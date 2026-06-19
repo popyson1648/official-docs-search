@@ -18,8 +18,9 @@ const defaultSourceMode: SourceMode =
 const docsLocale = params.get("docsLocale") || Astro.cookies.get("ods_docs_locale")?.value || undefined;
 const selectedSourceIds = new Set(params.getAll("sourceId"));
 
+const knownLanguages = getKnownLanguageIds(catalog);
 const parsed = parseQuery(q, {
-  knownLanguages: getKnownLanguageIds(catalog)
+  knownLanguages
 });
 const sourceMode = parsed.sourceMode ?? defaultSourceMode;
 const locale = parsed.locale ?? docsLocale;
@@ -45,9 +46,20 @@ const trustedScope = resolveSearchScope(catalog, {
   sourceMode: "all"
 });
 
-const shouldSearch = q.trim().length > 0 && parsed.errors.length === 0 && scope.sources.length > 0;
+const hasQuery = q.trim().length > 0;
+const shouldSearch = hasQuery && parsed.errors.length === 0 && scope.sources.length > 0;
 const pseConfig = shouldSearch ? buildProgrammableSearchConfig(parsed.searchText, scope.sources) : undefined;
 const googleCx = import.meta.env.PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX ?? "";
+
+const clientSources = catalog.languages.flatMap((lang) =>
+  (lang.sources ?? []).map((source) => ({
+    id: source.id,
+    language: lang.id,
+    languageName: lang.name,
+    domains: source.domains ?? [],
+    pathPrefixes: source.path_prefixes ?? source.pathPrefixes ?? []
+  }))
+);
 ---
 
 <html lang={uiLanguage}>
@@ -57,30 +69,16 @@ const googleCx = import.meta.env.PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX ?? "";
     <title>{t(uiLanguage, "title")}</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=LINE+Seed+JP:wght@400;700&display=swap" rel="stylesheet">
     {
       googleCx && (
         <>
           <script is:inline>
             window.__gcse = {
-              parsetags: "explicit",
               initializationCallback() {
-                const render = () => {
-                  window.google.search.cse.element.render({
-                    div: "google-results",
-                    tag: "searchresults-only",
-                    gname: "docs-results",
-                    attributes: {
-                      linkTarget: "_self",
-                      resultSetSize: "filtered_cse"
-                    }
-                  });
-                  window.dispatchEvent(new Event("ods:pse-ready"));
-                };
-                if (document.readyState === "complete") {
-                  render();
-                } else {
-                  window.google.setOnLoadCallback(render, true);
-                }
+                window.dispatchEvent(new Event("ods:pse-ready"));
               }
             };
           </script>
@@ -90,90 +88,157 @@ const googleCx = import.meta.env.PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX ?? "";
     }
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="/">{t(uiLanguage, "title")}</a>
-      <div class="header-actions">
-        <button class="text-button" type="button" data-help-open>{t(uiLanguage, "help")}</button>
-      </div>
-    </header>
+
 
     <main class="page">
       <section class="search-panel" aria-labelledby="search-heading">
-        <h1 id="search-heading">{t(uiLanguage, "queryLabel")}</h1>
+        <div class="search-header">
+          <h1 id="search-heading">
+            <span class="lang-en">{t("en", "queryLabel")}</span>
+            <span class="lang-ja">{t("ja", "queryLabel")}</span>
+          </h1>
+          <div class="header-actions">
+            <fieldset class="lang-switch">
+              <legend class="sr-only">UI Language</legend>
+              <label class:list={["lang-btn", { active: uiLanguage === "en" }]}>
+                <input type="radio" name="ui" value="en" class="sr-only" checked={uiLanguage === "en"} data-ui-radio>
+                EN
+              </label>
+              <label class:list={["lang-btn", { active: uiLanguage === "ja" }]}>
+                <input type="radio" name="ui" value="ja" class="sr-only" checked={uiLanguage === "ja"} data-ui-radio>
+                JA
+              </label>
+            </fieldset>
+            <button class="text-button" type="button" data-help-open>
+              <span class="lang-en">{t("en", "help")}</span>
+              <span class="lang-ja">{t("ja", "help")}</span>
+            </button>
+          </div>
+        </div>
         <form class="search-form" method="get" action="/" data-search-form>
           <input type="hidden" name="ui" value={uiLanguage} data-ui-hidden />
           <div class="query-row">
-            <label class="sr-only" for="q">Search query</label>
-            <div class="query-stack" data-query-stack>
-              <div class="query-highlight" aria-hidden="true" data-query-highlight></div>
-              <input
-                id="q"
-                name="q"
-                value={q}
-                autocomplete="off"
-                spellcheck="false"
-                placeholder="<language> <search words>"
-                data-query-input
-              />
+            <div class="search-group">
+              <label class="sr-only" for="q">Search query</label>
+              <div class="query-stack" data-query-stack data-known-languages={JSON.stringify(Array.from(knownLanguages))}>
+                <div class="query-highlight" aria-hidden="true" data-query-highlight></div>
+                <input
+                  id="q"
+                  name="q"
+                  value={q}
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="<language> <search words>"
+                  data-query-input
+                  autofocus
+                />
+              </div>
+              <button type="submit">
+                <span class="lang-en">{t("en", "search")}</span>
+                <span class="lang-ja">{t("ja", "search")}</span>
+              </button>
             </div>
-            <button type="submit">{t(uiLanguage, "search")}</button>
           </div>
 
-          <p class="examples">{t(uiLanguage, "examples")}</p>
+          {
+            parsed.languages.length > 0 && (
+              <div class="active-tags" data-active-tags>
+                {parsed.languages.map((lang) => {
+                  const langName = catalog.languages.find((l) => l.id === lang)?.name || lang;
+                  return (
+                    <span class="fpill">
+                      <span class="fpill-label">{langName}</span>
+                      <button type="button" class="fpill-x" data-remove-tag={lang} aria-label={`Remove ${langName}`}>×</button>
+                    </span>
+                  );
+                })}
+              </div>
+            )
+          }
+
+          <p class="examples">
+            <span class="lang-en">{t("en", "examples")}</span>
+            <span class="lang-ja">{t("ja", "examples")}</span>
+          </p>
 
           <div class="controls-row">
-            <label class="check-control">
-              <input
-                type="checkbox"
-                name="sourceMode"
-                value="all"
-                checked={sourceMode === "all"}
-                data-source-toggle
-              />
-              <span>{t(uiLanguage, "includeTrusted")}</span>
-            </label>
-
-            <label class="select-control">
-              <span>{t(uiLanguage, "uiLanguage")}</span>
-              <select name="ui" data-ui-select>
-                <option value="en" selected={uiLanguage === "en"}>English</option>
-                <option value="ja" selected={uiLanguage === "ja"}>日本語</option>
-              </select>
-            </label>
-
-            <label class="select-control">
-              <span>{t(uiLanguage, "docsLocale")}</span>
-              <select name="docsLocale" data-docs-locale>
-                <option value="" selected={!locale}>Default</option>
-                <option value="en" selected={locale === "en"}>English</option>
-                <option value="ja" selected={locale === "ja"}>日本語</option>
-              </select>
-            </label>
+            <div class="filters">
+              <label class="switch-label">
+                <span class="lang-en">{t("en", "includeTrusted")}</span>
+                <span class="lang-ja">{t("ja", "includeTrusted")}</span>
+                <input
+                  type="checkbox"
+                  name="sourceMode"
+                  value="all"
+                  class="pill-toggle"
+                  checked={sourceMode === "all"}
+                  data-source-toggle
+                />
+              </label>
+            </div>
+            
+            <div class="filters">
+              <span class="filter-label">
+                <span class="lang-en">{t("en", "docsLocale")}:</span>
+                <span class="lang-ja">{t("ja", "docsLocale")}:</span>
+              </span>
+              <fieldset class="seg-toggle">
+                <legend class="sr-only">Docs Locale</legend>
+                <label class:list={["seg-btn", { active: !locale }]}>
+                  <input type="radio" name="docsLocale" value="" class="sr-only" checked={!locale} data-docs-radio>
+                  <span class="lang-en">All</span>
+                  <span class="lang-ja">すべて</span>
+                </label>
+                <label class:list={["seg-btn", { active: locale === "en" }]}>
+                  <input type="radio" name="docsLocale" value="en" class="sr-only" checked={locale === "en"} data-docs-radio>
+                  EN
+                </label>
+                <label class:list={["seg-btn", { active: locale === "ja" }]}>
+                  <input type="radio" name="docsLocale" value="ja" class="sr-only" checked={locale === "ja"} data-docs-radio>
+                  JA
+                </label>
+              </fieldset>
+            </div>
           </div>
 
-          <details class="source-details" open={sourceMode === "all"}>
-            <summary>{t(uiLanguage, "trustedSources")}</summary>
-            <div class="source-grid">
+          <details class="source-details">
+            <summary>
+              <span class="lang-en">{t("en", "sources")}</span>
+              <span class="lang-ja">{t("ja", "sources")}</span>
+            </summary>
+            <div class="source-lists">
               {
-                trustedScope.sources
-                  .filter((source) => source.kind !== "official")
-                  .map((source) => (
-                    <label class="source-option">
-                      <input
-                        type="checkbox"
-                        name="sourceId"
-                        value={source.id}
-                        checked={selectedIds.has(source.id)}
-                        disabled={sourceMode !== "all"}
-                      />
-                      <span>
-                        <strong>{source.name}</strong>
-                        <small>
-                          {source.domains[0]} · {sourceLabel(source.kind)}
-                        </small>
-                      </span>
-                    </label>
-                  ))
+                (hasQuery && parsed.languages.length > 0 ? trustedScope.languages : catalog.languages).map((language) => (
+                  <div class="language-group">
+                    <h3 class="language-name">{language.name}</h3>
+                    <div class="source-grid">
+                      {
+                        language.sources.map((source) => {
+                          const isOfficial = source.kind === "official";
+                          const disabled = !isOfficial && sourceMode !== "all";
+                          return (
+                            <label class:list={["source-option", { disabled }]}>
+                              <input
+                                type="checkbox"
+                                name="sourceId"
+                                value={source.id}
+                                checked={selectedIds.has(source.id)}
+                                disabled={disabled}
+                                class="pill-toggle"
+                              />
+                              <span>
+                                <strong>{source.name}</strong>
+                                <small>
+                                  {source.domains[0]} · {sourceLabel(source.kind)}
+                                </small>
+                              </span>
+                            </label>
+                          );
+                        })
+                      }
+                    </div>
+                  </div>
+                ))
               }
             </div>
           </details>
@@ -190,80 +255,113 @@ const googleCx = import.meta.env.PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX ?? "";
 
       {
         scope.localeNotices.length > 0 && (
-          <section class="notice">
-            <p>{t(uiLanguage, "localeUnavailable")}</p>
-            <ul>
-              {scope.localeNotices.map((notice) => (
-                <li>
-                  {notice.language}: {notice.sources.map((source) => source.name).join(", ")}
-                </li>
-              ))}
-            </ul>
-          </section>
+          <div class="locale-notice muted">
+            <small>
+              <span class="lang-en">Note: {t("en", "localeUnavailable")}</span>
+              <span class="lang-ja">※ {t("ja", "localeUnavailable")}</span>
+              ({scope.localeNotices.map((notice) => `${notice.language}: ${notice.sources.map((s) => s.name).join(", ")}`).join("; ")})
+            </small>
+          </div>
         )
       }
 
-      <section
-        class="results"
-        aria-live="polite"
-        data-pse-results
-        data-google-query={pseConfig?.googleQuery ?? ""}
-      >
-        {
-          !q.trim() ? (
-            <p class="muted">{t(uiLanguage, "empty")}</p>
-          ) : parsed.errors.length > 0 ? null : !googleCx ? (
-            <section class="notice">
-              <p>Set PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX to enable Google Programmable Search results.</p>
-              <p><a href="/search/annotations.xml">annotations.xml</a> and <a href="/search/context.xml">context.xml</a> are generated from the TOML catalog for the Google control panel.</p>
-            </section>
-          ) : scope.sources.length === 0 ? (
-            <p class="muted">{t(uiLanguage, "noResults")}</p>
-          ) : (
-            <div id="google-results" class="google-results"></div>
-          )
-        }
-      </section>
+      {
+        hasQuery && (
+          <section
+            class="results"
+            aria-live="polite"
+            data-pse-results
+            data-google-query={pseConfig?.googleQuery ?? ""}
+          >
+            {
+              parsed.errors.length > 0 ? null : !googleCx ? (
+                <section class="notice">
+                  <p>Set PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX to enable Google Programmable Search results.</p>
+                  <p><a href="/search/annotations.xml">annotations.xml</a> and <a href="/search/context.xml">context.xml</a> are generated from the TOML catalog for the Google control panel.</p>
+                </section>
+              ) : scope.sources.length === 0 ? (
+                <p class="muted">
+                  <span class="lang-en">{t("en", "noResults")}</span>
+                  <span class="lang-ja">{t("ja", "noResults")}</span>
+                </p>
+              ) : (
+                <div
+                  class="gcse-searchresults-only"
+                  data-gname="docs-results"
+                  data-mobileLayout="disabled"
+                  data-resultSetSize="web"
+                  data-queryParameterName="gq"
+                ></div>
+              )
+            }
+          </section>
+        )
+      }
     </main>
 
     <dialog class="help-dialog" data-help-dialog>
       <form method="dialog">
         <div class="dialog-header">
-          <h2>{t(uiLanguage, "help")}</h2>
+          <h2>
+            <span class="lang-en">{t("en", "help")}</span>
+            <span class="lang-ja">{t("ja", "help")}</span>
+          </h2>
           <button class="icon-button" value="close" aria-label="Close">×</button>
         </div>
         <div class="help-content">
           <p><code>&lt;language&gt; &lt;search words&gt;</code></p>
           <p><code>lang:&lt;language&gt; &lt;search words&gt;</code></p>
           <p><code>lang:python,rust &lt;search words&gt;</code></p>
+          <p class="muted" style="margin-top: -6px; margin-bottom: 12px; font-size: 0.9em;">
+            <span class="lang-en">(File extensions like <code>.py</code> or <code>ts</code> can also be used)</span>
+            <span class="lang-ja">(<code>.py</code> や <code>ts</code> などの拡張子も指定できます)</span>
+          </p>
           <p><code>&lt;search words&gt; locale:ja</code></p>
           <p><code>&lt;search words&gt; source:all</code></p>
-          <p>{t(uiLanguage, "flagsRule")}</p>
+          <p>
+            <span class="lang-en">{t("en", "flagsRule")}</span>
+            <span class="lang-ja">{t("ja", "flagsRule")}</span>
+          </p>
           <p><code>::</code>, <code>?.</code>, <code>$</code>, <code>%</code>, <code>&lt;T&gt;</code> are searched as normal text.</p>
         </div>
       </form>
-    </dialog>
-
-    <script>
+    </dialog>    <script>
       const input = document.querySelector("[data-query-input]");
       const highlight = document.querySelector("[data-query-highlight]");
       const form = document.querySelector("[data-search-form]");
-      const sourceToggle = document.querySelector("[data-source-toggle]");
-      const uiSelect = document.querySelector("[data-ui-select]");
       const uiHidden = document.querySelector("[data-ui-hidden]");
-      const docsLocale = document.querySelector("[data-docs-locale]");
+      const sourceToggle = document.querySelector("[data-source-toggle]");
+      const uiRadios = document.querySelectorAll("[data-ui-radio]");
+      const docsRadios = document.querySelectorAll("[data-docs-radio]");
       const dialog = document.querySelector("[data-help-dialog]");
       const helpOpen = document.querySelector("[data-help-open]");
       const pseResults = document.querySelector("[data-pse-results]");
 
+      const queryStack = document.querySelector("[data-query-stack]");
+      const knownLanguages = new Set(JSON.parse(queryStack?.dataset.knownLanguages || "[]"));
+
       const flagPattern = /^(lang:[^\s]+|locale:[^\s]+|source:(official|all))$/i;
       const anyFlagPattern = /^(lang:|locale:|source:)/i;
+
+      function normalizeLanguageId(value) {
+        const normalized = value.trim().toLowerCase();
+        if (normalized === "c++" || normalized === "cplusplus") return "cpp";
+        if (normalized === "c#" || normalized === "cs") return "csharp";
+        if (normalized === "js" || normalized === "ecmascript") return "javascript";
+        if (normalized === "ts") return "typescript";
+        if (normalized === "py") return "python";
+        if (normalized === "rs") return "rust";
+        if (normalized === "rb") return "ruby";
+        if (normalized === "golang") return "go";
+        return normalized;
+      }
 
       function renderHighlight() {
         if (!input || !highlight) return;
         const tokens = input.value.match(/\S+|\s+/g) || [];
         let seenSearch = false;
         let seenSuffix = false;
+        let isFirstToken = true;
         highlight.replaceChildren();
         for (const token of tokens) {
           const span = document.createElement("span");
@@ -272,8 +370,14 @@ const googleCx = import.meta.env.PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX ?? "";
             highlight.append(span);
             continue;
           }
-          const isFlag = flagPattern.test(token);
+          
           const looksFlag = anyFlagPattern.test(token);
+          let isFlag = flagPattern.test(token);
+          
+          if (isFirstToken && !looksFlag && knownLanguages.has(normalizeLanguageId(token))) {
+            isFlag = true;
+          }
+
           if (!isFlag && !looksFlag) seenSearch = true;
           if (isFlag && !seenSearch) span.className = "flag-token";
           if (isFlag && seenSearch && !seenSuffix) {
@@ -285,6 +389,7 @@ const googleCx = import.meta.env.PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX ?? "";
             span.className = "flag-token invalid";
           }
           highlight.append(span);
+          isFirstToken = false;
         }
       }
 
@@ -296,31 +401,92 @@ const googleCx = import.meta.env.PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX ?? "";
       input?.addEventListener("scroll", () => {
         if (highlight) highlight.scrollLeft = input.scrollLeft;
       });
-      uiSelect?.addEventListener("change", () => {
-        if (uiHidden) uiHidden.value = uiSelect.value;
-        setCookie("ods_ui", uiSelect.value);
+
+      uiRadios.forEach((radio) => {
+        radio.addEventListener("change", (e) => {
+          setCookie("ods_ui", e.target.value);
+          if (uiHidden) uiHidden.value = e.target.value;
+          document.documentElement.lang = e.target.value;
+          uiRadios.forEach((r) => r.parentElement.classList.remove("active"));
+          if (e.target.checked) e.target.parentElement.classList.add("active");
+        });
       });
+      
       sourceToggle?.addEventListener("change", () => {
+        if (sourceToggle.checked) {
+          sourceToggle.parentElement.classList.add("active");
+        } else {
+          sourceToggle.parentElement.classList.remove("active");
+        }
         setCookie("ods_source", sourceToggle.checked ? "all" : "official");
+        form?.submit();
       });
-      docsLocale?.addEventListener("change", () => {
-        setCookie("ods_docs_locale", docsLocale.value);
+
+      docsRadios.forEach((radio) => {
+        radio.addEventListener("change", (e) => {
+          setCookie("ods_docs_locale", e.target.value);
+          form?.submit();
+        });
       });
-      form?.addEventListener("submit", () => {
-        if (uiSelect) setCookie("ods_ui", uiSelect.value);
-        if (sourceToggle) setCookie("ods_source", sourceToggle.checked ? "all" : "official");
-        if (docsLocale) setCookie("ods_docs_locale", docsLocale.value);
-      });
+
       helpOpen?.addEventListener("click", () => dialog?.showModal());
 
-      function runProgrammableSearch() {
-        const query = pseResults?.dataset.googleQuery;
-        if (!query || !window.google?.search?.cse?.element) return;
-        const element = window.google.search.cse.element.getElement("docs-results");
-        element?.execute(query);
-      }
+      dialog?.addEventListener("click", (e) => {
+        if (e.target === dialog) {
+          dialog.close();
+        }
+      });
 
-      window.addEventListener("ods:pse-ready", runProgrammableSearch);
+      // Handle active language tag removal
+      const activeTagsContainer = document.querySelector("[data-active-tags]");
+      activeTagsContainer?.addEventListener("click", (e) => {
+        const removeBtn = e.target.closest("[data-remove-tag]");
+        if (!removeBtn || !input) return;
+        
+        const langToRemove = removeBtn.dataset.removeTag;
+        let val = input.value;
+        
+        // 1. Remove from lang: flags (e.g. lang:python or lang:python,rust)
+        const langFlagRegex = new RegExp(`\\blang:([^\\s]+)`, 'i');
+        const match = val.match(langFlagRegex);
+        if (match) {
+          const langs = match[1].split(',');
+          const filteredLangs = langs.filter(l => l.toLowerCase() !== langToRemove.toLowerCase());
+          if (filteredLangs.length > 0) {
+            val = val.replace(match[0], `lang:${filteredLangs.join(',')}`);
+          } else {
+            val = val.replace(new RegExp(`\\s*lang:${match[1]}\\s*`, 'i'), ' ').trim();
+          }
+        } else {
+          // 2. Remove as leading bare token (e.g. "python map" -> "map")
+          const tokens = val.match(/\S+|\s+/g) || [];
+          if (tokens.length > 0 && normalizeLanguageId(tokens[0]) === normalizeLanguageId(langToRemove)) {
+            tokens.shift();
+            if (tokens.length > 0 && /^\s+$/.test(tokens[0])) {
+              tokens.shift();
+            }
+            val = tokens.join('');
+          }
+        }
+
+        input.value = val;
+        renderHighlight();
+        form?.submit();
+      });
+
+      // Inject the processed query into the "gq" parameter for Google CSE auto-execution
+      if (pseResults?.dataset.googleQuery) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("gq", pseResults.dataset.googleQuery);
+        window.history.replaceState({}, "", url.toString());
+      }
+      
+
+
+      input?.addEventListener("input", renderHighlight);
+      input?.addEventListener("scroll", () => {
+        if (highlight) highlight.scrollLeft = input.scrollLeft;
+      });
       renderHighlight();
     </script>
   </body>
