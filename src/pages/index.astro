@@ -1,8 +1,8 @@
 ---
 import { getUiLanguage, t } from "../core/i18n";
+import { buildProgrammableSearchConfig } from "../core/pse";
 import { parseQuery } from "../core/query";
 import type { SourceMode } from "../core/query";
-import { createSearchProvider } from "../core/search";
 import { getKnownLanguageIds, loadCatalog, resolveSearchScope, sourceLabel } from "../core/sources";
 
 export const prerender = false;
@@ -45,15 +45,9 @@ const trustedScope = resolveSearchScope(catalog, {
   sourceMode: "all"
 });
 
-const shouldSearch = q.trim().length > 0 && parsed.errors.length === 0;
-const response = shouldSearch
-  ? await createSearchProvider(process.env).search({
-      query: parsed.searchText,
-      locale,
-      sources: scope.sources
-    })
-  : undefined;
-const sourceById = new Map(scope.sources.concat(trustedScope.sources).map((source) => [source.id, source]));
+const shouldSearch = q.trim().length > 0 && parsed.errors.length === 0 && scope.sources.length > 0;
+const pseConfig = shouldSearch ? buildProgrammableSearchConfig(parsed.searchText, scope.sources) : undefined;
+const googleCx = import.meta.env.PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX ?? "";
 ---
 
 <html lang={uiLanguage}>
@@ -63,6 +57,37 @@ const sourceById = new Map(scope.sources.concat(trustedScope.sources).map((sourc
     <title>{t(uiLanguage, "title")}</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
+    {
+      googleCx && (
+        <>
+          <script is:inline>
+            window.__gcse = {
+              parsetags: "explicit",
+              initializationCallback() {
+                const render = () => {
+                  window.google.search.cse.element.render({
+                    div: "google-results",
+                    tag: "searchresults-only",
+                    gname: "docs-results",
+                    attributes: {
+                      linkTarget: "_self",
+                      resultSetSize: "filtered_cse"
+                    }
+                  });
+                  window.dispatchEvent(new Event("ods:pse-ready"));
+                };
+                if (document.readyState === "complete") {
+                  render();
+                } else {
+                  window.google.setOnLoadCallback(render, true);
+                }
+              }
+            };
+          </script>
+          <script async src={`https://cse.google.com/cse.js?cx=${encodeURIComponent(googleCx)}`}></script>
+        </>
+      )
+    }
   </head>
   <body>
     <header class="site-header">
@@ -178,35 +203,24 @@ const sourceById = new Map(scope.sources.concat(trustedScope.sources).map((sourc
         )
       }
 
-      {
-        response?.providerNotice && (
-          <section class="notice">
-            <p>{response.providerNotice}</p>
-          </section>
-        )
-      }
-
-      <section class="results" aria-live="polite">
+      <section
+        class="results"
+        aria-live="polite"
+        data-pse-results
+        data-google-query={pseConfig?.googleQuery ?? ""}
+      >
         {
           !q.trim() ? (
             <p class="muted">{t(uiLanguage, "empty")}</p>
-          ) : response && response.results.length === 0 ? (
+          ) : parsed.errors.length > 0 ? null : !googleCx ? (
+            <section class="notice">
+              <p>Set PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX to enable Google Programmable Search results.</p>
+              <p><a href="/search/annotations.xml">annotations.xml</a> and <a href="/search/context.xml">context.xml</a> are generated from the TOML catalog for the Google control panel.</p>
+            </section>
+          ) : scope.sources.length === 0 ? (
             <p class="muted">{t(uiLanguage, "noResults")}</p>
           ) : (
-            response?.results.map((result) => {
-              const source = sourceById.get(result.sourceId);
-              return (
-                <article class="result-item">
-                  <div class="result-meta">
-                    <span>{source ? sourceLabel(source.kind) : "Source"}</span>
-                    {source && <span>{source.name}</span>}
-                  </div>
-                  <h2><a href={result.url}>{result.title}</a></h2>
-                  <p>{result.snippet}</p>
-                  <a class="result-url" href={result.url}>{result.url}</a>
-                </article>
-              );
-            })
+            <div id="google-results" class="google-results"></div>
           )
         }
       </section>
@@ -240,6 +254,7 @@ const sourceById = new Map(scope.sources.concat(trustedScope.sources).map((sourc
       const docsLocale = document.querySelector("[data-docs-locale]");
       const dialog = document.querySelector("[data-help-dialog]");
       const helpOpen = document.querySelector("[data-help-open]");
+      const pseResults = document.querySelector("[data-pse-results]");
 
       const flagPattern = /^(lang:[^\s]+|locale:[^\s]+|source:(official|all))$/i;
       const anyFlagPattern = /^(lang:|locale:|source:)/i;
@@ -297,6 +312,15 @@ const sourceById = new Map(scope.sources.concat(trustedScope.sources).map((sourc
         if (docsLocale) setCookie("ods_docs_locale", docsLocale.value);
       });
       helpOpen?.addEventListener("click", () => dialog?.showModal());
+
+      function runProgrammableSearch() {
+        const query = pseResults?.dataset.googleQuery;
+        if (!query || !window.google?.search?.cse?.element) return;
+        const element = window.google.search.cse.element.getElement("docs-results");
+        element?.execute(query);
+      }
+
+      window.addEventListener("ods:pse-ready", runProgrammableSearch);
       renderHighlight();
     </script>
   </body>

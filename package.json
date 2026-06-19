@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "generate:pse-config": "node scripts/generate-pse-config.mjs",
     "dev": "astro dev",
+    "prebuild": "npm run generate:pse-config",
     "build": "astro build",
     "preview": "astro preview",
     "typecheck": "tsc --noEmit",

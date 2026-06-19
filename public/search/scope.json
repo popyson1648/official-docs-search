@@ -1,0 +1,237 @@
+{
+  "languages": [
+    {
+      "id": "python",
+      "name": "Python",
+      "sources": [
+        {
+          "id": "python-docs",
+          "kind": "official",
+          "name": "Python Documentation",
+          "url": "https://docs.python.org/",
+          "domains": [
+            "docs.python.org"
+          ],
+          "pathPrefixes": []
+        }
+      ]
+    },
+    {
+      "id": "rust",
+      "name": "Rust",
+      "sources": [
+        {
+          "id": "rust-docs",
+          "kind": "official",
+          "name": "Rust Documentation",
+          "url": "https://doc.rust-lang.org/",
+          "domains": [
+            "doc.rust-lang.org"
+          ],
+          "pathPrefixes": []
+        }
+      ]
+    },
+    {
+      "id": "javascript",
+      "name": "JavaScript",
+      "sources": [
+        {
+          "id": "tc39-ecma262",
+          "kind": "official",
+          "name": "ECMAScript Specification",
+          "url": "https://tc39.es/ecma262/",
+          "domains": [
+            "tc39.es"
+          ],
+          "pathPrefixes": [
+            "/ecma262/"
+          ]
+        },
+        {
+          "id": "mdn-js",
+          "kind": "conventional",
+          "name": "MDN Web Docs",
+          "url": "https://developer.mozilla.org/",
+          "domains": [
+            "developer.mozilla.org"
+          ],
+          "pathPrefixes": []
+        }
+      ]
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript",
+      "sources": [
+        {
+          "id": "typescript-docs",
+          "kind": "official",
+          "name": "TypeScript Documentation",
+          "url": "https://www.typescriptlang.org/docs/",
+          "domains": [
+            "www.typescriptlang.org"
+          ],
+          "pathPrefixes": [
+            "/docs/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "go",
+      "name": "Go",
+      "sources": [
+        {
+          "id": "go-docs",
+          "kind": "official",
+          "name": "Go Documentation",
+          "url": "https://go.dev/doc/",
+          "domains": [
+            "go.dev"
+          ],
+          "pathPrefixes": [
+            "/doc/",
+            "/ref/"
+          ]
+        },
+        {
+          "id": "go-std",
+          "kind": "official",
+          "name": "Go Standard Library",
+          "url": "https://pkg.go.dev/std",
+          "domains": [
+            "pkg.go.dev"
+          ],
+          "pathPrefixes": [
+            "/std",
+            "/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c",
+      "name": "C",
+      "sources": [
+        {
+          "id": "cppreference-c",
+          "kind": "community",
+          "name": "cppreference C",
+          "url": "https://en.cppreference.com/w/c",
+          "domains": [
+            "en.cppreference.com"
+          ],
+          "pathPrefixes": [
+            "/w/c"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpp",
+      "name": "C++",
+      "sources": [
+        {
+          "id": "cppreference-cpp",
+          "kind": "community",
+          "name": "cppreference C++",
+          "url": "https://en.cppreference.com/w/cpp",
+          "domains": [
+            "en.cppreference.com"
+          ],
+          "pathPrefixes": [
+            "/w/cpp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "csharp",
+      "name": "C#",
+      "sources": [
+        {
+          "id": "csharp-docs",
+          "kind": "official",
+          "name": "Microsoft C# Documentation",
+          "url": "https://learn.microsoft.com/dotnet/csharp/",
+          "domains": [
+            "learn.microsoft.com"
+          ],
+          "pathPrefixes": [
+            "/dotnet/csharp/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "java",
+      "name": "Java",
+      "sources": [
+        {
+          "id": "java-docs",
+          "kind": "official",
+          "name": "Oracle Java Documentation",
+          "url": "https://docs.oracle.com/en/java/",
+          "domains": [
+            "docs.oracle.com"
+          ],
+          "pathPrefixes": [
+            "/en/java/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "php",
+      "name": "PHP",
+      "sources": [
+        {
+          "id": "php-manual",
+          "kind": "official",
+          "name": "PHP Manual",
+          "url": "https://www.php.net/manual/",
+          "domains": [
+            "www.php.net",
+            "php.net"
+          ],
+          "pathPrefixes": [
+            "/manual/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ruby",
+      "name": "Ruby",
+      "sources": [
+        {
+          "id": "ruby-docs",
+          "kind": "official",
+          "name": "Ruby Documentation",
+          "url": "https://docs.ruby-lang.org/",
+          "domains": [
+            "docs.ruby-lang.org"
+          ],
+          "pathPrefixes": []
+        }
+      ]
+    },
+    {
+      "id": "swift",
+      "name": "Swift",
+      "sources": [
+        {
+          "id": "swift-docs",
+          "kind": "official",
+          "name": "Swift Documentation",
+          "url": "https://docs.swift.org/",
+          "domains": [
+            "docs.swift.org"
+          ],
+          "pathPrefixes": []
+        }
+      ]
+    }
+  ]
+}

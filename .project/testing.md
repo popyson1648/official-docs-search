@@ -18,6 +18,7 @@ python3 scripts/verify.py
 
 - Query syntax changes: update and run `tests/query.test.ts`.
 - Source catalog resolution changes: update and run `tests/sources.test.ts`.
+- Google Programmable Search constraint changes: update and run `tests/pse.test.ts`.
 - UI changes: run the dev server and check desktop and mobile widths.
 - Build/config changes: run the full verification script.
 

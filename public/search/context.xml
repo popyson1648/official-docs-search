@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomSearchEngine top_refinements="0">
+  <Title>Official Docs Search</Title>
+  <Context>
+    <BackgroundLabels>
+      <Label name="_include_" mode="FILTER"/>
+      <Label name="_exclude_" mode="ELIMINATE"/>
+    </BackgroundLabels>
+    <Facet>
+      <FacetItem title="Python">
+        <Label name="language_python" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Rust">
+        <Label name="language_rust" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="JavaScript">
+        <Label name="language_javascript" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="TypeScript">
+        <Label name="language_typescript" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Go">
+        <Label name="language_go" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="C">
+        <Label name="language_c" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="C++">
+        <Label name="language_cpp" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="C#">
+        <Label name="language_csharp" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Java">
+        <Label name="language_java" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="PHP">
+        <Label name="language_php" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Ruby">
+        <Label name="language_ruby" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Swift">
+        <Label name="language_swift" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Official">
+        <Label name="kind_official" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Conventional">
+        <Label name="kind_conventional" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Community">
+        <Label name="kind_community" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Python Documentation">
+        <Label name="source_python_docs" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Rust Documentation">
+        <Label name="source_rust_docs" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="ECMAScript Specification">
+        <Label name="source_tc39_ecma262" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="MDN Web Docs">
+        <Label name="source_mdn_js" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="TypeScript Documentation">
+        <Label name="source_typescript_docs" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Go Documentation">
+        <Label name="source_go_docs" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Go Standard Library">
+        <Label name="source_go_std" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="cppreference C">
+        <Label name="source_cppreference_c" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="cppreference C++">
+        <Label name="source_cppreference_cpp" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Microsoft C# Documentation">
+        <Label name="source_csharp_docs" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Oracle Java Documentation">
+        <Label name="source_java_docs" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="PHP Manual">
+        <Label name="source_php_manual" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Ruby Documentation">
+        <Label name="source_ruby_docs" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+    <Facet>
+      <FacetItem title="Swift Documentation">
+        <Label name="source_swift_docs" mode="FILTER"/>
+      </FacetItem>
+    </Facet>
+  </Context>
+</CustomSearchEngine>

@@ -10,6 +10,7 @@ The production domain is `official-docs-search.popyson.com`.
 - Application entry point: `src/pages/index.astro`
 - Framework-independent logic: `src/core/`
 - Documentation source catalog: `src/data/docs-sources.toml`
+- Generated Google Programmable Search config: `public/search/`
 - Unit tests: `tests/`
 
 ## Minimum Setup
