@@ -1,0 +1,303 @@
+---
+import { getUiLanguage, t } from "../core/i18n";
+import { parseQuery } from "../core/query";
+import type { SourceMode } from "../core/query";
+import { createSearchProvider } from "../core/search";
+import { getKnownLanguageIds, loadCatalog, resolveSearchScope, sourceLabel } from "../core/sources";
+
+export const prerender = false;
+
+const catalog = loadCatalog();
+const params = Astro.url.searchParams;
+const q = params.get("q") ?? "";
+const uiLanguage = getUiLanguage(params.get("ui") ?? Astro.cookies.get("ods_ui")?.value);
+const cookieSourceMode = Astro.cookies.get("ods_source")?.value;
+const formSourceMode = params.get("sourceMode");
+const defaultSourceMode: SourceMode =
+  formSourceMode === "all" || cookieSourceMode === "all" ? "all" : "official";
+const docsLocale = params.get("docsLocale") || Astro.cookies.get("ods_docs_locale")?.value || undefined;
+const selectedSourceIds = new Set(params.getAll("sourceId"));
+
+const parsed = parseQuery(q, {
+  knownLanguages: getKnownLanguageIds(catalog)
+});
+const sourceMode = parsed.sourceMode ?? defaultSourceMode;
+const locale = parsed.locale ?? docsLocale;
+const selectedIds =
+  selectedSourceIds.size > 0
+    ? selectedSourceIds
+    : new Set(
+        catalog.languages
+          .flatMap((language) => language.sources)
+          .filter((source) => source.defaultEnabled)
+          .map((source) => source.id)
+      );
+
+const scope = resolveSearchScope(catalog, {
+  languages: parsed.languages,
+  locale,
+  sourceMode,
+  enabledSourceIds: selectedIds
+});
+const trustedScope = resolveSearchScope(catalog, {
+  languages: parsed.languages,
+  locale,
+  sourceMode: "all"
+});
+
+const shouldSearch = q.trim().length > 0 && parsed.errors.length === 0;
+const response = shouldSearch
+  ? await createSearchProvider(process.env).search({
+      query: parsed.searchText,
+      locale,
+      sources: scope.sources
+    })
+  : undefined;
+const sourceById = new Map(scope.sources.concat(trustedScope.sources).map((source) => [source.id, source]));
+---
+
+<html lang={uiLanguage}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t(uiLanguage, "title")}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">{t(uiLanguage, "title")}</a>
+      <div class="header-actions">
+        <button class="text-button" type="button" data-help-open>{t(uiLanguage, "help")}</button>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="search-panel" aria-labelledby="search-heading">
+        <h1 id="search-heading">{t(uiLanguage, "queryLabel")}</h1>
+        <form class="search-form" method="get" action="/" data-search-form>
+          <input type="hidden" name="ui" value={uiLanguage} data-ui-hidden />
+          <div class="query-row">
+            <label class="sr-only" for="q">Search query</label>
+            <div class="query-stack" data-query-stack>
+              <div class="query-highlight" aria-hidden="true" data-query-highlight></div>
+              <input
+                id="q"
+                name="q"
+                value={q}
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="<language> <search words>"
+                data-query-input
+              />
+            </div>
+            <button type="submit">{t(uiLanguage, "search")}</button>
+          </div>
+
+          <p class="examples">{t(uiLanguage, "examples")}</p>
+
+          <div class="controls-row">
+            <label class="check-control">
+              <input
+                type="checkbox"
+                name="sourceMode"
+                value="all"
+                checked={sourceMode === "all"}
+                data-source-toggle
+              />
+              <span>{t(uiLanguage, "includeTrusted")}</span>
+            </label>
+
+            <label class="select-control">
+              <span>{t(uiLanguage, "uiLanguage")}</span>
+              <select name="ui" data-ui-select>
+                <option value="en" selected={uiLanguage === "en"}>English</option>
+                <option value="ja" selected={uiLanguage === "ja"}>日本語</option>
+              </select>
+            </label>
+
+            <label class="select-control">
+              <span>{t(uiLanguage, "docsLocale")}</span>
+              <select name="docsLocale" data-docs-locale>
+                <option value="" selected={!locale}>Default</option>
+                <option value="en" selected={locale === "en"}>English</option>
+                <option value="ja" selected={locale === "ja"}>日本語</option>
+              </select>
+            </label>
+          </div>
+
+          <details class="source-details" open={sourceMode === "all"}>
+            <summary>{t(uiLanguage, "trustedSources")}</summary>
+            <div class="source-grid">
+              {
+                trustedScope.sources
+                  .filter((source) => source.kind !== "official")
+                  .map((source) => (
+                    <label class="source-option">
+                      <input
+                        type="checkbox"
+                        name="sourceId"
+                        value={source.id}
+                        checked={selectedIds.has(source.id)}
+                        disabled={sourceMode !== "all"}
+                      />
+                      <span>
+                        <strong>{source.name}</strong>
+                        <small>
+                          {source.domains[0]} · {sourceLabel(source.kind)}
+                        </small>
+                      </span>
+                    </label>
+                  ))
+              }
+            </div>
+          </details>
+        </form>
+      </section>
+
+      {
+        parsed.errors.length > 0 && (
+          <section class="notice error" aria-live="polite">
+            {parsed.errors.map((error) => <p>{error.message}</p>)}
+          </section>
+        )
+      }
+
+      {
+        scope.localeNotices.length > 0 && (
+          <section class="notice">
+            <p>{t(uiLanguage, "localeUnavailable")}</p>
+            <ul>
+              {scope.localeNotices.map((notice) => (
+                <li>
+                  {notice.language}: {notice.sources.map((source) => source.name).join(", ")}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        response?.providerNotice && (
+          <section class="notice">
+            <p>{response.providerNotice}</p>
+          </section>
+        )
+      }
+
+      <section class="results" aria-live="polite">
+        {
+          !q.trim() ? (
+            <p class="muted">{t(uiLanguage, "empty")}</p>
+          ) : response && response.results.length === 0 ? (
+            <p class="muted">{t(uiLanguage, "noResults")}</p>
+          ) : (
+            response?.results.map((result) => {
+              const source = sourceById.get(result.sourceId);
+              return (
+                <article class="result-item">
+                  <div class="result-meta">
+                    <span>{source ? sourceLabel(source.kind) : "Source"}</span>
+                    {source && <span>{source.name}</span>}
+                  </div>
+                  <h2><a href={result.url}>{result.title}</a></h2>
+                  <p>{result.snippet}</p>
+                  <a class="result-url" href={result.url}>{result.url}</a>
+                </article>
+              );
+            })
+          )
+        }
+      </section>
+    </main>
+
+    <dialog class="help-dialog" data-help-dialog>
+      <form method="dialog">
+        <div class="dialog-header">
+          <h2>{t(uiLanguage, "help")}</h2>
+          <button class="icon-button" value="close" aria-label="Close">×</button>
+        </div>
+        <div class="help-content">
+          <p><code>&lt;language&gt; &lt;search words&gt;</code></p>
+          <p><code>lang:&lt;language&gt; &lt;search words&gt;</code></p>
+          <p><code>lang:python,rust &lt;search words&gt;</code></p>
+          <p><code>&lt;search words&gt; locale:ja</code></p>
+          <p><code>&lt;search words&gt; source:all</code></p>
+          <p>{t(uiLanguage, "flagsRule")}</p>
+          <p><code>::</code>, <code>?.</code>, <code>$</code>, <code>%</code>, <code>&lt;T&gt;</code> are searched as normal text.</p>
+        </div>
+      </form>
+    </dialog>
+
+    <script>
+      const input = document.querySelector("[data-query-input]");
+      const highlight = document.querySelector("[data-query-highlight]");
+      const form = document.querySelector("[data-search-form]");
+      const sourceToggle = document.querySelector("[data-source-toggle]");
+      const uiSelect = document.querySelector("[data-ui-select]");
+      const uiHidden = document.querySelector("[data-ui-hidden]");
+      const docsLocale = document.querySelector("[data-docs-locale]");
+      const dialog = document.querySelector("[data-help-dialog]");
+      const helpOpen = document.querySelector("[data-help-open]");
+
+      const flagPattern = /^(lang:[^\s]+|locale:[^\s]+|source:(official|all))$/i;
+      const anyFlagPattern = /^(lang:|locale:|source:)/i;
+
+      function renderHighlight() {
+        if (!input || !highlight) return;
+        const tokens = input.value.match(/\S+|\s+/g) || [];
+        let seenSearch = false;
+        let seenSuffix = false;
+        highlight.replaceChildren();
+        for (const token of tokens) {
+          const span = document.createElement("span");
+          span.textContent = token;
+          if (/^\s+$/.test(token)) {
+            highlight.append(span);
+            continue;
+          }
+          const isFlag = flagPattern.test(token);
+          const looksFlag = anyFlagPattern.test(token);
+          if (!isFlag && !looksFlag) seenSearch = true;
+          if (isFlag && !seenSearch) span.className = "flag-token";
+          if (isFlag && seenSearch && !seenSuffix) {
+            span.className = "flag-token";
+            seenSuffix = true;
+          } else if (isFlag && seenSearch && seenSuffix) {
+            span.className = "flag-token";
+          } else if (looksFlag) {
+            span.className = "flag-token invalid";
+          }
+          highlight.append(span);
+        }
+      }
+
+      function setCookie(name, value) {
+        document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=31536000; SameSite=Lax`;
+      }
+
+      input?.addEventListener("input", renderHighlight);
+      input?.addEventListener("scroll", () => {
+        if (highlight) highlight.scrollLeft = input.scrollLeft;
+      });
+      uiSelect?.addEventListener("change", () => {
+        if (uiHidden) uiHidden.value = uiSelect.value;
+        setCookie("ods_ui", uiSelect.value);
+      });
+      sourceToggle?.addEventListener("change", () => {
+        setCookie("ods_source", sourceToggle.checked ? "all" : "official");
+      });
+      docsLocale?.addEventListener("change", () => {
+        setCookie("ods_docs_locale", docsLocale.value);
+      });
+      form?.addEventListener("submit", () => {
+        if (uiSelect) setCookie("ods_ui", uiSelect.value);
+        if (sourceToggle) setCookie("ods_source", sourceToggle.checked ? "all" : "official");
+        if (docsLocale) setCookie("ods_docs_locale", docsLocale.value);
+      });
+      helpOpen?.addEventListener("click", () => dialog?.showModal());
+      renderHighlight();
+    </script>
+  </body>
+</html>

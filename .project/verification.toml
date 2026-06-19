@@ -1,24 +1,26 @@
 version = 1
 
 [phases.format]
-enabled = true
+enabled = false
 command = ""
+reason = "No formatter is configured yet."
 
 [phases.lint]
-enabled = true
+enabled = false
 command = ""
+reason = "No linter is configured yet."
 
 [phases.typecheck]
 enabled = true
-command = ""
+command = "npm run typecheck"
 
 [phases.build]
 enabled = true
-command = ""
+command = "npm run build"
 
 [phases.test_unit]
 enabled = true
-command = ""
+command = "npm run test"
 
 [phases.test_integration]
 enabled = false

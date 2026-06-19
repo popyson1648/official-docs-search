@@ -1,0 +1,209 @@
+[meta]
+version = 1
+
+[[languages]]
+id = "python"
+name = "Python"
+aliases = ["py"]
+bare_aliases = ["python"]
+
+[[languages.sources]]
+id = "python-docs"
+kind = "official"
+name = "Python Documentation"
+url = "https://docs.python.org/"
+domains = ["docs.python.org"]
+default_enabled = true
+locales = ["en", "ja"]
+
+[[languages]]
+id = "rust"
+name = "Rust"
+aliases = ["rs"]
+bare_aliases = ["rust"]
+
+[[languages.sources]]
+id = "rust-docs"
+kind = "official"
+name = "Rust Documentation"
+url = "https://doc.rust-lang.org/"
+domains = ["doc.rust-lang.org"]
+default_enabled = true
+locales = ["en"]
+
+[[languages]]
+id = "javascript"
+name = "JavaScript"
+aliases = ["js", "ecmascript"]
+bare_aliases = ["javascript", "js"]
+
+[[languages.sources]]
+id = "tc39-ecma262"
+kind = "official"
+name = "ECMAScript Specification"
+url = "https://tc39.es/ecma262/"
+domains = ["tc39.es"]
+path_prefixes = ["/ecma262/"]
+default_enabled = true
+locales = ["en"]
+
+[[languages.sources]]
+id = "mdn-js"
+kind = "conventional"
+name = "MDN Web Docs"
+url = "https://developer.mozilla.org/"
+domains = ["developer.mozilla.org"]
+default_enabled = true
+locales = ["en", "ja"]
+
+[[languages]]
+id = "typescript"
+name = "TypeScript"
+aliases = ["ts"]
+bare_aliases = ["typescript", "ts"]
+
+[[languages.sources]]
+id = "typescript-docs"
+kind = "official"
+name = "TypeScript Documentation"
+url = "https://www.typescriptlang.org/docs/"
+domains = ["www.typescriptlang.org"]
+path_prefixes = ["/docs/"]
+default_enabled = true
+locales = ["en"]
+
+[[languages]]
+id = "go"
+name = "Go"
+aliases = ["golang"]
+bare_aliases = ["go", "golang"]
+
+[[languages.sources]]
+id = "go-docs"
+kind = "official"
+name = "Go Documentation"
+url = "https://go.dev/doc/"
+domains = ["go.dev"]
+path_prefixes = ["/doc/", "/ref/"]
+default_enabled = true
+locales = ["en"]
+
+[[languages.sources]]
+id = "go-std"
+kind = "official"
+name = "Go Standard Library"
+url = "https://pkg.go.dev/std"
+domains = ["pkg.go.dev"]
+path_prefixes = ["/std", "/"]
+default_enabled = true
+locales = ["en"]
+
+[[languages]]
+id = "c"
+name = "C"
+aliases = []
+bare_aliases = ["c"]
+
+[[languages.sources]]
+id = "cppreference-c"
+kind = "community"
+name = "cppreference C"
+url = "https://en.cppreference.com/w/c"
+domains = ["en.cppreference.com"]
+path_prefixes = ["/w/c"]
+default_enabled = true
+locales = ["en"]
+
+[[languages]]
+id = "cpp"
+name = "C++"
+aliases = ["c++", "cplusplus"]
+bare_aliases = ["cpp", "c++", "cplusplus"]
+
+[[languages.sources]]
+id = "cppreference-cpp"
+kind = "community"
+name = "cppreference C++"
+url = "https://en.cppreference.com/w/cpp"
+domains = ["en.cppreference.com"]
+path_prefixes = ["/w/cpp"]
+default_enabled = true
+locales = ["en"]
+
+[[languages]]
+id = "csharp"
+name = "C#"
+aliases = ["c#", "cs"]
+bare_aliases = ["csharp", "c#", "cs"]
+
+[[languages.sources]]
+id = "csharp-docs"
+kind = "official"
+name = "Microsoft C# Documentation"
+url = "https://learn.microsoft.com/dotnet/csharp/"
+domains = ["learn.microsoft.com"]
+path_prefixes = ["/dotnet/csharp/"]
+default_enabled = true
+locales = ["en", "ja"]
+
+[[languages]]
+id = "java"
+name = "Java"
+aliases = []
+bare_aliases = ["java"]
+
+[[languages.sources]]
+id = "java-docs"
+kind = "official"
+name = "Oracle Java Documentation"
+url = "https://docs.oracle.com/en/java/"
+domains = ["docs.oracle.com"]
+path_prefixes = ["/en/java/"]
+default_enabled = true
+locales = ["en"]
+
+[[languages]]
+id = "php"
+name = "PHP"
+aliases = []
+bare_aliases = ["php"]
+
+[[languages.sources]]
+id = "php-manual"
+kind = "official"
+name = "PHP Manual"
+url = "https://www.php.net/manual/"
+domains = ["www.php.net", "php.net"]
+path_prefixes = ["/manual/"]
+default_enabled = true
+locales = ["en", "ja"]
+
+[[languages]]
+id = "ruby"
+name = "Ruby"
+aliases = ["rb"]
+bare_aliases = ["ruby"]
+
+[[languages.sources]]
+id = "ruby-docs"
+kind = "official"
+name = "Ruby Documentation"
+url = "https://docs.ruby-lang.org/"
+domains = ["docs.ruby-lang.org"]
+default_enabled = true
+locales = ["en", "ja"]
+
+[[languages]]
+id = "swift"
+name = "Swift"
+aliases = []
+bare_aliases = ["swift"]
+
+[[languages.sources]]
+id = "swift-docs"
+kind = "official"
+name = "Swift Documentation"
+url = "https://docs.swift.org/"
+domains = ["docs.swift.org"]
+default_enabled = true
+locales = ["en"]
