@@ -1,0 +1,71 @@
+name: Update search indexes
+
+on:
+  schedule:
+    - cron: "23 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: search-index-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      UPDATE_BRANCH: automation/search-index-update
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate and verify indexes
+        run: |
+          npm run update:search-index
+          npm run check:search-index
+          npm run test:integration
+
+      - name: Ensure only generated indexes changed
+        run: |
+          unexpected="$(git status --porcelain --untracked-files=all | awk '$2 !~ /^public\\/search-index\\// { print }')"
+          test -z "$unexpected" || {
+            echo "$unexpected"
+            exit 1
+          }
+
+      - name: Publish a draft update pull request
+        run: |
+          if git diff --quiet -- public/search-index; then
+            echo "Search indexes are already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$UPDATE_BRANCH"
+          git add public/search-index
+          git commit -m "Update generated search indexes"
+          git push --force-with-lease origin "HEAD:$UPDATE_BRANCH"
+          gh pr view "$UPDATE_BRANCH" >/dev/null 2>&1 ||
+            gh pr create \
+              --draft \
+              --base "${{ github.event.repository.default_branch }}" \
+              --head "$UPDATE_BRANCH" \
+              --title "Update generated search indexes" \
+              --body "Automated weekly index refresh. Review source, count, size, and known-query changes before merging."

@@ -1,10 +1,10 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { parse } from "smol-toml";
+import docsSourcesToml from "../data/docs-sources.toml?raw";
 import type { SourceMode } from "./query";
 import { normalizeLanguageId } from "./query";
 
 export type SourceKind = "official" | "conventional" | "community";
+export type IndexSupportStatus = "supported" | "planned" | "blocked" | "disabled";
 
 export interface DocsCatalog {
   languages: DocsLanguage[];
@@ -27,7 +27,14 @@ export interface DocsSource {
   domains: string[];
   pathPrefixes: string[];
   defaultEnabled: boolean;
-  locales: string[];
+  siteLocales: string[];
+  indexes: DocsIndexSupport[];
+}
+
+export interface DocsIndexSupport {
+  locale: string;
+  status: IndexSupportStatus;
+  reason?: string;
 }
 
 export interface ResolvedSearchScope {
@@ -49,13 +56,11 @@ interface ResolveOptions {
   enabledSourceIds?: Set<string>;
 }
 
-const catalogPath = fileURLToPath(new URL("../data/docs-sources.toml", import.meta.url));
-
 let cachedCatalog: DocsCatalog | undefined;
 
 export function loadCatalog(): DocsCatalog {
   if (!cachedCatalog) {
-    cachedCatalog = parseCatalog(readFileSync(catalogPath, "utf8"));
+    cachedCatalog = parseCatalog(docsSourcesToml);
   }
   return cachedCatalog;
 }
@@ -93,7 +98,7 @@ export function resolveSearchScope(catalog: DocsCatalog, options: ResolveOptions
   const sources = selectedLanguages.flatMap((language) =>
     language.sources.filter((source) => {
       if (!sourceKinds.has(source.kind)) return false;
-      if (options.sourceMode === "all" && options.enabledSourceIds && !options.enabledSourceIds.has(source.id)) {
+      if (options.enabledSourceIds && !options.enabledSourceIds.has(source.id)) {
         return false;
       }
       return true;
@@ -103,7 +108,7 @@ export function resolveSearchScope(catalog: DocsCatalog, options: ResolveOptions
   const localeNotices = options.locale
     ? selectedLanguages.flatMap((language) => {
         const unsupported = language.sources.filter(
-          (source) => sources.includes(source) && !source.locales.includes(options.locale as string)
+          (source) => sources.includes(source) && !source.siteLocales.includes(options.locale as string)
         );
         return unsupported.length > 0
           ? [
@@ -139,12 +144,6 @@ export function isAllowedResultUrl(urlValue: string, sources: DocsSource[]): boo
   });
 }
 
-export function sourceLabel(kind: SourceKind): string {
-  if (kind === "official") return "Official";
-  if (kind === "conventional") return "Conventional";
-  return "Community";
-}
-
 function findLanguage(catalog: DocsCatalog, id: string): DocsLanguage | undefined {
   const normalized = normalizeLanguageId(id);
   return catalog.languages.find(
@@ -177,7 +176,23 @@ function normalizeSource(language: string, raw: Record<string, unknown>): DocsSo
     domains: stringArray(raw.domains),
     pathPrefixes: stringArray(raw.path_prefixes),
     defaultEnabled: raw.default_enabled !== false,
-    locales: stringArray(raw.locales)
+    siteLocales: stringArray(raw.site_locales),
+    indexes: Array.isArray(raw.indexes)
+      ? raw.indexes.map((index) => normalizeIndexSupport(index as Record<string, unknown>))
+      : []
+  };
+}
+
+function normalizeIndexSupport(raw: Record<string, unknown>): DocsIndexSupport {
+  const status = raw.status;
+  if (status !== "supported" && status !== "planned" && status !== "blocked" && status !== "disabled") {
+    throw new Error(`Invalid index support status: ${String(status)}`);
+  }
+  const reason = String(raw.reason ?? "").trim();
+  return {
+    locale: String(raw.locale ?? ""),
+    status,
+    ...(reason ? { reason } : {})
   };
 }
 

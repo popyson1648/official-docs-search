@@ -1,9 +1,8 @@
 ---
-import { getUiLanguage, t } from "../core/i18n";
-import { buildProgrammableSearchConfig } from "../core/pse";
+import { getSourceKindLabel, getUiLanguage, t } from "../core/i18n";
 import { parseQuery } from "../core/query";
 import type { SourceMode } from "../core/query";
-import { getKnownLanguageIds, loadCatalog, resolveSearchScope, sourceLabel } from "../core/sources";
+import { getKnownLanguageIds, loadCatalog, resolveSearchScope } from "../core/sources";
 
 export const prerender = false;
 
@@ -17,6 +16,7 @@ const defaultSourceMode: SourceMode =
   formSourceMode === "all" || cookieSourceMode === "all" ? "all" : "official";
 const docsLocale = params.get("docsLocale") || Astro.cookies.get("ods_docs_locale")?.value || undefined;
 const selectedSourceIds = new Set(params.getAll("sourceId"));
+const hasExplicitSourceSelection = params.get("sourceSelection") === "explicit";
 
 const knownLanguages = getKnownLanguageIds(catalog);
 const parsed = parseQuery(q, {
@@ -25,7 +25,7 @@ const parsed = parseQuery(q, {
 const sourceMode = parsed.sourceMode ?? defaultSourceMode;
 const locale = parsed.locale ?? docsLocale;
 const selectedIds =
-  selectedSourceIds.size > 0
+  selectedSourceIds.size > 0 || hasExplicitSourceSelection
     ? selectedSourceIds
     : new Set(
         catalog.languages
@@ -47,19 +47,6 @@ const trustedScope = resolveSearchScope(catalog, {
 });
 
 const hasQuery = q.trim().length > 0;
-const shouldSearch = hasQuery && parsed.errors.length === 0 && scope.sources.length > 0;
-const pseConfig = shouldSearch ? buildProgrammableSearchConfig(parsed.searchText, scope.sources) : undefined;
-const googleCx = import.meta.env.PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX ?? "";
-
-const clientSources = catalog.languages.flatMap((lang) =>
-  (lang.sources ?? []).map((source) => ({
-    id: source.id,
-    language: lang.id,
-    languageName: lang.name,
-    domains: source.domains ?? [],
-    pathPrefixes: source.path_prefixes ?? source.pathPrefixes ?? []
-  }))
-);
 ---
 
 <html lang={uiLanguage}>
@@ -72,20 +59,6 @@ const clientSources = catalog.languages.flatMap((lang) =>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=LINE+Seed+JP:wght@400;700&display=swap" rel="stylesheet">
-    {
-      googleCx && (
-        <>
-          <script is:inline>
-            window.__gcse = {
-              initializationCallback() {
-                window.dispatchEvent(new Event("ods:pse-ready"));
-              }
-            };
-          </script>
-          <script async src={`https://cse.google.com/cse.js?cx=${encodeURIComponent(googleCx)}`}></script>
-        </>
-      )
-    }
   </head>
   <body>
 
@@ -99,7 +72,7 @@ const clientSources = catalog.languages.flatMap((lang) =>
           </h1>
           <div class="header-actions">
             <fieldset class="lang-switch">
-              <legend class="sr-only">UI Language</legend>
+              <legend class="sr-only">{t(uiLanguage, "uiLanguage")}</legend>
               <label class:list={["lang-btn", { active: uiLanguage === "en" }]}>
                 <input type="radio" name="ui" value="en" class="sr-only" checked={uiLanguage === "en"} data-ui-radio>
                 EN
@@ -117,9 +90,10 @@ const clientSources = catalog.languages.flatMap((lang) =>
         </div>
         <form class="search-form" method="get" action="/" data-search-form>
           <input type="hidden" name="ui" value={uiLanguage} data-ui-hidden />
+          <input type="hidden" name="sourceSelection" value="explicit" />
           <div class="query-row">
             <div class="search-group">
-              <label class="sr-only" for="q">Search query</label>
+              <label class="sr-only" for="q">{t(uiLanguage, "queryLabel")}</label>
               <div class="query-stack" data-query-stack data-known-languages={JSON.stringify(Array.from(knownLanguages))}>
                 <div class="query-highlight" aria-hidden="true" data-query-highlight></div>
                 <input
@@ -128,7 +102,7 @@ const clientSources = catalog.languages.flatMap((lang) =>
                   value={q}
                   autocomplete="off"
                   spellcheck="false"
-                  placeholder="<language> <search words>"
+                  placeholder={t(uiLanguage, "queryPlaceholder")}
                   data-query-input
                   autofocus
                 />
@@ -142,7 +116,7 @@ const clientSources = catalog.languages.flatMap((lang) =>
 
           {
             parsed.languages.length > 0 && (
-              <div class="active-tags" data-active-tags>
+              <div class="active-tags" data-active-tags aria-label={t(uiLanguage, "activeTags")}>
                 {parsed.languages.map((lang) => {
                   const langName = catalog.languages.find((l) => l.id === lang)?.name || lang;
                   return (
@@ -183,7 +157,7 @@ const clientSources = catalog.languages.flatMap((lang) =>
                 <span class="lang-ja">{t("ja", "docsLocale")}:</span>
               </span>
               <fieldset class="seg-toggle">
-                <legend class="sr-only">Docs Locale</legend>
+                <legend class="sr-only">{t(uiLanguage, "docsLocale")}</legend>
                 <label class:list={["seg-btn", { active: !locale }]}>
                   <input type="radio" name="docsLocale" value="" class="sr-only" checked={!locale} data-docs-radio>
                   <span class="lang-en">All</span>
@@ -225,11 +199,15 @@ const clientSources = catalog.languages.flatMap((lang) =>
                                 checked={selectedIds.has(source.id)}
                                 disabled={disabled}
                                 class="pill-toggle"
+                                data-source-option
+                                data-source-kind={source.kind}
                               />
                               <span>
                                 <strong>{source.name}</strong>
                                 <small>
-                                  {source.domains[0]} · {sourceLabel(source.kind)}
+                                  {source.domains[0]} ·{" "}
+                                  <span class="lang-en">{getSourceKindLabel("en", source.kind)}</span>
+                                  <span class="lang-ja">{getSourceKindLabel("ja", source.kind)}</span>
                                 </small>
                               </span>
                             </label>
@@ -267,31 +245,51 @@ const clientSources = catalog.languages.flatMap((lang) =>
 
       {
         hasQuery && (
-          <section
-            class="results"
-            aria-live="polite"
-            data-pse-results
-            data-google-query={pseConfig?.googleQuery ?? ""}
-          >
+          <section class="results" aria-live="polite" aria-label={t(uiLanguage, "resultsTitle")}>
             {
-              parsed.errors.length > 0 ? null : !googleCx ? (
-                <section class="notice">
-                  <p>Set PUBLIC_GOOGLE_PROGRAMMABLE_SEARCH_CX to enable Google Programmable Search results.</p>
-                  <p><a href="/search/annotations.xml">annotations.xml</a> and <a href="/search/context.xml">context.xml</a> are generated from the TOML catalog for the Google control panel.</p>
-                </section>
-              ) : scope.sources.length === 0 ? (
-                <p class="muted">
-                  <span class="lang-en">{t("en", "noResults")}</span>
-                  <span class="lang-ja">{t("ja", "noResults")}</span>
+              parsed.errors.length > 0 ? null : scope.sources.length === 0 ? (
+                <p class="notice">
+                  <span class="lang-en">{t("en", "noSources")}</span>
+                  <span class="lang-ja">{t("ja", "noSources")}</span>
                 </p>
               ) : (
                 <div
-                  class="gcse-searchresults-only"
-                  data-gname="docs-results"
-                  data-mobileLayout="disabled"
-                  data-resultSetSize="web"
-                  data-queryParameterName="gq"
-                ></div>
+                  data-search-results
+                  data-query={parsed.searchText}
+                  data-docs-locale={locale ?? ""}
+                  data-sources={JSON.stringify(scope.sources.map((source) => ({ id: source.id, name: source.name })))}
+                >
+                  <p
+                    class="search-status"
+                    data-search-status
+                    data-state="loading"
+                    data-loading-en={t("en", "searchLoading")}
+                    data-loading-ja={t("ja", "searchLoading")}
+                    data-success-en={t("en", "resultCount")}
+                    data-success-ja={t("ja", "resultCount")}
+                    data-empty-en={t("en", "noResults")}
+                    data-empty-ja={t("ja", "noResults")}
+                    data-error-en={t("en", "searchProviderError")}
+                    data-error-ja={t("ja", "searchProviderError")}
+                  >
+                    <span class="lang-en">{t("en", "searchLoading")}</span>
+                    <span class="lang-ja">{t("ja", "searchLoading")}</span>
+                  </p>
+                  <p
+                    class="index-coverage notice"
+                    data-index-coverage
+                    data-unsupported-en={t("en", "indexUnavailable")}
+                    data-unsupported-ja={t("ja", "indexUnavailable")}
+                    data-planned-en={t("en", "indexPlanned")}
+                    data-planned-ja={t("ja", "indexPlanned")}
+                    data-blocked-en={t("en", "indexBlocked")}
+                    data-blocked-ja={t("ja", "indexBlocked")}
+                    data-disabled-en={t("en", "indexDisabled")}
+                    data-disabled-ja={t("ja", "indexDisabled")}
+                    hidden
+                  ></p>
+                  <ol class="result-list" data-result-list></ol>
+                </div>
               )
             }
           </section>
@@ -306,7 +304,7 @@ const clientSources = catalog.languages.flatMap((lang) =>
             <span class="lang-en">{t("en", "help")}</span>
             <span class="lang-ja">{t("ja", "help")}</span>
           </h2>
-          <button class="icon-button" value="close" aria-label="Close">×</button>
+          <button class="icon-button" value="close" aria-label={t(uiLanguage, "close")}>×</button>
         </div>
         <div class="help-content">
           <p><code>&lt;language&gt; &lt;search words&gt;</code></p>
@@ -325,169 +323,11 @@ const clientSources = catalog.languages.flatMap((lang) =>
           <p><code>::</code>, <code>?.</code>, <code>$</code>, <code>%</code>, <code>&lt;T&gt;</code> are searched as normal text.</p>
         </div>
       </form>
-    </dialog>    <script>
-      const input = document.querySelector("[data-query-input]");
-      const highlight = document.querySelector("[data-query-highlight]");
-      const form = document.querySelector("[data-search-form]");
-      const uiHidden = document.querySelector("[data-ui-hidden]");
-      const sourceToggle = document.querySelector("[data-source-toggle]");
-      const uiRadios = document.querySelectorAll("[data-ui-radio]");
-      const docsRadios = document.querySelectorAll("[data-docs-radio]");
-      const dialog = document.querySelector("[data-help-dialog]");
-      const helpOpen = document.querySelector("[data-help-open]");
-      const pseResults = document.querySelector("[data-pse-results]");
+    </dialog>
+    <script>
+      import { initializeClientSearchPage } from "../client/search-page";
 
-      const queryStack = document.querySelector("[data-query-stack]");
-      const knownLanguages = new Set(JSON.parse(queryStack?.dataset.knownLanguages || "[]"));
-
-      const flagPattern = /^(lang:[^\s]+|locale:[^\s]+|source:(official|all))$/i;
-      const anyFlagPattern = /^(lang:|locale:|source:)/i;
-
-      function normalizeLanguageId(value) {
-        const normalized = value.trim().toLowerCase();
-        if (normalized === "c++" || normalized === "cplusplus") return "cpp";
-        if (normalized === "c#" || normalized === "cs") return "csharp";
-        if (normalized === "js" || normalized === "ecmascript") return "javascript";
-        if (normalized === "ts") return "typescript";
-        if (normalized === "py") return "python";
-        if (normalized === "rs") return "rust";
-        if (normalized === "rb") return "ruby";
-        if (normalized === "golang") return "go";
-        return normalized;
-      }
-
-      function renderHighlight() {
-        if (!input || !highlight) return;
-        const tokens = input.value.match(/\S+|\s+/g) || [];
-        let seenSearch = false;
-        let seenSuffix = false;
-        let isFirstToken = true;
-        highlight.replaceChildren();
-        for (const token of tokens) {
-          const span = document.createElement("span");
-          span.textContent = token;
-          if (/^\s+$/.test(token)) {
-            highlight.append(span);
-            continue;
-          }
-          
-          const looksFlag = anyFlagPattern.test(token);
-          let isFlag = flagPattern.test(token);
-          
-          if (isFirstToken && !looksFlag && knownLanguages.has(normalizeLanguageId(token))) {
-            isFlag = true;
-          }
-
-          if (!isFlag && !looksFlag) seenSearch = true;
-          if (isFlag && !seenSearch) span.className = "flag-token";
-          if (isFlag && seenSearch && !seenSuffix) {
-            span.className = "flag-token";
-            seenSuffix = true;
-          } else if (isFlag && seenSearch && seenSuffix) {
-            span.className = "flag-token";
-          } else if (looksFlag) {
-            span.className = "flag-token invalid";
-          }
-          highlight.append(span);
-          isFirstToken = false;
-        }
-      }
-
-      function setCookie(name, value) {
-        document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=31536000; SameSite=Lax`;
-      }
-
-      input?.addEventListener("input", renderHighlight);
-      input?.addEventListener("scroll", () => {
-        if (highlight) highlight.scrollLeft = input.scrollLeft;
-      });
-
-      uiRadios.forEach((radio) => {
-        radio.addEventListener("change", (e) => {
-          setCookie("ods_ui", e.target.value);
-          if (uiHidden) uiHidden.value = e.target.value;
-          document.documentElement.lang = e.target.value;
-          uiRadios.forEach((r) => r.parentElement.classList.remove("active"));
-          if (e.target.checked) e.target.parentElement.classList.add("active");
-        });
-      });
-      
-      sourceToggle?.addEventListener("change", () => {
-        if (sourceToggle.checked) {
-          sourceToggle.parentElement.classList.add("active");
-        } else {
-          sourceToggle.parentElement.classList.remove("active");
-        }
-        setCookie("ods_source", sourceToggle.checked ? "all" : "official");
-        form?.submit();
-      });
-
-      docsRadios.forEach((radio) => {
-        radio.addEventListener("change", (e) => {
-          setCookie("ods_docs_locale", e.target.value);
-          form?.submit();
-        });
-      });
-
-      helpOpen?.addEventListener("click", () => dialog?.showModal());
-
-      dialog?.addEventListener("click", (e) => {
-        if (e.target === dialog) {
-          dialog.close();
-        }
-      });
-
-      // Handle active language tag removal
-      const activeTagsContainer = document.querySelector("[data-active-tags]");
-      activeTagsContainer?.addEventListener("click", (e) => {
-        const removeBtn = e.target.closest("[data-remove-tag]");
-        if (!removeBtn || !input) return;
-        
-        const langToRemove = removeBtn.dataset.removeTag;
-        let val = input.value;
-        
-        // 1. Remove from lang: flags (e.g. lang:python or lang:python,rust)
-        const langFlagRegex = new RegExp(`\\blang:([^\\s]+)`, 'i');
-        const match = val.match(langFlagRegex);
-        if (match) {
-          const langs = match[1].split(',');
-          const filteredLangs = langs.filter(l => l.toLowerCase() !== langToRemove.toLowerCase());
-          if (filteredLangs.length > 0) {
-            val = val.replace(match[0], `lang:${filteredLangs.join(',')}`);
-          } else {
-            val = val.replace(new RegExp(`\\s*lang:${match[1]}\\s*`, 'i'), ' ').trim();
-          }
-        } else {
-          // 2. Remove as leading bare token (e.g. "python map" -> "map")
-          const tokens = val.match(/\S+|\s+/g) || [];
-          if (tokens.length > 0 && normalizeLanguageId(tokens[0]) === normalizeLanguageId(langToRemove)) {
-            tokens.shift();
-            if (tokens.length > 0 && /^\s+$/.test(tokens[0])) {
-              tokens.shift();
-            }
-            val = tokens.join('');
-          }
-        }
-
-        input.value = val;
-        renderHighlight();
-        form?.submit();
-      });
-
-      // Inject the processed query into the "gq" parameter for Google CSE auto-execution
-      if (pseResults?.dataset.googleQuery) {
-        const url = new URL(window.location.href);
-        url.searchParams.set("gq", pseResults.dataset.googleQuery);
-        window.history.replaceState({}, "", url.toString());
-      }
-      
-
-
-      input?.addEventListener("input", renderHighlight);
-      input?.addEventListener("scroll", () => {
-        if (highlight) highlight.scrollLeft = input.scrollLeft;
-      });
-      renderHighlight();
+      void initializeClientSearchPage();
     </script>
   </body>
 </html>

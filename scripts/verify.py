@@ -17,6 +17,7 @@ DEFAULT_ORDER = [
     "test_unit",
     "test_integration",
     "test_e2e",
+    "test_live",
     "test_component",
     "test_contract",
     "accessibility",

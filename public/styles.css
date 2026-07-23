@@ -8,7 +8,6 @@
   --border: #e3e6e9;
   --border-strong: #bcccea;
   --accent: #1857c4;
-  --flag: #0b57d0;
   --error: #ea4335;
   --radius: 6px;
   font-family: "Alexandria", "LINE Seed JP", sans-serif;
@@ -26,12 +25,9 @@ body {
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
-html, body {
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  position: static !important;
-  height: auto !important;
-  min-height: 100% !important;
+html,
+body {
+  min-height: 100%;
 }
 
 a {
@@ -56,20 +52,6 @@ select {
   font: inherit;
 }
 
-.site-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 56px;
-  padding: 0 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.brand {
-  font-weight: 650;
-  text-decoration: none;
-}
-
 .page {
   width: min(980px, calc(100% - 32px));
   margin: 0 auto;
@@ -77,8 +59,8 @@ select {
 }
 
 .search-panel {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 22px;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 h1 {
@@ -221,42 +203,6 @@ small {
   flex-wrap: wrap;
 }
 
-.tag-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
-  background-color: #e8f0fe;
-  color: #1a73e8;
-  border: 1px solid #d2e3fc;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
-  box-shadow: 0 1px 2px rgba(26,115,232,0.05);
-}
-
-.tag-close {
-  border: none;
-  background: transparent;
-  color: inherit;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  transition: background-color 0.1s, color 0.1s;
-}
-
-.tag-close:hover {
-  background-color: rgba(26, 115, 232, 0.15);
-  color: #d93025;
-}
-
 .query-row button {
   min-width: 100px;
 }
@@ -273,13 +219,13 @@ small {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 
 .header-actions .text-button {
   min-width: 80px;
-  min-height: 36px;
-  padding: 0 16px;
+  min-height: 40px;
+  padding: 6px 16px;
 }
 
 .filters {
@@ -289,52 +235,11 @@ small {
   align-items: center;
 }
 
-.filter-btn {
-  border: 1px solid transparent;
-  padding: 4px 12px;
-  min-height: 32px;
-  border-radius: var(--radius);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  background: var(--surface);
-  color: var(--text);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .1s, color .1s;
-}
-
-.filter-btn:hover {
-  background: color-mix(in srgb, var(--surface) 90%, #000);
-}
-
-.filter-btn.active {
-  background: var(--text);
-  color: #fff;
-}
-
-.filter-btn:has(input:focus-visible) {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
-}
-
 .filter-label {
   font-size: 14px;
   color: var(--muted);
   font-weight: 600;
   margin-right: 2px;
-}
-
-.field-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.field-label {
-  font-size: 14px;
-  color: var(--text-2);
 }
 
 .lang-switch {
@@ -473,17 +378,35 @@ small {
   margin: 0;
 }
 
-.notice ul {
-  margin: 8px 0 0;
-  padding-left: 18px;
-}
-
 .error {
   border-left-color: var(--error);
 }
 
 .results {
   margin-top: 24px;
+}
+
+.search-status {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.search-status[data-state="error"] {
+  border-left: 4px solid var(--error);
+  color: var(--text);
+}
+
+.result-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.index-coverage {
+  margin: 0 0 12px;
 }
 
 .result-item {
@@ -499,15 +422,16 @@ small {
   font-size: 0.86rem;
 }
 
+.result-meta > span:not(:last-child)::after {
+  content: "·";
+  margin-left: 8px;
+}
+
 .result-item h2 {
   margin: 4px 0;
   font-size: 1.15rem;
   line-height: 1.35;
   letter-spacing: 0;
-}
-
-.result-item p {
-  margin: 6px 0;
 }
 
 .result-url {
@@ -569,45 +493,13 @@ code {
 }
 
 @media (max-width: 640px) {
-  .site-header {
-    padding: 0 16px;
+  .search-group {
+    flex: 1 1 100%;
   }
 
-  .query-row {
-    flex-wrap: nowrap;
-  }
-  .search-group {
-    display: flex;
-    gap: 8px;
-    flex: 1 1 100%;
-    align-items: center;
-  }
   .query-stack {
     flex: 1 1 auto;
   }
-  .lang-switch {
-    flex: 0 0 auto;
-  }
-
-  .query-row button {
-    width: auto;
-  }
-}
-
-/* Force Programmable Search Engine to render inline even on mobile */
-.gsc-modal-background-image {
-  display: none !important;
-}
-.gsc-results-wrapper-overlay {
-  position: static !important;
-  width: auto !important;
-  height: auto !important;
-  box-shadow: none !important;
-  z-index: auto !important;
-  background: transparent !important;
-  top: auto !important;
-  left: auto !important;
-  padding: 0 !important;
 }
 
 html[lang="en"] .lang-ja {
@@ -659,18 +551,6 @@ html[lang="ja"] .lang-en {
   font-size: 0.85em;
 }
 
-.gcse-searchresults-only,
-.gsc-control-cse,
-.gsc-control-wrapper-cse,
-.gsc-results-wrapper-nooverlay,
-.gsc-wrapper {
-  padding: 0 !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-/* Header Actions and Layout */
 .search-header {
   display: flex;
   justify-content: space-between;
@@ -686,28 +566,6 @@ html[lang="ja"] .lang-en {
   font-size: 1.7rem;
 }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Specific button layout adjustments */
-.header-actions .text-button {
-  min-height: 40px;
-  padding: 6px 16px;
-}
-
-.header-actions .lang-switch {
-  margin: 0;
-}
-
-.search-panel {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-/* popyson.com/blog style tag pills */
 .fpill {
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -746,7 +604,6 @@ html[lang="ja"] .lang-en {
   background: var(--border);
 }
 
-/* Toggle Switch layout styling */
 .switch-label {
   display: inline-flex;
   align-items: center;
@@ -762,7 +619,6 @@ html[lang="ja"] .lang-en {
   margin: 0;
 }
 
-/* Docs Locale Selector Segmented Toggle */
 .seg-toggle {
   display: inline-flex;
   border: 1px solid var(--border);
@@ -806,4 +662,3 @@ html[lang="ja"] .lang-en {
     gap: 12px;
   }
 }
-

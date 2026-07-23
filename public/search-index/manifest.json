@@ -1,0 +1,932 @@
+{
+  "schemaVersion": 2,
+  "generatorVersion": "2",
+  "catalogSha256": "4229ca009319c74c781c778d3f58dcc1e087ac13fefee8a0cda9c45a4c3035b5",
+  "entries": [
+    {
+      "sourceId": "python-docs",
+      "sourceName": "Python Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "python",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/python-docs.en.dc9144854c12a563.json",
+      "recordCount": 13577,
+      "rawBytes": 1294361,
+      "gzipBytes": 153993,
+      "brotliBytes": 121954,
+      "outputSha256": "dc9144854c12a5634ea002fbd3010fe5621bdc5aa49fa83eb5f645ebea289cc5",
+      "inputSha256": "122de877ef7ec2f80daa316c0a296d9b60326b4450278be6a004b6079e4df9f6",
+      "inputs": [
+        {
+          "url": "https://documents.devdocs.io/python~3.14/index.json",
+          "sha256": "5dbb64eb3545fd5c3776b8bd058befdacde3cc959b788801280434b925336ea8",
+          "etag": "W/\"3e12742bb84283b64af443e6d2f55164\"",
+          "lastModified": "Thu, 25 Jun 2026 16:57:41 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:13:39.259Z",
+      "adapter": "devdocs",
+      "upstreamVersion": "Python 3.14 via DevDocs",
+      "attribution": "Python documentation © Python Software Foundation; PSF License.",
+      "licenseUrl": "https://docs.python.org/3/license.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "list",
+        "pathlib"
+      ]
+    },
+    {
+      "sourceId": "python-docs",
+      "sourceName": "Python Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "python",
+      "docsLocale": "ja",
+      "status": "supported",
+      "path": "/search-index/python-docs.ja.44546056810ef3ab.json",
+      "recordCount": 6540,
+      "rawBytes": 851033,
+      "gzipBytes": 144216,
+      "brotliBytes": 90270,
+      "outputSha256": "44546056810ef3ab60afd9927c5bdbbcde21407536947d93fec0d87f2402aeea",
+      "inputSha256": "2acd1b65a8e075a746a5e33a420885fbe1d86a0d914609bf48c7d2dfe6083893",
+      "inputs": [
+        {
+          "url": "https://docs.python.org/ja/3/searchindex.js",
+          "sha256": "fba6a227eac6acf856bf24efb16dc8d1c2ba14f4ff3e3157007577aa079f0322",
+          "etag": "\"6a608f1c-4d4a70\"",
+          "lastModified": "Wed, 22 Jul 2026 09:36:28 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:13:34.011Z",
+      "adapter": "sphinx",
+      "upstreamVersion": "Python 3 Japanese latest",
+      "attribution": "Python documentation © Python Software Foundation; PSF License.",
+      "licenseUrl": "https://docs.python.org/ja/3/license.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "リスト",
+        "pathlib"
+      ]
+    },
+    {
+      "sourceId": "rust-docs",
+      "sourceName": "Rust Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "rust",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/rust-docs.en.93beea2771cc566e.json",
+      "recordCount": 37210,
+      "rawBytes": 3665232,
+      "gzipBytes": 297875,
+      "brotliBytes": 201901,
+      "outputSha256": "93beea2771cc566e8e89d8b4771765d20aa3eed8e97eca213937a55dbded742e",
+      "inputSha256": "eb802110f94999e8cda41f06f284ab5fcc295397d8fe61513d8d6cae4dc26d98",
+      "inputs": [
+        {
+          "url": "https://documents.devdocs.io/rust/index.json",
+          "sha256": "de4d97f2d0854ae84158a1b7f858dff4fabdf90dff87e04b033c9b6c2eda59fd",
+          "etag": "W/\"94e9236cb5789858b51a804dd0f0fd8d\"",
+          "lastModified": "Sun, 12 Jul 2026 20:53:25 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:13:44.163Z",
+      "adapter": "devdocs",
+      "upstreamVersion": "Rust latest via DevDocs",
+      "attribution": "Rust documentation © The Rust Project Developers; Apache-2.0 or MIT.",
+      "licenseUrl": "https://www.rust-lang.org/policies/licenses",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "iterator",
+        "option"
+      ]
+    },
+    {
+      "sourceId": "tc39-ecma262",
+      "sourceName": "ECMAScript Specification",
+      "sourceKind": "official",
+      "programmingLanguage": "javascript",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/tc39-ecma262.en.fc0e3169f008c773.json",
+      "recordCount": 2337,
+      "rawBytes": 254858,
+      "gzipBytes": 38881,
+      "brotliBytes": 31728,
+      "outputSha256": "fc0e3169f008c77324b74712bf571da4eb89a4cc99c4fb3c2bb8336c9500242d",
+      "inputSha256": "42d44f5e2b03e57764d231239afe00492405b953285094c7b8683e6a0ce1d122",
+      "inputs": [
+        {
+          "url": "https://tc39.es/ecma262/",
+          "sha256": "6cd5244d3dd8046734b6e41123c0719986ee4091e92c81de9c510084e41c28c5",
+          "etag": "W/\"6a5e56b9-73f3fe\"",
+          "lastModified": "Mon, 20 Jul 2026 17:11:21 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:13:40.353Z",
+      "adapter": "ecmarkup",
+      "upstreamVersion": "ECMA-262 latest",
+      "attribution": "ECMAScript specification © Ecma International.",
+      "licenseUrl": "https://tc39.es/ecma262/",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "array",
+        "promise"
+      ]
+    },
+    {
+      "sourceId": "mdn-js",
+      "sourceName": "MDN Web Docs",
+      "sourceKind": "conventional",
+      "programmingLanguage": "javascript",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/mdn-js.en.071a0345d0541af4.json",
+      "recordCount": 1291,
+      "rawBytes": 92874,
+      "gzipBytes": 13583,
+      "brotliBytes": 11456,
+      "outputSha256": "071a0345d0541af4c4212da6ce1b284ceeb107f53189b45a7a3f29409ec6727f",
+      "inputSha256": "c79a76c5740541f32ed8464ce51db3fdc6c7d9dfb339c556f67a945052b4c42e",
+      "inputs": [
+        {
+          "url": "https://documents.devdocs.io/javascript/index.json",
+          "sha256": "a613b88d839d5dd6d9d2f569d06d5343c6440fa302041d48b7389deb0383b617",
+          "etag": "W/\"896db5bba7d0b377394b8527c9c3a229\"",
+          "lastModified": "Thu, 09 Jul 2026 15:59:11 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:13:40.561Z",
+      "adapter": "devdocs",
+      "upstreamVersion": "MDN JavaScript latest via DevDocs",
+      "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
+      "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "proxy",
+        "promise"
+      ]
+    },
+    {
+      "sourceId": "mdn-js",
+      "sourceName": "MDN Web Docs",
+      "sourceKind": "conventional",
+      "programmingLanguage": "javascript",
+      "docsLocale": "ja",
+      "status": "planned",
+      "reason": "No maintained Japanese JavaScript index is configured."
+    },
+    {
+      "sourceId": "typescript-docs",
+      "sourceName": "TypeScript Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "typescript",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/typescript-docs.en.442f9a22ecb18c36.json",
+      "recordCount": 179,
+      "rawBytes": 13305,
+      "gzipBytes": 3000,
+      "brotliBytes": 2603,
+      "outputSha256": "442f9a22ecb18c36611f65245049fb9c7a1e8166722fb1dc41c090b8259cae6d",
+      "inputSha256": "9cc659d4cce9156a7328e25f3a1409352327824200dc3858d152a42d9190e178",
+      "inputs": [
+        {
+          "url": "https://documents.devdocs.io/typescript/index.json",
+          "sha256": "a3c40d3c02d6d5e7aa8ab9f00cfd12aecdaa95713b9bce4a7adca2f15a420e3f",
+          "etag": "W/\"c7116f8ae2d7bfeced30bc8cde88435b\"",
+          "lastModified": "Wed, 22 Apr 2026 18:51:59 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:19:37.326Z",
+      "adapter": "devdocs",
+      "upstreamVersion": "TypeScript 6.0.3 via DevDocs",
+      "attribution": "TypeScript documentation © Microsoft, CC BY 4.0. Index metadata adapted from DevDocs.",
+      "licenseUrl": "https://github.com/microsoft/TypeScript-Website/blob/v2/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "generics",
+        "narrowing"
+      ]
+    },
+    {
+      "sourceId": "go-docs",
+      "sourceName": "Go Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "go",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "The DevDocs Go index covers the standard library, not the language guides."
+    },
+    {
+      "sourceId": "go-std",
+      "sourceName": "Go Standard Library",
+      "sourceKind": "official",
+      "programmingLanguage": "go",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/go-std.en.391cbfcb89b3c4b1.json",
+      "recordCount": 6351,
+      "rawBytes": 413130,
+      "gzipBytes": 52353,
+      "brotliBytes": 44048,
+      "outputSha256": "391cbfcb89b3c4b1cea6ba0142ea01ab30a26fd4e66a2819f02b2f1cfaa9c95a",
+      "inputSha256": "f6f6eabc79b2be49ed985a61259bcae6ae935665262221cf84005d8b5473eeb5",
+      "inputs": [
+        {
+          "url": "https://documents.devdocs.io/go/index.json",
+          "sha256": "5e093503404d2e3463fd1138a9b75198ff3d7b9833ecd0b843ca4945f6254d64",
+          "etag": "W/\"db9b2068e6f7d4f1dcbe6e876634c559\"",
+          "lastModified": "Mon, 23 Feb 2026 18:26:08 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:19:37.739Z",
+      "adapter": "devdocs",
+      "upstreamVersion": "Go 1.26.0 via DevDocs",
+      "attribution": "Go documentation © The Go Authors; BSD-3-Clause. Index metadata adapted from DevDocs.",
+      "licenseUrl": "https://go.googlesource.com/go/+/master/LICENSE",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "Reader",
+        "Checksum"
+      ]
+    },
+    {
+      "sourceId": "cppreference-c",
+      "sourceName": "cppreference C",
+      "sourceKind": "community",
+      "programmingLanguage": "c",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "cppreference-cpp",
+      "sourceName": "cppreference C++",
+      "sourceKind": "community",
+      "programmingLanguage": "cpp",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "csharp-docs",
+      "sourceName": "Microsoft C# Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "csharp",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/csharp-docs.en.9aaf89807a138a5b.json",
+      "recordCount": 271,
+      "rawBytes": 27695,
+      "gzipBytes": 5953,
+      "brotliBytes": 4940,
+      "outputSha256": "9aaf89807a138a5b206d10bae9a1632822f18bff79423453f352077066354b94",
+      "inputSha256": "de77bfdac04fe7cd6857c40e9cc5a4094743165fc98995f0652be68dacc298a9",
+      "inputs": [
+        {
+          "url": "https://raw.githubusercontent.com/dotnet/docs/b2bd326ace411a28756f9f2e93e21ff289840a56/docs/csharp/toc.yml",
+          "sha256": "f1a76724f549bdd316ba68a9ac02e0ade420ce5853181178b2cc33fd8bbd6638",
+          "etag": "W/\"061d6c4fd9f89df74a44b9bb82b5a32ca057a6a7d3cbb4aafe055f37fa4ced82\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:19:37.849Z",
+      "adapter": "yaml-toc",
+      "upstreamVersion": "dotnet/docs b2bd326ace411a28756f9f2e93e21ff289840a56",
+      "attribution": ".NET and C# documentation © Microsoft, CC BY 4.0.",
+      "licenseUrl": "https://github.com/dotnet/docs/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Generics",
+        "Pattern matching"
+      ]
+    },
+    {
+      "sourceId": "csharp-docs",
+      "sourceName": "Microsoft C# Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "csharp",
+      "docsLocale": "ja",
+      "status": "planned",
+      "reason": "The public source TOC contains English titles only."
+    },
+    {
+      "sourceId": "java-docs",
+      "sourceName": "Oracle Java Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "java",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/java-docs.en.76f983d824ae7f8d.json",
+      "recordCount": 5208,
+      "rawBytes": 503417,
+      "gzipBytes": 66489,
+      "brotliBytes": 49806,
+      "outputSha256": "76f983d824ae7f8dfc60d19e1cfbb32cb4596d52e1f3cf68740eacb1d1b87d65",
+      "inputSha256": "8d6b2f811ff97749363372e99df940dc422f5e7e9510fbc258979d4b65e10556",
+      "inputs": [
+        {
+          "url": "https://docs.oracle.com/en/java/javase/25/docs/api/package-search-index.js",
+          "sha256": "a1d2e7c5217cafb1d382bd1e09d6986a1c2f12d0141202391f3f27cf744b0ee9",
+          "etag": "\"22995dd6c293c5d8d60e410e382cfbab:1757957487.002354\"",
+          "lastModified": "Tue, 21 Jul 2026 12:07:07 GMT"
+        },
+        {
+          "url": "https://docs.oracle.com/en/java/javase/25/docs/api/type-search-index.js",
+          "sha256": "22bb10f3e4e3b74580cc910d1a84ae54cb047c285350a4ff285ecf26268b01d2",
+          "etag": "\"c31128b7de9f78122c09e2404e35b5e0:1784636051.06232\"",
+          "lastModified": "Tue, 21 Jul 2026 12:07:20 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:19:38.654Z",
+      "adapter": "javadoc-types",
+      "upstreamVersion": "Java SE 25",
+      "attribution": "Java SE 25 & JDK 25 API documentation © Oracle and/or its affiliates. All rights reserved.",
+      "licenseUrl": "https://docs.oracle.com/en/java/javase/25/docs/legal/copyright.html",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "String",
+        "List"
+      ]
+    },
+    {
+      "sourceId": "php-manual",
+      "sourceName": "PHP Manual",
+      "sourceKind": "official",
+      "programmingLanguage": "php",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/php-manual.en.7f373f39bfe1d7b3.json",
+      "recordCount": 9149,
+      "rawBytes": 536159,
+      "gzipBytes": 91086,
+      "brotliBytes": 73332,
+      "outputSha256": "7f373f39bfe1d7b31e4731dd509e62f4c8f51f231b76cd668458c6a1c1ef9b4d",
+      "inputSha256": "1d28d4d9440ff2d97860c605c1added679d4ae29666be0a0306597f0d2dc3d6e",
+      "inputs": [
+        {
+          "url": "https://www.php.net/manual/en/indexes.functions.php",
+          "sha256": "031398b394bc3f524593a60b37393f55f41dd918e1c0c33adaab8ce27f5f7cf5",
+          "lastModified": "Thu, 23 Jul 2026 04:09:26 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:19:40.029Z",
+      "adapter": "php-manual-index",
+      "upstreamVersion": "PHP Manual rolling",
+      "attribution": "PHP Manual © PHP Documentation Group, CC BY 3.0 or later.",
+      "licenseUrl": "https://www.php.net/manual/en/copyright.php",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "array_map"
+      ]
+    },
+    {
+      "sourceId": "php-manual",
+      "sourceName": "PHP Manual",
+      "sourceKind": "official",
+      "programmingLanguage": "php",
+      "docsLocale": "ja",
+      "status": "supported",
+      "path": "/search-index/php-manual.ja.4d3928ff0adf875c.json",
+      "recordCount": 9147,
+      "rawBytes": 536007,
+      "gzipBytes": 91168,
+      "brotliBytes": 73366,
+      "outputSha256": "4d3928ff0adf875ce79da507b4577e0a75f5b5f81a274304007958832595e5f9",
+      "inputSha256": "a67336ec0b938b904c7df180223ae34869a761593cd574f4d78334fbdf9223ed",
+      "inputs": [
+        {
+          "url": "https://www.php.net/manual/ja/indexes.functions.php",
+          "sha256": "b6d3ae29a211da43f9dbd9ded433f9da3208a6f5ebc9722709b9748a89aa46db",
+          "lastModified": "Thu, 23 Jul 2026 04:20:54 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:19:41.219Z",
+      "adapter": "php-manual-index",
+      "upstreamVersion": "PHP Manual rolling",
+      "attribution": "PHP Manual © PHP Documentation Group, CC BY 3.0 or later.",
+      "licenseUrl": "https://www.php.net/manual/ja/copyright.php",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "array_map"
+      ]
+    },
+    {
+      "sourceId": "ruby-docs",
+      "sourceName": "Ruby Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "ruby",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/ruby-docs.en.97794678f8a80587.json",
+      "recordCount": 16341,
+      "rawBytes": 1055486,
+      "gzipBytes": 142737,
+      "brotliBytes": 110832,
+      "outputSha256": "97794678f8a805872537a706d505b051f54cefe5500255643a9ec93268e32936",
+      "inputSha256": "ad728be772a7517babd97f8a3667a1bd81b01aacea0452c18c1a908ee4d84fe4",
+      "inputs": [
+        {
+          "url": "https://docs.ruby-lang.org/en/3.4/table_of_contents.html",
+          "sha256": "53f2e5cb815d6d8dda01d1a2910ade6b711ed5e4246a3ddadd56453ac224bd82",
+          "etag": "W/\"6a144ca9-259af9\"",
+          "lastModified": "Mon, 25 May 2026 13:20:41 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:19:42.501Z",
+      "adapter": "rdoc-toc",
+      "upstreamVersion": "Ruby 3.4",
+      "attribution": "Ruby documentation © Ruby contributors; Ruby License and component-specific licenses.",
+      "licenseUrl": "https://docs.ruby-lang.org/en/3.4/LEGAL.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Enumerable",
+        "map"
+      ]
+    },
+    {
+      "sourceId": "ruby-docs",
+      "sourceName": "Ruby Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "ruby",
+      "docsLocale": "ja",
+      "status": "supported",
+      "path": "/search-index/ruby-docs.ja.53a8c8ea0dacc455.json",
+      "recordCount": 11845,
+      "rawBytes": 668215,
+      "gzipBytes": 100136,
+      "brotliBytes": 82539,
+      "outputSha256": "53a8c8ea0dacc455c0d47038f12f930ad047e04bc81e4287525d96b747873dfd",
+      "inputSha256": "80f2557c7c468caa38ace73fb004a5f7121788164185b6b02dc08dc7795a1920",
+      "inputs": [
+        {
+          "url": "https://docs.ruby-lang.org/ja/3.4/class/index.html",
+          "sha256": "25df5079f305fb527a35df618477a4e7522bc2c5e02553a803d52be916c8a225",
+          "etag": "W/\"6a5f28b1-c20f3\"",
+          "lastModified": "Tue, 21 Jul 2026 08:07:13 GMT"
+        },
+        {
+          "url": "https://docs.ruby-lang.org/ja/3.4/function/index.html",
+          "sha256": "8257f6d4c5dab3ea79d99c8c6002e604655345feffbf2fc925eadb13f57b04e5",
+          "etag": "W/\"6a5f28b1-26dc8\"",
+          "lastModified": "Tue, 21 Jul 2026 08:07:13 GMT"
+        },
+        {
+          "url": "https://docs.ruby-lang.org/ja/3.4/library/index.html",
+          "sha256": "6f596b9fc3c49640d82f9d6053ef9d02661090c98848edb2b74663bb83350a82",
+          "etag": "W/\"6a5f28b2-7444\"",
+          "lastModified": "Tue, 21 Jul 2026 08:07:14 GMT"
+        },
+        {
+          "url": "https://docs.ruby-lang.org/ja/3.4/doc/index.html",
+          "sha256": "2ab8bb0b019aebe642c18fd25015c45d96e9ea19651be99e6bd4f1ba5b1447d8",
+          "etag": "W/\"6a5f28b1-1a6a\"",
+          "lastModified": "Tue, 21 Jul 2026 08:07:13 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T05:19:43.251Z",
+      "adapter": "ruby-reference-index",
+      "upstreamVersion": "Ruby 3.4 Japanese Reference",
+      "attribution": "Ruby Reference Manual Japanese edition, CC BY 3.0.",
+      "licenseUrl": "https://docs.ruby-lang.org/ja/latest/doc/license.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Enumerable",
+        "オブジェクト"
+      ]
+    },
+    {
+      "sourceId": "swift-docs",
+      "sourceName": "Swift Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "swift",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "kotlin-docs",
+      "sourceName": "Kotlin Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "kotlin",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "scala-docs",
+      "sourceName": "Scala Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "scala",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "dart-docs",
+      "sourceName": "Dart Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "dart",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "dart-api",
+      "sourceName": "Dart API Reference",
+      "sourceKind": "official",
+      "programmingLanguage": "dart",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "elixir-docs",
+      "sourceName": "Elixir Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "elixir",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "elixir-lang",
+      "sourceName": "Elixir Lang Guides",
+      "sourceKind": "official",
+      "programmingLanguage": "elixir",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "erlang-docs",
+      "sourceName": "Erlang/OTP Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "erlang",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "haskell-docs",
+      "sourceName": "Haskell Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "haskell",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "haskell-ghc-users-guide",
+      "sourceName": "GHC User's Guide",
+      "sourceKind": "official",
+      "programmingLanguage": "haskell",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "lua-manual",
+      "sourceName": "Lua Reference Manual",
+      "sourceKind": "official",
+      "programmingLanguage": "lua",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "perl-docs",
+      "sourceName": "Perl Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "perl",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "r-manuals",
+      "sourceName": "R Manuals",
+      "sourceKind": "official",
+      "programmingLanguage": "r",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "julia-docs",
+      "sourceName": "Julia Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "julia",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "clojure-docs",
+      "sourceName": "Clojure Reference",
+      "sourceKind": "official",
+      "programmingLanguage": "clojure",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "groovy-docs",
+      "sourceName": "Groovy Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "groovy",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "objc-docs",
+      "sourceName": "Objective-C Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "objc",
+      "docsLocale": "en",
+      "status": "blocked",
+      "reason": "Apple does not expose a stable redistributable documentation index."
+    },
+    {
+      "sourceId": "bash-manual",
+      "sourceName": "Bash Reference Manual",
+      "sourceKind": "official",
+      "programmingLanguage": "bash",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "powershell-docs",
+      "sourceName": "PowerShell Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "powershell",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "powershell-docs",
+      "sourceName": "PowerShell Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "powershell",
+      "docsLocale": "ja",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "fsharp-docs",
+      "sourceName": "F# Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "fsharp",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "fsharp-docs",
+      "sourceName": "F# Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "fsharp",
+      "docsLocale": "ja",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "vb-docs",
+      "sourceName": "Visual Basic Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "visualbasic",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "vb-docs",
+      "sourceName": "Visual Basic Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "visualbasic",
+      "docsLocale": "ja",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "zig-docs",
+      "sourceName": "Zig Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "zig",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "nim-docs",
+      "sourceName": "Nim Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "nim",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "crystal-docs",
+      "sourceName": "Crystal Reference",
+      "sourceKind": "official",
+      "programmingLanguage": "crystal",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "d-docs",
+      "sourceName": "D Language Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "d",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "ocaml-docs",
+      "sourceName": "OCaml Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "ocaml",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "solidity-docs",
+      "sourceName": "Solidity Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "solidity",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "elm-guide",
+      "sourceName": "Elm Guide",
+      "sourceKind": "official",
+      "programmingLanguage": "elm",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "elm-packages",
+      "sourceName": "Elm Packages",
+      "sourceKind": "official",
+      "programmingLanguage": "elm",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "racket-docs",
+      "sourceName": "Racket Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "racket",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "cl-hyperspec",
+      "sourceName": "Common Lisp HyperSpec",
+      "sourceKind": "community",
+      "programmingLanguage": "commonlisp",
+      "docsLocale": "en",
+      "status": "disabled",
+      "reason": "The legacy community specification index is intentionally disabled."
+    },
+    {
+      "sourceId": "gfortran",
+      "sourceName": "GNU Fortran Manual",
+      "sourceKind": "official",
+      "programmingLanguage": "fortran",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "fortran-lang",
+      "sourceName": "Fortran Lang",
+      "sourceKind": "conventional",
+      "programmingLanguage": "fortran",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "haxe-manual",
+      "sourceName": "Haxe Manual",
+      "sourceKind": "official",
+      "programmingLanguage": "haxe",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "haxe-api",
+      "sourceName": "Haxe API",
+      "sourceKind": "official",
+      "programmingLanguage": "haxe",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "postgresql-docs",
+      "sourceName": "PostgreSQL Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "sql",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "mysql-docs",
+      "sourceName": "MySQL Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "sql",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "sqlite-docs",
+      "sourceName": "SQLite Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "sql",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "wasm-mdn",
+      "sourceName": "WebAssembly on MDN",
+      "sourceKind": "conventional",
+      "programmingLanguage": "webassembly",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "wasm-mdn",
+      "sourceName": "WebAssembly on MDN",
+      "sourceKind": "conventional",
+      "programmingLanguage": "webassembly",
+      "docsLocale": "ja",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "wasm-spec",
+      "sourceName": "WebAssembly Specification",
+      "sourceKind": "official",
+      "programmingLanguage": "webassembly",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "html-mdn",
+      "sourceName": "HTML on MDN",
+      "sourceKind": "conventional",
+      "programmingLanguage": "html",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "html-mdn",
+      "sourceName": "HTML on MDN",
+      "sourceKind": "conventional",
+      "programmingLanguage": "html",
+      "docsLocale": "ja",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "css-mdn",
+      "sourceName": "CSS on MDN",
+      "sourceKind": "conventional",
+      "programmingLanguage": "css",
+      "docsLocale": "en",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    },
+    {
+      "sourceId": "css-mdn",
+      "sourceName": "CSS on MDN",
+      "sourceKind": "conventional",
+      "programmingLanguage": "css",
+      "docsLocale": "ja",
+      "status": "planned",
+      "reason": "Adapter not implemented."
+    }
+  ]
+}

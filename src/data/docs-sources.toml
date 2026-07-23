@@ -14,7 +14,8 @@ name = "Python Documentation"
 url = "https://docs.python.org/"
 domains = ["docs.python.org"]
 default_enabled = true
-locales = ["en", "ja"]
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
 [[languages]]
 id = "rust"
@@ -29,7 +30,8 @@ name = "Rust Documentation"
 url = "https://doc.rust-lang.org/"
 domains = ["doc.rust-lang.org"]
 default_enabled = true
-locales = ["en"]
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "javascript"
@@ -45,7 +47,8 @@ url = "https://tc39.es/ecma262/"
 domains = ["tc39.es"]
 path_prefixes = ["/ecma262/"]
 default_enabled = true
-locales = ["en"]
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages.sources]]
 id = "mdn-js"
@@ -54,7 +57,8 @@ name = "MDN Web Docs"
 url = "https://developer.mozilla.org/"
 domains = ["developer.mozilla.org"]
 default_enabled = true
-locales = ["en", "ja"]
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "planned", reason = "No maintained Japanese JavaScript index is configured." }]
 
 [[languages]]
 id = "typescript"
@@ -70,7 +74,8 @@ url = "https://www.typescriptlang.org/docs/"
 domains = ["www.typescriptlang.org"]
 path_prefixes = ["/docs/"]
 default_enabled = true
-locales = ["en"]
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "go"
@@ -86,7 +91,8 @@ url = "https://go.dev/doc/"
 domains = ["go.dev"]
 path_prefixes = ["/doc/", "/ref/"]
 default_enabled = true
-locales = ["en"]
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "The DevDocs Go index covers the standard library, not the language guides." }]
 
 [[languages.sources]]
 id = "go-std"
@@ -96,7 +102,8 @@ url = "https://pkg.go.dev/std"
 domains = ["pkg.go.dev"]
 path_prefixes = ["/std", "/"]
 default_enabled = true
-locales = ["en"]
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "c"
@@ -112,7 +119,8 @@ url = "https://en.cppreference.com/w/c"
 domains = ["en.cppreference.com"]
 path_prefixes = ["/w/c"]
 default_enabled = true
-locales = ["en"]
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
 
 [[languages]]
 id = "cpp"
@@ -128,7 +136,8 @@ url = "https://en.cppreference.com/w/cpp"
 domains = ["en.cppreference.com"]
 path_prefixes = ["/w/cpp"]
 default_enabled = true
-locales = ["en"]
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
 
 [[languages]]
 id = "csharp"
@@ -142,9 +151,10 @@ kind = "official"
 name = "Microsoft C# Documentation"
 url = "https://learn.microsoft.com/dotnet/csharp/"
 domains = ["learn.microsoft.com"]
-path_prefixes = ["/dotnet/csharp/"]
+path_prefixes = ["/en-us/dotnet/csharp/", "/ja-jp/dotnet/csharp/"]
 default_enabled = true
-locales = ["en", "ja"]
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "planned", reason = "The public source TOC contains English titles only." }]
 
 [[languages]]
 id = "java"
@@ -160,7 +170,8 @@ url = "https://docs.oracle.com/en/java/"
 domains = ["docs.oracle.com"]
 path_prefixes = ["/en/java/"]
 default_enabled = true
-locales = ["en"]
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "php"
@@ -176,7 +187,8 @@ url = "https://www.php.net/manual/"
 domains = ["www.php.net", "php.net"]
 path_prefixes = ["/manual/"]
 default_enabled = true
-locales = ["en", "ja"]
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
 [[languages]]
 id = "ruby"
@@ -191,7 +203,8 @@ name = "Ruby Documentation"
 url = "https://docs.ruby-lang.org/"
 domains = ["docs.ruby-lang.org"]
 default_enabled = true
-locales = ["en", "ja"]
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
 [[languages]]
 id = "swift"
@@ -206,4 +219,635 @@ name = "Swift Documentation"
 url = "https://docs.swift.org/"
 domains = ["docs.swift.org"]
 default_enabled = true
-locales = ["en"]
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "kotlin"
+name = "Kotlin"
+aliases = ["kt"]
+bare_aliases = ["kotlin"]
+
+[[languages.sources]]
+id = "kotlin-docs"
+kind = "official"
+name = "Kotlin Documentation"
+url = "https://kotlinlang.org/docs/"
+domains = ["kotlinlang.org"]
+path_prefixes = ["/docs/", "/api/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "scala"
+name = "Scala"
+aliases = []
+bare_aliases = ["scala"]
+
+[[languages.sources]]
+id = "scala-docs"
+kind = "official"
+name = "Scala Documentation"
+url = "https://docs.scala-lang.org/"
+domains = ["docs.scala-lang.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "dart"
+name = "Dart"
+aliases = []
+bare_aliases = ["dart"]
+
+[[languages.sources]]
+id = "dart-docs"
+kind = "official"
+name = "Dart Documentation"
+url = "https://dart.dev/"
+domains = ["dart.dev"]
+path_prefixes = ["/language", "/libraries", "/guides", "/tools", "/effective-dart"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages.sources]]
+id = "dart-api"
+kind = "official"
+name = "Dart API Reference"
+url = "https://api.dart.dev/"
+domains = ["api.dart.dev"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "elixir"
+name = "Elixir"
+aliases = ["ex"]
+bare_aliases = ["elixir"]
+
+[[languages.sources]]
+id = "elixir-docs"
+kind = "official"
+name = "Elixir Documentation"
+url = "https://hexdocs.pm/elixir/"
+domains = ["hexdocs.pm"]
+path_prefixes = ["/elixir/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages.sources]]
+id = "elixir-lang"
+kind = "official"
+name = "Elixir Lang Guides"
+url = "https://elixir-lang.org/getting-started/introduction.html"
+domains = ["elixir-lang.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "erlang"
+name = "Erlang"
+aliases = []
+bare_aliases = ["erlang"]
+
+[[languages.sources]]
+id = "erlang-docs"
+kind = "official"
+name = "Erlang/OTP Documentation"
+url = "https://www.erlang.org/doc/"
+domains = ["www.erlang.org", "erlang.org"]
+path_prefixes = ["/doc/", "/docs/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "haskell"
+name = "Haskell"
+aliases = ["hs"]
+bare_aliases = ["haskell"]
+
+[[languages.sources]]
+id = "haskell-docs"
+kind = "official"
+name = "Haskell Documentation"
+url = "https://www.haskell.org/documentation/"
+domains = ["www.haskell.org"]
+path_prefixes = ["/documentation"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages.sources]]
+id = "haskell-ghc-users-guide"
+kind = "official"
+name = "GHC User's Guide"
+url = "https://downloads.haskell.org/ghc/latest/docs/users_guide/"
+domains = ["downloads.haskell.org"]
+path_prefixes = ["/ghc/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "lua"
+name = "Lua"
+aliases = []
+bare_aliases = ["lua"]
+
+[[languages.sources]]
+id = "lua-manual"
+kind = "official"
+name = "Lua Reference Manual"
+url = "https://www.lua.org/manual/"
+domains = ["www.lua.org"]
+path_prefixes = ["/manual/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "perl"
+name = "Perl"
+aliases = []
+bare_aliases = ["perl"]
+
+[[languages.sources]]
+id = "perl-docs"
+kind = "official"
+name = "Perl Documentation"
+url = "https://perldoc.perl.org/"
+domains = ["perldoc.perl.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "r"
+name = "R"
+aliases = []
+bare_aliases = ["r"]
+
+[[languages.sources]]
+id = "r-manuals"
+kind = "official"
+name = "R Manuals"
+url = "https://cran.r-project.org/manuals.html"
+domains = ["cran.r-project.org"]
+path_prefixes = ["/doc/manuals/", "/doc/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "julia"
+name = "Julia"
+aliases = ["jl"]
+bare_aliases = ["julia"]
+
+[[languages.sources]]
+id = "julia-docs"
+kind = "official"
+name = "Julia Documentation"
+url = "https://docs.julialang.org/"
+domains = ["docs.julialang.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "clojure"
+name = "Clojure"
+aliases = ["clj"]
+bare_aliases = ["clojure"]
+
+[[languages.sources]]
+id = "clojure-docs"
+kind = "official"
+name = "Clojure Reference"
+url = "https://clojure.org/reference/"
+domains = ["clojure.org"]
+path_prefixes = ["/reference/", "/guides/", "/api/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "groovy"
+name = "Groovy"
+aliases = []
+bare_aliases = ["groovy"]
+
+[[languages.sources]]
+id = "groovy-docs"
+kind = "official"
+name = "Groovy Documentation"
+url = "https://groovy-lang.org/documentation.html"
+domains = ["groovy-lang.org", "docs.groovy-lang.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "objc"
+name = "Objective-C"
+aliases = ["objective-c", "objectivec"]
+bare_aliases = ["objc"]
+
+[[languages.sources]]
+id = "objc-docs"
+kind = "official"
+name = "Objective-C Documentation"
+url = "https://developer.apple.com/documentation/objectivec"
+domains = ["developer.apple.com"]
+path_prefixes = ["/documentation/objectivec"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "blocked", reason = "Apple does not expose a stable redistributable documentation index." }]
+
+[[languages]]
+id = "bash"
+name = "Bash"
+aliases = ["shell", "sh"]
+bare_aliases = ["bash", "shell"]
+
+[[languages.sources]]
+id = "bash-manual"
+kind = "official"
+name = "Bash Reference Manual"
+url = "https://www.gnu.org/software/bash/manual/"
+domains = ["www.gnu.org"]
+path_prefixes = ["/software/bash/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "powershell"
+name = "PowerShell"
+aliases = ["pwsh"]
+bare_aliases = ["powershell"]
+
+[[languages.sources]]
+id = "powershell-docs"
+kind = "official"
+name = "PowerShell Documentation"
+url = "https://learn.microsoft.com/powershell/"
+domains = ["learn.microsoft.com"]
+path_prefixes = ["/powershell/"]
+default_enabled = true
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "fsharp"
+name = "F#"
+aliases = ["f#", "fs"]
+bare_aliases = ["fsharp"]
+
+[[languages.sources]]
+id = "fsharp-docs"
+kind = "official"
+name = "F# Documentation"
+url = "https://learn.microsoft.com/dotnet/fsharp/"
+domains = ["learn.microsoft.com"]
+path_prefixes = ["/dotnet/fsharp/"]
+default_enabled = true
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "visualbasic"
+name = "Visual Basic"
+aliases = ["vb", "vb.net", "vbnet"]
+bare_aliases = ["visualbasic"]
+
+[[languages.sources]]
+id = "vb-docs"
+kind = "official"
+name = "Visual Basic Documentation"
+url = "https://learn.microsoft.com/dotnet/visual-basic/"
+domains = ["learn.microsoft.com"]
+path_prefixes = ["/dotnet/visual-basic/"]
+default_enabled = true
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "zig"
+name = "Zig"
+aliases = []
+bare_aliases = ["zig"]
+
+[[languages.sources]]
+id = "zig-docs"
+kind = "official"
+name = "Zig Documentation"
+url = "https://ziglang.org/documentation/master/"
+domains = ["ziglang.org"]
+path_prefixes = ["/documentation/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "nim"
+name = "Nim"
+aliases = []
+bare_aliases = ["nim"]
+
+[[languages.sources]]
+id = "nim-docs"
+kind = "official"
+name = "Nim Documentation"
+url = "https://nim-lang.org/documentation.html"
+domains = ["nim-lang.org"]
+path_prefixes = ["/docs/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "crystal"
+name = "Crystal"
+aliases = []
+bare_aliases = ["crystal"]
+
+[[languages.sources]]
+id = "crystal-docs"
+kind = "official"
+name = "Crystal Reference"
+url = "https://crystal-lang.org/reference/"
+domains = ["crystal-lang.org"]
+path_prefixes = ["/reference/", "/api/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "d"
+name = "D"
+aliases = ["dlang"]
+bare_aliases = ["d"]
+
+[[languages.sources]]
+id = "d-docs"
+kind = "official"
+name = "D Language Documentation"
+url = "https://dlang.org/"
+domains = ["dlang.org"]
+path_prefixes = ["/spec/", "/phobos/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "ocaml"
+name = "OCaml"
+aliases = ["ml"]
+bare_aliases = ["ocaml"]
+
+[[languages.sources]]
+id = "ocaml-docs"
+kind = "official"
+name = "OCaml Documentation"
+url = "https://ocaml.org/docs"
+domains = ["ocaml.org"]
+path_prefixes = ["/manual", "/api", "/docs"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "solidity"
+name = "Solidity"
+aliases = ["sol"]
+bare_aliases = ["solidity"]
+
+[[languages.sources]]
+id = "solidity-docs"
+kind = "official"
+name = "Solidity Documentation"
+url = "https://docs.soliditylang.org/"
+domains = ["docs.soliditylang.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "elm"
+name = "Elm"
+aliases = []
+bare_aliases = ["elm"]
+
+[[languages.sources]]
+id = "elm-guide"
+kind = "official"
+name = "Elm Guide"
+url = "https://guide.elm-lang.org/"
+domains = ["guide.elm-lang.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages.sources]]
+id = "elm-packages"
+kind = "official"
+name = "Elm Packages"
+url = "https://package.elm-lang.org/"
+domains = ["package.elm-lang.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "racket"
+name = "Racket"
+aliases = ["rkt"]
+bare_aliases = ["racket"]
+
+[[languages.sources]]
+id = "racket-docs"
+kind = "official"
+name = "Racket Documentation"
+url = "https://docs.racket-lang.org/"
+domains = ["docs.racket-lang.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "commonlisp"
+name = "Common Lisp"
+aliases = ["lisp", "cl", "common-lisp"]
+bare_aliases = ["commonlisp"]
+
+[[languages.sources]]
+id = "cl-hyperspec"
+kind = "community"
+name = "Common Lisp HyperSpec"
+url = "https://www.lispworks.com/documentation/HyperSpec/"
+domains = ["www.lispworks.com"]
+path_prefixes = ["/documentation/HyperSpec/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "disabled", reason = "The legacy community specification index is intentionally disabled." }]
+
+[[languages]]
+id = "fortran"
+name = "Fortran"
+aliases = []
+bare_aliases = ["fortran"]
+
+[[languages.sources]]
+id = "gfortran"
+kind = "official"
+name = "GNU Fortran Manual"
+url = "https://gcc.gnu.org/onlinedocs/gfortran/"
+domains = ["gcc.gnu.org"]
+path_prefixes = ["/onlinedocs/gfortran/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages.sources]]
+id = "fortran-lang"
+kind = "conventional"
+name = "Fortran Lang"
+url = "https://fortran-lang.org/learn/"
+domains = ["fortran-lang.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "haxe"
+name = "Haxe"
+aliases = []
+bare_aliases = ["haxe"]
+
+[[languages.sources]]
+id = "haxe-manual"
+kind = "official"
+name = "Haxe Manual"
+url = "https://haxe.org/manual/"
+domains = ["haxe.org"]
+path_prefixes = ["/manual/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages.sources]]
+id = "haxe-api"
+kind = "official"
+name = "Haxe API"
+url = "https://api.haxe.org/"
+domains = ["api.haxe.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "sql"
+name = "SQL"
+aliases = []
+bare_aliases = ["sql"]
+
+[[languages.sources]]
+id = "postgresql-docs"
+kind = "official"
+name = "PostgreSQL Documentation"
+url = "https://www.postgresql.org/docs/"
+domains = ["www.postgresql.org"]
+path_prefixes = ["/docs/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages.sources]]
+id = "mysql-docs"
+kind = "official"
+name = "MySQL Documentation"
+url = "https://dev.mysql.com/doc/"
+domains = ["dev.mysql.com"]
+path_prefixes = ["/doc/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages.sources]]
+id = "sqlite-docs"
+kind = "official"
+name = "SQLite Documentation"
+url = "https://www.sqlite.org/docs.html"
+domains = ["www.sqlite.org", "sqlite.org"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "webassembly"
+name = "WebAssembly"
+aliases = ["wasm"]
+bare_aliases = ["webassembly"]
+
+[[languages.sources]]
+id = "wasm-mdn"
+kind = "conventional"
+name = "WebAssembly on MDN"
+url = "https://developer.mozilla.org/en-US/docs/WebAssembly"
+domains = ["developer.mozilla.org"]
+path_prefixes = ["/en-US/docs/WebAssembly", "/ja/docs/WebAssembly"]
+default_enabled = true
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages.sources]]
+id = "wasm-spec"
+kind = "official"
+name = "WebAssembly Specification"
+url = "https://webassembly.github.io/spec/"
+domains = ["webassembly.github.io"]
+path_prefixes = ["/spec/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "html"
+name = "HTML"
+aliases = []
+bare_aliases = ["html"]
+
+[[languages.sources]]
+id = "html-mdn"
+kind = "conventional"
+name = "HTML on MDN"
+url = "https://developer.mozilla.org/en-US/docs/Web/HTML"
+domains = ["developer.mozilla.org"]
+path_prefixes = ["/en-US/docs/Web/HTML", "/ja/docs/Web/HTML"]
+default_enabled = true
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages]]
+id = "css"
+name = "CSS"
+aliases = []
+bare_aliases = ["css"]
+
+[[languages.sources]]
+id = "css-mdn"
+kind = "conventional"
+name = "CSS on MDN"
+url = "https://developer.mozilla.org/en-US/docs/Web/CSS"
+domains = ["developer.mozilla.org"]
+path_prefixes = ["/en-US/docs/Web/CSS", "/ja/docs/Web/CSS"]
+default_enabled = true
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]

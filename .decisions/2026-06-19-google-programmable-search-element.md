@@ -10,7 +10,9 @@ Use Google Programmable Search Element for the first production search provider
 
 ## Status
 
-Accepted
+Superseded
+
+Superseded by [Replace Google Programmable Search with federated browser-side documentation indexes](./2026-07-23-federated-browser-search-index.md).
 
 ## Decision
 

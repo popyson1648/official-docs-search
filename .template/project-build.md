@@ -2,10 +2,47 @@
 
 ## Prerequisites
 
+- Node.js 24, matching CI.
+- npm.
+
 ## Setup
 
-## Build
+Run `npm install`.
 
-## Run
+## Application Commands
+
+- Start the local server with `npm run dev`.
+- Build the Astro Node application with `npm run build`.
+- Start the production build with `npm start`.
+- Use `npm run preview` only for Astro preview, not production delivery verification.
+
+The application has no runtime search-provider key.
+The browser fetches only supported bundles matching selected sources and Docs locale.
+
+## Generated Search Data
+
+Treat `src/data/docs-sources.toml` as the canonical source, locale, and support-status contract.
+The manifest projects every support state and currently identifies 13 supported indexes.
+Commit compact, content-addressed bundles and `manifest.json` under `public/search-index/`.
+Record input and output hashes, validators, versions, counts, sizes, attribution, license, cadence, and known queries in the manifest.
+
+- `npm run update:search-index` intentionally refreshes committed artifacts.
+- `npm run generate:search-index` is the update alias.
+- `npm run check:search-index` stages and compares artifacts without changing them.
+- `npm run test:live` checks synchronization and live links without mutating committed artifacts.
+
+Validate all adapters before publication.
+Publish content-addressed bundles first and the manifest last.
+Retain retrieval time for unchanged input hashes, and gate large count or compressed-size changes behind explicit review.
+The scheduled update workflow must create a reviewable draft pull request and must not merge it.
+
+## Production Delivery
+
+Run `npm run build && npm start`.
+The production server negotiates gzip and Brotli, emits content-derived `ETag` and `Vary: Accept-Encoding`, gives hashed bundles a one-year immutable policy, and requires revalidation for the manifest.
 
 ## Common Failures
+
+- Reject mismatched catalog and adapter declarations.
+- Reject empty, malformed, out-of-scope, or unexpectedly changed input before publication.
+- Treat check-mode differences as a prompt to review and intentionally update, not as an automatic repair.

@@ -47,12 +47,7 @@ export function parseQuery(raw: string, options: QueryParseOptions): ParsedQuery
       searchText: "",
       languages: [],
       flags,
-      errors: [
-        {
-          code: "empty_search_text",
-          message: "Enter search words."
-        }
-      ]
+      errors: []
     };
   }
 

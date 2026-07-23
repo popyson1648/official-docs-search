@@ -1,40 +1,54 @@
 version = 1
 
 [phases.format]
-enabled = true
+enabled = false
 command = ""
+reason = "No formatter is configured yet."
 
 [phases.lint]
-enabled = true
+enabled = false
 command = ""
+reason = "No linter is configured yet."
 
 [phases.typecheck]
 enabled = true
-command = ""
+command = "npm run typecheck"
 
 [phases.build]
 enabled = true
-command = ""
+command = "npm run build"
 
 [phases.test_unit]
 enabled = true
-command = ""
+command = "npm run test"
 
 [phases.test_integration]
-enabled = false
-command = ""
+enabled = true
+command = "npm run test:integration"
+run_pre_commit = true
+run_in_ci = true
 
 [phases.test_e2e]
-enabled = false
-command = ""
+enabled = true
+command = "npm run test:e2e"
+run_pre_commit = true
+run_in_ci = true
+
+[phases.test_live]
+enabled = true
+command = "npm run test:live"
+run_pre_commit = false
+run_in_ci = false
 
 [phases.test_component]
 enabled = false
 command = ""
 
 [phases.test_contract]
-enabled = false
-command = ""
+enabled = true
+command = "npm run test:server"
+run_pre_commit = true
+run_in_ci = true
 
 [phases.accessibility]
 enabled = false
@@ -47,3 +61,9 @@ command = ""
 [phases.bundle_size]
 enabled = false
 command = ""
+
+[phases.security]
+enabled = true
+command = "npm audit --omit=dev"
+run_pre_commit = false
+run_in_ci = true

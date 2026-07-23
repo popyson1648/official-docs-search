@@ -16,7 +16,8 @@ url = "https://tc39.es/ecma262/"
 domains = ["tc39.es"]
 path_prefixes = ["/ecma262/"]
 default_enabled = true
-locales = ["en"]
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages.sources]]
 id = "mdn"
@@ -25,7 +26,8 @@ name = "MDN Web Docs"
 url = "https://developer.mozilla.org/"
 domains = ["developer.mozilla.org"]
 default_enabled = true
-locales = ["en", "ja"]
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "planned", reason = "Fixture." }]
 `;
 
 describe("sources", () => {
@@ -46,6 +48,15 @@ describe("sources", () => {
       enabledSourceIds: new Set(["ecma", "mdn"])
     });
     expect(scope.sources.map((source) => source.id)).toEqual(["ecma", "mdn"]);
+  });
+
+  it("honors explicit source selection in official mode", () => {
+    const scope = resolveSearchScope(catalog, {
+      languages: ["javascript"],
+      sourceMode: "official",
+      enabledSourceIds: new Set()
+    });
+    expect(scope.sources).toEqual([]);
   });
 
   it("reports locale gaps", () => {
