@@ -139,7 +139,11 @@ async function clickAndWaitForNavigation(page, selector) {
 
 before(async () => {
   app = await startApp();
-  browser = await puppeteer.launch();
+  browser = await puppeteer.launch({
+    args: process.env.CI === "true"
+      ? ["--no-sandbox", "--disable-setuid-sandbox"]
+      : []
+  });
 });
 
 after(async () => {
