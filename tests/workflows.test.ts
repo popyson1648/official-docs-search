@@ -21,7 +21,7 @@ describe("GitHub Actions workflows", () => {
       (step: any) => step.name === "Classify changed files"
     );
     const nodeIndex = steps.findIndex(
-      (step: any) => step.uses === "actions/setup-node@v4"
+      (step: any) => step.uses === "actions/setup-node@v7"
     );
     const classify = steps[classifyIndex];
 
