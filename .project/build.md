@@ -36,9 +36,21 @@ The manifest records the complete output hash, input URLs and hashes, HTTP valid
 Use these commands:
 
 - `npm run update:search-index`: fetch, validate, and replace committed artifacts.
+- `npm run update:search-index:weekly`: update only weekly source jobs.
+- `npm run update:search-index:monthly`: update only monthly source jobs,
+  including the rate-limited GNU/GCC group.
 - `npm run generate:search-index`: alias of the update command.
 - `npm run check:search-index`: generate in staging and compare without changing committed artifacts.
-- `npm run test:live`: run the non-mutating check, verify live result links, and run integration tests.
+- `npm run test:live:affected`: check only source families affected by the
+  current diff and verify their live result links.
+- `npm run test:live`: check every source and verify every live result link.
+
+The generator and live verifier also accept repeatable
+`--source SOURCE_ID[/LOCALE]`, `--exclude-source`, and
+`--frequency weekly|monthly` selectors.
+Partial generation verifies and reuses every unselected committed bundle; it
+fails if a reused hash, bundle identity, static job metadata, catalog hash, or
+schema does not match.
 
 Generation validates every adapter before publishing and runs independent jobs
 with bounded concurrency while retaining catalog order in the manifest.
@@ -46,7 +58,12 @@ Update mode moves content-addressed bundles out of staging first, moves `manifes
 If input hashes are unchanged, the prior `retrievedAt` is retained so identical inputs produce identical artifacts.
 Record-count and gzip/Brotli-size gates reject large changes; use `node scripts/generate-search-index.mjs --update --accept-large-changes` only after reviewing and approving the upstream change.
 
-The weekly workflow in `.github/workflows/update-search-index.yml` opens or refreshes a draft pull request.
+The scheduled workflow refreshes weekly sources every Monday and monthly
+sources on the first day of each month.
+It does not repeat upstream generation immediately after an update; offline
+integration checks validate the complete resulting artifact set.
+The workflow opens or refreshes a scope-specific branch and draft pull request
+so a pending weekly update cannot be overwritten by a monthly or manual run.
 It never merges an index update.
 
 ## Production Delivery

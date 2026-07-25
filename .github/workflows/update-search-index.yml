@@ -3,7 +3,19 @@ name: Update search indexes
 on:
   schedule:
     - cron: "23 3 * * 1"
+    - cron: "23 4 1 * *"
   workflow_dispatch:
+    inputs:
+      scope:
+        description: Search-index update scope
+        required: true
+        default: weekly
+        type: choice
+        options:
+          - weekly
+          - monthly
+          - gnu
+          - all
 
 permissions:
   contents: write
@@ -18,7 +30,6 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
-      UPDATE_BRANCH: automation/search-index-update
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -38,10 +49,39 @@ jobs:
         run: npm ci
 
       - name: Generate and verify indexes
+        env:
+          MANUAL_SCOPE: ${{ inputs.scope }}
+          SCHEDULE_EXPRESSION: ${{ github.event.schedule }}
         run: |
-          npm run update:search-index
-          npm run check:search-index
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            scope="$MANUAL_SCOPE"
+          elif [ "$SCHEDULE_EXPRESSION" = "23 4 1 * *" ]; then
+            scope="monthly"
+          else
+            scope="weekly"
+          fi
+
+          case "$scope" in
+            weekly|monthly)
+              selection=(--frequency "$scope")
+              ;;
+            gnu)
+              selection=(--source gfortran --source gnu-objc)
+              ;;
+            all)
+              selection=()
+              ;;
+            *)
+              echo "Unsupported update scope: $scope"
+              exit 2
+              ;;
+          esac
+
+          node scripts/generate-search-index.mjs --update "${selection[@]}"
+          node scripts/verify-live-search-index.mjs "${selection[@]}"
           npm run test:integration
+          echo "UPDATE_SCOPE=$scope" >> "$GITHUB_ENV"
+          echo "UPDATE_BRANCH=automation/search-index-update-$scope" >> "$GITHUB_ENV"
 
       - name: Ensure only generated indexes changed
         run: |
@@ -68,5 +108,5 @@ jobs:
               --draft \
               --base "${{ github.event.repository.default_branch }}" \
               --head "$UPDATE_BRANCH" \
-              --title "Update generated search indexes" \
-              --body "Automated weekly index refresh. Review source, count, size, and known-query changes before merging."
+              --title "Update ${UPDATE_SCOPE} search indexes" \
+              --body "Automated ${UPDATE_SCOPE} index refresh. Review source, count, size, and known-query changes before merging."

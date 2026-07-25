@@ -49,3 +49,13 @@ Revisit for offline search, failed warm-latency targets, or evidence that native
 Record the mobile viewport, CPU and network throttling, first-switch and
 worker-cached switch targets, and Long Task threshold used by automated browser
 verification.
+
+## Verification Cost
+
+Record the full CI duration and the dominant phases before and after
+change-aware selection.
+Include documentation-only startup cost, full and concern-specific browser
+durations, repeated-build elimination, and representative source-scoped live
+times.
+State which slow upstream groups are scheduled separately and confirm that
+unrelated changes make no request to them.

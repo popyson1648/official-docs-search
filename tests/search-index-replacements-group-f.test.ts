@@ -6,9 +6,8 @@ import {
 } from "../scripts/search-index/parsers-group-f.mjs";
 
 describe("replacement group F search-index jobs", () => {
-  it("exports the two licensed replacement jobs with safety gates", () => {
+  it("exports the licensed replacement job with safety gates", () => {
     expect(replacementGroupFJobs.map((job) => `${job.sourceId}/${job.docsLocale}`)).toEqual([
-      "gnu-objc/en",
       "cl-language-reference/en"
     ]);
     for (const job of replacementGroupFJobs) {
@@ -99,7 +98,6 @@ describe("replacement group F search-index jobs", () => {
   it("loads only the declared static input for each job", async () => {
     const calls: string[] = [];
     const fixtures = [
-      '<li><a id="toc-GNU-Objective-C-Features" href="Objective-C.html">9 GNU Objective-C Features</a></li>',
       "<urlset><url><loc>https://lisp-docs.github.io/cl-language-reference/chap-3/defmacro_macro</loc></url></urlset>"
     ];
 
@@ -114,7 +112,6 @@ describe("replacement group F search-index jobs", () => {
     }
 
     expect(calls).toEqual([
-      "https://gcc.gnu.org/onlinedocs/gcc-15.2.0/gcc/index.html",
       "https://lisp-docs.github.io/cl-language-reference/sitemap.xml"
     ]);
   });

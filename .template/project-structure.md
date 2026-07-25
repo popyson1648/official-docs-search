@@ -6,7 +6,9 @@
 - `src/core/`: framework-independent query, catalog, runtime, and ranking logic.
 - `src/data/`: canonical source, locale, and support-state catalog.
 - `src/pages/`: Astro routes and server-rendered shells.
-- `scripts/`: source-family jobs and parsers, reproducible publication, live verification, and production serving.
+- `scripts/`: source-family jobs and parsers, change-scope classification,
+  reproducible full/partial publication, live verification, and production
+  serving.
 - `public/search-index/`: committed compact indexes and manifest.
 - `tests/`: unit, integration, server-contract, live-data, and browser verification.
 - `.plans/` and `.decisions/`: task and architecture history.

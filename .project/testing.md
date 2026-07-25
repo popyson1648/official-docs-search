@@ -6,7 +6,13 @@
 - `npm run test:integration` verifies all committed supported indexes, catalog/manifest agreement, minimum counts, content hashes, allowed original URLs, per-bundle and selected-set size budgets, every known query, and combined-language results.
 - `npm run test:server` builds and verifies production SSR, Brotli/gzip negotiation, body integrity, `ETag`, conditional `304`, `Vary`, and cache policies.
 - `npm run test:e2e` builds and drives Chromium against the production server and real committed indexes.
-- `npm run test:live` stages current upstream data, checks that committed artifacts match, verifies one known live result URL for every supported index, and reruns integration tests.
+- `npm run test:e2e:filters`, `npm run test:e2e:catalog`,
+  `npm run test:e2e:layout`, and `npm run test:e2e:performance` run bounded
+  browser concerns against an existing build.
+- `npm run test:live:affected` regenerates and checks only source families
+  affected by the current diff, then verifies their known live result URLs.
+- `npm run test:live` explicitly checks every upstream source and live result
+  URL.
 
 ## Minimum Checks Before Completion
 
@@ -16,9 +22,23 @@ Run:
 python3 scripts/verify.py
 ```
 
-The default mode includes live network verification and the production server contract.
-Pre-commit and CI use committed bundles and skip live upstream access so third-party outages do not make those modes flaky.
-`npm run test:live` does not modify committed search-index files.
+The default command combines commits not yet present on the branch upstream
+(falling back to `origin/dev` then `origin/main`) with staged, unstaged,
+deleted, and untracked files, then runs only the applicable pre-push phases.
+Documentation-only changes run no Node command.
+Unknown implementation or configuration paths fall back to all offline phases.
+New implementation, test, or configuration paths also fall back to all offline
+phases until their narrower ownership rule is committed.
+Pre-commit uses its staged filenames, while CI compares the exact push or pull
+request range and skips Node setup entirely when no phase is selected.
+
+Run `python3 scripts/verify.py --mode ci --full` for complete deterministic
+offline verification.
+Run `python3 scripts/verify.py --mode all --full --include-network` only when a
+complete all-source live check is required.
+Network phases otherwise run only when an affected adapter, parser, generator,
+transport, or catalog path selects them.
+Both live commands are non-mutating.
 
 ## Checks By Change Type
 
@@ -26,10 +46,15 @@ Pre-commit and CI use committed bundles and skip live upstream access so third-p
 - Catalog and source resolution: update `tests/sources.test.ts` and `tests/catalog.test.ts`.
 - Generation or adapters: update `tests/search-index-generator.test.ts`, `tests/search-index.test.ts`, and intentional generated artifacts.
 - Runtime loading or ranking: update `tests/search-runtime.test.ts`, `tests/search.test.ts`, and integration coverage.
-- Client controls or rendering: update focused client tests and `tests/e2e/search.test.mjs`.
+- Client controls or rendering: update focused client tests and the applicable
+  tagged scenarios in `tests/e2e/search.test.mjs`.
 - Production compression or caching: update and run `tests/integration/production-server.test.mjs`.
-- Catalog adapter or upstream-data changes: run the update command intentionally, review the diff, then run `npm run test:live`.
-- Build or verification changes: run the complete verification script.
+- Catalog adapter or upstream-data changes: run the source-scoped update
+  intentionally, review the diff, then run `npm run test:live:affected`.
+- Build or verification changes: run
+  `python3 scripts/verify.py --mode ci --full`.
+- Unknown classifications, invalid comparison bases, and shared indexing paths
+  fail safe to the broad applicable scope.
 
 ## Required Browser Coverage
 

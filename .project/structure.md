@@ -28,9 +28,18 @@
 - `src/pages/index.astro`: server-rendered search form and result shell.
 - `scripts/search-index.mjs`: shared DevDocs, Sphinx, Ecmarkup, Javadoc, and HTML normalization helpers.
 - `scripts/search-index/`: source-family job registries, parser modules, and job helpers.
+- `scripts/search-index/change-scope.mjs`: maps changed source-family paths to
+  the smallest safe live-index scope.
 - `scripts/generate-search-index.mjs`: the composed job registry and update/check CLI.
-- `scripts/search-index-generator.mjs`: deterministic validation, manifest construction, staging, and manifest-last publication.
-- `scripts/verify-live-search-index.mjs`: verifies a known live result URL for every supported index.
+- `scripts/search-index-generator.mjs`: deterministic full/partial validation,
+  verified artifact reuse, manifest construction, staging, and manifest-last
+  publication.
+- `scripts/verify-live-search-index.mjs`: verifies known live result URLs for
+  an explicit source or cadence selection.
+- `scripts/verify-affected-search-index.mjs`: composes affected generation and
+  live-link checks.
+- `scripts/verify.py`: selects repository verification phases from changed
+  paths with conservative fallback.
 - `scripts/serve-production.mjs`: serves Astro middleware with the search-asset compression and cache contract.
 
 ## Runtime Data Flow

@@ -6,6 +6,8 @@
   "scripts": {
     "generate:search-index": "node scripts/generate-search-index.mjs --update",
     "update:search-index": "node scripts/generate-search-index.mjs --update",
+    "update:search-index:weekly": "node scripts/generate-search-index.mjs --update --frequency weekly",
+    "update:search-index:monthly": "node scripts/generate-search-index.mjs --update --frequency monthly",
     "check:search-index": "node scripts/generate-search-index.mjs --check",
     "dev": "astro dev",
     "build": "astro build",
@@ -14,9 +16,16 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --exclude 'tests/integration/**'",
     "test:integration": "vitest run tests/integration",
-    "test:server": "npm run build && node --test --test-concurrency=1 tests/integration/production-server.test.mjs",
-    "test:e2e": "npm run build && node --test --test-concurrency=1 tests/e2e/search.test.mjs",
-    "test:live": "npm run check:search-index && node scripts/verify-live-search-index.mjs && npm run test:integration"
+    "test:server": "npm run build && npm run test:server:built",
+    "test:server:built": "node --test --test-concurrency=1 tests/integration/*.test.mjs",
+    "test:e2e": "npm run build && npm run test:e2e:built",
+    "test:e2e:built": "node --test --test-concurrency=1 tests/e2e/*.test.mjs",
+    "test:e2e:filters": "node --test --test-concurrency=1 --test-name-pattern='^\\[(smoke|filters)\\]' tests/e2e/search.test.mjs",
+    "test:e2e:catalog": "node --test --test-concurrency=1 --test-name-pattern='^\\[(smoke|catalog)\\]' tests/e2e/search.test.mjs",
+    "test:e2e:layout": "node --test --test-concurrency=1 --test-name-pattern='^\\[(smoke|filters|layout)\\]' tests/e2e/search.test.mjs",
+    "test:e2e:performance": "node --test --test-concurrency=1 --test-name-pattern='^\\[(smoke|performance)\\]' tests/e2e/search.test.mjs",
+    "test:live": "npm run check:search-index && node scripts/verify-live-search-index.mjs",
+    "test:live:affected": "node scripts/verify-affected-search-index.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^11.0.2",

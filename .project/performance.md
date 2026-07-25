@@ -92,3 +92,26 @@ Before in-page switching, the Python EN-to-JA interaction took 3,956 ms under
 those conditions.
 The implementation measurement on 2026-07-24 was 1,364 ms for the first switch
 and 80 ms for the repeated switch.
+
+## Verification Cost
+
+Before change-aware selection, the successful 2026-07-25 GitHub Actions run
+took 87 seconds.
+The verification step took about 53 seconds, including about 39 seconds of
+browser E2E, and production output was built three times.
+Documentation-only changes still paid Node setup and `npm ci`.
+
+Verification now classifies the exact changed paths before Node setup.
+Documentation-only CI selects no Node phase.
+Focused filter, layout, and performance browser runs measured about 10, 11, and
+12 seconds locally, compared with about 32 seconds for the complete browser
+file.
+One production build is shared by selected browser and server-contract phases.
+
+Live index work is selected independently by source family.
+On 2026-07-25, a single `gfortran/en` regeneration took about 125 seconds and
+its selected live-link check took about 35 seconds under GCC's access
+constraints.
+Unrelated changes now make zero GCC requests.
+Weekly refresh excludes the monthly GNU group, and scheduled update no longer
+regenerates the same upstream selection twice.

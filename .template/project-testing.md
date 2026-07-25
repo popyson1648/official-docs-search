@@ -6,13 +6,24 @@
 - `npm run test:integration` verifies all supported indexes, catalog/manifest agreement, counts, hashes, URL scope, per-bundle and selected-set budgets, every known query, and multi-language results.
 - `npm run test:server` verifies production SSR, gzip/Brotli, validators, conditional responses, and cache policies.
 - `npm run test:e2e` drives Chromium against the production server and real committed bundles.
-- `npm run test:live` checks staged upstream artifacts and live result links without changing committed artifacts.
+- Concern-specific E2E commands verify filters, catalog coverage,
+  layout/accessibility, and performance against one existing build.
+- `npm run test:live:affected` checks only source families affected by the
+  current diff.
+- `npm run test:live` explicitly checks all upstream artifacts and live links.
 
 ## Minimum Checks Before Completion
 
 Run `python3 scripts/verify.py`.
-The default mode includes the live network phase and server contract.
-Pre-commit and CI use committed bundles and skip live upstream access.
+The default mode combines unpushed commits with working-tree and untracked
+changes, then runs only applicable pre-push phases.
+Documentation-only changes run no Node command, while unknown implementation
+paths and newly added implementation/configuration paths fall back to all
+offline phases.
+Use `python3 scripts/verify.py --mode ci --full` for complete deterministic
+offline verification.
+Use `python3 scripts/verify.py --mode all --full --include-network` only for an
+explicit all-source live check.
 
 ## Checks By Change Type
 
@@ -20,7 +31,8 @@ Pre-commit and CI use committed bundles and skip live upstream access.
 - Update generator tests, integration thresholds, and intentional artifacts for adapter changes.
 - Update server-contract tests for compression or caching changes.
 - Update browser flows for user-facing behavior changes.
-- Run live verification after reviewing any intentional upstream-data refresh.
+- Run affected live verification after reviewing an intentional source-scoped
+  upstream-data refresh.
 
 ## Required Browser Coverage
 

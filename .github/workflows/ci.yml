@@ -9,18 +9,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      - name: Classify changed files
+        id: changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            change_range="${PR_BASE_SHA}...HEAD"
+          else
+            change_range="${PUSH_BEFORE_SHA}..HEAD"
+          fi
+          selection="$(python3 scripts/verify.py --mode ci --changed-range "$change_range" --list --json)"
+          phase_count="$(python3 -c 'import json, sys; print(len(json.loads(sys.argv[1])["phases"]))' "$selection")"
+          echo "change_range=$change_range" >> "$GITHUB_OUTPUT"
+          echo "phase_count=$phase_count" >> "$GITHUB_OUTPUT"
+          echo "$selection"
+
       - uses: actions/setup-node@v4
+        if: steps.changes.outputs.phase_count != '0'
         with:
           node-version: "24"
           cache: npm
 
       - name: Install dependencies
+        if: steps.changes.outputs.phase_count != '0'
         run: npm ci
 
       - name: Run verification
-        run: python3 scripts/verify.py --mode ci
+        run: >-
+          python3 scripts/verify.py
+          --mode ci
+          --changed-range "${{ steps.changes.outputs.change_range }}"

@@ -3,7 +3,8 @@
 ## Release Steps
 
 1. Intentionally update upstream artifacts only when required and review every generated diff.
-2. Run the non-mutating index check and complete verification.
+2. Run the affected non-mutating index check and complete deterministic
+   verification.
 3. Review supported paths, statuses, hashes, versions, counts, compressed sizes, attribution, licenses, and known queries.
 4. Check language, source, locale, support-state, responsive, escaping, and safe-link browser flows.
 5. Verify production compression, validators, revalidation, and immutable bundle caching.
@@ -11,6 +12,8 @@
 7. Smoke-test original links and delivery headers.
 
 Scheduled updates must produce reviewable draft pull requests and must never merge automatically.
+Run an explicit all-source live check before releasing shared generator or
+transport changes.
 
 ## Required Checks
 

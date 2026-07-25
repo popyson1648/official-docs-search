@@ -151,7 +151,7 @@ after(async () => {
   await stopApp(app);
 });
 
-test("initial page, help, validation, and language tags work", async () => {
+test("[smoke] initial page, help, validation, and language tags work", async () => {
   const page = await newPage();
   await page.goto(app.baseUrl, { waitUntil: "domcontentloaded" });
   assert.equal(await page.$("[data-search-results]"), null);
@@ -178,7 +178,7 @@ test("initial page, help, validation, and language tags work", async () => {
   await page.close();
 });
 
-test("search guidance uses concrete unboxed examples and accurate aliases", async () => {
+test("[smoke] search guidance uses concrete unboxed examples and accurate aliases", async () => {
   const page = await newPage();
   await page.goto(`${app.baseUrl}/?ui=ja`, { waitUntil: "domcontentloaded" });
 
@@ -281,7 +281,7 @@ test("search guidance uses concrete unboxed examples and accurate aliases", asyn
   await page.close();
 });
 
-test("the visible JavaScript example performs a multi-token AND search", async () => {
+test("[smoke] the visible JavaScript example performs a multi-token AND search", async () => {
   const page = await newPage();
   await gotoQuery(page, "js promise all", "&docsLocale=en");
   await waitForResults(page);
@@ -308,7 +308,7 @@ test("the visible JavaScript example performs a multi-token AND search", async (
   await page.close();
 });
 
-test("Sphinx section context renders as plain text instead of raw markup", async () => {
+test("[smoke] Sphinx section context renders as plain text instead of raw markup", async () => {
   const page = await newPage();
   await gotoQuery(page, "python pathlib glob", "&docsLocale=ja&ui=ja");
   await waitForResults(page);
@@ -322,7 +322,7 @@ test("Sphinx section context renders as plain text instead of raw markup", async
   await page.close();
 });
 
-test("single-language official search returns real linked results in new tabs", async () => {
+test("[smoke] single-language official search returns real linked results in new tabs", async () => {
   const page = await newPage();
   await gotoQuery(page, "python list", "&docsLocale=en");
   await waitForResults(page);
@@ -336,7 +336,7 @@ test("single-language official search returns real linked results in new tabs", 
   await page.close();
 });
 
-test("query and search-index strings render as text without executing markup", async () => {
+test("[smoke] query and search-index strings render as text without executing markup", async () => {
   const page = await newPage();
   const searchPayload =
     'safety </input><img id="query-xss" src=x onerror="globalThis.__odsXss=1">';
@@ -453,7 +453,7 @@ test("query and search-index strings render as text without executing markup", a
   await page.close();
 });
 
-test("one multi-language query returns results for every selected language", async () => {
+test("[catalog] one multi-language query returns results for every selected language", async () => {
   const page = await newPage();
   await gotoQuery(page, "python,rust iterator", "&docsLocale=en");
   await waitForResults(page);
@@ -467,7 +467,7 @@ test("one multi-language query returns results for every selected language", asy
   await page.close();
 });
 
-test("result filters narrow a multi-language search by language and site without navigation", async () => {
+test("[filters] result filters narrow a multi-language search by language and site without navigation", async () => {
   const page = await newPage();
   await page.goto(
     `${app.baseUrl}/?q=${encodeURIComponent(
@@ -780,7 +780,7 @@ test("result filters narrow a multi-language search by language and site without
   await page.close();
 });
 
-test("result filters match the reference overlay and responsive interaction at 375px", async () => {
+test("[filters] result filters match the reference overlay and responsive interaction at 375px", async () => {
   const page = await newPage({ width: 375, height: 900 });
   await page.goto(
     `${app.baseUrl}/?q=${encodeURIComponent(
@@ -861,7 +861,7 @@ test("result filters match the reference overlay and responsive interaction at 3
   await page.close();
 });
 
-test("result filter motion is removed when the user prefers reduced motion", async () => {
+test("[filters] result filter motion is removed when the user prefers reduced motion", async () => {
   const page = await newPage();
   await page.emulateMediaFeatures([
     { name: "prefers-reduced-motion", value: "reduce" }
@@ -889,7 +889,7 @@ test("result filter motion is removed when the user prefers reduced motion", asy
   await page.close();
 });
 
-test("adding a spaced second language enables its default sources", async () => {
+test("[filters] adding a spaced second language enables its default sources", async () => {
   const page = await newPage();
   await gotoQuery(page, "rust generic", "&docsLocale=en");
   await waitForResults(page);
@@ -1001,7 +1001,7 @@ test("adding a spaced second language enables its default sources", async () => 
   await page.close();
 });
 
-test("enabling and disabling a non-official source changes the result list", async () => {
+test("[filters] enabling and disabling a non-official source changes the result list", async () => {
   const page = await newPage();
   await gotoQuery(page, "javascript proxy", "&docsLocale=en");
   await waitForResults(page);
@@ -1027,7 +1027,7 @@ test("enabling and disabling a non-official source changes the result list", asy
   await page.close();
 });
 
-test("documentation locale and UI locale switch independently", async () => {
+test("[catalog] documentation locale and UI locale switch independently", async () => {
   const page = await newPage();
   await gotoQuery(page, "python list", "&docsLocale=en");
   await waitForResults(page);
@@ -1069,9 +1069,9 @@ test("documentation locale and UI locale switch independently", async () => {
   await page.close();
 });
 
-test("Japanese requests visibly fall back to English-only documentation", async () => {
+test("[catalog] Japanese requests visibly fall back to English-only documentation", async () => {
   const page = await newPage();
-  await gotoQuery(page, "rust iterator", "&docsLocale=ja");
+  await gotoQuery(page, "rust iterator source:all", "&docsLocale=ja");
   await waitForResults(page);
 
   const result = await snapshot(page);
@@ -1107,7 +1107,7 @@ test("Japanese requests visibly fall back to English-only documentation", async 
   await page.close();
 });
 
-test("fallback notices group one compact explanation with a semantic source list", async () => {
+test("[catalog] fallback notices group one compact explanation with a semantic source list", async () => {
   const page = await newPage({ width: 375, height: 900 });
   await page.goto(`${app.baseUrl}/?ui=ja&docsLocale=ja`, {
     waitUntil: "domcontentloaded"
@@ -1185,7 +1185,7 @@ test("fallback notices group one compact explanation with a semantic source list
   await page.close();
 });
 
-test("a failed bundle is reported without discarding successful results", async () => {
+test("[catalog] a failed bundle is reported without discarding successful results", async () => {
   const page = await newPage();
   await page.setCacheEnabled(false);
   await page.setRequestInterception(true);
@@ -1214,7 +1214,7 @@ test("a failed bundle is reported without discarding successful results", async 
   await page.close();
 });
 
-test("planned secondary sources are explicit while supported sources still return results", async () => {
+test("[catalog] planned secondary sources are explicit while supported sources still return results", async () => {
   const page = await newPage();
   await gotoQuery(page, "haxe abstract", "&docsLocale=en");
   await waitForResults(page);
@@ -1229,7 +1229,7 @@ test("planned secondary sources are explicit while supported sources still retur
   await page.close();
 });
 
-test("new TypeScript and C# indexes participate in one combined search", async () => {
+test("[catalog] new TypeScript and C# indexes participate in one combined search", async () => {
   const page = await newPage();
   await gotoQuery(page, "typescript,csharp generics source:official", "&docsLocale=en");
   await waitForResults(page);
@@ -1243,7 +1243,7 @@ test("new TypeScript and C# indexes participate in one combined search", async (
   await page.close();
 });
 
-test("new PHP and Ruby indexes expose their Japanese documentation locale", async () => {
+test("[catalog] new PHP and Ruby indexes expose their Japanese documentation locale", async () => {
   for (const [query, source, hostname] of [
     ["php array_map", "php-manual", "www.php.net"],
     ["ruby Enumerable", "ruby-docs", "docs.ruby-lang.org"]
@@ -1260,7 +1260,7 @@ test("new PHP and Ruby indexes expose their Japanese documentation locale", asyn
 });
 
 test(
-  "every catalog language returns a real result through its supported index",
+  "[catalog] every catalog language returns a real result through its supported index",
   { timeout: 120_000 },
   async () => {
     const supported = searchManifest.entries.filter((entry) => entry.status === "supported");
@@ -1325,7 +1325,7 @@ test(
 );
 
 test(
-  "every supported Japanese index and every English fallback stays truthful",
+  "[catalog] every supported Japanese index and every English fallback stays truthful",
   { timeout: 120_000 },
   async () => {
     const supported = searchManifest.entries.filter((entry) => entry.status === "supported");
@@ -1393,7 +1393,7 @@ test(
   }
 );
 
-test("qualified editions are visibly labeled in results", async () => {
+test("[catalog] qualified editions are visibly labeled in results", async () => {
   const page = await newPage();
   await gotoQuery(
     page,
@@ -1408,7 +1408,7 @@ test("qualified editions are visibly labeled in results", async () => {
   await page.close();
 });
 
-test("trusted non-official caveats are localized in the source picker and results", async () => {
+test("[catalog] trusted non-official caveats are localized in the source picker and results", async () => {
   const page = await newPage();
   await gotoQuery(
     page,
@@ -1503,7 +1503,7 @@ test("trusted non-official caveats are localized in the source picker and result
   await page.close();
 });
 
-test("every admitted non-official source renders a qualified safe result and Japanese fallback", async () => {
+test("[catalog] every admitted non-official source renders a qualified safe result and Japanese fallback", async () => {
   const page = await newPage();
   for (const sourceId of trustedCommunitySourceIds) {
     const entry = searchManifest.entries.find(
@@ -1553,7 +1553,7 @@ test("every admitted non-official source renders a qualified safe result and Jap
   await page.close();
 });
 
-test("blocked and disabled index states are distinguishable", async () => {
+test("[catalog] blocked and disabled index states are distinguishable", async () => {
   const blockedPage = await newPage();
   await gotoQuery(blockedPage, "objc Fast Enumeration", "&docsLocale=en");
   await waitForResults(blockedPage);
@@ -1575,7 +1575,7 @@ test("blocked and disabled index states are distinguishable", async () => {
   await disabledPage.close();
 });
 
-test("empty and index-load failure states are explicit", async () => {
+test("[catalog] empty and index-load failure states are explicit", async () => {
   const emptyPage = await newPage();
   await gotoQuery(emptyPage, "python zzz-no-such-document-zzz", "&docsLocale=en");
   await emptyPage.waitForSelector('[data-search-status][data-state="empty"]');
@@ -1597,7 +1597,7 @@ test("empty and index-load failure states are explicit", async () => {
   await errorPage.close();
 });
 
-test("results stay visible at desktop and mobile widths", async () => {
+test("[layout] results stay visible at desktop and mobile widths", async () => {
   for (const width of [1280, 375]) {
     const page = await newPage({ width, height: 800 });
     await gotoQuery(page, "python list", "&docsLocale=en");
@@ -1614,7 +1614,7 @@ test("results stay visible at desktop and mobile widths", async () => {
   }
 });
 
-test("header actions and source picker stay compact at desktop and mobile widths", async () => {
+test("[layout] header actions and source picker stay compact at desktop and mobile widths", async () => {
   for (const width of [1280, 375]) {
     const page = await newPage({ width, height: 900 });
     await gotoQuery(
@@ -1681,7 +1681,7 @@ test("header actions and source picker stay compact at desktop and mobile widths
   }
 });
 
-test("result hierarchy, shared badges, input chips, and count stay visually distinct", async () => {
+test("[layout] result hierarchy, shared badges, input chips, and count stay visually distinct", async () => {
   for (const width of [1280, 375]) {
     const page = await newPage({ width, height: 900 });
     await gotoQuery(
@@ -1810,7 +1810,7 @@ test("result hierarchy, shared badges, input chips, and count stay visually dist
   }
 });
 
-test("documentation locale switch avoids navigation and meets cold and warm budgets", async () => {
+test("[performance] documentation locale switch avoids navigation and meets cold and warm budgets", async () => {
   const page = await newPage({ width: 390, height: 800 });
   await page.emulateCPUThrottling(4);
   await page.emulateNetworkConditions(PredefinedNetworkConditions["Fast 3G"]);

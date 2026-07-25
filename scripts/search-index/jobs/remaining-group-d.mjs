@@ -179,20 +179,6 @@ jobs.push({
   }
 });
 
-jobs.push(
-  htmlTocJob({
-    sourceId: "gfortran",
-    programmingLanguage: "fortran",
-    inputUrl: "https://gcc.gnu.org/onlinedocs/gfortran/index.html",
-    urlPrefix: "https://gcc.gnu.org/onlinedocs/gfortran/",
-    minimumRecords: 450,
-    knownQueries: ["GNU Fortran Command Options", "Intrinsic Procedures"],
-    upstreamVersion: "GNU Fortran rolling manual",
-    attribution: "GNU Fortran manual © Free Software Foundation; GNU FDL 1.3 or later.",
-    licenseUrl: "https://gcc.gnu.org/onlinedocs/gfortran/GNU-Free-Documentation-License.html"
-  })
-);
-
 jobs.push({
   sourceId: "fortran-lang",
   programmingLanguage: "fortran",
@@ -347,7 +333,7 @@ function htmlTocJob(options) {
     attribution: options.attribution,
     licenseUrl: options.licenseUrl,
     ...(options.qualification ? { qualification: options.qualification } : {}),
-    updateFrequency: "weekly",
+    updateFrequency: options.updateFrequency ?? "weekly",
     load: async ({ fetchText }) =>
       normalizeHtmlToc(await fetchText(options.inputUrl), {
         inputUrl: options.linkBaseUrl ?? options.inputUrl,

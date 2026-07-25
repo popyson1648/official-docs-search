@@ -31,15 +31,23 @@ license, cadence, known queries, and visible English/Japanese qualifications in 
 manifest.
 
 - `npm run update:search-index` intentionally refreshes committed artifacts.
+- Weekly and monthly update commands refresh only jobs with that cadence.
 - `npm run generate:search-index` is the update alias.
 - `npm run check:search-index` stages and compares artifacts without changing them.
-- `npm run test:live` checks synchronization and live links without mutating committed artifacts.
+- `npm run test:live:affected` checks changed source families only.
+- `npm run test:live` explicitly checks every source and live result URL.
+
+Allow repeatable source and frequency selectors.
+Partial generation must hash-validate and reuse every unselected artifact, and
+must fail on catalog, schema, identity, or static-metadata drift.
 
 Validate all adapters before publication.
 Use bounded job concurrency without changing catalog manifest order.
 Publish content-addressed bundles first and the manifest last.
 Retain retrieval time for unchanged input hashes, and gate large count or compressed-size changes behind explicit review.
-The scheduled update workflow must create a reviewable draft pull request and must not merge it.
+Schedule weekly and monthly source cadences separately, avoid a duplicate
+network regeneration after update, use scope-specific update branches, create
+reviewable draft pull requests, and never merge them.
 
 ## Production Delivery
 

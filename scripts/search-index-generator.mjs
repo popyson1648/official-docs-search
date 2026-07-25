@@ -10,7 +10,7 @@ import {
   statSync,
   writeFileSync
 } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { brotliCompressSync, constants, gzipSync } from "node:zlib";
 import { parse } from "smol-toml";
 
@@ -24,6 +24,8 @@ export async function buildSearchIndexArtifacts({
   jobs,
   fetcher = fetch,
   previousManifest,
+  selectedKeys,
+  readPreviousArtifact,
   now = () => new Date(),
   acceptLargeChanges = false,
   concurrency = 4
@@ -53,6 +55,25 @@ export async function buildSearchIndexArtifacts({
   const previousEntries = new Map(
     (previousManifest?.entries ?? []).map((entry) => [indexKey(entry.sourceId, entry.docsLocale), entry])
   );
+  const selection =
+    selectedKeys === undefined ? undefined : new Set(selectedKeys);
+  if (selection) {
+    for (const key of selection) {
+      if (!supportedKeys.has(key)) throw new Error(`Selected index is not supported: ${key}`);
+    }
+    if (!previousManifest || typeof readPreviousArtifact !== "function") {
+      throw new Error("Partial generation requires previous manifest and artifact access.");
+    }
+    if (
+      previousManifest.schemaVersion !== SEARCH_INDEX_SCHEMA_VERSION ||
+      previousManifest.generatorVersion !== SEARCH_INDEX_GENERATOR_VERSION ||
+      previousManifest.catalogSha256 !== sha256(catalogSource)
+    ) {
+      throw new Error(
+        "Partial generation cannot reuse artifacts after schema, generator, or catalog changes."
+      );
+    }
+  }
   const files = new Map();
   const projections = catalog.flatMap((source) =>
     source.indexes.map((support) => ({ source, support }))
@@ -73,6 +94,16 @@ export async function buildSearchIndexArtifacts({
     const job = jobsByKey.get(key);
     if (!job) throw new Error(`Supported catalog index has no adapter job: ${key}`);
     const previous = previousEntries.get(key);
+    if (selection && !selection.has(key)) {
+      return reusePreviousArtifact({
+        baseEntry,
+        source,
+        job,
+        key,
+        previous,
+        readPreviousArtifact
+      });
+    }
     const inputs = [];
     const fetchText = async (url, options = {}) => {
       const response = await fetcher(url);
@@ -128,16 +159,7 @@ export async function buildSearchIndexArtifacts({
     }).byteLength;
     enforceChangeGates(job, previous, records.length, gzipBytes, brotliBytes, acceptLargeChanges);
 
-    const combinedInputHash = sha256(
-      inputs
-        .map(
-          (input) =>
-            input.canonicalizer
-              ? `${input.url}\0${input.canonicalizer}\0${input.sha256}`
-              : `${input.url}\0${input.sha256}`
-        )
-        .join("\n")
-    );
+    const combinedInputHash = combinedInputSha256(inputs);
     const retrievedAt =
       previous?.inputSha256 === combinedInputHash && previous.retrievedAt
         ? previous.retrievedAt
@@ -185,6 +207,105 @@ export async function buildSearchIndexArtifacts({
   };
   files.set("manifest.json", `${JSON.stringify(manifest, null, 2)}\n`);
   return { files, manifest };
+}
+
+function reusePreviousArtifact({
+  baseEntry,
+  source,
+  job,
+  key,
+  previous,
+  readPreviousArtifact
+}) {
+  if (!previous?.path) {
+    throw new Error(`Cannot reuse missing previous manifest entry: ${key}`);
+  }
+  const expectedMetadata = {
+    ...baseEntry,
+    adapter: job.adapter,
+    upstreamVersion: job.upstreamVersion,
+    attribution: job.attribution,
+    licenseUrl: job.licenseUrl,
+    updateFrequency: job.updateFrequency,
+    knownQueries: job.knownQueries,
+    ...(source.qualificationEn || job.qualification
+      ? { qualification: source.qualificationEn ?? job.qualification }
+      : {}),
+    ...(source.qualificationJa || job.qualificationJa
+      ? { qualificationJa: source.qualificationJa ?? job.qualificationJa }
+      : {})
+  };
+  for (const [field, value] of Object.entries(expectedMetadata)) {
+    if (JSON.stringify(previous[field]) !== JSON.stringify(value)) {
+      throw new Error(
+        `Cannot reuse ${key}; static metadata changed for ${field}. Run a full generation.`
+      );
+    }
+  }
+
+  const filename = basename(previous.path);
+  if (previous.path !== `/search-index/${filename}`) {
+    throw new Error(`Cannot reuse ${key}; invalid previous artifact path.`);
+  }
+  const bundleBytes = readPreviousArtifact(filename);
+  if (typeof bundleBytes !== "string") {
+    throw new Error(`Cannot reuse ${key}; previous artifact is unavailable.`);
+  }
+  if (sha256(bundleBytes) !== previous.outputSha256) {
+    throw new Error(`Cannot reuse ${key}; previous artifact hash does not match.`);
+  }
+  const rawBytes = Buffer.byteLength(bundleBytes);
+  const gzipBytes = gzipSync(bundleBytes, { level: 9 }).byteLength;
+  const brotliBytes = brotliCompressSync(bundleBytes, {
+    params: { [constants.BROTLI_PARAM_QUALITY]: 11 }
+  }).byteLength;
+  if (
+    rawBytes !== previous.rawBytes ||
+    gzipBytes !== previous.gzipBytes ||
+    brotliBytes !== previous.brotliBytes
+  ) {
+    throw new Error(`Cannot reuse ${key}; previous artifact sizes do not match.`);
+  }
+  if (
+    !Array.isArray(previous.inputs) ||
+    previous.inputs.length === 0 ||
+    previous.inputs.some(
+      (input) =>
+        typeof input?.url !== "string" ||
+        typeof input?.sha256 !== "string"
+    ) ||
+    combinedInputSha256(previous.inputs) !== previous.inputSha256
+  ) {
+    throw new Error(`Cannot reuse ${key}; previous input provenance does not match.`);
+  }
+  const bundle = JSON.parse(bundleBytes);
+  if (
+    bundle.schemaVersion !== SEARCH_INDEX_SCHEMA_VERSION ||
+    bundle.sourceId !== previous.sourceId ||
+    bundle.docsLocale !== previous.docsLocale ||
+    bundle.urlPrefix !== job.urlPrefix ||
+    !Array.isArray(bundle.records) ||
+    bundle.records.length !== previous.recordCount
+  ) {
+    throw new Error(`Cannot reuse ${key}; previous artifact metadata does not match.`);
+  }
+  return {
+    filename,
+    bundleBytes,
+    manifestEntry: previous
+  };
+}
+
+function combinedInputSha256(inputs) {
+  return sha256(
+    inputs
+      .map((input) =>
+        input.canonicalizer
+          ? `${input.url}\0${input.canonicalizer}\0${input.sha256}`
+          : `${input.url}\0${input.sha256}`
+      )
+      .join("\n")
+  );
 }
 
 export function publishSearchIndexArtifacts({ files, outputDirectory, mode }) {

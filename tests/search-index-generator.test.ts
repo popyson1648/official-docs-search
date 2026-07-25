@@ -324,6 +324,136 @@ indexes = [{ locale = "en", status = "supported" }]
     ]);
   });
 
+  it("fetches only selected indexes and reuses verified committed artifacts", async () => {
+    const secondSource = `
+[[languages.sources]]
+id = "second-docs"
+kind = "official"
+name = "Second Documentation"
+url = "https://second.test/docs/"
+domains = ["second.test"]
+path_prefixes = ["/docs/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+`;
+    const secondJob = {
+      ...fixtureJob(),
+      sourceId: "second-docs",
+      urlPrefix: "https://second.test/docs/",
+      load: async ({ fetchText }: { fetchText: (url: string) => Promise<string> }) => {
+        await fetchText("https://input.test/second.json");
+        return [{ title: "Second", url: "https://second.test/docs/second" }];
+      }
+    };
+    const catalogSource = `${catalog}${secondSource}`;
+    const first = await buildSearchIndexArtifacts({
+      catalogSource,
+      jobs: [fixtureJob(), secondJob],
+      fetcher: fixtureFetch,
+      now: () => new Date("2026-07-23T00:00:00Z")
+    });
+    let fetchCount = 0;
+    const partial = await buildSearchIndexArtifacts({
+      catalogSource,
+      jobs: [fixtureJob(), secondJob],
+      fetcher: async () => {
+        fetchCount += 1;
+        return await fixtureFetch();
+      },
+      previousManifest: first.manifest,
+      selectedKeys: ["second-docs/en"],
+      readPreviousArtifact: (filename: string) => first.files.get(filename),
+      now: () => new Date("2026-07-24T00:00:00Z")
+    });
+
+    expect(fetchCount).toBe(1);
+    expect([...partial.files]).toEqual([...first.files]);
+  });
+
+  it("fails partial generation when unselected static metadata changed", async () => {
+    const first = await build(fixtureJob(), new Date("2026-07-23T00:00:00Z"));
+
+    await expect(
+      buildSearchIndexArtifacts({
+        catalogSource: catalog,
+        jobs: [{ ...fixtureJob(), upstreamVersion: "fixture-2" }],
+        fetcher: fixtureFetch,
+        previousManifest: first.manifest,
+        selectedKeys: [],
+        readPreviousArtifact: (filename: string) => first.files.get(filename)
+      })
+    ).rejects.toThrow(/static metadata changed/);
+  });
+
+  it("performs zero fetches for an empty explicit selection", async () => {
+    const first = await build(fixtureJob(), new Date("2026-07-23T00:00:00Z"));
+    const partial = await buildSearchIndexArtifacts({
+      catalogSource: catalog,
+      jobs: [fixtureJob()],
+      fetcher: async () => {
+        throw new Error("unexpected fetch");
+      },
+      previousManifest: first.manifest,
+      selectedKeys: [],
+      readPreviousArtifact: (filename: string) => first.files.get(filename)
+    });
+
+    expect([...partial.files]).toEqual([...first.files]);
+  });
+
+  it("rejects a corrupt reused artifact", async () => {
+    const first = await build(fixtureJob(), new Date("2026-07-23T00:00:00Z"));
+
+    await expect(
+      buildSearchIndexArtifacts({
+        catalogSource: catalog,
+        jobs: [fixtureJob()],
+        fetcher: fixtureFetch,
+        previousManifest: first.manifest,
+        selectedKeys: [],
+        readPreviousArtifact: () => "{\"corrupt\":true}\n"
+      })
+    ).rejects.toThrow(/artifact hash does not match/);
+  });
+
+  it("rejects corrupt reused size and provenance metadata", async () => {
+    const first = await build(fixtureJob(), new Date("2026-07-23T00:00:00Z"));
+    const artifactReader = (filename: string) => first.files.get(filename);
+    const withEntry = (changes: Record<string, unknown>) => ({
+      ...first.manifest,
+      entries: first.manifest.entries.map((entry) =>
+        entry.sourceId === "example-docs" && entry.docsLocale === "en"
+          ? { ...entry, ...changes }
+          : entry
+      )
+    });
+
+    await expect(
+      buildSearchIndexArtifacts({
+        catalogSource: catalog,
+        jobs: [fixtureJob()],
+        fetcher: fixtureFetch,
+        previousManifest: withEntry({
+          rawBytes: Number(first.manifest.entries[0].rawBytes) + 1
+        }),
+        selectedKeys: [],
+        readPreviousArtifact: artifactReader
+      })
+    ).rejects.toThrow(/artifact sizes do not match/);
+
+    await expect(
+      buildSearchIndexArtifacts({
+        catalogSource: catalog,
+        jobs: [fixtureJob()],
+        fetcher: fixtureFetch,
+        previousManifest: withEntry({ inputSha256: "0".repeat(64) }),
+        selectedKeys: [],
+        readPreviousArtifact: artifactReader
+      })
+    ).rejects.toThrow(/input provenance does not match/);
+  });
+
   it("rejects timeouts and non-success responses", async () => {
     await expect(
       buildSearchIndexArtifacts({

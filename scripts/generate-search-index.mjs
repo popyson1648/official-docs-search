@@ -26,6 +26,7 @@ import { englishGroupAJobs } from "./search-index/jobs/english-group-a.mjs";
 import { remainingGroupDJobs } from "./search-index/jobs/remaining-group-d.mjs";
 import { japaneseGroupEJobs } from "./search-index/jobs/japanese-group-e.mjs";
 import { replacementGroupFJobs } from "./search-index/jobs/replacements-group-f.mjs";
+import { gnuJobs } from "./search-index/jobs/gnu.mjs";
 import { trustedCommunityGroupAJobs } from "./search-index/jobs/trusted-community-group-a.mjs";
 import { trustedCommunityGroupBJobs } from "./search-index/jobs/trusted-community-group-b.mjs";
 import { trustedCommunityGroupCJobs } from "./search-index/jobs/trusted-community-group-c.mjs";
@@ -34,14 +35,8 @@ import { fetchDocumentationUrl } from "./search-index/http-fetch.mjs";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const outputDirectory = resolve(root, "public/search-index");
 const catalogSource = readFileSync(resolve(root, "src/data/docs-sources.toml"), "utf8");
-const args = new Set(process.argv.slice(2));
-const mode = args.has("--update") ? "update" : args.has("--check") ? "check" : undefined;
 
-if (!mode || (args.has("--update") && args.has("--check"))) {
-  throw new Error("Use exactly one of --update or --check.");
-}
-
-const jobs = [
+export const searchIndexJobs = [
   ...trustedCommunityGroupAJobs,
   ...trustedCommunityGroupBJobs,
   ...trustedCommunityGroupCJobs,
@@ -334,25 +329,171 @@ const jobs = [
   ...englishGroupAJobs,
   ...remainingGroupDJobs,
   ...japaneseGroupEJobs,
-  ...replacementGroupFJobs
+  ...replacementGroupFJobs,
+  ...gnuJobs
 ];
 
-const previousManifest = readPreviousManifest(outputDirectory);
-const { files, manifest } = await buildSearchIndexArtifacts({
-  catalogSource,
-  jobs,
-  fetcher: fetchWithRetry,
-  previousManifest,
-  acceptLargeChanges: args.has("--accept-large-changes")
-});
-publishSearchIndexArtifacts({ files, outputDirectory, mode });
-
-for (const entry of manifest.entries) {
-  if (entry.status === "supported") {
-    console.log(`${entry.sourceId}/${entry.docsLocale}: ${entry.recordCount} records → ${entry.path}`);
-  }
+if (
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+  await run(process.argv.slice(2));
 }
-console.log(mode === "update" ? "Search indexes updated." : "Search indexes are synchronized.");
+
+async function run(rawArgs) {
+  const parsed = parseSearchIndexArguments(rawArgs);
+  const previousManifest = readPreviousManifest(outputDirectory);
+  const selectedKeys = selectSearchIndexJobKeys(searchIndexJobs, parsed);
+  const { files, manifest } = await buildSearchIndexArtifacts({
+    catalogSource,
+    jobs: searchIndexJobs,
+    fetcher: fetchWithRetry,
+    previousManifest,
+    ...(selectedKeys
+      ? {
+          selectedKeys,
+          readPreviousArtifact: (filename) =>
+            readFileSync(resolve(outputDirectory, filename), "utf8")
+        }
+      : {}),
+    acceptLargeChanges: parsed.acceptLargeChanges
+  });
+  publishSearchIndexArtifacts({
+    files,
+    outputDirectory,
+    mode: parsed.mode
+  });
+
+  for (const entry of manifest.entries) {
+    const key = `${entry.sourceId}/${entry.docsLocale}`;
+    if (
+      entry.status === "supported" &&
+      (!selectedKeys || selectedKeys.includes(key))
+    ) {
+      console.log(
+        `${key}: ${entry.recordCount} records → ${entry.path}`
+      );
+    }
+  }
+  const scope = selectedKeys
+    ? `${selectedKeys.length} selected indexes`
+    : "all indexes";
+  console.log(
+    parsed.mode === "update"
+      ? `Search indexes updated (${scope}).`
+      : `Search indexes are synchronized (${scope}).`
+  );
+}
+
+export function parseSearchIndexArguments(rawArgs) {
+  const modes = rawArgs.filter(
+    (argument) => argument === "--update" || argument === "--check"
+  );
+  if (modes.length !== 1) {
+    throw new Error("Use exactly one of --update or --check.");
+  }
+  const sourceSelectors = optionValues(rawArgs, "--source");
+  const excludedSourceSelectors = optionValues(rawArgs, "--exclude-source");
+  const frequencies = optionValues(rawArgs, "--frequency");
+  for (const frequency of frequencies) {
+    if (frequency !== "weekly" && frequency !== "monthly") {
+      throw new Error(`Unsupported update frequency: ${frequency}`);
+    }
+  }
+  const valueIndexes = new Set();
+  for (let index = 0; index < rawArgs.length; index += 1) {
+    if (
+      ["--source", "--exclude-source", "--frequency"].includes(rawArgs[index])
+    ) {
+      valueIndexes.add(index + 1);
+    }
+  }
+  const knownFlags = new Set([
+    "--update",
+    "--check",
+    "--accept-large-changes",
+    "--source",
+    "--exclude-source",
+    "--frequency"
+  ]);
+  rawArgs.forEach((argument, index) => {
+    if (
+      valueIndexes.has(index) ||
+      knownFlags.has(argument) ||
+      argument.startsWith("--source=") ||
+      argument.startsWith("--exclude-source=") ||
+      argument.startsWith("--frequency=")
+    ) {
+      return;
+    }
+    throw new Error(`Unknown argument: ${argument}`);
+  });
+  return {
+    mode: modes[0].slice(2),
+    sourceSelectors,
+    excludedSourceSelectors,
+    frequencies,
+    acceptLargeChanges: rawArgs.includes("--accept-large-changes")
+  };
+}
+
+function optionValues(args, option) {
+  const values = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const argument = args[index];
+    if (argument === option) {
+      const value = args[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error(`${option} requires a value.`);
+      }
+      values.push(value);
+      index += 1;
+    } else if (argument.startsWith(`${option}=`)) {
+      const value = argument.slice(option.length + 1);
+      if (!value) throw new Error(`${option} requires a value.`);
+      values.push(value);
+    }
+  }
+  return values;
+}
+
+export function selectSearchIndexJobKeys(jobs, parsed) {
+  if (
+    parsed.sourceSelectors.length === 0 &&
+    parsed.excludedSourceSelectors.length === 0 &&
+    parsed.frequencies.length === 0
+  ) {
+    return undefined;
+  }
+  const matchesSelector = (job, selector) =>
+    selector.includes("/")
+      ? `${job.sourceId}/${job.docsLocale}` === selector
+      : job.sourceId === selector;
+  for (const selector of [
+    ...parsed.sourceSelectors,
+    ...parsed.excludedSourceSelectors
+  ]) {
+    if (!jobs.some((job) => matchesSelector(job, selector))) {
+      throw new Error(`Unknown source selector: ${selector}`);
+    }
+  }
+  const selected = jobs.filter(
+    (job) =>
+      (parsed.sourceSelectors.length === 0 ||
+        parsed.sourceSelectors.some((selector) =>
+          matchesSelector(job, selector)
+        )) &&
+      (parsed.frequencies.length === 0 ||
+        parsed.frequencies.includes(job.updateFrequency)) &&
+      !parsed.excludedSourceSelectors.some((selector) =>
+        matchesSelector(job, selector)
+      )
+  );
+  if (selected.length === 0) {
+    throw new Error("The requested source selection is empty.");
+  }
+  return selected.map((job) => `${job.sourceId}/${job.docsLocale}`);
+}
 
 function goDocumentationUrl(path, version) {
   const [pathname, fragment] = path.split("#", 2);

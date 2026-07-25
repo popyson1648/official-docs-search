@@ -7,7 +7,8 @@ A release is needed after application, catalog, adapter, generated-index, depend
 ## Release Steps
 
 1. If refreshing upstream data, run `npm run update:search-index` and review every generated diff.
-2. Run `npm run check:search-index` and `python3 scripts/verify.py`.
+2. Run the applicable source-scoped live check, then
+   `python3 scripts/verify.py --mode ci --full`.
 3. Review every supported path in `public/search-index/manifest.json`: statuses, input/output hashes, versions, counts, gzip/Brotli sizes, attribution, licenses, and known queries.
 4. Confirm all-language coverage, single- and multi-language search,
    non-official sources, exact and fallback EN/JA Docs locale, partial failure,
@@ -16,11 +17,14 @@ A release is needed after application, catalog, adapter, generated-index, depend
 6. Deploy the application and its matching `public/search-index/` artifacts together.
 7. Smoke-test original-document links and response headers on the deployed site.
 
-The scheduled weekly index update opens a draft pull request; review it and never merge automatically.
+The scheduled weekly and monthly index updates open a draft pull request;
+review it and never merge automatically.
 
 ## Required Checks
 
-- All configured offline and live verification phases pass.
+- All configured offline phases and every affected live source pass.
+- Before a release that changes shared generator or transport behavior, run
+  `python3 scripts/verify.py --mode all --full --include-network`.
 - Known searches return non-empty semantic results from allowed original domains.
 - A combined query includes each selected supported programming language.
 - Planned, blocked, and disabled sources are reported explicitly.

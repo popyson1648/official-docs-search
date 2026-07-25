@@ -1,69 +1,306 @@
 version = 1
 
+[change_detection]
+documentation_paths = [
+  "*.md",
+  ".plans/**",
+  ".decisions/**",
+  ".project/**/*.md",
+  ".template/**/*.md",
+]
+full_paths = [
+  "scripts/verify.py",
+  "tests/verify_script.py",
+  ".project/verification.toml",
+  ".template/verification.toml",
+  ".pre-commit-config.yaml",
+  ".github/workflows/*.yml",
+]
+safe_added_paths = [
+  "*.md",
+  ".plans/**",
+  ".decisions/**",
+  ".project/**/*.md",
+  ".template/**/*.md",
+  "public/search-index/**",
+]
+fallback_base_refs = [
+  "origin/dev",
+  "origin/main",
+]
+
 [phases.format]
 enabled = false
 command = ""
 reason = "No formatter is configured yet."
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = false
+run_in_ci = false
 
 [phases.lint]
 enabled = false
 command = ""
 reason = "No linter is configured yet."
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = false
+run_in_ci = false
 
 [phases.typecheck]
 enabled = true
 command = "npm run typecheck"
+run_on_edit = true
+run_pre_commit = true
+run_pre_push = true
+run_in_ci = true
+paths = [
+  "src/**",
+  "tests/**/*.ts",
+  "scripts/**/*.mts",
+  "astro.config.mjs",
+  "vitest.config.ts",
+  "tsconfig.json",
+  "package.json",
+  "package-lock.json",
+]
 
 [phases.build]
 enabled = true
 command = "npm run build"
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = true
+run_in_ci = true
+paths = [
+  "src/**",
+  "public/**",
+  "astro.config.mjs",
+  "tsconfig.json",
+  "package.json",
+  "package-lock.json",
+]
 
 [phases.test_unit]
 enabled = true
 command = "npm run test"
+run_on_edit = true
+run_pre_commit = true
+run_pre_push = true
+run_in_ci = true
+paths = [
+  "src/core/**",
+  "src/client/search-controls.ts",
+  "src/client/search-result-filters.ts",
+  "scripts/generate-search-index.mjs",
+  "scripts/search-index.mjs",
+  "scripts/search-index-generator.mjs",
+  "scripts/search-index/**",
+  "scripts/verify-affected-search-index.mjs",
+  "scripts/verify-live-search-index.mjs",
+  "tests/*.test.ts",
+  "vitest.config.ts",
+  "package.json",
+  "package-lock.json",
+]
 
 [phases.test_integration]
 enabled = true
 command = "npm run test:integration"
+run_on_edit = false
 run_pre_commit = true
+run_pre_push = true
 run_in_ci = true
+paths = [
+  "public/search-index/**",
+  "src/data/docs-sources.toml",
+  "src/core/search.ts",
+  "src/core/search-runtime.ts",
+  "src/core/sources.ts",
+  "tests/integration/**/*.ts",
+  "vitest.config.ts",
+  "package.json",
+  "package-lock.json",
+]
 
 [phases.test_e2e]
 enabled = true
-command = "npm run test:e2e"
-run_pre_commit = true
+command = "npm run test:e2e:built"
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = true
 run_in_ci = true
+requires = ["build"]
+paths = [
+  "src/client/**",
+  "src/core/highlight.ts",
+  "src/core/i18n.ts",
+  "src/core/query.ts",
+  "src/core/search.ts",
+  "src/core/search-runtime.ts",
+  "src/core/sources.ts",
+  "src/pages/**",
+  "scripts/serve-production.mjs",
+  "tests/e2e/**",
+  "astro.config.mjs",
+  "package.json",
+  "package-lock.json",
+]
+exclude_paths = [
+  "src/client/search-controls.ts",
+  "src/client/search-result-filters.ts",
+]
+
+[phases.test_e2e_filters]
+enabled = true
+command = "npm run test:e2e:filters"
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = true
+run_in_ci = true
+requires = ["build"]
+covered_by = ["test_e2e", "test_e2e_layout"]
+paths = [
+  "src/client/search-controls.ts",
+  "src/client/search-result-filters.ts",
+  "src/core/result-filters.ts",
+  "src/core/search-controls.ts",
+]
+
+[phases.test_e2e_catalog]
+enabled = true
+command = "npm run test:e2e:catalog"
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = true
+run_in_ci = true
+requires = ["build"]
+covered_by = ["test_e2e"]
+paths = [
+  "public/search-index/**",
+  "src/data/docs-sources.toml",
+]
+
+[phases.test_e2e_layout]
+enabled = true
+command = "npm run test:e2e:layout"
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = true
+run_in_ci = true
+requires = ["build"]
+covered_by = ["test_e2e"]
+paths = [
+  "public/styles.css",
+]
+
+[phases.test_e2e_performance]
+enabled = true
+command = "npm run test:e2e:performance"
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = true
+run_in_ci = true
+requires = ["build"]
+covered_by = ["test_e2e"]
+paths = [
+  "tests/e2e/performance/**",
+]
 
 [phases.test_live]
 enabled = true
-command = "npm run test:live"
+command = "npm run test:live:affected"
+run_on_edit = false
 run_pre_commit = false
+run_pre_push = true
 run_in_ci = false
+network = true
+paths = [
+  "scripts/generate-search-index.mjs",
+  "scripts/verify-live-search-index.mjs",
+  "scripts/verify-affected-search-index.mjs",
+  "scripts/search-index.mjs",
+  "scripts/search-index-generator.mjs",
+  "scripts/search-index/**",
+  "src/data/docs-sources.toml",
+]
 
 [phases.test_component]
 enabled = false
 command = ""
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = false
+run_in_ci = false
 
 [phases.test_contract]
 enabled = true
-command = "npm run test:server"
-run_pre_commit = true
+command = "npm run test:server:built"
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = true
 run_in_ci = true
+requires = ["build"]
+paths = [
+  "public/search-index/**",
+  "src/pages/**",
+  "src/data/docs-sources.toml",
+  "scripts/serve-production.mjs",
+  "tests/integration/**/*.mjs",
+  "astro.config.mjs",
+  "package.json",
+  "package-lock.json",
+]
+
+[phases.test_verification]
+enabled = true
+command = "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'verify_*.py'"
+run_on_edit = true
+run_pre_commit = true
+run_pre_push = true
+run_in_ci = true
+paths = [
+  "scripts/verify.py",
+  "tests/verify_script.py",
+  ".project/verification.toml",
+  ".template/verification.toml",
+  ".pre-commit-config.yaml",
+  ".github/workflows/*.yml",
+]
 
 [phases.accessibility]
 enabled = false
 command = ""
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = false
+run_in_ci = false
 
 [phases.performance]
 enabled = false
 command = ""
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = false
+run_in_ci = false
 
 [phases.bundle_size]
 enabled = false
 command = ""
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = false
+run_in_ci = false
 
 [phases.security]
 enabled = true
 command = "npm audit --omit=dev"
+run_on_edit = false
 run_pre_commit = false
+run_pre_push = true
 run_in_ci = true
+paths = [
+  "package.json",
+  "package-lock.json",
+  ".github/workflows/security-audit.yml",
+]

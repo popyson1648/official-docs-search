@@ -9,7 +9,7 @@ import {
 
 describe("remaining group D adapters", () => {
   it("exports unique and gated source-locale jobs", () => {
-    expect(remainingGroupDJobs).toHaveLength(15);
+    expect(remainingGroupDJobs).toHaveLength(14);
     const keys = remainingGroupDJobs.map(
       (job: { sourceId: string; docsLocale: string }) => `${job.sourceId}/${job.docsLocale}`
     );
