@@ -1,6 +1,5 @@
 import { createHash } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
-import { gzipSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
 import {
   expandSearchIndexBundle,
@@ -18,6 +17,14 @@ const bundles = new Map(
 );
 const catalog = loadCatalog();
 const catalogSources = catalog.languages.flatMap((language) => language.sources);
+const trustedCommunitySourceIds = new Set([
+  "comprehensive-rust", "javascript-info", "typescript-deep-dive",
+  "go-by-example", "cpp-core-guidelines", "php-the-right-way",
+  "elixir-school", "learn-you-a-haskell", "advanced-r", "clojure-guides",
+  "fsharp-for-fun-and-profit", "zig-guide", "programming-in-d",
+  "cornell-ocaml", "solidity-by-example", "common-lisp-cookbook",
+  "webdev-html", "webdev-css"
+]);
 
 function records(sourceId: string, docsLocale: string) {
   const entry = manifest.entries.find(
@@ -29,6 +36,39 @@ function records(sourceId: string, docsLocale: string) {
 }
 
 describe("generated search indexes", () => {
+  it("keeps the approved language and locale coverage matrix", () => {
+    expect(supportedEntries).toHaveLength(85);
+    expect(
+      new Set(manifest.entries.map((entry) => entry.programmingLanguage)
+    ).size).toBe(44);
+    expect(
+      new Set(supportedEntries.map((entry) => entry.programmingLanguage)
+    ).size).toBe(44);
+    expect(
+      supportedEntries.filter((entry) => entry.docsLocale === "ja")
+    ).toHaveLength(17);
+  });
+
+  it("keeps every admitted non-official source qualified in both UI languages", () => {
+    const admittedEntries = supportedEntries.filter((entry) =>
+      trustedCommunitySourceIds.has(entry.sourceId)
+    );
+    expect(admittedEntries).toHaveLength(18);
+    for (const entry of admittedEntries) {
+      const catalogSource = catalogSources.find(
+        (source) => source.id === entry.sourceId
+      );
+      expect(entry.sourceKind, entry.sourceId).not.toBe("official");
+      expect(entry.docsLocale, entry.sourceId).toBe("en");
+      expect(entry.qualification, `${entry.sourceId} English qualification`).toBe(
+        catalogSource?.qualification?.en
+      );
+      expect(entry.qualificationJa, `${entry.sourceId} Japanese qualification`).toBe(
+        catalogSource?.qualification?.ja
+      );
+    }
+  });
+
   it("matches every catalog source-locale status in both directions", () => {
     const declared = catalog.languages.flatMap((language) =>
       language.sources.flatMap((source) =>
@@ -92,26 +132,37 @@ describe("generated search indexes", () => {
     }
   });
 
-  it("keeps the initial five indexes below one gzip megabyte and all indexes below one Brotli megabyte", () => {
-    const initialKeys = new Set([
-      "python-docs/en",
-      "python-docs/ja",
-      "rust-docs/en",
-      "tc39-ecma262/en",
-      "mdn-js/en"
-    ]);
-    const initialGzipBytes = supportedEntries
-      .filter((entry) => initialKeys.has(`${entry.sourceId}/${entry.docsLocale}`))
-      .reduce(
-      (total, entry) => total + gzipSync(readFileSync(`public${entry.path}`)).byteLength,
-      0
-    );
-    const completeBrotliBytes = supportedEntries.reduce(
-      (total, entry) => total + (entry.brotliBytes ?? Number.POSITIVE_INFINITY),
-      0
-    );
-    expect(initialGzipBytes).toBeLessThan(1_000_000);
-    expect(completeBrotliBytes).toBeLessThan(1_000_000);
+  it("keeps individual and selected working sets within transfer budgets", () => {
+    for (const entry of supportedEntries) {
+      expect(entry.brotliBytes, `${entry.sourceId}/${entry.docsLocale}`).toBeLessThan(750_000);
+    }
+
+    const defaultLanguages = new Set(catalog.languages.slice(0, 4).map((language) => language.id));
+    const defaultEnglishBytes = supportedEntries
+      .filter(
+        (entry) =>
+          defaultLanguages.has(entry.programmingLanguage) &&
+          entry.docsLocale === "en" &&
+          entry.sourceKind === "official"
+      )
+      .reduce((total, entry) => total + (entry.brotliBytes ?? Number.POSITIVE_INFINITY), 0);
+    expect(defaultEnglishBytes).toBeLessThan(1_000_000);
+
+    const largestFourLanguageBytes = [...supportedEntries]
+      .sort(
+        (left, right) =>
+          (right.brotliBytes ?? Number.POSITIVE_INFINITY) -
+          (left.brotliBytes ?? Number.POSITIVE_INFINITY)
+      )
+      .filter(
+        (entry, index, entries) =>
+          entries.findIndex(
+            (candidate) => candidate.programmingLanguage === entry.programmingLanguage
+          ) === index
+      )
+      .slice(0, 4)
+      .reduce((total, entry) => total + (entry.brotliBytes ?? Number.POSITIVE_INFINITY), 0);
+    expect(largestFourLanguageBytes).toBeLessThan(2_000_000);
   });
 
   it("returns known English, Japanese, and non-official documentation results", () => {
@@ -138,6 +189,17 @@ describe("generated search indexes", () => {
     expect(searchRecords(records("ruby-docs", "ja"), "Enumerable")[0]?.url).toMatch(
       /^https:\/\/docs\.ruby-lang\.org\/ja\/3\.4\//
     );
+  });
+
+  it("returns a known result for every supported source and locale", () => {
+    for (const entry of supportedEntries) {
+      const query = entry.knownQueries?.[0];
+      expect(query, `${entry.sourceId}/${entry.docsLocale} known query`).toBeTruthy();
+      expect(
+        searchRecords(records(entry.sourceId, entry.docsLocale), query as string).length,
+        `${entry.sourceId}/${entry.docsLocale}: ${query}`
+      ).toBeGreaterThan(0);
+    }
   });
 
   it("returns both languages from one combined multi-language query", () => {

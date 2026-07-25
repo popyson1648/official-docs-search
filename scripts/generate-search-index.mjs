@@ -8,7 +8,6 @@ import {
   readPreviousManifest
 } from "./search-index-generator.mjs";
 import {
-  normalizeDevdocsEntries,
   extractHtmlLinks,
   normalizeSphinxEntries,
   normalizeTc39Entries,
@@ -16,6 +15,21 @@ import {
   parseSphinxSearchIndex,
   uniqueRecords
 } from "./search-index.mjs";
+import {
+  devdocsJob,
+  documentationUrl,
+  linkRecords
+} from "./search-index/job-helpers.mjs";
+import { multilingualGroupBJobs } from "./search-index/jobs/multilingual-group-b.mjs";
+import { microsoftGroupCJobs } from "./search-index/jobs/microsoft-group-c.mjs";
+import { englishGroupAJobs } from "./search-index/jobs/english-group-a.mjs";
+import { remainingGroupDJobs } from "./search-index/jobs/remaining-group-d.mjs";
+import { japaneseGroupEJobs } from "./search-index/jobs/japanese-group-e.mjs";
+import { replacementGroupFJobs } from "./search-index/jobs/replacements-group-f.mjs";
+import { trustedCommunityGroupAJobs } from "./search-index/jobs/trusted-community-group-a.mjs";
+import { trustedCommunityGroupBJobs } from "./search-index/jobs/trusted-community-group-b.mjs";
+import { trustedCommunityGroupCJobs } from "./search-index/jobs/trusted-community-group-c.mjs";
+import { fetchDocumentationUrl } from "./search-index/http-fetch.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const outputDirectory = resolve(root, "public/search-index");
@@ -28,6 +42,9 @@ if (!mode || (args.has("--update") && args.has("--check"))) {
 }
 
 const jobs = [
+  ...trustedCommunityGroupAJobs,
+  ...trustedCommunityGroupBJobs,
+  ...trustedCommunityGroupCJobs,
   devdocsJob({
     sourceId: "python-docs",
     programmingLanguage: "python",
@@ -311,7 +328,13 @@ const jobs = [
       }
       return uniqueRecords(records);
     }
-  }
+  },
+  ...multilingualGroupBJobs,
+  ...microsoftGroupCJobs,
+  ...englishGroupAJobs,
+  ...remainingGroupDJobs,
+  ...japaneseGroupEJobs,
+  ...replacementGroupFJobs
 ];
 
 const previousManifest = readPreviousManifest(outputDirectory);
@@ -330,41 +353,6 @@ for (const entry of manifest.entries) {
   }
 }
 console.log(mode === "update" ? "Search indexes updated." : "Search indexes are synchronized.");
-
-function devdocsJob(options) {
-  return {
-    sourceId: options.sourceId,
-    programmingLanguage: options.programmingLanguage,
-    docsLocale: options.docsLocale,
-    adapter: "devdocs",
-    upstreamVersion: options.upstreamVersion,
-    urlPrefix: options.urlPrefix,
-    minimumRecords: options.minimumRecords,
-    maximumRecordDropRatio: 0.2,
-    maximumSizeChangeRatio: 0.5,
-    knownQueries: options.knownQueries,
-    attribution: options.attribution,
-    licenseUrl: options.licenseUrl,
-    updateFrequency: options.updateFrequency ?? "weekly",
-    load: async ({ fetchText }) => {
-      const records = normalizeDevdocsEntries(JSON.parse(await fetchText(options.inputUrl)), {
-        sourceId: options.sourceId,
-        programmingLanguage: options.programmingLanguage,
-        docsLocale: options.docsLocale,
-        sourceKind: options.sourceKind,
-        sourceName: options.sourceName,
-        buildUrl: options.buildUrl
-      });
-      return options.acceptRecord ? records.filter(options.acceptRecord) : records;
-    }
-  };
-}
-
-function documentationUrl(baseUrl, path) {
-  const [pathname, fragment] = path.split("#", 2);
-  const suffix = pathname.endsWith(".html") ? pathname : `${pathname}.html`;
-  return `${baseUrl}${suffix}${fragment ? `#${encodeURIComponent(fragment)}` : ""}`;
-}
 
 function goDocumentationUrl(path, version) {
   const [pathname, fragment] = path.split("#", 2);
@@ -393,30 +381,22 @@ function csharpTocRecords(value, section = "C# documentation") {
   return records;
 }
 
-function linkRecords(links, inputUrl, requiredPrefix) {
-  return uniqueRecords(
-    links.flatMap(({ href, title }) => {
-      const url = new URL(href, inputUrl).href;
-      if (requiredPrefix && !url.startsWith(requiredPrefix)) return [];
-      return [{ title, url }];
-    })
-  );
-}
-
 async function fetchWithRetry(url) {
   let lastError;
-  for (let attempt = 1; attempt <= 2; attempt += 1) {
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
     try {
-      const response = await fetch(url, {
+      const isGcc = new URL(url).hostname === "gcc.gnu.org";
+      const response = await fetchDocumentationUrl(url, {
         headers: { "User-Agent": "official-docs-search-indexer/0.2" },
-        signal: AbortSignal.timeout(30_000)
+        ...(!isGcc ? { signal: AbortSignal.timeout(30_000) } : {})
       });
-      if (response.ok || attempt === 2) return response;
+      if (response.ok || attempt === 3) return response;
       lastError = new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
       await response.body?.cancel();
     } catch (error) {
       lastError = error;
     }
+    await new Promise((resolveDelay) => setTimeout(resolveDelay, attempt * 1_000));
   }
   throw lastError;
 }

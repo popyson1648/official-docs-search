@@ -7,7 +7,14 @@ import {
 } from "../core/search-controls";
 import type { SourceKind } from "../core/sources";
 
-export function initializeSearchControls(root: Document = document): void {
+export interface SearchControlCallbacks {
+  onDocsLocaleChange?(docsLocale: string): void | Promise<void>;
+}
+
+export function initializeSearchControls(
+  root: Document = document,
+  callbacks: SearchControlCallbacks = {}
+): void {
   const input = root.querySelector<HTMLInputElement>("[data-query-input]");
   const highlight = root.querySelector<HTMLElement>("[data-query-highlight]");
   const form = root.querySelector<HTMLFormElement>("[data-search-form]");
@@ -64,6 +71,10 @@ export function initializeSearchControls(root: Document = document): void {
     form?.querySelectorAll("[data-preserved-source]").forEach((element) => element.remove());
     for (const [index, option] of optionElements.entries()) {
       option.disabled = state.options[index].disabled;
+      option.closest(".source-option")?.classList.toggle(
+        "disabled",
+        state.options[index].disabled
+      );
     }
     for (const sourceId of state.preservedIds) {
       const preserved = root.createElement("input");
@@ -80,7 +91,20 @@ export function initializeSearchControls(root: Document = document): void {
   docsRadios.forEach((radio) => {
     radio.addEventListener("change", () => {
       root.cookie = preferenceCookie("docsLocale", radio.value);
-      form?.requestSubmit();
+      updateDocsLocaleUrl(root, radio.value);
+      const effectiveLocale = form?.dataset.queryLocale || radio.value;
+      if (form) form.dataset.docsLocale = effectiveLocale;
+      if (results) results.dataset.docsLocale = effectiveLocale;
+      updateDocsRadioState(docsRadios, effectiveLocale);
+      updateLocaleNotice(root, effectiveLocale);
+      void callbacks.onDocsLocaleChange?.(effectiveLocale);
+    });
+  });
+
+  const results = root.querySelector<HTMLElement>("[data-search-results]");
+  form?.querySelectorAll<HTMLInputElement>("[data-source-option]").forEach((option) => {
+    option.addEventListener("change", () => {
+      updateLocaleNotice(root, form.dataset.docsLocale ?? "");
     });
   });
 
@@ -102,6 +126,7 @@ export function initializeSearchControls(root: Document = document): void {
   });
 
   renderHighlight();
+  updateLocaleNotice(root, form?.dataset.docsLocale ?? "");
 }
 
 function parseKnownLanguages(value: string | undefined): Set<string> {
@@ -117,4 +142,39 @@ function parseKnownLanguages(value: string | undefined): Set<string> {
 function sourceKind(value: string | undefined): SourceKind {
   if (value === "conventional" || value === "community") return value;
   return "official";
+}
+
+function updateDocsLocaleUrl(root: Document, docsLocale: string): void {
+  const view = root.defaultView;
+  if (!view) return;
+  const url = new URL(view.location.href);
+  if (docsLocale) url.searchParams.set("docsLocale", docsLocale);
+  else url.searchParams.delete("docsLocale");
+  view.history.replaceState(view.history.state, "", url);
+}
+
+function updateDocsRadioState(
+  radios: NodeListOf<HTMLInputElement>,
+  docsLocale: string
+): void {
+  radios.forEach((radio) => {
+    const active = radio.value === docsLocale;
+    radio.checked = active;
+    radio.parentElement?.classList.toggle("active", active);
+  });
+}
+
+function updateLocaleNotice(root: Document, docsLocale: string): void {
+  const notice = root.querySelector<HTMLElement>("[data-locale-notice]");
+  if (!notice) return;
+  const hasActiveQuery = notice.dataset.hasQuery === "true";
+  const hasUnsupportedSelection =
+    docsLocale === "ja" &&
+    [...root.querySelectorAll<HTMLInputElement>("[data-source-option]")].some(
+      (option) =>
+        option.checked &&
+        !option.disabled &&
+        option.dataset.supportsJa !== "true"
+    );
+  notice.hidden = hasActiveQuery || !hasUnsupportedSelection;
 }

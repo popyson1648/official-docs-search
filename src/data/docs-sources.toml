@@ -33,6 +33,19 @@ default_enabled = true
 site_locales = ["en"]
 indexes = [{ locale = "en", status = "supported" }]
 
+[[languages.sources]]
+id = "comprehensive-rust"
+kind = "conventional"
+name = "Comprehensive Rust"
+url = "https://google.github.io/comprehensive-rust/"
+domains = ["google.github.io"]
+path_prefixes = ["/comprehensive-rust/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Google-maintained course material, not an API reference."
+qualification_ja = "Google が保守する講座資料であり、API リファレンスではありません。"
+
 [[languages]]
 id = "javascript"
 name = "JavaScript"
@@ -58,7 +71,20 @@ url = "https://developer.mozilla.org/"
 domains = ["developer.mozilla.org"]
 default_enabled = true
 site_locales = ["en", "ja"]
-indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "planned", reason = "No maintained Japanese JavaScript index is configured." }]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
+
+[[languages.sources]]
+id = "javascript-info"
+kind = "conventional"
+name = "The Modern JavaScript Tutorial"
+url = "https://javascript.info/"
+domains = ["javascript.info"]
+path_prefixes = ["/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Tutorial metadata only; the repository and website use different Creative Commons license labels."
+qualification_ja = "索引はタイトル等のメタデータのみです。リポジトリとWebサイトでCreative Commonsライセンス表記が異なります。"
 
 [[languages]]
 id = "typescript"
@@ -77,6 +103,19 @@ default_enabled = true
 site_locales = ["en"]
 indexes = [{ locale = "en", status = "supported" }]
 
+[[languages.sources]]
+id = "typescript-deep-dive"
+kind = "conventional"
+name = "TypeScript Deep Dive"
+url = "https://basarat.gitbook.io/typescript"
+domains = ["basarat.gitbook.io"]
+path_prefixes = ["/typescript"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "A classic deep guide, but many chapters predate recent TypeScript features; verify current behavior in the official docs."
+qualification_ja = "定評ある詳説書ですが、多くの章は最近のTypeScript機能より前に書かれています。現在の挙動は公式文書でも確認してください。"
+
 [[languages]]
 id = "go"
 name = "Go"
@@ -92,7 +131,7 @@ domains = ["go.dev"]
 path_prefixes = ["/doc/", "/ref/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "The DevDocs Go index covers the standard library, not the language guides." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages.sources]]
 id = "go-std"
@@ -105,6 +144,19 @@ default_enabled = true
 site_locales = ["en"]
 indexes = [{ locale = "en", status = "supported" }]
 
+[[languages.sources]]
+id = "go-by-example"
+kind = "conventional"
+name = "Go by Example"
+url = "https://gobyexample.com/"
+domains = ["gobyexample.com"]
+path_prefixes = ["/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Example-oriented learning material, not the Go language specification or API reference."
+qualification_ja = "例題中心の学習資料であり、Go言語仕様やAPIリファレンスではありません。"
+
 [[languages]]
 id = "c"
 name = "C"
@@ -115,12 +167,12 @@ bare_aliases = ["c"]
 id = "cppreference-c"
 kind = "community"
 name = "cppreference C"
-url = "https://en.cppreference.com/w/c"
-domains = ["en.cppreference.com"]
-path_prefixes = ["/w/c"]
+url = "https://en.cppreference.com/c/"
+domains = ["en.cppreference.com", "ja.cppreference.com"]
+path_prefixes = ["/c/"]
 default_enabled = true
-site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
 [[languages]]
 id = "cpp"
@@ -132,12 +184,25 @@ bare_aliases = ["cpp", "c++", "cplusplus"]
 id = "cppreference-cpp"
 kind = "community"
 name = "cppreference C++"
-url = "https://en.cppreference.com/w/cpp"
-domains = ["en.cppreference.com"]
-path_prefixes = ["/w/cpp"]
+url = "https://en.cppreference.com/cpp/"
+domains = ["en.cppreference.com", "ja.cppreference.com"]
+path_prefixes = ["/cpp/"]
+default_enabled = true
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
+
+[[languages.sources]]
+id = "cpp-core-guidelines"
+kind = "conventional"
+name = "C++ Core Guidelines"
+url = "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines"
+domains = ["isocpp.github.io"]
+path_prefixes = ["/CppCoreGuidelines/CppCoreGuidelines"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Design and coding guidelines rather than a complete language reference; the index stores rule metadata only under the source's custom terms."
+qualification_ja = "完全な言語リファレンスではなく設計・コーディング指針です。独自の利用条件に従い、索引にはルールのメタデータのみを収録します。"
 
 [[languages]]
 id = "csharp"
@@ -154,7 +219,7 @@ domains = ["learn.microsoft.com"]
 path_prefixes = ["/en-us/dotnet/csharp/", "/ja-jp/dotnet/csharp/"]
 default_enabled = true
 site_locales = ["en", "ja"]
-indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "planned", reason = "The public source TOC contains English titles only." }]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
 [[languages]]
 id = "java"
@@ -168,10 +233,10 @@ kind = "official"
 name = "Oracle Java Documentation"
 url = "https://docs.oracle.com/en/java/"
 domains = ["docs.oracle.com"]
-path_prefixes = ["/en/java/"]
+path_prefixes = ["/en/java/", "/javase/jp/"]
 default_enabled = true
-site_locales = ["en"]
-indexes = [{ locale = "en", status = "supported" }]
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
 [[languages]]
 id = "php"
@@ -189,6 +254,19 @@ path_prefixes = ["/manual/"]
 default_enabled = true
 site_locales = ["en", "ja"]
 indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
+
+[[languages.sources]]
+id = "php-the-right-way"
+kind = "community"
+name = "PHP: The Right Way"
+url = "https://phptherightway.com/"
+domains = ["phptherightway.com"]
+path_prefixes = ["/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Practical community recommendations and curated links, not the PHP language reference."
+qualification_ja = "コミュニティによる実践的な推奨事項とリンク集であり、PHP言語リファレンスではありません。"
 
 [[languages]]
 id = "ruby"
@@ -220,7 +298,7 @@ url = "https://docs.swift.org/"
 domains = ["docs.swift.org"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "kotlin"
@@ -237,7 +315,7 @@ domains = ["kotlinlang.org"]
 path_prefixes = ["/docs/", "/api/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "scala"
@@ -253,7 +331,18 @@ url = "https://docs.scala-lang.org/"
 domains = ["docs.scala-lang.org"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "scala-docs-ja"
+kind = "community"
+name = "Scala Documentation (Japanese community translation)"
+url = "https://docs.scala-lang.org/ja/"
+domains = ["docs.scala-lang.org"]
+path_prefixes = ["/ja/"]
+default_enabled = true
+site_locales = ["ja"]
+indexes = [{ locale = "ja", status = "supported" }]
 
 [[languages]]
 id = "dart"
@@ -270,7 +359,7 @@ domains = ["dart.dev"]
 path_prefixes = ["/language", "/libraries", "/guides", "/tools", "/effective-dart"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages.sources]]
 id = "dart-api"
@@ -280,7 +369,7 @@ url = "https://api.dart.dev/"
 domains = ["api.dart.dev"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "elixir"
@@ -297,7 +386,7 @@ domains = ["hexdocs.pm"]
 path_prefixes = ["/elixir/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages.sources]]
 id = "elixir-lang"
@@ -308,6 +397,19 @@ domains = ["elixir-lang.org"]
 default_enabled = true
 site_locales = ["en"]
 indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+
+[[languages.sources]]
+id = "elixir-school"
+kind = "community"
+name = "Elixir School"
+url = "https://elixirschool.com/en/lessons/"
+domains = ["elixirschool.com"]
+path_prefixes = ["/en/lessons/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "A community-maintained learning site; translations can have different freshness, and the official Elixir docs remain authoritative."
+qualification_ja = "コミュニティ運営の学習サイトです。翻訳ごとに更新状況が異なる場合があり、正確な仕様は公式Elixir文書を優先してください。"
 
 [[languages]]
 id = "erlang"
@@ -324,7 +426,7 @@ domains = ["www.erlang.org", "erlang.org"]
 path_prefixes = ["/doc/", "/docs/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "haskell"
@@ -352,7 +454,20 @@ domains = ["downloads.haskell.org"]
 path_prefixes = ["/ghc/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "learn-you-a-haskell"
+kind = "community"
+name = "Learn You a Haskell (community edition)"
+url = "https://learnyouahaskell.github.io/"
+domains = ["learnyouahaskell.github.io"]
+path_prefixes = ["/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "A community-maintained edition published with the original author's permission; official GHC docs remain authoritative."
+qualification_ja = "原著者の許可を得て保守されるコミュニティ版です。正確な仕様は公式GHC文書を優先してください。"
 
 [[languages]]
 id = "lua"
@@ -369,7 +484,7 @@ domains = ["www.lua.org"]
 path_prefixes = ["/manual/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "perl"
@@ -385,7 +500,7 @@ url = "https://perldoc.perl.org/"
 domains = ["perldoc.perl.org"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "r"
@@ -402,7 +517,20 @@ domains = ["cran.r-project.org"]
 path_prefixes = ["/doc/manuals/", "/doc/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "advanced-r"
+kind = "conventional"
+name = "Advanced R (2nd edition)"
+url = "https://adv-r.hadley.nz/"
+domains = ["adv-r.hadley.nz"]
+path_prefixes = ["/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "An advanced book about R internals and techniques, not an introductory course or the official R manuals."
+qualification_ja = "Rの内部構造と高度な技法を扱う書籍であり、入門講座や公式Rマニュアルではありません。"
 
 [[languages]]
 id = "julia"
@@ -418,7 +546,7 @@ url = "https://docs.julialang.org/"
 domains = ["docs.julialang.org"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "clojure"
@@ -435,7 +563,20 @@ domains = ["clojure.org"]
 path_prefixes = ["/reference/", "/guides/", "/api/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "clojure-guides"
+kind = "community"
+name = "Clojure Guides"
+url = "https://clojure-doc.org/articles/"
+domains = ["clojure-doc.org"]
+path_prefixes = ["/articles/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Community-maintained guides; the official Clojure reference keeps authority and ranking priority."
+qualification_ja = "コミュニティ運営のガイドです。正確な仕様と検索順位では公式Clojureリファレンスを優先します。"
 
 [[languages]]
 id = "groovy"
@@ -451,7 +592,7 @@ url = "https://groovy-lang.org/documentation.html"
 domains = ["groovy-lang.org", "docs.groovy-lang.org"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "objc"
@@ -468,7 +609,18 @@ domains = ["developer.apple.com"]
 path_prefixes = ["/documentation/objectivec"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "blocked", reason = "Apple does not expose a stable redistributable documentation index." }]
+indexes = [{ locale = "en", status = "blocked", reason = "Apple's undocumented DocC JSON is excluded: Apple's Website Terms prohibit automated extraction and redistribution, and no documented distributable static index is offered." }]
+
+[[languages.sources]]
+id = "gnu-objc"
+kind = "official"
+name = "GNU Objective-C Features"
+url = "https://gcc.gnu.org/onlinedocs/gcc-15.2.0/gcc/Objective-C.html"
+domains = ["gcc.gnu.org"]
+path_prefixes = ["/onlinedocs/gcc-15.2.0/gcc/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "bash"
@@ -480,12 +632,12 @@ bare_aliases = ["bash", "shell"]
 id = "bash-manual"
 kind = "official"
 name = "Bash Reference Manual"
-url = "https://www.gnu.org/software/bash/manual/"
-domains = ["www.gnu.org"]
-path_prefixes = ["/software/bash/"]
+url = "https://tiswww.case.edu/php/chet/bash/bashref.html"
+domains = ["tiswww.case.edu"]
+path_prefixes = ["/php/chet/bash/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "powershell"
@@ -499,10 +651,10 @@ kind = "official"
 name = "PowerShell Documentation"
 url = "https://learn.microsoft.com/powershell/"
 domains = ["learn.microsoft.com"]
-path_prefixes = ["/powershell/"]
+path_prefixes = ["/en-us/powershell/", "/ja-jp/powershell/"]
 default_enabled = true
 site_locales = ["en", "ja"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
 [[languages]]
 id = "fsharp"
@@ -516,10 +668,23 @@ kind = "official"
 name = "F# Documentation"
 url = "https://learn.microsoft.com/dotnet/fsharp/"
 domains = ["learn.microsoft.com"]
-path_prefixes = ["/dotnet/fsharp/"]
+path_prefixes = ["/en-us/dotnet/fsharp/", "/ja-jp/dotnet/fsharp/"]
 default_enabled = true
 site_locales = ["en", "ja"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
+
+[[languages.sources]]
+id = "fsharp-for-fun-and-profit"
+kind = "conventional"
+name = "F# for Fun and Profit"
+url = "https://fsharpforfunandprofit.com/"
+domains = ["fsharpforfunandprofit.com"]
+path_prefixes = ["/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Independent learning material; only titles and direct links are indexed because the site text is not openly relicensed."
+qualification_ja = "独立系の学習資料です。サイト本文にオープンライセンスが明示されていないため、索引にはタイトルと直接リンクのみを収録します。"
 
 [[languages]]
 id = "visualbasic"
@@ -533,10 +698,10 @@ kind = "official"
 name = "Visual Basic Documentation"
 url = "https://learn.microsoft.com/dotnet/visual-basic/"
 domains = ["learn.microsoft.com"]
-path_prefixes = ["/dotnet/visual-basic/"]
+path_prefixes = ["/en-us/dotnet/visual-basic/", "/ja-jp/dotnet/visual-basic/"]
 default_enabled = true
 site_locales = ["en", "ja"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
 [[languages]]
 id = "zig"
@@ -553,7 +718,20 @@ domains = ["ziglang.org"]
 path_prefixes = ["/documentation/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "zig-guide"
+kind = "conventional"
+name = "zig.guide"
+url = "https://zig.guide/"
+domains = ["zig.guide"]
+path_prefixes = ["/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Version-specific guide for Zig 0.15.2; compare version-sensitive behavior with the current official Zig documentation."
+qualification_ja = "Zig 0.15.2向けのバージョン固定ガイドです。バージョン依存の挙動は最新の公式Zig文書とも照合してください。"
 
 [[languages]]
 id = "nim"
@@ -570,7 +748,7 @@ domains = ["nim-lang.org"]
 path_prefixes = ["/docs/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "crystal"
@@ -587,7 +765,7 @@ domains = ["crystal-lang.org"]
 path_prefixes = ["/reference/", "/api/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "d"
@@ -604,7 +782,20 @@ domains = ["dlang.org"]
 path_prefixes = ["/spec/", "/phobos/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "programming-in-d"
+kind = "conventional"
+name = "Programming in D"
+url = "https://ddili.org/ders/d.en/"
+domains = ["ddili.org"]
+path_prefixes = ["/ders/d.en/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "A CC BY-NC-SA community-authored language book rather than the official D specification; it may lag the latest D release."
+qualification_ja = "公式のD言語仕様ではなく、CC BY-NC-SAのコミュニティ著者による解説書です。最新のDリリースへの追従が遅れる場合があります。"
 
 [[languages]]
 id = "ocaml"
@@ -621,7 +812,20 @@ domains = ["ocaml.org"]
 path_prefixes = ["/manual", "/api", "/docs"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "cornell-ocaml"
+kind = "conventional"
+name = "OCaml Programming: Correct + Efficient + Beautiful"
+url = "https://cs3110.github.io/textbook/"
+domains = ["cs3110.github.io"]
+path_prefixes = ["/textbook/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Cornell's Spring 2026 course textbook; the index stores metadata only under CC BY-NC-ND."
+qualification_ja = "Cornell大学の2026年春学期の教科書です。CC BY-NC-NDに従い、索引にはメタデータのみを収録します。"
 
 [[languages]]
 id = "solidity"
@@ -635,9 +839,34 @@ kind = "official"
 name = "Solidity Documentation"
 url = "https://docs.soliditylang.org/"
 domains = ["docs.soliditylang.org"]
+path_prefixes = ["/en/latest/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "solidity-docs-ja"
+kind = "community"
+name = "Solidity Documentation (Japanese community translation)"
+url = "https://docs.soliditylang.org/ja/latest/"
+domains = ["docs.soliditylang.org"]
+path_prefixes = ["/ja/latest/"]
+default_enabled = true
+site_locales = ["ja"]
+indexes = [{ locale = "ja", status = "supported" }]
+
+[[languages.sources]]
+id = "solidity-by-example"
+kind = "community"
+name = "Solidity by Example"
+url = "https://solidity-by-example.org/"
+domains = ["solidity-by-example.org"]
+path_prefixes = ["/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Example-oriented material targeting Solidity 0.8.x; use current official security guidance for production contracts."
+qualification_ja = "Solidity 0.8系を対象にした例題中心の資料です。本番コントラクトでは最新の公式セキュリティ指針も確認してください。"
 
 [[languages]]
 id = "elm"
@@ -653,17 +882,17 @@ url = "https://guide.elm-lang.org/"
 domains = ["guide.elm-lang.org"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages.sources]]
 id = "elm-packages"
-kind = "official"
+kind = "conventional"
 name = "Elm Packages"
 url = "https://package.elm-lang.org/"
 domains = ["package.elm-lang.org"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "racket"
@@ -679,7 +908,7 @@ url = "https://docs.racket-lang.org/"
 domains = ["docs.racket-lang.org"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "commonlisp"
@@ -696,7 +925,31 @@ domains = ["www.lispworks.com"]
 path_prefixes = ["/documentation/HyperSpec/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "disabled", reason = "The legacy community specification index is intentionally disabled." }]
+indexes = [{ locale = "en", status = "disabled", reason = "LispWorks permits only complete, unmodified HyperSpec redistribution and expressly forbids partial copies and derivative works, so its symbol index cannot seed a distributable metadata bundle." }]
+
+[[languages.sources]]
+id = "cl-language-reference"
+kind = "community"
+name = "Common Lisp Technical Reference"
+url = "https://lisp-docs.github.io/cl-language-reference/"
+domains = ["lisp-docs.github.io"]
+path_prefixes = ["/cl-language-reference/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "common-lisp-cookbook"
+kind = "community"
+name = "The Common Lisp Cookbook"
+url = "https://lispcookbook.github.io/cl-cookbook/"
+domains = ["lispcookbook.github.io"]
+path_prefixes = ["/cl-cookbook/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "A practical community cookbook, not the ANSI Common Lisp specification; recipes can be implementation- or library-specific."
+qualification_ja = "ANSI Common Lisp仕様ではなくコミュニティの実践的なクックブックで、処理系やライブラリ固有のレシピを含む場合があります。"
 
 [[languages]]
 id = "fortran"
@@ -713,7 +966,7 @@ domains = ["gcc.gnu.org"]
 path_prefixes = ["/onlinedocs/gfortran/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages.sources]]
 id = "fortran-lang"
@@ -723,7 +976,7 @@ url = "https://fortran-lang.org/learn/"
 domains = ["fortran-lang.org"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "haxe"
@@ -740,7 +993,7 @@ domains = ["haxe.org"]
 path_prefixes = ["/manual/"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages.sources]]
 id = "haxe-api"
@@ -777,8 +1030,8 @@ url = "https://dev.mysql.com/doc/"
 domains = ["dev.mysql.com"]
 path_prefixes = ["/doc/"]
 default_enabled = true
-site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+site_locales = ["en", "ja"]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
 [[languages.sources]]
 id = "sqlite-docs"
@@ -788,7 +1041,7 @@ url = "https://www.sqlite.org/docs.html"
 domains = ["www.sqlite.org", "sqlite.org"]
 default_enabled = true
 site_locales = ["en"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }]
 
 [[languages]]
 id = "webassembly"
@@ -805,7 +1058,7 @@ domains = ["developer.mozilla.org"]
 path_prefixes = ["/en-US/docs/WebAssembly", "/ja/docs/WebAssembly"]
 default_enabled = true
 site_locales = ["en", "ja"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
 [[languages.sources]]
 id = "wasm-spec"
@@ -833,7 +1086,20 @@ domains = ["developer.mozilla.org"]
 path_prefixes = ["/en-US/docs/Web/HTML", "/ja/docs/Web/HTML"]
 default_enabled = true
 site_locales = ["en", "ja"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
+
+[[languages.sources]]
+id = "webdev-html"
+kind = "conventional"
+name = "web.dev Learn HTML"
+url = "https://web.dev/learn/html/"
+domains = ["web.dev"]
+path_prefixes = ["/learn/html/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "A Google-authored practical course, not the WHATWG HTML specification."
+qualification_ja = "Googleによる実践講座であり、WHATWG HTML仕様ではありません。"
 
 [[languages]]
 id = "css"
@@ -850,4 +1116,17 @@ domains = ["developer.mozilla.org"]
 path_prefixes = ["/en-US/docs/Web/CSS", "/ja/docs/Web/CSS"]
 default_enabled = true
 site_locales = ["en", "ja"]
-indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemented." }, { locale = "ja", status = "planned", reason = "Adapter not implemented." }]
+indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
+
+[[languages.sources]]
+id = "webdev-css"
+kind = "conventional"
+name = "web.dev Learn CSS"
+url = "https://web.dev/learn/css/"
+domains = ["web.dev"]
+path_prefixes = ["/learn/css/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "A Google-authored practical course that complements, rather than replaces, MDN and CSS specifications."
+qualification_ja = "Googleによる実践講座であり、MDNやCSS仕様を置き換えるものではなく補完する資料です。"

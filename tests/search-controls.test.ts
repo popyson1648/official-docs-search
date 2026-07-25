@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  mergeNewLanguageSourceDefaults,
   preferenceCookie,
   removeLanguageFromQuery,
   resolveSourceOptionState
@@ -31,12 +32,43 @@ describe("search controls", () => {
     ]);
   });
 
+  it("adds defaults only for newly introduced languages", () => {
+    const selected = mergeNewLanguageSourceDefaults(
+      new Set(["rust-docs"]),
+      new Set(["rust"]),
+      [
+        {
+          id: "rust",
+          sources: [
+            { id: "rust-docs", defaultEnabled: true },
+            { id: "comprehensive-rust", defaultEnabled: true }
+          ]
+        },
+        {
+          id: "typescript",
+          sources: [
+            { id: "typescript-docs", defaultEnabled: true },
+            { id: "typescript-disabled", defaultEnabled: false }
+          ]
+        }
+      ]
+    );
+
+    expect([...selected]).toEqual(["rust-docs", "typescript-docs"]);
+  });
+
   it("removes canonical languages and aliases from explicit and bare queries", () => {
     expect(removeLanguageFromQuery("lang:py,rust iterator", "python")).toBe(
       "lang:rust iterator"
     );
     expect(removeLanguageFromQuery("typescript,csharp generics", "typescript")).toBe(
       "csharp generics"
+    );
+    expect(removeLanguageFromQuery("rust, ts ownership", "rust")).toBe(
+      "ts ownership"
+    );
+    expect(removeLanguageFromQuery("rust, ts ownership", "typescript")).toBe(
+      "rust ownership"
     );
     expect(removeLanguageFromQuery("lang:rs iterator", "rust")).toBe("iterator");
   });

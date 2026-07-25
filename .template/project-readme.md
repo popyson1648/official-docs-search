@@ -3,7 +3,8 @@
 ## What This Project Is
 
 Official Docs Search is an Astro 7 server-rendered application for searching trusted programming-language documentation.
-It ships 13 supported, compact source-and-locale indexes and searches selected bundles in a browser Web Worker.
+It provides supported search coverage for all catalog languages through compact
+source-and-locale indexes and searches selected bundles in a browser Web Worker.
 
 ## Where To Start
 
@@ -12,6 +13,7 @@ It ships 13 supported, compact source-and-locale indexes and searches selected b
 - Framework-independent logic: `src/core/`
 - Documentation source catalog: `src/data/docs-sources.toml`
 - Index adapters and generation: `scripts/generate-search-index.mjs`
+- Source-family index jobs and parsers: `scripts/search-index/`
 - Generated indexes: `public/search-index/`
 - Production server: `scripts/serve-production.mjs`
 - Verification: `tests/` and `scripts/verify.py`

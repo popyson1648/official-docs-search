@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   update:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
       UPDATE_BRANCH: automation/search-index-update

@@ -3,7 +3,7 @@
 ## Test Types
 
 - `npm test` verifies query, catalog, client controls, highlighting, adapters, deterministic publication, compact bundles, runtime loading, ranking, and diversification.
-- `npm run test:integration` verifies all supported indexes, catalog/manifest agreement, counts, hashes, URL scope, size budgets, known queries, and multi-language results.
+- `npm run test:integration` verifies all supported indexes, catalog/manifest agreement, counts, hashes, URL scope, per-bundle and selected-set budgets, every known query, and multi-language results.
 - `npm run test:server` verifies production SSR, gzip/Brotli, validators, conditional responses, and cache policies.
 - `npm run test:e2e` drives Chromium against the production server and real committed bundles.
 - `npm run test:live` checks staged upstream artifacts and live result links without changing committed artifacts.
@@ -24,9 +24,44 @@ Pre-commit and CI use committed bundles and skip live upstream access.
 
 ## Required Browser Coverage
 
-Assert non-empty original links, selected supported languages, source toggles and preservation, locales, support states, escaping, safe new-tab behavior, and desktop/mobile visibility.
-Keep the 4×-CPU warm mobile search at or below 500 ms with no search-time Long Task over 50 ms.
+Assert one non-empty original result for every catalog language and supported
+exact locale.
+Fix the approved language/index/locale counts and cover every language-level
+requested-locale fallback, source toggles and preservation, HTTP and malformed
+bundle partial failures, visible edition qualifications, support states,
+escaping, safe new-tab behavior, and desktop/mobile visibility.
+For admitted non-official teaching sources, require official-only exclusion,
+a known `source:all` result, and localized source-picker/result qualifications.
+Verify per-source Japanese-availability labels, source metadata order, a
+single-column source picker, compact desktop/mobile controls, and right-aligned
+header actions.
+For multi-language forms, accept whitespace after commas, add defaults only for
+newly introduced languages, and preserve checked disabled non-official Sources.
+Fix the result classification/attribution/title/annotation order, shared
+source-kind badge styling, typography hierarchy, removable input-chip target
+size and keyboard behavior, compact successful result counts, 24 CSS-pixel
+source-control targets, and visible keyboard focus for Docs-locale controls.
+Require concrete unboxed examples for every search-syntax row, accurate alias
+wording, a persistent short `js promise all` example, one multi-token AND
+explanation in search help, and one compact fallback explanation with a
+semantic source list instead of repeated sentences.
+Require exact full-match language/site facets, OR-within and AND-across
+selection, cached in-page re-search, one removable applied pill per facet,
+clear-all behavior, and current counts and notices. Match the approved
+reference interaction for overlay opening without result reflow, persistent
+panel state during property and choice changes, outside-pointer dismissal,
+Escape and Back focus restoration, active-trigger state, localized
+accessibility, width-morph timings, mobile containment, coarse-pointer targets,
+and reduced-motion suppression.
+Show the generic Japanese-availability notice before searching, but hide it
+when result-specific fallback details are available.
+Under constrained network and CPU conditions, budget the first in-page
+Docs-locale switch separately from a repeated worker-cached switch and require
+no new document request or warm-switch Long Task over 50 ms.
 
 ## Generation Safety Coverage
 
-Require deterministic identical-input output, no partial publication, non-mutating check mode, corrupt/timeout/error rejection, and explicit approval for large changes.
+Require deterministic identical-input output and manifest order, duplicate-job
+rejection, no partial publication, non-mutating check mode,
+corrupt/timeout/error rejection, explicit approval for large changes, and plain
+text normalization for Sphinx title and section metadata.

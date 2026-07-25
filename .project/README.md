@@ -3,7 +3,8 @@
 ## What This Project Is
 
 Official Docs Search is an Astro 7 server-rendered application for searching trusted programming-language documentation.
-It ships 13 supported, compact source-and-locale indexes and searches selected bundles in a browser Web Worker.
+It provides supported search coverage for all 44 catalog languages through
+compact source-and-locale indexes and searches selected bundles in a browser Web Worker.
 The production domain is `official-docs-search.popyson.com`.
 
 ## Where To Start
@@ -13,6 +14,7 @@ The production domain is `official-docs-search.popyson.com`.
 - Framework-independent catalog, query, and search logic: `src/core/`
 - Documentation source catalog: `src/data/docs-sources.toml`
 - Index adapters and generation: `scripts/generate-search-index.mjs`
+- Source-family index jobs and parsers: `scripts/search-index/`
 - Generated federated search indexes: `public/search-index/`
 - Production server: `scripts/serve-production.mjs`
 - Unit, integration, server-contract, and browser tests: `tests/`

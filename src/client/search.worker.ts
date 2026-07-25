@@ -3,7 +3,10 @@ import {
   type SearchRuntimeRequest,
   type SearchRuntimeResult
 } from "../core/search-runtime";
-import type { StoredSearchIndexBundle } from "../core/search";
+import type {
+  SearchIndexManifest,
+  StoredSearchIndexBundle
+} from "../core/search";
 
 interface WorkerRequest {
   id: number;
@@ -27,10 +30,11 @@ interface WorkerScope {
 
 const scope = globalThis as unknown as WorkerScope;
 const bundleCache = new Map<string, Promise<StoredSearchIndexBundle>>();
+const manifestCache = new Map<string, Promise<SearchIndexManifest>>();
 
 scope.addEventListener("message", (event) => {
   const { id, request } = event.data;
-  void runSearchRequest(request, fetch, bundleCache)
+  void runSearchRequest(request, fetch, bundleCache, manifestCache)
     .then((result) => scope.postMessage({ id, result }))
     .catch((error: unknown) =>
       scope.postMessage({

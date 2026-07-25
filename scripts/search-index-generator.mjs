@@ -25,10 +25,16 @@ export async function buildSearchIndexArtifacts({
   fetcher = fetch,
   previousManifest,
   now = () => new Date(),
-  acceptLargeChanges = false
+  acceptLargeChanges = false,
+  concurrency = 4
 }) {
   const catalog = parseIndexCatalog(catalogSource);
-  const jobsByKey = new Map(jobs.map((job) => [indexKey(job.sourceId, job.docsLocale), job]));
+  const jobsByKey = new Map();
+  for (const job of jobs) {
+    const key = indexKey(job.sourceId, job.docsLocale);
+    if (jobsByKey.has(key)) throw new Error(`Duplicate adapter job: ${key}`);
+    jobsByKey.set(key, job);
+  }
   const supportedKeys = new Set(
     catalog.flatMap((source) =>
       source.indexes
@@ -48,78 +54,99 @@ export async function buildSearchIndexArtifacts({
     (previousManifest?.entries ?? []).map((entry) => [indexKey(entry.sourceId, entry.docsLocale), entry])
   );
   const files = new Map();
-  const manifestEntries = [];
+  const projections = catalog.flatMap((source) =>
+    source.indexes.map((support) => ({ source, support }))
+  );
+  const built = await mapConcurrent(projections, concurrency, async ({ source, support }) => {
+    const baseEntry = {
+      sourceId: source.id,
+      sourceName: source.name,
+      sourceKind: source.kind,
+      programmingLanguage: source.programmingLanguage,
+      docsLocale: support.locale,
+      status: support.status,
+      ...(support.reason ? { reason: support.reason } : {})
+    };
+    if (support.status !== "supported") return { manifestEntry: baseEntry };
 
-  for (const source of catalog) {
-    for (const support of source.indexes) {
-      const baseEntry = {
-        sourceId: source.id,
-        sourceName: source.name,
-        sourceKind: source.kind,
-        programmingLanguage: source.programmingLanguage,
-        docsLocale: support.locale,
-        status: support.status,
-        ...(support.reason ? { reason: support.reason } : {})
-      };
-      if (support.status !== "supported") {
-        manifestEntries.push(baseEntry);
-        continue;
+    const key = indexKey(source.id, support.locale);
+    const job = jobsByKey.get(key);
+    if (!job) throw new Error(`Supported catalog index has no adapter job: ${key}`);
+    const previous = previousEntries.get(key);
+    const inputs = [];
+    const fetchText = async (url, options = {}) => {
+      const response = await fetcher(url);
+      if (!response.ok) throw new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
+      const rawBody = await response.text();
+      const body = options.canonicalize
+        ? options.canonicalize(rawBody)
+        : rawBody;
+      if (typeof body !== "string" || body.length === 0) {
+        throw new Error(`Input canonicalizer returned no metadata for ${url}.`);
       }
-
-      const key = indexKey(source.id, support.locale);
-      const job = jobsByKey.get(key);
-      const inputs = [];
-      const fetchText = async (url) => {
-        const response = await fetcher(url);
-        if (!response.ok) throw new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
-        const body = await response.text();
-        inputs.push({
-          url,
-          sha256: sha256(body),
-          ...(response.headers.get("etag") ? { etag: response.headers.get("etag") } : {}),
-          ...(response.headers.get("last-modified")
-            ? { lastModified: response.headers.get("last-modified") }
-            : {})
-        });
-        return body;
+      const input = {
+        url,
+        sha256: sha256(body),
+        ...(options.canonicalizer ? { canonicalizer: options.canonicalizer } : {}),
+        ...(response.headers.get("etag") ? { etag: response.headers.get("etag") } : {}),
+        ...(response.headers.get("last-modified")
+          ? { lastModified: response.headers.get("last-modified") }
+          : {})
       };
-
-      const records = await job.load({ fetchText });
-      validateRecords(source, job, records);
-      if (inputs.length === 0) throw new Error(`${key} did not record an input.`);
-
-      const bundle = {
-        schemaVersion: SEARCH_INDEX_SCHEMA_VERSION,
-        sourceId: source.id,
-        docsLocale: support.locale,
-        urlPrefix: job.urlPrefix,
-        records: records.map((record) => [
-          record.title,
-          record.url.slice(job.urlPrefix.length),
-          ...(record.section ? [record.section] : [])
-        ])
-      };
-      const bundleBytes = `${JSON.stringify(bundle)}\n`;
-      const outputSha256 = sha256(bundleBytes);
-      const filename = `${source.id}.${support.locale}.${outputSha256.slice(0, 16)}.json`;
-      const path = `/search-index/${filename}`;
-      const gzipBytes = gzipSync(bundleBytes, { level: 9 }).byteLength;
-      const brotliBytes = brotliCompressSync(bundleBytes, {
-        params: { [constants.BROTLI_PARAM_QUALITY]: 11 }
-      }).byteLength;
-      const previous = previousEntries.get(key);
-      enforceChangeGates(job, previous, records.length, gzipBytes, brotliBytes, acceptLargeChanges);
-
-      const combinedInputHash = sha256(
-        inputs.map((input) => `${input.url}\0${input.sha256}`).join("\n")
+      const unchangedInput = previous?.inputs?.find(
+        (candidate) =>
+          candidate.url === input.url &&
+          candidate.sha256 === input.sha256 &&
+          candidate.canonicalizer === input.canonicalizer
       );
-      const retrievedAt =
-        previous?.inputSha256 === combinedInputHash && previous.retrievedAt
-          ? previous.retrievedAt
-          : now().toISOString();
+      inputs.push(unchangedInput ?? input);
+      return body;
+    };
 
-      files.set(filename, bundleBytes);
-      manifestEntries.push({
+    const records = await job.load({ fetchText });
+    validateRecords(source, job, records);
+    if (inputs.length === 0) throw new Error(`${key} did not record an input.`);
+
+    const bundle = {
+      schemaVersion: SEARCH_INDEX_SCHEMA_VERSION,
+      sourceId: source.id,
+      docsLocale: support.locale,
+      urlPrefix: job.urlPrefix,
+      records: records.map((record) => [
+        record.title,
+        record.url.slice(job.urlPrefix.length),
+        ...(record.section ? [record.section] : [])
+      ])
+    };
+    const bundleBytes = `${JSON.stringify(bundle)}\n`;
+    const outputSha256 = sha256(bundleBytes);
+    const filename = `${source.id}.${support.locale}.${outputSha256.slice(0, 16)}.json`;
+    const path = `/search-index/${filename}`;
+    const gzipBytes = gzipSync(bundleBytes, { level: 9 }).byteLength;
+    const brotliBytes = brotliCompressSync(bundleBytes, {
+      params: { [constants.BROTLI_PARAM_QUALITY]: 11 }
+    }).byteLength;
+    enforceChangeGates(job, previous, records.length, gzipBytes, brotliBytes, acceptLargeChanges);
+
+    const combinedInputHash = sha256(
+      inputs
+        .map(
+          (input) =>
+            input.canonicalizer
+              ? `${input.url}\0${input.canonicalizer}\0${input.sha256}`
+              : `${input.url}\0${input.sha256}`
+        )
+        .join("\n")
+    );
+    const retrievedAt =
+      previous?.inputSha256 === combinedInputHash && previous.retrievedAt
+        ? previous.retrievedAt
+        : now().toISOString();
+
+    return {
+      filename,
+      bundleBytes,
+      manifestEntry: {
         ...baseEntry,
         path,
         recordCount: records.length,
@@ -135,10 +162,20 @@ export async function buildSearchIndexArtifacts({
         attribution: job.attribution,
         licenseUrl: job.licenseUrl,
         updateFrequency: job.updateFrequency,
-        knownQueries: job.knownQueries
-      });
-    }
+        knownQueries: job.knownQueries,
+        ...(source.qualificationEn || job.qualification
+          ? { qualification: source.qualificationEn ?? job.qualification }
+          : {}),
+        ...(source.qualificationJa || job.qualificationJa
+          ? { qualificationJa: source.qualificationJa ?? job.qualificationJa }
+          : {})
+      }
+    };
+  });
+  for (const entry of built) {
+    if (entry.filename) files.set(entry.filename, entry.bundleBytes);
   }
+  const manifestEntries = built.map((entry) => entry.manifestEntry);
 
   const manifest = {
     schemaVersion: SEARCH_INDEX_SCHEMA_VERSION,
@@ -194,6 +231,13 @@ export function parseIndexCatalog(source) {
     const sources = Array.isArray(language.sources) ? language.sources : [];
     return sources.map((source) => {
       const siteLocales = stringArray(source.site_locales);
+      const qualificationEn = String(source.qualification_en ?? "").trim();
+      const qualificationJa = String(source.qualification_ja ?? "").trim();
+      if (Boolean(qualificationEn) !== Boolean(qualificationJa)) {
+        throw new Error(
+          `${source.id} must provide both qualification_en and qualification_ja.`
+        );
+      }
       const indexes = Array.isArray(source.indexes)
         ? source.indexes.map((index) => ({
             locale: String(index.locale ?? ""),
@@ -226,7 +270,9 @@ export function parseIndexCatalog(source) {
         domains: stringArray(source.domains),
         pathPrefixes: stringArray(source.path_prefixes),
         siteLocales,
-        indexes
+        indexes,
+        qualificationEn: qualificationEn || undefined,
+        qualificationJa: qualificationJa || undefined
       };
     });
   });
@@ -244,7 +290,16 @@ function compareArtifacts(files, outputDirectory) {
   for (const [filename, contents] of files) {
     const path = join(outputDirectory, filename);
     if (!existsSync(path)) differences.push(`missing ${filename}`);
-    else if (readFileSync(path, "utf8") !== contents) differences.push(`changed ${filename}`);
+    else {
+      const existing = readFileSync(path, "utf8");
+      if (existing !== contents) {
+        differences.push(
+          filename === "manifest.json"
+            ? describeManifestDifference(existing, contents)
+            : `changed ${filename}`
+        );
+      }
+    }
   }
   if (existsSync(outputDirectory)) {
     for (const filename of readdirSync(outputDirectory)) {
@@ -252,6 +307,36 @@ function compareArtifacts(files, outputDirectory) {
     }
   }
   return differences;
+}
+
+function describeManifestDifference(existingSource, expectedSource) {
+  const existing = JSON.parse(existingSource);
+  const expected = JSON.parse(expectedSource);
+  const changed = [];
+  for (const field of ["schemaVersion", "generatorVersion", "catalogSha256"]) {
+    if (existing[field] !== expected[field]) changed.push(field);
+  }
+  const existingEntries = new Map(
+    (existing.entries ?? []).map((entry) => [
+      indexKey(entry.sourceId, entry.docsLocale),
+      entry
+    ])
+  );
+  for (const entry of expected.entries ?? []) {
+    const key = indexKey(entry.sourceId, entry.docsLocale);
+    const previous = existingEntries.get(key);
+    if (!previous) {
+      changed.push(`${key}:added`);
+      continue;
+    }
+    const fields = [...new Set([...Object.keys(previous), ...Object.keys(entry)])]
+      .filter((field) => JSON.stringify(previous[field]) !== JSON.stringify(entry[field]));
+    if (fields.length > 0) changed.push(`${key}:${fields.join(",")}`);
+    existingEntries.delete(key);
+  }
+  for (const key of existingEntries.keys()) changed.push(`${key}:removed`);
+  const detail = changed.slice(0, 10).join("; ");
+  return `changed manifest.json${detail ? ` (${detail}${changed.length > 10 ? "; …" : ""})` : ""}`;
 }
 
 function validateRecords(source, job, records) {
@@ -318,4 +403,20 @@ function indexKey(sourceId, locale) {
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+async function mapConcurrent(values, concurrency, callback) {
+  const limit = Math.max(1, Math.min(values.length || 1, Number(concurrency) || 1));
+  const results = new Array(values.length);
+  let nextIndex = 0;
+  await Promise.all(
+    Array.from({ length: limit }, async () => {
+      while (nextIndex < values.length) {
+        const index = nextIndex;
+        nextIndex += 1;
+        results[index] = await callback(values[index], index);
+      }
+    })
+  );
+  return results;
 }

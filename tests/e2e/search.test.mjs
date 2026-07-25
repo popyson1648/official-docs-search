@@ -1,11 +1,35 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { spawn } from "node:child_process";
+import { readFileSync } from "node:fs";
 import net from "node:net";
 import { resolve } from "node:path";
-import puppeteer from "puppeteer";
+import puppeteer, { PredefinedNetworkConditions } from "puppeteer";
 
 const root = resolve(import.meta.dirname, "../..");
+const searchManifest = JSON.parse(
+  readFileSync(resolve(root, "public/search-index/manifest.json"), "utf8")
+);
+const trustedCommunitySourceIds = [
+  "comprehensive-rust",
+  "javascript-info",
+  "typescript-deep-dive",
+  "go-by-example",
+  "cpp-core-guidelines",
+  "php-the-right-way",
+  "elixir-school",
+  "learn-you-a-haskell",
+  "advanced-r",
+  "clojure-guides",
+  "fsharp-for-fun-and-profit",
+  "zig-guide",
+  "programming-in-d",
+  "cornell-ocaml",
+  "solidity-by-example",
+  "common-lisp-cookbook",
+  "webdev-html",
+  "webdev-css"
+];
 let app;
 let browser;
 
@@ -78,6 +102,20 @@ async function waitForResults(page) {
   await page.waitForSelector(".result-item h2 a", { timeout: 20_000 });
 }
 
+async function waitForResultFilter(page) {
+  await page.waitForFunction(
+    () => {
+      const status = document.querySelector("[data-search-status]");
+      const filters = document.querySelector(".result-filter-shell");
+      return (
+        status?.getAttribute("data-state") === "success" &&
+        filters?.getAttribute("aria-busy") !== "true"
+      );
+    },
+    { timeout: 20_000 }
+  );
+}
+
 async function snapshot(page) {
   return await page.evaluate(() => ({
     state: document.querySelector("[data-search-status]")?.dataset.state,
@@ -125,8 +163,158 @@ test("initial page, help, validation, and language tags work", async () => {
     await page.$$eval("[data-remove-tag]", (buttons) => buttons.map((button) => button.dataset.removeTag)),
     ["python", "rust"]
   );
+  const tagGap = await page.evaluate(() => {
+    const input = document.querySelector("[data-query-input]").getBoundingClientRect();
+    const tags = document.querySelector("[data-active-tags]").getBoundingClientRect();
+    return tags.top - input.bottom;
+  });
+  assert.ok(tagGap >= 10, `query-tag gap was ${tagGap}px`);
   await clickAndWaitForNavigation(page, '[data-remove-tag="python"]');
   assert.equal(new URL(page.url()).searchParams.get("q"), "rust iterator");
+  await page.close();
+});
+
+test("search guidance uses concrete unboxed examples and accurate aliases", async () => {
+  const page = await newPage();
+  await page.goto(`${app.baseUrl}/?ui=ja`, { waitUntil: "domcontentloaded" });
+
+  assert.equal(
+    await page.$eval("[data-help-open] .lang-ja", (element) => element.textContent),
+    "検索方法"
+  );
+  assert.equal(
+    await page.$eval("#query-example .lang-ja", (element) => element.textContent),
+    "例：js promise all"
+  );
+  assert.equal(
+    await page.$eval("[data-query-input]", (element) => element.hasAttribute("placeholder")),
+    false
+  );
+  await page.click("[data-query-input]");
+  const inputFocus = await page.$eval("[data-query-input]", (element) => {
+    const style = getComputedStyle(element);
+    return {
+      outlineColor: style.outlineColor,
+      outlineWidth: Number.parseFloat(style.outlineWidth),
+      borderColor: style.borderColor
+    };
+  });
+  assert.equal(inputFocus.outlineColor, "rgb(91, 139, 224)");
+  assert.equal(inputFocus.outlineWidth, 2);
+  assert.notEqual(inputFocus.borderColor, "rgb(0, 0, 0)");
+  await page.click("[data-help-open]");
+
+  const guidance = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll(".help-rule")];
+    return {
+      heading: document.querySelector("[data-help-dialog] h2 .lang-ja")?.textContent,
+      syntax: rows.map((row) => row.querySelector(".help-syntax")?.textContent),
+      examples: rows.map((row) => row.querySelector(".help-example .lang-ja")?.textContent),
+      examplesContainCode: rows.some((row) => row.querySelector(".help-example code")),
+      exampleStyles: rows.map((row) => {
+        const style = getComputedStyle(row.querySelector(".help-example"));
+        return {
+          backgroundColor: style.backgroundColor,
+          borderTopWidth: style.borderTopWidth,
+          fontSize: Number.parseFloat(style.fontSize)
+        };
+      }),
+      syntaxFontSize: Number.parseFloat(
+        getComputedStyle(rows[0].querySelector(".help-syntax")).fontSize
+      ),
+      text: document.querySelector(".help-content")?.textContent,
+      englishText: [...document.querySelectorAll(".help-content .lang-en")]
+        .map((element) => element.textContent)
+        .join(" "),
+      japaneseText: [...document.querySelectorAll(".help-content .lang-ja")]
+        .map((element) => element.textContent)
+        .join(" ")
+    };
+  });
+
+  assert.equal(guidance.heading, "検索方法");
+  assert.deepEqual(guidance.syntax, [
+    "<language> <search words>",
+    "lang:<language> <search words>",
+    "<language>, <language> <search words>",
+    "lang:<language>,<language> <search words>",
+    "<search words> locale:ja",
+    "<search words> source:all"
+  ]);
+  assert.deepEqual(guidance.examples, [
+    "例：js promise all",
+    "例：lang:rust iterator",
+    "例：rust, ts generic",
+    "例：lang:python,rust iterator",
+    "例：iterator locale:ja",
+    "例：proxy source:all"
+  ]);
+  assert.equal(guidance.examplesContainCode, false);
+  assert.ok(
+    guidance.exampleStyles.every(
+      (style) =>
+        style.backgroundColor === "rgba(0, 0, 0, 0)" &&
+        style.borderTopWidth === "0px" &&
+        style.fontSize < guidance.syntaxFontSize
+    )
+  );
+  assert.doesNotMatch(guidance.englishText, /\.py\b|extension/i);
+  assert.doesNotMatch(guidance.japaneseText, /\.py\b|拡張子/);
+  assert.match(guidance.japaneseText, /py や ts などの短縮名/);
+  assert.match(
+    guidance.japaneseText,
+    /検索語を複数入力すると、すべてを含む結果に絞り込みます。/
+  );
+  assert.equal(
+    guidance.japaneseText.match(/検索語を複数入力すると、すべてを含む結果に絞り込みます。/g)
+      ?.length,
+    1
+  );
+  assert.doesNotMatch(
+    await page.$eval("body", (element) => element.textContent),
+    /<language> <search words> \/ <search words>/
+  );
+  await page.close();
+});
+
+test("the visible JavaScript example performs a multi-token AND search", async () => {
+  const page = await newPage();
+  await gotoQuery(page, "js promise all", "&docsLocale=en");
+  await waitForResults(page);
+  const result = await snapshot(page);
+  assert.ok(result.languages.length > 0);
+  assert.ok(result.languages.every((language) => language === "javascript"));
+  assert.equal(
+    await page.$eval("[data-search-results]", (element) => element.dataset.query),
+    "promise all"
+  );
+  assert.ok(
+    await page.$$eval(".result-item", (items) =>
+      items.every((item) => {
+        const searchable = [
+          item.querySelector("h2")?.textContent,
+          item.querySelector(".result-section")?.textContent
+        ]
+          .join(" ")
+          .toLocaleLowerCase();
+        return searchable.includes("promise") && searchable.includes("all");
+      })
+    )
+  );
+  await page.close();
+});
+
+test("Sphinx section context renders as plain text instead of raw markup", async () => {
+  const page = await newPage();
+  await gotoQuery(page, "python pathlib glob", "&docsLocale=ja&ui=ja");
+  await waitForResults(page);
+  const section = await page.$eval(".result-section", (element) => ({
+    text: element.textContent,
+    html: element.innerHTML
+  }));
+  assert.match(section.text, /pathlib/);
+  assert.doesNotMatch(section.text, /<\/?(?:code|span)\b/i);
+  assert.doesNotMatch(section.html, /&lt;\/?(?:code|span)\b/i);
   await page.close();
 });
 
@@ -155,6 +343,10 @@ test("query and search-index strings render as text without executing markup", a
     'Python </span><img id="source-xss" src=x onerror="globalThis.__odsXss=1">';
   const localePayload =
     'en"><img id="locale-xss" src=x onerror="globalThis.__odsXss=1">';
+  const sectionPayload =
+    'Security </span><img id="section-xss" src=x onerror="globalThis.__odsXss=1">';
+  const qualificationPayload =
+    'Note: </span><img id="qualification-xss" src=x onerror="globalThis.__odsXss=1">';
   const urlSuffix =
     'safe.html?next="><img id="url-xss" src=x onerror="globalThis.__odsXss=1">';
   const manifest = {
@@ -170,7 +362,9 @@ test("query and search-index strings render as text without executing markup", a
         docsLocale: localePayload,
         status: "supported",
         path: "/search-index/security.fixture.json",
-        recordCount: 1
+        recordCount: 1,
+        qualification: qualificationPayload,
+        qualificationJa: qualificationPayload
       }
     ]
   };
@@ -179,7 +373,7 @@ test("query and search-index strings render as text without executing markup", a
     sourceId: "python-docs",
     docsLocale: localePayload,
     urlPrefix: "https://docs.python.org/3/",
-    records: [[titlePayload, urlSuffix]]
+    records: [[titlePayload, urlSuffix, sectionPayload]]
   };
 
   await page.evaluateOnNewDocument(() => {
@@ -216,14 +410,19 @@ test("query and search-index strings render as text without executing markup", a
         "title-xss",
         "source-xss",
         "locale-xss",
+        "section-xss",
+        "qualification-xss",
         "url-xss"
       ].filter((id) => document.getElementById(id)),
       queryValue: document.querySelector("[data-query-input]")?.value,
       highlightText: document.querySelector("[data-query-highlight]")?.textContent,
       title: link?.textContent,
       href: link?.href,
-      meta: document.querySelector(".result-meta")?.textContent,
-      visibleUrl: document.querySelector(".result-url")?.textContent
+      classification: document.querySelector(".result-classification")?.textContent,
+      attribution: document.querySelector(".result-attribution")?.textContent,
+      visibleUrl: document.querySelector(".result-url")?.textContent,
+      section: document.querySelector(".result-section")?.textContent,
+      qualification: document.querySelector(".result-qualification")?.textContent
     };
   });
 
@@ -232,10 +431,18 @@ test("query and search-index strings render as text without executing markup", a
   assert.equal(rendered.queryValue, queryPayload);
   assert.equal(rendered.highlightText, queryPayload);
   assert.equal(rendered.title, titlePayload);
-  assert.match(rendered.meta, new RegExp(sourcePayload.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(
-    rendered.meta,
+    rendered.attribution,
+    new RegExp(sourcePayload.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+  );
+  assert.match(
+    rendered.classification,
     new RegExp(localePayload.toUpperCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+  );
+  assert.equal(rendered.section, sectionPayload);
+  assert.match(
+    rendered.qualification,
+    new RegExp(qualificationPayload.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
   );
   assert.equal(new URL(rendered.href).protocol, "https:");
   assert.match(rendered.visibleUrl, /%22%3E%3Cimg/);
@@ -252,6 +459,540 @@ test("one multi-language query returns results for every selected language", asy
   assert.deepEqual(
     new Set(result.links.map((link) => new URL(link.href).hostname)),
     new Set(["docs.python.org", "doc.rust-lang.org"])
+  );
+  await page.close();
+});
+
+test("result filters narrow a multi-language search by language and site without navigation", async () => {
+  const page = await newPage();
+  await page.goto(
+    `${app.baseUrl}/?q=${encodeURIComponent(
+      "rust, ts generic source:all"
+    )}&ui=ja&docsLocale=en`,
+    { waitUntil: "domcontentloaded" }
+  );
+  await waitForResults(page);
+
+  const initial = await snapshot(page);
+  assert.deepEqual(new Set(initial.languages), new Set(["rust", "typescript"]));
+  assert.deepEqual(
+    new Set(initial.sources),
+    new Set([
+      "rust-docs",
+      "comprehensive-rust",
+      "typescript-docs",
+      "typescript-deep-dive"
+    ])
+  );
+
+  const initialPageIdentity = await page.evaluate(() => ({
+    url: location.href,
+    timeOrigin: performance.timeOrigin
+  }));
+  const initialResultTop = await page.$eval(".result-item", (element) =>
+    element.getBoundingClientRect().top
+  );
+  const trigger = "[data-result-filter-open]";
+  assert.equal(
+    await page.$eval(`${trigger} .lang-ja`, (element) => element.textContent),
+    "絞り込み"
+  );
+  assert.equal(await page.$eval(trigger, (element) => element.getAttribute("aria-expanded")), "false");
+
+  await page.click(trigger);
+  const opened = await page.evaluate(() => {
+    const controls = document.querySelector(".result-filter-controls");
+    const panel = document.querySelector(".result-filter-panel");
+    const filterTrigger = document.querySelector("[data-result-filter-open]");
+    const back = document.querySelector("[data-result-filter-close]");
+    const properties = document.querySelector(".result-filter-properties");
+    return {
+      expanded: filterTrigger?.getAttribute("aria-expanded"),
+      focusedBack: document.activeElement === back,
+      panelPosition: panel ? getComputedStyle(panel).position : "",
+      transitionDuration: controls ? getComputedStyle(controls).transitionDuration : "",
+      propertiesRole: properties?.getAttribute("role"),
+      activeFacetPressed: document
+        .querySelector('[data-result-filter-facet="language"]')
+        ?.getAttribute("aria-pressed"),
+      resultTop: document.querySelector(".result-item")?.getBoundingClientRect().top
+    };
+  });
+  assert.deepEqual(opened, {
+    expanded: "true",
+    focusedBack: true,
+    panelPosition: "absolute",
+    transitionDuration: "0.26s",
+    propertiesRole: "group",
+    activeFacetPressed: "true",
+    resultTop: initialResultTop
+  });
+  assert.equal(
+    await page.$eval("[data-result-filter-close] .lang-ja", (element) => element.textContent),
+    "ツールに戻る"
+  );
+  assert.deepEqual(
+    new Set(
+      await page.$$eval(
+        '[data-result-filter-choice="language"]',
+        (buttons) => buttons.map((button) => button.textContent)
+      )
+    ),
+    new Set(["Rust", "TypeScript"])
+  );
+
+  await page.click('[data-result-filter-facet="site"]');
+  assert.equal(
+    await page.$eval(".result-filter-panel", (element) => element.hidden),
+    false
+  );
+  assert.equal(
+    await page.$eval('[data-result-filter-facet="site"]', (element) =>
+      element.getAttribute("aria-pressed")
+    ),
+    "true"
+  );
+  assert.deepEqual(
+    new Set(
+      await page.$$eval(
+        '[data-result-filter-choice="site"]',
+        (buttons) => buttons.map((button) => button.textContent)
+      )
+    ),
+    new Set([
+      "Rust Documentation",
+      "Comprehensive Rust",
+      "TypeScript Documentation",
+      "TypeScript Deep Dive"
+    ])
+  );
+
+  await page.keyboard.press("Escape");
+  await page.waitForFunction(
+    () => {
+      const trigger = document.querySelector("[data-result-filter-open]");
+      return (
+        trigger?.getAttribute("aria-expanded") === "false" &&
+        document.activeElement === trigger
+      );
+    },
+    { timeout: 5_000 }
+  );
+
+  await page.click(trigger);
+  await page.click("[data-query-input]");
+  assert.equal(
+    await page.$eval(trigger, (element) => element.getAttribute("aria-expanded")),
+    "false"
+  );
+  assert.equal(
+    await page.evaluate(() =>
+      document.activeElement === document.querySelector("[data-result-filter-open]")
+    ),
+    false
+  );
+
+  await page.click(trigger);
+  await new Promise((resolveDelay) => setTimeout(resolveDelay, 300));
+  await page.click("[data-result-filter-close]");
+  assert.equal(
+    await page.evaluate(() =>
+      document.activeElement === document.querySelector("[data-result-filter-open]")
+    ),
+    true
+  );
+  assert.equal(
+    await page.$eval(".result-filter-controls", (element) =>
+      getComputedStyle(element).transitionDuration
+    ),
+    "0.18s"
+  );
+
+  await page.click(trigger);
+  await page.click('[data-result-filter-facet="language"]');
+  await page.click(
+    '[data-result-filter-choice="language"][data-result-filter-value="rust"]'
+  );
+  await waitForResultFilter(page);
+  await page.click(
+    '[data-result-filter-choice="language"][data-result-filter-value="typescript"]'
+  );
+  await waitForResultFilter(page);
+
+  let filtered = await snapshot(page);
+  assert.deepEqual(new Set(filtered.languages), new Set(["rust", "typescript"]));
+  assert.deepEqual(
+    await page.$eval(
+      '[data-result-filter-remove="language"]',
+      (button) => ({
+        category: button
+          .closest(".result-filter-active-pill")
+          ?.querySelector(".result-filter-active-category .lang-ja")?.textContent,
+        value: button
+          .closest(".result-filter-active-pill")
+          ?.querySelector(".result-filter-active-value")?.textContent,
+        accessibleLabel: button.querySelector(".lang-ja.sr-only")?.textContent
+      })
+    ),
+    {
+      category: "言語",
+      value: "Rust, TypeScript",
+      accessibleLabel: "絞り込みを解除：言語"
+    }
+  );
+  assert.equal(
+    await page.$$eval('[data-result-filter-active-facet="language"]', (pills) => pills.length),
+    1
+  );
+  assert.deepEqual(
+    await page.$eval(
+      '[data-result-filter-choice="language"][data-result-filter-value="typescript"]',
+      (element) => ({
+        panelOpen: !document.querySelector(".result-filter-panel")?.hidden,
+        focused: document.activeElement === element
+      })
+    ),
+    { panelOpen: true, focused: true }
+  );
+  assert.equal(
+    await page.$eval(trigger, (element) => element.classList.contains("active")),
+    true
+  );
+
+  await page.click(
+    '[data-result-filter-choice="language"][data-result-filter-value="typescript"]'
+  );
+  await waitForResultFilter(page);
+  filtered = await snapshot(page);
+  assert.ok(filtered.languages.length > 0);
+  assert.ok(filtered.languages.every((language) => language === "rust"));
+
+  await page.click('[data-result-filter-facet="site"]');
+  await page.click(
+    '[data-result-filter-choice="site"][data-result-filter-value="comprehensive-rust"]'
+  );
+  await waitForResultFilter(page);
+
+  filtered = await snapshot(page);
+  assert.ok(filtered.sources.length > 0);
+  assert.ok(filtered.languages.every((language) => language === "rust"));
+  assert.ok(filtered.sources.every((source) => source === "comprehensive-rust"));
+  assert.equal(
+    await page.$eval("[data-search-status]", (element) => {
+      const renderedCount = document.querySelectorAll(".result-item").length;
+      const statusCount = Number.parseInt(element.textContent?.match(/\d+/)?.[0] ?? "-1", 10);
+      return statusCount === renderedCount;
+    }),
+    true
+  );
+  assert.deepEqual(
+    new Set(
+      await page.$$eval(".result-filter-active-pill", (pills) =>
+        pills.map((pill) => pill.querySelector(".result-filter-active-value")?.textContent)
+      )
+    ),
+    new Set(["Rust", "Comprehensive Rust"])
+  );
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      url: location.href,
+      timeOrigin: performance.timeOrigin
+    })),
+    initialPageIdentity
+  );
+
+  await page.click('[data-result-filter-remove="site"]');
+  await waitForResultFilter(page);
+  filtered = await snapshot(page);
+  assert.ok(filtered.languages.every((language) => language === "rust"));
+  assert.ok(new Set(filtered.sources).has("rust-docs"));
+  assert.equal(
+    await page.$('[data-result-filter-remove="site"]'),
+    null
+  );
+
+  assert.equal(
+    await page.$eval("[data-result-filter-clear] .lang-ja", (element) => element.textContent),
+    "すべて解除"
+  );
+  await page.click("[data-result-filter-clear]");
+  await waitForResultFilter(page);
+  filtered = await snapshot(page);
+  assert.deepEqual(new Set(filtered.languages), new Set(["rust", "typescript"]));
+  assert.equal(
+    await page.$eval("[data-result-filter-applied]", (element) => element.hidden),
+    true
+  );
+
+  await page.click('[data-result-filter-facet="language"]');
+  await page.click(
+    '[data-result-filter-choice="language"][data-result-filter-value="rust"]'
+  );
+  await waitForResultFilter(page);
+  await page.click('[data-result-filter-facet="site"]');
+  await page.click(
+    '[data-result-filter-choice="site"][data-result-filter-value="comprehensive-rust"]'
+  );
+  await waitForResultFilter(page);
+
+  await page.$eval('[data-docs-radio][value="ja"]', (radio) => radio.click());
+  await page.waitForFunction(
+    () =>
+      document.querySelector("[data-search-results]")?.getAttribute("data-docs-locale") === "ja" &&
+      document.querySelector("[data-search-status]")?.getAttribute("data-state") === "success" &&
+      document.querySelector(".result-filter-shell")?.getAttribute("aria-busy") !== "true",
+    { timeout: 20_000 }
+  );
+
+  filtered = await snapshot(page);
+  assert.ok(filtered.sources.length > 0);
+  assert.ok(filtered.sources.every((source) => source === "comprehensive-rust"));
+  assert.ok(filtered.locales.every((locale) => locale === "en"));
+  assert.deepEqual(
+    new Set(
+      await page.$$eval(".result-filter-active-pill", (pills) =>
+        pills.map((pill) => pill.querySelector(".result-filter-active-value")?.textContent)
+      )
+    ),
+    new Set(["Rust", "Comprehensive Rust"])
+  );
+  assert.deepEqual(
+    await page.$$eval(
+      "[data-index-coverage] .lang-ja .index-coverage-sources li",
+      (items) => items.map((item) => item.textContent)
+    ),
+    ["Comprehensive Rust"]
+  );
+  assert.equal(
+    await page.$eval("[data-index-coverage] .lang-ja .index-coverage-summary", (element) =>
+      element.textContent
+    ),
+    "次のソースは日本語版がないため、英語の検索結果を表示しています。"
+  );
+  assert.equal(
+    await page.evaluate((timeOrigin) => performance.timeOrigin === timeOrigin, initialPageIdentity.timeOrigin),
+    true
+  );
+  await page.close();
+});
+
+test("result filters match the reference overlay and responsive interaction at 375px", async () => {
+  const page = await newPage({ width: 375, height: 900 });
+  await page.goto(
+    `${app.baseUrl}/?q=${encodeURIComponent(
+      "rust, ts generic source:all"
+    )}&ui=ja&docsLocale=en`,
+    { waitUntil: "domcontentloaded" }
+  );
+  await waitForResults(page);
+  const resultTop = await page.$eval(".result-item", (element) =>
+    element.getBoundingClientRect().top
+  );
+  await page.click("[data-result-filter-open]");
+  assert.equal(
+    await page.$eval(".result-item", (element) => element.getBoundingClientRect().top),
+    resultTop
+  );
+  await page.click('[data-result-filter-facet="site"]');
+  await page.click(
+    '[data-result-filter-choice="site"][data-result-filter-value="comprehensive-rust"]'
+  );
+  await waitForResultFilter(page);
+  await new Promise((resolveDelay) => setTimeout(resolveDelay, 300));
+
+  const layout = await page.evaluate(() => {
+    const shell = document.querySelector(".result-filter-shell");
+    const controls = document.querySelector(".result-filter-controls");
+    const panel = document.querySelector(".result-filter-panel");
+    const choices = document.querySelector(".result-filter-choices");
+    const visibleTargets = [...document.querySelectorAll(".result-filter-shell button")].filter(
+      (button) => button.getClientRects().length > 0
+    );
+    const panelRect = panel.getBoundingClientRect();
+    return {
+      viewportWidth: document.documentElement.clientWidth,
+      shellLeft: shell.getBoundingClientRect().left,
+      shellRight: shell.getBoundingClientRect().right,
+      controlsRight: controls.getBoundingClientRect().right,
+      panelLeft: panelRect.left,
+      panelRight: panelRect.right,
+      panelPosition: getComputedStyle(panel).position,
+      choicesWrap: getComputedStyle(choices).flexWrap,
+      choiceRows: new Set(
+        [...choices.querySelectorAll("button")].map((choice) =>
+          Math.round(choice.getBoundingClientRect().top)
+        )
+      ).size,
+      targets: visibleTargets.map((button) => {
+        const rect = button.getBoundingClientRect();
+        return {
+          width: rect.width,
+          height: rect.height,
+          left: rect.left,
+          right: rect.right
+        };
+      })
+    };
+  });
+
+  assert.ok(
+    layout.shellLeft >= 0 && layout.shellRight <= layout.viewportWidth,
+    `filter bounds ${layout.shellLeft}-${layout.shellRight}px exceeded viewport ${layout.viewportWidth}px`
+  );
+  assert.ok(layout.controlsRight <= layout.viewportWidth);
+  assert.ok(layout.panelLeft >= 0 && layout.panelRight <= layout.viewportWidth);
+  assert.equal(layout.panelPosition, "absolute");
+  assert.equal(layout.choicesWrap, "wrap");
+  assert.ok(layout.choiceRows > 1);
+  assert.ok(
+    layout.targets.every(
+      (target) =>
+        target.width >= 24 &&
+        target.height >= 24 &&
+        target.left >= 0 &&
+        target.right <= layout.viewportWidth
+    ),
+    JSON.stringify(layout.targets)
+  );
+  await page.close();
+});
+
+test("result filter motion is removed when the user prefers reduced motion", async () => {
+  const page = await newPage();
+  await page.emulateMediaFeatures([
+    { name: "prefers-reduced-motion", value: "reduce" }
+  ]);
+  await page.goto(
+    `${app.baseUrl}/?q=${encodeURIComponent(
+      "rust, ts generic source:all"
+    )}&ui=en&docsLocale=en`,
+    { waitUntil: "domcontentloaded" }
+  );
+  await waitForResults(page);
+  await page.click("[data-result-filter-open]");
+  const motion = await page.evaluate(() => {
+    const controls = document.querySelector(".result-filter-controls");
+    const panel = document.querySelector(".result-filter-panel");
+    return {
+      transitionDuration: getComputedStyle(controls).transitionDuration,
+      animationName: getComputedStyle(panel).animationName
+    };
+  });
+  assert.deepEqual(motion, {
+    transitionDuration: "0s",
+    animationName: "none"
+  });
+  await page.close();
+});
+
+test("adding a spaced second language enables its default sources", async () => {
+  const page = await newPage();
+  await gotoQuery(page, "rust generic", "&docsLocale=en");
+  await waitForResults(page);
+
+  let sourceState = await page.evaluate(() =>
+    Object.fromEntries(
+      ["rust-docs", "comprehensive-rust"].map((sourceId) => {
+        const option = document.querySelector(
+          `input[data-source-option][value="${sourceId}"]`
+        );
+        return [
+          sourceId,
+          { checked: option.checked, disabled: option.disabled }
+        ];
+      })
+    )
+  );
+  assert.deepEqual(sourceState, {
+    "rust-docs": { checked: true, disabled: false },
+    "comprehensive-rust": { checked: true, disabled: true }
+  });
+  assert.ok(
+    await page.$(
+      'input[type="hidden"][data-preserved-source][value="comprehensive-rust"]'
+    )
+  );
+
+  await page.$eval("[data-query-input]", (input) => {
+    input.value = "rust, ts generic";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await clickAndWaitForNavigation(page, '.search-group button[type="submit"]');
+  await waitForResults(page);
+
+  assert.deepEqual(
+    await page.$$eval(".fpill-label", (labels) =>
+      labels.map((label) => label.textContent)
+    ),
+    ["Rust", "TypeScript"]
+  );
+  assert.deepEqual(
+    new Set((await snapshot(page)).languages),
+    new Set(["rust", "typescript"])
+  );
+  assert.deepEqual(
+    new Set(
+      await page.$$eval('input[name="sourceScopeLanguage"]', (inputs) =>
+        inputs.map((input) => input.value)
+      )
+    ),
+    new Set(["rust", "typescript"])
+  );
+
+  sourceState = await page.evaluate(() =>
+    Object.fromEntries(
+      [
+        "rust-docs",
+        "comprehensive-rust",
+        "typescript-docs",
+        "typescript-deep-dive"
+      ].map((sourceId) => {
+        const option = document.querySelector(
+          `input[data-source-option][value="${sourceId}"]`
+        );
+        return [
+          sourceId,
+          { checked: option.checked, disabled: option.disabled }
+        ];
+      })
+    )
+  );
+  assert.deepEqual(sourceState, {
+    "rust-docs": { checked: true, disabled: false },
+    "comprehensive-rust": { checked: true, disabled: true },
+    "typescript-docs": { checked: true, disabled: false },
+    "typescript-deep-dive": { checked: true, disabled: true }
+  });
+
+  await clickAndWaitForNavigation(page, "[data-source-toggle]");
+  await waitForResults(page);
+  sourceState = await page.evaluate(() =>
+    Object.fromEntries(
+      ["comprehensive-rust", "typescript-deep-dive"].map((sourceId) => {
+        const option = document.querySelector(
+          `input[data-source-option][value="${sourceId}"]`
+        );
+        return [
+          sourceId,
+          { checked: option.checked, disabled: option.disabled }
+        ];
+      })
+    )
+  );
+  assert.deepEqual(sourceState, {
+    "comprehensive-rust": { checked: true, disabled: false },
+    "typescript-deep-dive": { checked: true, disabled: false }
+  });
+  const enabledSources = new Set((await snapshot(page)).sources);
+  assert.ok(enabledSources.has("comprehensive-rust"));
+  assert.ok(enabledSources.has("typescript-deep-dive"));
+  await clickAndWaitForNavigation(page, "[data-source-toggle]");
+  await waitForResults(page);
+  assert.equal(
+    (await snapshot(page)).sources.some((sourceId) =>
+      ["comprehensive-rust", "typescript-deep-dive"].includes(sourceId)
+    ),
+    false
   );
   await page.close();
 });
@@ -288,9 +1029,32 @@ test("documentation locale and UI locale switch independently", async () => {
   await waitForResults(page);
   assert.ok((await snapshot(page)).locales.every((locale) => locale === "en"));
 
-  await clickAndWaitForNavigation(page, '[data-docs-radio][value="ja"]');
-  await waitForResults(page);
+  let documentRequests = 0;
+  page.on("request", (request) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+      documentRequests += 1;
+    }
+  });
+  await page.evaluate(() => {
+    document.documentElement.dataset.localeSwitchDocument = "preserved";
+  });
+  await page.$eval('[data-docs-radio][value="ja"]', (radio) => radio.click());
+  await page.waitForFunction(
+    () =>
+      document.querySelector("[data-search-results]")?.dataset.docsLocale === "ja" &&
+      document.querySelector("[data-search-status]")?.dataset.state === "success"
+  );
   let result = await snapshot(page);
+  assert.equal(documentRequests, 0);
+  assert.equal(
+    await page.$eval("html", (html) => html.dataset.localeSwitchDocument),
+    "preserved"
+  );
+  assert.equal(new URL(page.url()).searchParams.get("docsLocale"), "ja");
+  assert.match(
+    await page.evaluate(() => document.cookie),
+    /(?:^|; )ods_docs_locale=ja(?:;|$)/
+  );
   assert.ok(result.locales.every((locale) => locale === "ja"));
   assert.ok(result.links.every((link) => new URL(link.href).pathname.startsWith("/ja/")));
 
@@ -301,24 +1065,169 @@ test("documentation locale and UI locale switch independently", async () => {
   await page.close();
 });
 
-test("planned sources are explicit while supported sources still return results", async () => {
+test("Japanese requests visibly fall back to English-only documentation", async () => {
   const page = await newPage();
-  await gotoQuery(page, "go Reader", "&docsLocale=en");
+  await gotoQuery(page, "rust iterator", "&docsLocale=ja");
+  await waitForResults(page);
+
+  const result = await snapshot(page);
+  assert.ok(result.locales.every((locale) => locale === "en"));
+  const notice = await page.$eval("[data-index-coverage]", (element) => ({
+    hidden: element.hidden,
+    enSummary: element.querySelector(".lang-en .index-coverage-summary")?.textContent,
+    jaSummary: element.querySelector(".lang-ja .index-coverage-summary")?.textContent,
+    enSources: [...element.querySelectorAll(".lang-en .index-coverage-sources li")].map(
+      (item) => item.textContent
+    ),
+    jaSources: [...element.querySelectorAll(".lang-ja .index-coverage-sources li")].map(
+      (item) => item.textContent
+    )
+  }));
+  assert.equal(notice.hidden, false);
+  assert.equal(
+    notice.enSummary,
+    "The following sources do not have Japanese documentation, so English search results are shown."
+  );
+  assert.equal(
+    notice.jaSummary,
+    "次のソースは日本語版がないため、英語の検索結果を表示しています。"
+  );
+  assert.deepEqual(notice.enSources, [
+    "Rust Documentation",
+    "Comprehensive Rust"
+  ]);
+  assert.deepEqual(notice.jaSources, [
+    "Rust Documentation",
+    "Comprehensive Rust"
+  ]);
+  await page.close();
+});
+
+test("fallback notices group one compact explanation with a semantic source list", async () => {
+  const page = await newPage({ width: 375, height: 900 });
+  await page.goto(`${app.baseUrl}/?ui=ja&docsLocale=ja`, {
+    waitUntil: "domcontentloaded"
+  });
+  const preSearchNotice = await page.$eval("[data-locale-notice]", (element) => ({
+    hidden: element.hidden,
+    text: element.querySelector(".lang-ja")?.textContent?.trim()
+  }));
+  assert.equal(preSearchNotice.hidden, false);
+  assert.equal(preSearchNotice.text, "※ 一部のソースは日本語に未対応です。");
+
+  await page.goto(
+    `${app.baseUrl}/?q=${encodeURIComponent(
+      "rust,typescript type source:all"
+    )}&ui=ja&docsLocale=ja`,
+    { waitUntil: "domcontentloaded" }
+  );
+  await waitForResults(page);
+
+  const notice = await page.$eval("[data-index-coverage]", (element) => {
+    const visibleGroup = element.querySelector(".lang-ja");
+    const summary = visibleGroup?.querySelector(".index-coverage-summary");
+    const sourceList = visibleGroup?.querySelector(".index-coverage-sources");
+    const style = getComputedStyle(element);
+    return {
+      summary: summary?.textContent,
+      summaryCount: [
+        ...(visibleGroup?.querySelectorAll(".index-coverage-summary") ?? [])
+      ].length,
+      sourceListTag: sourceList?.tagName,
+      sources: [...(sourceList?.querySelectorAll("li") ?? [])].map(
+        (item) => item.textContent
+      ),
+      sourceListTop: sourceList?.getBoundingClientRect().top,
+      summaryBottom: summary?.getBoundingClientRect().bottom,
+      repeatedCopy: visibleGroup?.textContent?.includes(
+        "日本語ドキュメントは未対応のため"
+      ),
+      fontSize: Number.parseFloat(style.fontSize),
+      backgroundColor: style.backgroundColor,
+      borderWidths: [
+        style.borderTopWidth,
+        style.borderRightWidth,
+        style.borderBottomWidth,
+        style.borderLeftWidth
+      ]
+    };
+  });
+
+  assert.equal(
+    notice.summary,
+    "次のソースは日本語版がないため、英語の検索結果を表示しています。"
+  );
+  assert.equal(notice.summaryCount, 1);
+  assert.equal(notice.sourceListTag, "UL");
+  assert.deepEqual(
+    new Set(notice.sources),
+    new Set([
+      "Rust Documentation",
+      "Comprehensive Rust",
+      "TypeScript Documentation",
+      "TypeScript Deep Dive"
+    ])
+  );
+  assert.equal(notice.sources.length, 4);
+  assert.ok(notice.sourceListTop > notice.summaryBottom);
+  assert.equal(notice.repeatedCopy, false);
+  assert.ok(notice.fontSize <= 12);
+  assert.equal(notice.backgroundColor, "rgba(0, 0, 0, 0)");
+  assert.deepEqual(notice.borderWidths, ["0px", "0px", "0px", "0px"]);
+  assert.equal(
+    await page.$eval("[data-locale-notice]", (element) => element.hidden),
+    true
+  );
+  await page.close();
+});
+
+test("a failed bundle is reported without discarding successful results", async () => {
+  const page = await newPage();
+  await page.setCacheEnabled(false);
+  await page.setRequestInterception(true);
+  page.on("request", async (request) => {
+    const pathname = new URL(request.url()).pathname;
+    if (/^\/search-index\/rust-docs\.en\.[^.]+\.json$/.test(pathname)) {
+      await request.respond({ status: 503, contentType: "application/json", body: "{}" });
+    } else {
+      await request.continue();
+    }
+  });
+
+  await gotoQuery(page, "python,rust list source:official", "&docsLocale=en");
+  await waitForResults(page);
+  const result = await snapshot(page);
+  assert.ok(result.sources.includes("python-docs"));
+  assert.equal(result.sources.includes("rust-docs"), false);
+  const notice = await page.$eval("[data-index-coverage]", (element) => ({
+    hidden: element.hidden,
+    en: element.querySelector(".lang-en")?.textContent,
+    ja: element.querySelector(".lang-ja")?.textContent
+  }));
+  assert.equal(notice.hidden, false);
+  assert.match(notice.en, /Rust Documentation \(EN\).*other available results are shown/);
+  assert.match(notice.ja, /Rust Documentation（EN）.*取得できた検索結果のみ表示/);
+  await page.close();
+});
+
+test("planned secondary sources are explicit while supported sources still return results", async () => {
+  const page = await newPage();
+  await gotoQuery(page, "haxe abstract", "&docsLocale=en");
   await waitForResults(page);
   const coverage = await page.$eval("[data-index-coverage]", (element) => ({
     hidden: element.hidden,
     text: element.textContent
   }));
   assert.equal(coverage.hidden, false);
-  assert.match(coverage.text, /Go Documentation/);
+  assert.match(coverage.text, /Haxe API/);
   assert.match(coverage.text, /index planned/);
-  assert.ok((await snapshot(page)).sources.includes("go-std"));
+  assert.ok((await snapshot(page)).sources.includes("haxe-manual"));
   await page.close();
 });
 
 test("new TypeScript and C# indexes participate in one combined search", async () => {
   const page = await newPage();
-  await gotoQuery(page, "typescript,csharp generics", "&docsLocale=en");
+  await gotoQuery(page, "typescript,csharp generics source:official", "&docsLocale=en");
   await waitForResults(page);
   const result = await snapshot(page);
 
@@ -346,10 +1255,305 @@ test("new PHP and Ruby indexes expose their Japanese documentation locale", asyn
   }
 });
 
+test(
+  "every catalog language returns a real result through its supported index",
+  { timeout: 120_000 },
+  async () => {
+    const supported = searchManifest.entries.filter((entry) => entry.status === "supported");
+    const languageIds = [...new Set(searchManifest.entries.map((entry) => entry.programmingLanguage))];
+    const selected = languageIds.map((language) => {
+      const candidates = supported.filter((entry) => entry.programmingLanguage === language);
+      return (
+        candidates.find(
+          (entry) => entry.docsLocale === "en" && entry.sourceKind === "official"
+        ) ??
+        candidates.find((entry) => entry.docsLocale === "en") ??
+        candidates[0]
+      );
+    });
+    assert.equal(selected.filter(Boolean).length, languageIds.length);
+
+    for (const entry of selected) {
+      const page = await newPage();
+      const query = entry.knownQueries?.[0];
+      assert.ok(query, `${entry.programmingLanguage} must have a known query`);
+      const sourceFlag =
+        entry.sourceKind === "official" ? " source:official" : " source:all";
+      await gotoQuery(
+        page,
+        `lang:${entry.programmingLanguage} ${query}${sourceFlag}`,
+        `&docsLocale=${entry.docsLocale}`
+      );
+      await waitForResults(page);
+      try {
+        await page.waitForFunction(
+          ({ language, sourceId }) =>
+            [...document.querySelectorAll(".result-item")].some(
+              (item) =>
+                item.dataset.language === language &&
+                item.dataset.sourceId === sourceId
+            ),
+          { timeout: 20_000 },
+          { language: entry.programmingLanguage, sourceId: entry.sourceId }
+        );
+      } catch {
+        const diagnostic = await page.evaluate(() => ({
+          state: document.querySelector("[data-search-status]")?.getAttribute("data-state"),
+          status: document.querySelector("[data-search-status]")?.textContent,
+          sources: [...document.querySelectorAll(".result-item")].map(
+            (item) => item.getAttribute("data-source-id")
+          ),
+          coverage: document.querySelector("[data-index-coverage]")?.textContent
+        }));
+        assert.fail(
+          `${entry.programmingLanguage}/${entry.sourceId} did not render: ${JSON.stringify(diagnostic)}`
+        );
+      }
+      const result = await snapshot(page);
+      assert.ok(
+        result.languages.includes(entry.programmingLanguage),
+        `${entry.programmingLanguage}: ${query}`
+      );
+      assert.ok(result.sources.includes(entry.sourceId), `${entry.sourceId}: ${query}`);
+      await page.close();
+    }
+  }
+);
+
+test(
+  "every supported Japanese index and every English fallback stays truthful",
+  { timeout: 120_000 },
+  async () => {
+    const supported = searchManifest.entries.filter((entry) => entry.status === "supported");
+    const japanese = supported.filter((entry) => entry.docsLocale === "ja");
+    assert.equal(japanese.length, 17);
+
+    for (const entry of japanese) {
+      const page = await newPage();
+      const sourceFlag =
+        entry.sourceKind === "official" ? "source:official" : "source:all";
+      await gotoQuery(
+        page,
+        `lang:${entry.programmingLanguage} ${entry.knownQueries[0]} ${sourceFlag}`,
+        "&docsLocale=ja"
+      );
+      await waitForResults(page);
+      const result = await snapshot(page);
+      assert.ok(result.sources.includes(entry.sourceId), entry.sourceId);
+      assert.ok(result.locales.every((locale) => locale === "ja"), entry.sourceId);
+      await page.close();
+    }
+
+    const languageIds = [...new Set(supported.map((entry) => entry.programmingLanguage))];
+    const fallbackLanguages = languageIds.filter(
+      (language) =>
+        !supported.some(
+          (entry) =>
+            entry.programmingLanguage === language && entry.docsLocale === "ja"
+        )
+    );
+    assert.equal(fallbackLanguages.length, 27);
+
+    for (const language of fallbackLanguages) {
+      const entry =
+        supported.find(
+          (candidate) =>
+            candidate.programmingLanguage === language &&
+            candidate.docsLocale === "en" &&
+            candidate.sourceKind === "official"
+        ) ??
+        supported.find(
+          (candidate) =>
+            candidate.programmingLanguage === language &&
+            candidate.docsLocale === "en"
+        );
+      assert.ok(entry, language);
+      const page = await newPage();
+      const sourceFlag =
+        entry.sourceKind === "official" ? "source:official" : "source:all";
+      await gotoQuery(
+        page,
+        `lang:${language} ${entry.knownQueries[0]} ${sourceFlag}`,
+        "&docsLocale=ja"
+      );
+      await waitForResults(page);
+      const result = await snapshot(page);
+      assert.ok(result.sources.includes(entry.sourceId), entry.sourceId);
+      assert.ok(result.locales.every((locale) => locale === "en"), entry.sourceId);
+      assert.match(
+        await page.$eval("[data-index-coverage]", (element) => element.textContent),
+        /English search results are shown/
+      );
+      await page.close();
+    }
+  }
+);
+
+test("qualified editions are visibly labeled in results", async () => {
+  const page = await newPage();
+  await gotoQuery(
+    page,
+    "lang:sql SQL ステートメント source:official",
+    "&docsLocale=ja"
+  );
+  await waitForResults(page);
+  assert.match(
+    await page.$eval(".result-qualification", (element) => element.textContent),
+    /Machine-translated MySQL 8\.0/
+  );
+  await page.close();
+});
+
+test("trusted non-official caveats are localized in the source picker and results", async () => {
+  const page = await newPage();
+  await gotoQuery(
+    page,
+    "lang:typescript strictNullChecks source:all",
+    "&docsLocale=en"
+  );
+  await waitForResults(page);
+  await page.$eval("details.source-details", (details) => {
+    details.open = true;
+  });
+
+  const readVisibleCaveats = () => page.evaluate(() => {
+    const source = document
+      .querySelector('input[value="typescript-deep-dive"]')
+      ?.closest(".source-option");
+    const result = document.querySelector(
+      '.result-item[data-source-id="typescript-deep-dive"]'
+    );
+    const visibleText = (root, selector) => {
+      const element = root?.querySelector(selector);
+      return element && element.getClientRects().length > 0
+        ? element.textContent
+        : undefined;
+    };
+    const meta = source?.querySelector(".source-meta");
+    const sourceLink = source?.querySelector(".source-link");
+    return {
+      sourceEn: visibleText(source, ".source-qualification .lang-en"),
+      sourceJa: visibleText(source, ".source-qualification .lang-ja"),
+      resultEn: visibleText(result, ".result-qualification .lang-en"),
+      resultJa: visibleText(result, ".result-qualification .lang-ja"),
+      unavailableEn: visibleText(source, ".source-ja-unavailable .lang-en"),
+      unavailableJa: visibleText(source, ".source-ja-unavailable .lang-ja"),
+      metadataOrder: [...(meta?.children ?? [])].map((element) => element.className),
+      link: sourceLink
+        ? {
+            href: sourceLink.href,
+            target: sourceLink.target,
+            rel: sourceLink.rel
+          }
+        : undefined
+    };
+  });
+
+  let caveats = await readVisibleCaveats();
+  assert.match(caveats.sourceEn ?? "", /^Note: .*classic deep guide/i);
+  assert.equal(caveats.sourceJa, undefined);
+  assert.match(caveats.resultEn ?? "", /^Note: .*classic deep guide/i);
+  assert.equal(caveats.resultJa, undefined);
+  assert.equal(caveats.unavailableEn, undefined);
+  assert.equal(caveats.unavailableJa, undefined);
+  assert.deepEqual(caveats.metadataOrder, [
+    "source-kind",
+    "source-link",
+    "source-ja-unavailable"
+  ]);
+  assert.equal(new URL(caveats.link.href).hostname, "basarat.gitbook.io");
+  assert.equal(caveats.link.target, "_blank");
+  assert.match(caveats.link.rel, /noopener/);
+
+  await page.$eval('[data-docs-radio][value="ja"]', (radio) => radio.click());
+  await page.waitForFunction(
+    () =>
+      document.querySelector("[data-search-results]")?.dataset.docsLocale === "ja" &&
+      document.querySelector("[data-search-status]")?.dataset.state === "success"
+  );
+  caveats = await readVisibleCaveats();
+  assert.equal(caveats.unavailableEn, "No Japanese version");
+  assert.equal(caveats.unavailableJa, undefined);
+  const englishLocaleNotice = await page.$eval("[data-locale-notice]", (notice) => ({
+    hidden: notice.hidden,
+    text: notice.querySelector(".lang-en")?.textContent.trim()
+  }));
+  assert.equal(englishLocaleNotice.hidden, true);
+  assert.equal(englishLocaleNotice.text, "Note: Some sources don't support Japanese.");
+
+  await page.$eval('[data-ui-radio][value="ja"]', (radio) => radio.click());
+  await page.waitForFunction(() => document.documentElement.lang === "ja");
+  caveats = await readVisibleCaveats();
+  assert.equal(caveats.sourceEn, undefined);
+  assert.match(caveats.sourceJa ?? "", /^補足：/);
+  assert.equal(caveats.resultEn, undefined);
+  assert.match(caveats.resultJa ?? "", /^補足：/);
+  assert.equal(caveats.unavailableEn, undefined);
+  assert.equal(caveats.unavailableJa, "日本語未対応");
+  const japaneseLocaleNotice = await page.$eval("[data-locale-notice]", (notice) => ({
+    hidden: notice.hidden,
+    text: notice.querySelector(".lang-ja")?.textContent.trim()
+  }));
+  assert.equal(japaneseLocaleNotice.hidden, true);
+  assert.equal(japaneseLocaleNotice.text, "※ 一部のソースは日本語に未対応です。");
+  await page.close();
+});
+
+test("every admitted non-official source renders a qualified safe result and Japanese fallback", async () => {
+  const page = await newPage();
+  for (const sourceId of trustedCommunitySourceIds) {
+    const entry = searchManifest.entries.find(
+      (candidate) =>
+        candidate.sourceId === sourceId &&
+        candidate.docsLocale === "en" &&
+        candidate.status === "supported"
+    );
+    assert.ok(entry, `${sourceId}: missing supported manifest entry`);
+    assert.ok(entry.knownQueries?.[0], `${sourceId}: missing known query`);
+
+    await gotoQuery(
+      page,
+      `lang:${entry.programmingLanguage} ${entry.knownQueries[0]} source:all`,
+      `&docsLocale=ja&sourceSelection=explicit&sourceId=${encodeURIComponent(sourceId)}`
+    );
+    await waitForResults(page);
+    const rendered = await page.evaluate((expectedSourceId) => {
+      const item = document.querySelector(
+        `.result-item[data-source-id="${expectedSourceId}"]`
+      );
+      const link = item?.querySelector("h2 a");
+      const sourceOption = document
+        .querySelector(`input[value="${expectedSourceId}"]`)
+        ?.closest(".source-option");
+      return {
+        docsLocale: item?.getAttribute("data-docs-locale"),
+        href: link?.href,
+        target: link?.target,
+        rel: link?.rel,
+        resultQualification:
+          item?.querySelector(".result-qualification .lang-en")?.textContent,
+        sourceQualification:
+          sourceOption?.querySelector(".source-qualification .lang-en")?.textContent,
+        fallback: document.querySelector("[data-index-coverage] .lang-en")?.textContent
+      };
+    }, sourceId);
+
+    assert.equal(rendered.docsLocale, "en", sourceId);
+    assert.equal(new URL(rendered.href).protocol, "https:", sourceId);
+    assert.equal(rendered.target, "_blank", sourceId);
+    assert.match(rendered.rel ?? "", /noopener/, sourceId);
+    assert.match(rendered.resultQualification ?? "", /^Note: /, sourceId);
+    assert.match(rendered.sourceQualification ?? "", /^Note: /, sourceId);
+    assert.match(rendered.fallback ?? "", /English search results are shown/, sourceId);
+  }
+  await page.close();
+});
+
 test("blocked and disabled index states are distinguishable", async () => {
   const blockedPage = await newPage();
-  await gotoQuery(blockedPage, "objc NSObject", "&docsLocale=en");
-  await blockedPage.waitForSelector('[data-search-status][data-state="empty"]');
+  await gotoQuery(blockedPage, "objc Fast Enumeration", "&docsLocale=en");
+  await waitForResults(blockedPage);
+  assert.ok((await snapshot(blockedPage)).sources.includes("gnu-objc"));
   assert.match(
     await blockedPage.$eval("[data-index-coverage]", (element) => element.textContent),
     /index unavailable/
@@ -357,8 +1561,9 @@ test("blocked and disabled index states are distinguishable", async () => {
   await blockedPage.close();
 
   const disabledPage = await newPage();
-  await gotoQuery(disabledPage, "commonlisp format source:all", "&docsLocale=en");
-  await disabledPage.waitForSelector('[data-search-status][data-state="empty"]');
+  await gotoQuery(disabledPage, "commonlisp mapcar source:all", "&docsLocale=en");
+  await waitForResults(disabledPage);
+  assert.ok((await snapshot(disabledPage)).sources.includes("cl-language-reference"));
   assert.match(
     await disabledPage.$eval("[data-index-coverage]", (element) => element.textContent),
     /index disabled/
@@ -405,9 +1610,207 @@ test("results stay visible at desktop and mobile widths", async () => {
   }
 });
 
-test("worker search stays responsive and warm mobile search completes within 500ms", async () => {
+test("header actions and source picker stay compact at desktop and mobile widths", async () => {
+  for (const width of [1280, 375]) {
+    const page = await newPage({ width, height: 900 });
+    await gotoQuery(
+      page,
+      "lang:typescript strictNullChecks source:all",
+      "&docsLocale=ja&ui=ja"
+    );
+    await waitForResults(page);
+    await page.$eval("details.source-details", (details) => {
+      details.open = true;
+    });
+    assert.equal(
+      await page.$eval(".source-details summary .lang-ja", (element) => element.textContent),
+      "Sources"
+    );
+    const layout = await page.evaluate(() => {
+      const header = document.querySelector(".search-header").getBoundingClientRect();
+      const actions = document.querySelector(".header-actions").getBoundingClientRect();
+      const summaryStyle = getComputedStyle(document.querySelector(".source-details summary"));
+      const titleStyle = getComputedStyle(document.querySelector(".source-title"));
+      const optionStyle = getComputedStyle(document.querySelector(".source-option"));
+      const gridStyle = getComputedStyle(document.querySelector(".source-grid"));
+      const summaryRect = document.querySelector(".source-details summary").getBoundingClientRect();
+      const titleRect = document.querySelector(".source-title").getBoundingClientRect();
+      const sourceLinkRect = document.querySelector(".source-link").getBoundingClientRect();
+      const sourceToggleRect = document.querySelector("[data-source-option]").getBoundingClientRect();
+      return {
+        rightGap: Math.abs(header.right - actions.right),
+        summaryFont: Number.parseFloat(summaryStyle.fontSize),
+        titleFont: Number.parseFloat(titleStyle.fontSize),
+        optionPaddingTop: Number.parseFloat(optionStyle.paddingTop),
+        rowGap: Number.parseFloat(gridStyle.rowGap),
+        gridColumns: gridStyle.gridTemplateColumns.trim().split(/\s+/).length,
+        summaryHeight: summaryRect.height,
+        titleHeight: titleRect.height,
+        sourceLinkHeight: sourceLinkRect.height,
+        sourceToggleHeight: sourceToggleRect.height
+      };
+    });
+    assert.ok(layout.rightGap <= 1, `header actions right gap was ${layout.rightGap}px at ${width}px`);
+    assert.ok(layout.summaryFont <= 14, `source summary font was ${layout.summaryFont}px`);
+    assert.ok(layout.titleFont <= 13, `source title font was ${layout.titleFont}px`);
+    assert.ok(layout.optionPaddingTop <= 7, `source option padding was ${layout.optionPaddingTop}px`);
+    assert.ok(layout.rowGap <= 6, `source grid gap was ${layout.rowGap}px`);
+    assert.equal(layout.gridColumns, 1, `source grid had ${layout.gridColumns} columns at ${width}px`);
+    assert.ok(layout.summaryHeight >= 24);
+    assert.ok(layout.titleHeight >= 24);
+    assert.ok(layout.sourceLinkHeight >= 24);
+    assert.ok(layout.sourceToggleHeight >= 24);
+    await page.focus('[data-docs-radio][value="en"]');
+    const docsFocus = await page.$eval(
+      '[data-docs-radio][value="en"]',
+      (radio) => {
+        const style = getComputedStyle(radio.closest(".seg-btn"));
+        return {
+          outlineStyle: style.outlineStyle,
+          outlineWidth: Number.parseFloat(style.outlineWidth)
+        };
+      }
+    );
+    assert.equal(docsFocus.outlineStyle, "solid");
+    assert.ok(docsFocus.outlineWidth >= 2);
+    await page.close();
+  }
+});
+
+test("result hierarchy, shared badges, input chips, and count stay visually distinct", async () => {
+  for (const width of [1280, 375]) {
+    const page = await newPage({ width, height: 900 });
+    await gotoQuery(
+      page,
+      "lang:typescript strictNullChecks source:all",
+      "&docsLocale=en"
+    );
+    await waitForResults(page);
+    const layout = await page.evaluate(() => {
+      const item = document.querySelector(
+        '.result-item[data-source-id="typescript-deep-dive"]'
+      );
+      const classification = item.querySelector(".result-classification");
+      const resultKind = classification.querySelector(".source-kind");
+      const sourceKind = document
+        .querySelector('input[value="typescript-deep-dive"]')
+        .closest(".source-option")
+        .querySelector(".source-kind");
+      const title = item.querySelector("h2 a");
+      const attribution = item.querySelector(".result-attribution");
+      const sourceName = item.querySelector(".result-source-name");
+      const url = item.querySelector(".result-url");
+      const annotations = item.querySelector(".result-annotations");
+      const qualification = item.querySelector(".result-qualification");
+      const chip = document.querySelector(".fpill");
+      const chipRemove = document.querySelector(".fpill-x");
+      const status = document.querySelector('[data-search-status][data-state="success"]');
+      const results = document.querySelector(".results");
+      const styles = (element) => {
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return {
+          fontSize: Number.parseFloat(style.fontSize),
+          color: style.color,
+          backgroundColor: style.backgroundColor,
+          borderRadius: style.borderRadius,
+          borderTopWidth: style.borderTopWidth,
+          borderLeftWidth: style.borderLeftWidth,
+          borderColor: style.borderColor,
+          padding: style.padding,
+          minHeight: style.minHeight,
+          width: rect.width,
+          height: rect.height
+        };
+      };
+      return {
+        childOrder: [...item.children].map((element) =>
+          element.tagName === "H2" ? "result-title" : element.className
+        ),
+        classificationOrder: [...classification.children].map(
+          (element) => element.className
+        ),
+        attributionOrder: [...attribution.children].map((element) => element.className),
+        annotationOrder: [...annotations.children].map((element) => element.className),
+        resultKind: styles(resultKind),
+        sourceKind: styles(sourceKind),
+        title: styles(title),
+        sourceName: styles(sourceName),
+        url: styles(url),
+        qualification: styles(qualification),
+        chip: styles(chip),
+        chipRemove: styles(chipRemove),
+        status: styles(status),
+        resultsWidth: results.getBoundingClientRect().width,
+        horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth
+      };
+    });
+
+    assert.deepEqual(layout.childOrder, [
+      "result-classification",
+      "result-attribution",
+      "result-title",
+      "result-annotations"
+    ]);
+    assert.deepEqual(layout.classificationOrder, [
+      "result-classification-tag",
+      "result-classification-tag",
+      "source-kind"
+    ]);
+    assert.deepEqual(layout.attributionOrder, ["result-source-name", "result-url"]);
+    assert.deepEqual(layout.annotationOrder, [
+      "result-section",
+      "result-qualification"
+    ]);
+    assert.equal(layout.resultKind.backgroundColor, layout.sourceKind.backgroundColor);
+    assert.equal(layout.resultKind.borderRadius, layout.sourceKind.borderRadius);
+    assert.equal(layout.resultKind.borderColor, layout.sourceKind.borderColor);
+    assert.equal(layout.resultKind.borderTopWidth, layout.sourceKind.borderTopWidth);
+    assert.equal(layout.resultKind.padding, layout.sourceKind.padding);
+    assert.equal(layout.resultKind.minHeight, layout.sourceKind.minHeight);
+    assert.ok(layout.title.fontSize >= layout.qualification.fontSize + 5);
+    assert.ok(layout.title.fontSize > layout.sourceName.fontSize);
+    assert.ok(layout.sourceName.fontSize > layout.url.fontSize);
+    assert.notEqual(layout.title.color, layout.qualification.color);
+    assert.ok(Number.parseFloat(layout.url.borderLeftWidth) > 0);
+    assert.ok(layout.chip.height <= 30, `chip height was ${layout.chip.height}px at ${width}px`);
+    assert.ok(Number.parseFloat(layout.chip.borderRadius) >= layout.chip.height / 2);
+    assert.ok(layout.chipRemove.width >= 24 && layout.chipRemove.height >= 24);
+    assert.ok(layout.chipRemove.fontSize >= 16);
+    assert.equal(layout.status.borderTopWidth, "0px");
+    assert.equal(layout.status.backgroundColor, "rgba(0, 0, 0, 0)");
+    assert.ok(layout.status.width < layout.resultsWidth / 2);
+    assert.ok(layout.status.fontSize < layout.title.fontSize);
+    assert.equal(layout.horizontalOverflow, false);
+
+    if (width === 1280) {
+      await page.focus("[data-remove-tag]");
+      const focusStyle = await page.$eval("[data-remove-tag]", (element) => {
+        const style = getComputedStyle(element);
+        return {
+          outlineStyle: style.outlineStyle,
+          outlineWidth: Number.parseFloat(style.outlineWidth),
+          outlineOffset: Number.parseFloat(style.outlineOffset)
+        };
+      });
+      assert.equal(focusStyle.outlineStyle, "solid");
+      assert.ok(focusStyle.outlineWidth >= 2);
+      assert.ok(focusStyle.outlineOffset < 0);
+      await Promise.all([
+        page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 20_000 }),
+        page.keyboard.press("Enter")
+      ]);
+      assert.doesNotMatch(new URL(page.url()).searchParams.get("q"), /lang:typescript/);
+    }
+    await page.close();
+  }
+});
+
+test("documentation locale switch avoids navigation and meets cold and warm budgets", async () => {
   const page = await newPage({ width: 390, height: 800 });
   await page.emulateCPUThrottling(4);
+  await page.emulateNetworkConditions(PredefinedNetworkConditions["Fast 3G"]);
+  await page.setCacheEnabled(false);
   await page.evaluateOnNewDocument(() => {
     globalThis.__odsLongTasks = [];
     new PerformanceObserver((list) => {
@@ -417,10 +1820,32 @@ test("worker search stays responsive and warm mobile search completes within 500
     }).observe({ type: "longtask", buffered: true });
   });
 
-  await gotoQuery(page, "python,rust iterator", "&docsLocale=en");
+  await gotoQuery(page, "python list", "&docsLocale=en");
   await waitForResults(page);
-  await page.reload({ waitUntil: "domcontentloaded", timeout: 20_000 });
-  await waitForResults(page);
+  const timeOrigin = await page.evaluate(() => {
+    document.documentElement.dataset.performanceDocument = "preserved";
+    return performance.timeOrigin;
+  });
+
+  const coldStartedAt = Date.now();
+  await page.$eval('[data-docs-radio][value="ja"]', (radio) => radio.click());
+  await page.waitForFunction(
+    () =>
+      document.querySelector("[data-search-results]")?.dataset.docsLocale === "ja" &&
+      document.querySelector("[data-search-status]")?.dataset.state === "success",
+    { timeout: 20_000 }
+  );
+  const coldDuration = Date.now() - coldStartedAt;
+
+  const warmStartedAt = Date.now();
+  await page.$eval('[data-docs-radio][value="en"]', (radio) => radio.click());
+  await page.waitForFunction(
+    () =>
+      document.querySelector("[data-search-results]")?.dataset.docsLocale === "en" &&
+      document.querySelector("[data-search-status]")?.dataset.state === "success",
+    { timeout: 20_000 }
+  );
+  const warmDuration = Date.now() - warmStartedAt;
 
   const performanceResult = await page.evaluate(() => {
     const startedAt = performance.getEntriesByName("ods-search-start").at(-1)?.startTime ?? 0;
@@ -430,10 +1855,19 @@ test("worker search stays responsive and warm mobile search completes within 500
     const searchLongTasks = (globalThis.__odsLongTasks ?? []).filter(
       (entry) => entry.startTime >= startedAt && entry.duration > 50
     );
-    return { duration, searchLongTasks };
+    return {
+      duration,
+      searchLongTasks,
+      timeOrigin: performance.timeOrigin,
+      marker: document.documentElement.dataset.performanceDocument
+    };
   });
 
-  assert.ok(performanceResult.duration <= 500, `warm search took ${performanceResult.duration}ms`);
+  assert.ok(coldDuration <= 1_500, `cold locale switch took ${coldDuration}ms`);
+  assert.ok(warmDuration <= 500, `warm locale switch took ${warmDuration}ms`);
+  assert.ok(performanceResult.duration <= 500, `recorded warm search took ${performanceResult.duration}ms`);
+  assert.equal(performanceResult.timeOrigin, timeOrigin);
+  assert.equal(performanceResult.marker, "preserved");
   assert.deepEqual(performanceResult.searchLongTasks, []);
   await page.close();
 });

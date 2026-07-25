@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatorVersion": "2",
-  "catalogSha256": "4229ca009319c74c781c778d3f58dcc1e087ac13fefee8a0cda9c45a4c3035b5",
+  "catalogSha256": "617eeb89b01d4aac9295fea7e92efd08afed528b3ed59ec979dc63f596aa8088",
   "entries": [
     {
       "sourceId": "python-docs",
@@ -43,22 +43,22 @@
       "programmingLanguage": "python",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/python-docs.ja.44546056810ef3ab.json",
-      "recordCount": 6540,
-      "rawBytes": 851033,
-      "gzipBytes": 144216,
-      "brotliBytes": 90270,
-      "outputSha256": "44546056810ef3ab60afd9927c5bdbbcde21407536947d93fec0d87f2402aeea",
-      "inputSha256": "2acd1b65a8e075a746a5e33a420885fbe1d86a0d914609bf48c7d2dfe6083893",
+      "path": "/search-index/python-docs.ja.32f2ca4f0b1952c4.json",
+      "recordCount": 6541,
+      "rawBytes": 658111,
+      "gzipBytes": 134393,
+      "brotliBytes": 87705,
+      "outputSha256": "32f2ca4f0b1952c4aa2eae30b9c95b0beea4c9fafbf94536e6a843cae8e945ce",
+      "inputSha256": "7e8c37ae2c600dd44fc2ca58fcdae16e52f6a2ee947062b7afafbc0da5981c6d",
       "inputs": [
         {
           "url": "https://docs.python.org/ja/3/searchindex.js",
-          "sha256": "fba6a227eac6acf856bf24efb16dc8d1c2ba14f4ff3e3157007577aa079f0322",
-          "etag": "\"6a608f1c-4d4a70\"",
-          "lastModified": "Wed, 22 Jul 2026 09:36:28 GMT"
+          "sha256": "24bacd099f363d8605e7a1d775e28875fe10e88a35ae00ebb5b68f2a36a050ce",
+          "etag": "\"6a632022-4d54ce\"",
+          "lastModified": "Fri, 24 Jul 2026 08:19:46 GMT"
         }
       ],
-      "retrievedAt": "2026-07-23T05:13:34.011Z",
+      "retrievedAt": "2026-07-24T08:51:34.089Z",
       "adapter": "sphinx",
       "upstreamVersion": "Python 3 Japanese latest",
       "attribution": "Python documentation © Python Software Foundation; PSF License.",
@@ -103,6 +103,40 @@
       ]
     },
     {
+      "sourceId": "comprehensive-rust",
+      "sourceName": "Comprehensive Rust",
+      "sourceKind": "conventional",
+      "programmingLanguage": "rust",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/comprehensive-rust.en.b9dee727bf00b69d.json",
+      "recordCount": 562,
+      "rawBytes": 46140,
+      "gzipBytes": 8336,
+      "brotliBytes": 7208,
+      "outputSha256": "b9dee727bf00b69db6f15ed947f87abaeea74b5ec6a4b79986aa7f3862187f83",
+      "inputSha256": "316c2aa5ab3437351340b923ab63782c9ca93276ff4796c83e0a0a1f42630a81",
+      "inputs": [
+        {
+          "url": "https://raw.githubusercontent.com/google/comprehensive-rust/main/src/SUMMARY.md",
+          "sha256": "58f123188a2a48d58aa6fd59be35b755211bc81dd71d0654353d0b2b71751e7e",
+          "etag": "W/\"d4857668ffb40f680167636c9d612a4645cbfd237c3c9a1f63c3cfdb7a8f0917\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:11.552Z",
+      "adapter": "markdown-summary",
+      "upstreamVersion": "Comprehensive Rust rolling course",
+      "attribution": "Comprehensive Rust course content © Google LLC and contributors; CC BY 4.0.",
+      "licenseUrl": "https://github.com/google/comprehensive-rust/blob/main/LICENSE-CC-BY",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Borrowing",
+        "Ownership"
+      ],
+      "qualification": "Google-maintained course material, not an API reference.",
+      "qualificationJa": "Google が保守する講座資料であり、API リファレンスではありません。"
+    },
+    {
       "sourceId": "tc39-ecma262",
       "sourceName": "ECMAScript Specification",
       "sourceKind": "official",
@@ -120,8 +154,8 @@
         {
           "url": "https://tc39.es/ecma262/",
           "sha256": "6cd5244d3dd8046734b6e41123c0719986ee4091e92c81de9c510084e41c28c5",
-          "etag": "W/\"6a5e56b9-73f3fe\"",
-          "lastModified": "Mon, 20 Jul 2026 17:11:21 GMT"
+          "etag": "W/\"6a5e56b6-73f3fe\"",
+          "lastModified": "Mon, 20 Jul 2026 17:11:18 GMT"
         }
       ],
       "retrievedAt": "2026-07-23T05:13:40.353Z",
@@ -174,8 +208,66 @@
       "sourceKind": "conventional",
       "programmingLanguage": "javascript",
       "docsLocale": "ja",
-      "status": "planned",
-      "reason": "No maintained Japanese JavaScript index is configured."
+      "status": "supported",
+      "path": "/search-index/mdn-js.ja.c17728a582cf2b83.json",
+      "recordCount": 1028,
+      "rawBytes": 76913,
+      "gzipBytes": 13803,
+      "brotliBytes": 11317,
+      "outputSha256": "c17728a582cf2b831b2d7cb0fd8d3485b2faf428e2cfee27cddac611ac9aec99",
+      "inputSha256": "b76c98354ce38b633542a68ec93f51afb65198f6e90e919de91e1e638fd0d17f",
+      "inputs": [
+        {
+          "url": "https://developer.mozilla.org/ja/search-index.json",
+          "sha256": "5e33614c3f277d97fd82f4cb619a20fd3696f7086116effa83e55c25933d06e7",
+          "etag": "\"130c09b77c16f21c9ca995ad2b0ce882\"",
+          "lastModified": "Fri, 24 Jul 2026 01:15:01 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T02:36:10.372Z",
+      "adapter": "mdn-search-index",
+      "upstreamVersion": "MDN Web Docs ja rolling search index",
+      "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
+      "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "プロミス",
+        "配列"
+      ]
+    },
+    {
+      "sourceId": "javascript-info",
+      "sourceName": "The Modern JavaScript Tutorial",
+      "sourceKind": "conventional",
+      "programmingLanguage": "javascript",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/javascript-info.en.202a582353154721.json",
+      "recordCount": 202,
+      "rawBytes": 15466,
+      "gzipBytes": 3518,
+      "brotliBytes": 2995,
+      "outputSha256": "202a5823531547213bccb5dcd15a2d69d7b87747b182e7bc8797f27d28385038",
+      "inputSha256": "6b8e92964a000b99b47c88eb27a4a0308a49af10145d40143b832020b92116cb",
+      "inputs": [
+        {
+          "url": "https://javascript.info/",
+          "sha256": "962936d98c24675c83d78d04c21b81da2bb0ce6a0283aa5d8105eb1879732b0d",
+          "etag": "W/\"d0d0-Ved7RTrwQCwQLmRVv/7BiR3jryI\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:16.890Z",
+      "adapter": "html-course-toc",
+      "upstreamVersion": "The Modern JavaScript Tutorial rolling",
+      "attribution": "The Modern JavaScript Tutorial © Ilya Kantor and contributors. Repository terms are based on CC BY-NC 4.0; the site terms describe CC BY-NC-SA. Titles and direct links only.",
+      "licenseUrl": "https://github.com/javascript-tutorial/en.javascript.info/blob/master/LICENSE.md",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Async/await",
+        "Event loop"
+      ],
+      "qualification": "Tutorial metadata only; the repository and website use different Creative Commons license labels.",
+      "qualificationJa": "索引はタイトル等のメタデータのみです。リポジトリとWebサイトでCreative Commonsライセンス表記が異なります。"
     },
     {
       "sourceId": "typescript-docs",
@@ -211,13 +303,73 @@
       ]
     },
     {
+      "sourceId": "typescript-deep-dive",
+      "sourceName": "TypeScript Deep Dive",
+      "sourceKind": "conventional",
+      "programmingLanguage": "typescript",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/typescript-deep-dive.en.7c28b9683e1ecb51.json",
+      "recordCount": 124,
+      "rawBytes": 7781,
+      "gzipBytes": 1932,
+      "brotliBytes": 1655,
+      "outputSha256": "7c28b9683e1ecb5149b92bd3b735b8b1f21386517b00ceae5b09676e28507ac0",
+      "inputSha256": "b3b3ef21dbfb888b51bd2b2e4083453f45e7888ca311b6d053a315f1c5fbf6d2",
+      "inputs": [
+        {
+          "url": "https://raw.githubusercontent.com/basarat/typescript-book/master/SUMMARY.md",
+          "sha256": "1e134bc8fac6a87a09b5d9b7e37bbb987f9ffc8f53d7112506f976b512c0d562",
+          "etag": "W/\"eeba139a8259353145599fd08521fbc326f0bce4fb52a81cbed4bb9a847eb7fb\""
+        },
+        {
+          "url": "https://basarat.gitbook.io/typescript/sitemap-pages.xml",
+          "sha256": "7e906763e759801ff5f2c94af56dcf2681d303774a82290b2ffd9ddcf0abf3c8"
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:17.047Z",
+      "adapter": "gitbook-summary-sitemap",
+      "upstreamVersion": "TypeScript Deep Dive GitBook rolling",
+      "attribution": "TypeScript Deep Dive © Basarat Ali Syed; CC BY 4.0.",
+      "licenseUrl": "https://github.com/basarat/typescript-book/blob/master/LICENSE.md",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "strictNullChecks",
+        "Compiler Internals"
+      ],
+      "qualification": "A classic deep guide, but many chapters predate recent TypeScript features; verify current behavior in the official docs.",
+      "qualificationJa": "定評ある詳説書ですが、多くの章は最近のTypeScript機能より前に書かれています。現在の挙動は公式文書でも確認してください。"
+    },
+    {
       "sourceId": "go-docs",
       "sourceName": "Go Documentation",
       "sourceKind": "official",
       "programmingLanguage": "go",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "The DevDocs Go index covers the standard library, not the language guides."
+      "status": "supported",
+      "path": "/search-index/go-docs.en.a915dfc97e202365.json",
+      "recordCount": 48,
+      "rawBytes": 3514,
+      "gzipBytes": 1130,
+      "brotliBytes": 917,
+      "outputSha256": "a915dfc97e202365197ebbf6f0a602bb26eaf1b571233ffe59d395c2997c7427",
+      "inputSha256": "6b124aaa564909f20c9ae3c5226e2fa202ca7d95cf6366a8fb4ddb85f6222249",
+      "inputs": [
+        {
+          "url": "https://go.dev/doc/",
+          "sha256": "76024207eac8f80e19a132904181b23419e4730aab80eca190a59f9f04f03bd8"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:49:06.719Z",
+      "adapter": "scoped-html-toc",
+      "upstreamVersion": "Go language documentation rolling",
+      "attribution": "Go documentation © The Go Authors; BSD-3-Clause.",
+      "licenseUrl": "https://github.com/golang/website/blob/master/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Effective Go",
+        "fuzzing"
+      ]
     },
     {
       "sourceId": "go-std",
@@ -253,13 +405,104 @@
       ]
     },
     {
+      "sourceId": "go-by-example",
+      "sourceName": "Go by Example",
+      "sourceKind": "conventional",
+      "programmingLanguage": "go",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/go-by-example.en.2e749cc8961be84c.json",
+      "recordCount": 85,
+      "rawBytes": 3818,
+      "gzipBytes": 1193,
+      "brotliBytes": 1027,
+      "outputSha256": "2e749cc8961be84c53a3dd0f39b89291aa59a1d4685563fcd4e0a3592390fe90",
+      "inputSha256": "15464fb99efa9f6575edc386d2a4caf17611251f58154afe12985b7d478f2d45",
+      "inputs": [
+        {
+          "url": "https://gobyexample.com/",
+          "sha256": "959d0b2c69a2b001469fa1bfdab669fa9b1295cc4d04a8f451071c5e2a4363fe",
+          "etag": "\"8fde7996239ffc5ea28ca13dde2ca841\"",
+          "lastModified": "Mon, 06 Jul 2026 15:38:33 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:17.014Z",
+      "adapter": "html-example-toc",
+      "upstreamVersion": "Go by Example rolling",
+      "attribution": "Go by Example © Mark McGranaghan; CC BY 3.0 Unported.",
+      "licenseUrl": "https://github.com/mmcgrana/gobyexample#license",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Goroutines",
+        "JSON"
+      ],
+      "qualification": "Example-oriented learning material, not the Go language specification or API reference.",
+      "qualificationJa": "例題中心の学習資料であり、Go言語仕様やAPIリファレンスではありません。"
+    },
+    {
       "sourceId": "cppreference-c",
       "sourceName": "cppreference C",
       "sourceKind": "community",
       "programmingLanguage": "c",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/cppreference-c.en.a3e146d6bcb3c5c9.json",
+      "recordCount": 380,
+      "rawBytes": 12961,
+      "gzipBytes": 3212,
+      "brotliBytes": 2695,
+      "outputSha256": "a3e146d6bcb3c5c954085f55a7a00b66a4199c2625c9e33e364544d13a0f16db",
+      "inputSha256": "6f6b55bcf14ab46fef7af66b0e08dce5c8e12a59f7577ec0c5b89dc08a10179b",
+      "inputs": [
+        {
+          "url": "https://en.cppreference.com/c/index",
+          "sha256": "51c647342ce1423b3e9c2b2db0009c988fa817e1fefc4b496e3e17f75014aa48",
+          "lastModified": "Fri, 17 Jul 2026 12:16:03 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T15:31:18.403Z",
+      "adapter": "html-link-index",
+      "upstreamVersion": "cppreference C rolling",
+      "attribution": "cppreference content; CC BY-SA 3.0 and GFDL.",
+      "licenseUrl": "https://en.cppreference.com/Cppreference:Copyright/CC-BY-SA",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "atomic",
+        "type support"
+      ]
+    },
+    {
+      "sourceId": "cppreference-c",
+      "sourceName": "cppreference C",
+      "sourceKind": "community",
+      "programmingLanguage": "c",
+      "docsLocale": "ja",
+      "status": "supported",
+      "path": "/search-index/cppreference-c.ja.fdae67a60c63a0b7.json",
+      "recordCount": 39,
+      "rawBytes": 2269,
+      "gzipBytes": 926,
+      "brotliBytes": 716,
+      "outputSha256": "fdae67a60c63a0b787c607aafb2ea462187968f107098b7fa85e1b02a0610a59",
+      "inputSha256": "eb4ee7636ecbe30c339960d1d3d1b19c638a19c7a17a3b9fa2b84c525ee344e3",
+      "inputs": [
+        {
+          "url": "https://ja.cppreference.com/c",
+          "sha256": "d6fd33ba995290536480802be7e577d9b4f923904bc215497885814352191184",
+          "lastModified": "Fri, 17 Jul 2026 12:50:30 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T15:31:18.374Z",
+      "adapter": "scoped-html-toc",
+      "upstreamVersion": "cppreference Japanese C rolling (partial translation)",
+      "attribution": "Partial Japanese community translation of cppreference; CC BY-SA 3.0 and GFDL.",
+      "licenseUrl": "https://ja.cppreference.com/Cppreference:Copyright/CC-BY-SA",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "動的メモリ管理",
+        "アトミック操作"
+      ],
+      "qualification": "Partial Japanese community edition"
     },
     {
       "sourceId": "cppreference-cpp",
@@ -267,8 +510,98 @@
       "sourceKind": "community",
       "programmingLanguage": "cpp",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/cppreference-cpp.en.1d366cc52626c2eb.json",
+      "recordCount": 214,
+      "rawBytes": 7533,
+      "gzipBytes": 2274,
+      "brotliBytes": 1877,
+      "outputSha256": "1d366cc52626c2eba2477644e5c15ef6e067cceeb7d7bdb8f8f0de9adb489f21",
+      "inputSha256": "dfee34e69b8778b359682849d329ab80b0061f0a7768fb7bce7ce3ee257cd90b",
+      "inputs": [
+        {
+          "url": "https://en.cppreference.com/cpp/index",
+          "sha256": "d11505b6eab5d226f37f231481f4b41aa96958e8f38ebd0b669a3d002a8fd7e1",
+          "lastModified": "Fri, 17 Jul 2026 12:15:21 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T15:31:18.430Z",
+      "adapter": "html-link-index",
+      "upstreamVersion": "cppreference C++ rolling",
+      "attribution": "cppreference content; CC BY-SA 3.0 and GFDL.",
+      "licenseUrl": "https://en.cppreference.com/Cppreference:Copyright/CC-BY-SA",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "ranges",
+        "concepts library"
+      ]
+    },
+    {
+      "sourceId": "cppreference-cpp",
+      "sourceName": "cppreference C++",
+      "sourceKind": "community",
+      "programmingLanguage": "cpp",
+      "docsLocale": "ja",
+      "status": "supported",
+      "path": "/search-index/cppreference-cpp.ja.290290d88fa15482.json",
+      "recordCount": 99,
+      "rawBytes": 6080,
+      "gzipBytes": 1850,
+      "brotliBytes": 1498,
+      "outputSha256": "290290d88fa15482196b52502dba857fb20bf553550ff5bc0f6e3bb830dc5c10",
+      "inputSha256": "a6a3608adfe8cb28ad9d8babc9200c8b284357d1010ea9bfc1d5e23bbbeb3cd2",
+      "inputs": [
+        {
+          "url": "https://ja.cppreference.com/cpp",
+          "sha256": "8845c6437e4f0ad9e349a01eb428823d7593ee6a67ebd9b96d9823686b4a07d8",
+          "lastModified": "Fri, 17 Jul 2026 15:12:44 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T15:31:18.417Z",
+      "adapter": "scoped-html-toc",
+      "upstreamVersion": "cppreference Japanese C++ rolling (partial translation)",
+      "attribution": "Partial Japanese community translation of cppreference; CC BY-SA 3.0 and GFDL.",
+      "licenseUrl": "https://ja.cppreference.com/Cppreference:Copyright/CC-BY-SA",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "コンセプトライブラリ",
+        "範囲ライブラリ"
+      ],
+      "qualification": "Partial Japanese community edition"
+    },
+    {
+      "sourceId": "cpp-core-guidelines",
+      "sourceName": "C++ Core Guidelines",
+      "sourceKind": "conventional",
+      "programmingLanguage": "cpp",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/cpp-core-guidelines.en.c56b9aca50734d82.json",
+      "recordCount": 607,
+      "rawBytes": 63347,
+      "gzipBytes": 15717,
+      "brotliBytes": 13074,
+      "outputSha256": "c56b9aca50734d82149cefc5f0d3200175ce0da6c3a190c3651ab8e9699ed88a",
+      "inputSha256": "1578e595f56dcf400989fdf36f34e3f99492c6bd04b2d41b9242a01206da7091",
+      "inputs": [
+        {
+          "url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+          "sha256": "be29ae459bc206916c0737117ae43a1d4ac601fe2bf18cb6c10186613f083fa2",
+          "etag": "W/\"f143ccddccb18156d80f62a30e93986d520b3717b8f78924b6ac9bc96c688a95\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:17.865Z",
+      "adapter": "anchored-markdown-headings",
+      "upstreamVersion": "C++ Core Guidelines rolling",
+      "attribution": "C++ Core Guidelines © Standard C++ Foundation and contributors. Rule headings and direct links only under the project's custom license.",
+      "licenseUrl": "https://github.com/isocpp/CppCoreGuidelines/blob/master/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "RAII",
+        "Prefer immutable data"
+      ],
+      "qualification": "Design and coding guidelines rather than a complete language reference; the index stores rule metadata only under the source's custom terms.",
+      "qualificationJa": "完全な言語リファレンスではなく設計・コーディング指針です。独自の利用条件に従い、索引にはルールのメタデータのみを収録します。"
     },
     {
       "sourceId": "csharp-docs",
@@ -308,8 +641,32 @@
       "sourceKind": "official",
       "programmingLanguage": "csharp",
       "docsLocale": "ja",
-      "status": "planned",
-      "reason": "The public source TOC contains English titles only."
+      "status": "supported",
+      "path": "/search-index/csharp-docs.ja.b0d560951450ee21.json",
+      "recordCount": 279,
+      "rawBytes": 33135,
+      "gzipBytes": 7760,
+      "brotliBytes": 6551,
+      "outputSha256": "b0d560951450ee212b889b3fe079a48d9d9df21874fa82d81507906dd66e814d",
+      "inputSha256": "cb0128da4fa91017530d6cd03f81c19b6c551cede84a0969ebfd29920c8cdd14",
+      "inputs": [
+        {
+          "url": "https://learn.microsoft.com/ja-jp/dotnet/csharp/toc.json",
+          "sha256": "5d9735a23bdb5c05da49676b8d20af84447ef201b64144ab5061598924c458bc",
+          "etag": "\"0Q6UMgcxV3PpZbHY2d5NFV8rIik=\"",
+          "lastModified": "Wed, 22 Jul 2026 01:21:51 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:35:24.774Z",
+      "adapter": "microsoft-learn-localized-toc",
+      "upstreamVersion": "Microsoft Learn localized TOC rolling",
+      "attribution": ".NET documentation © Microsoft and contributors; CC BY 4.0.",
+      "licenseUrl": "https://github.com/dotnet/docs/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "ジェネリック",
+        "非同期プログラミング"
+      ]
     },
     {
       "sourceId": "java-docs",
@@ -351,6 +708,45 @@
       ]
     },
     {
+      "sourceId": "java-docs",
+      "sourceName": "Oracle Java Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "java",
+      "docsLocale": "ja",
+      "status": "supported",
+      "path": "/search-index/java-docs.ja.5f57c577795d9afb.json",
+      "recordCount": 5207,
+      "rawBytes": 503310,
+      "gzipBytes": 66462,
+      "brotliBytes": 49808,
+      "outputSha256": "5f57c577795d9afb90f6f4c199ab1f8ff2d60983ebb5f4776d615269a3dbef4b",
+      "inputSha256": "db8e3ab95c48ee7e0916dee2a789938ff05b72c898f99d084d9c670e205889da",
+      "inputs": [
+        {
+          "url": "https://docs.oracle.com/javase/jp/25/docs/api/package-search-index.js",
+          "sha256": "a1d2e7c5217cafb1d382bd1e09d6986a1c2f12d0141202391f3f27cf744b0ee9",
+          "etag": "\"22995dd6c293c5d8d60e410e382cfbab:1767582136.078742\"",
+          "lastModified": "Fri, 06 Mar 2026 00:36:23 GMT"
+        },
+        {
+          "url": "https://docs.oracle.com/javase/jp/25/docs/api/type-search-index.js",
+          "sha256": "06f0751bda589294a4b22fb5b6cc01a74a1c3633aab314ed3427844db4a608d2",
+          "etag": "\"28730211d9111c35aa4bb64303d82347:1767582136.756863\"",
+          "lastModified": "Fri, 06 Mar 2026 00:36:23 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:33:40.790Z",
+      "adapter": "javadoc-types",
+      "upstreamVersion": "Java SE 25 Japanese",
+      "attribution": "Java SE 25 & JDK 25 Japanese API documentation © Oracle and/or its affiliates. All rights reserved.",
+      "licenseUrl": "https://docs.oracle.com/javase/jp/25/docs/legal/copyright.html",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "String",
+        "List"
+      ]
+    },
+    {
       "sourceId": "php-manual",
       "sourceName": "PHP Manual",
       "sourceKind": "official",
@@ -363,15 +759,15 @@
       "gzipBytes": 91086,
       "brotliBytes": 73332,
       "outputSha256": "7f373f39bfe1d7b31e4731dd509e62f4c8f51f231b76cd668458c6a1c1ef9b4d",
-      "inputSha256": "1d28d4d9440ff2d97860c605c1added679d4ae29666be0a0306597f0d2dc3d6e",
+      "inputSha256": "e8dd9b385712d3d3cea8eabe7948ed80039c2dfc1192358c4d4232704f88178b",
       "inputs": [
         {
           "url": "https://www.php.net/manual/en/indexes.functions.php",
-          "sha256": "031398b394bc3f524593a60b37393f55f41dd918e1c0c33adaab8ce27f5f7cf5",
-          "lastModified": "Thu, 23 Jul 2026 04:09:26 GMT"
+          "sha256": "5238f76c6101bb5e0626c851dc074978025b06dd81cfc60fc5271580a48d5d24",
+          "lastModified": "Thu, 23 Jul 2026 14:09:32 GMT"
         }
       ],
-      "retrievedAt": "2026-07-23T05:19:40.029Z",
+      "retrievedAt": "2026-07-23T14:44:20.339Z",
       "adapter": "php-manual-index",
       "upstreamVersion": "PHP Manual rolling",
       "attribution": "PHP Manual © PHP Documentation Group, CC BY 3.0 or later.",
@@ -394,15 +790,15 @@
       "gzipBytes": 91168,
       "brotliBytes": 73366,
       "outputSha256": "4d3928ff0adf875ce79da507b4577e0a75f5b5f81a274304007958832595e5f9",
-      "inputSha256": "a67336ec0b938b904c7df180223ae34869a761593cd574f4d78334fbdf9223ed",
+      "inputSha256": "c4e0c1d948fbc1799734802ca53ddefe49fd1777353fcf16f026d991e84a2953",
       "inputs": [
         {
           "url": "https://www.php.net/manual/ja/indexes.functions.php",
-          "sha256": "b6d3ae29a211da43f9dbd9ded433f9da3208a6f5ebc9722709b9748a89aa46db",
-          "lastModified": "Thu, 23 Jul 2026 04:20:54 GMT"
+          "sha256": "3584c297b0461c8f9bbf07afdf06fda6c53a65904e1e16a54f475ff3c0b70293",
+          "lastModified": "Thu, 23 Jul 2026 14:22:18 GMT"
         }
       ],
-      "retrievedAt": "2026-07-23T05:19:41.219Z",
+      "retrievedAt": "2026-07-23T14:44:19.279Z",
       "adapter": "php-manual-index",
       "upstreamVersion": "PHP Manual rolling",
       "attribution": "PHP Manual © PHP Documentation Group, CC BY 3.0 or later.",
@@ -411,6 +807,41 @@
       "knownQueries": [
         "array_map"
       ]
+    },
+    {
+      "sourceId": "php-the-right-way",
+      "sourceName": "PHP: The Right Way",
+      "sourceKind": "community",
+      "programmingLanguage": "php",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/php-the-right-way.en.761435119a6ec851.json",
+      "recordCount": 177,
+      "rawBytes": 12254,
+      "gzipBytes": 3361,
+      "brotliBytes": 2762,
+      "outputSha256": "761435119a6ec8518ac1ce87a97c7a121bfbc0bfc84202d888bee1d1463e6e33",
+      "inputSha256": "dff4ef4301fa125ee571b4af8f2f3be5361496b981708d80d04675dc9e59dd62",
+      "inputs": [
+        {
+          "url": "https://phptherightway.com/",
+          "sha256": "63ae0bf9b17043095626e0941cc41955faab0b5a1c1f8bfc1705b67b35dc2eb2",
+          "etag": "W/\"69ef2637-4595e\"",
+          "lastModified": "Mon, 27 Apr 2026 09:02:47 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:20.418Z",
+      "adapter": "html-heading-index",
+      "upstreamVersion": "PHP: The Right Way rolling",
+      "attribution": "PHP: The Right Way © Josh Lockhart and contributors; CC BY-NC-SA 3.0.",
+      "licenseUrl": "https://github.com/codeguy/php-the-right-way/blob/gh-pages/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Dependency Injection",
+        "Composer and Packagist"
+      ],
+      "qualification": "Practical community recommendations and curated links, not the PHP language reference.",
+      "qualificationJa": "コミュニティによる実践的な推奨事項とリンク集であり、PHP言語リファレンスではありません。"
     },
     {
       "sourceId": "ruby-docs",
@@ -502,8 +933,32 @@
       "sourceKind": "official",
       "programmingLanguage": "swift",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/swift-docs.en.10b499234d4554da.json",
+      "recordCount": 44,
+      "rawBytes": 4448,
+      "gzipBytes": 857,
+      "brotliBytes": 700,
+      "outputSha256": "10b499234d4554da505758082491bf5fdb265422fc7e761ae65aa8b0a32ef598",
+      "inputSha256": "48ac559ba3227171cb9d08557904877c1ae44e92daee5348a2e69888bdaf40c6",
+      "inputs": [
+        {
+          "url": "https://docs.swift.org/swift-book/index/index.json",
+          "sha256": "24fa6b823371a221811472b6fd3b686adbc5f4ed480de6d3056873c25f8fbcea",
+          "etag": "\"21f2-6573c77c027c0\"",
+          "lastModified": "Thu, 23 Jul 2026 00:37:59 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:46:09.796Z",
+      "adapter": "docc-navigator",
+      "upstreamVersion": "The Swift Programming Language 6.4 beta",
+      "attribution": "The Swift Programming Language © Apple Inc. and Swift contributors; Apache 2.0.",
+      "licenseUrl": "https://github.com/swiftlang/swift-book/blob/main/LICENSE.txt",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Concurrency",
+        "Generics"
+      ]
     },
     {
       "sourceId": "kotlin-docs",
@@ -511,8 +966,32 @@
       "sourceKind": "official",
       "programmingLanguage": "kotlin",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/kotlin-docs.en.6ed24013d10831bc.json",
+      "recordCount": 361,
+      "rawBytes": 18613,
+      "gzipBytes": 4872,
+      "brotliBytes": 4017,
+      "outputSha256": "6ed24013d10831bc0e376c3be082a00ea91ca7dcf96e58f076fef0174596b39a",
+      "inputSha256": "0818424295e91bccf69af11d7f3a1776861c770984d40b568b996d266079c9f2",
+      "inputs": [
+        {
+          "url": "https://kotlinlang.org/docs/sitemap.xml",
+          "sha256": "6b5cd81503f68cf45822f5ec9a2c576db08dbb22a4be414d2a914fd359c40553",
+          "etag": "W/\"5a444f8b6b4d46a8955d607ac7022970\"",
+          "lastModified": "Fri, 24 Jul 2026 15:16:17 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T15:31:20.892Z",
+      "adapter": "sitemap",
+      "upstreamVersion": "Kotlin documentation rolling sitemap",
+      "attribution": "Kotlin documentation © JetBrains and contributors; Apache 2.0.",
+      "licenseUrl": "https://github.com/JetBrains/kotlin-web-site/blob/master/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Coroutines",
+        "Multiplatform"
+      ]
     },
     {
       "sourceId": "scala-docs",
@@ -520,8 +999,64 @@
       "sourceKind": "official",
       "programmingLanguage": "scala",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/scala-docs.en.570358b2f37327b5.json",
+      "recordCount": 32,
+      "rawBytes": 1749,
+      "gzipBytes": 790,
+      "brotliBytes": 601,
+      "outputSha256": "570358b2f37327b595786ec55e01125b6c1c170dfdaae6100dcb74b40c7efd4e",
+      "inputSha256": "cc19edf572f048671906d69a48f5a8014b537dc113af4321da9f46d008195b75",
+      "inputs": [
+        {
+          "url": "https://docs.scala-lang.org/",
+          "sha256": "64e248288e549f185c7f15d2141c985a3ed1f0fa92e7bbb7a1f62711b18558df",
+          "lastModified": "Thu, 23 Jul 2026 03:30:14 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:46:09.850Z",
+      "adapter": "html-top-level-toc",
+      "upstreamVersion": "Scala documentation rolling",
+      "attribution": "Scala documentation © Scala Center and contributors. Titles and direct links only; the documentation repository declares no separate reuse license.",
+      "licenseUrl": "https://www.scala-lang.org/license/",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Tour of Scala",
+        "Scala 3 Book"
+      ]
+    },
+    {
+      "sourceId": "scala-docs-ja",
+      "sourceName": "Scala Documentation (Japanese community translation)",
+      "sourceKind": "community",
+      "programmingLanguage": "scala",
+      "docsLocale": "ja",
+      "status": "supported",
+      "path": "/search-index/scala-docs-ja.ja.024c55b6279d1131.json",
+      "recordCount": 8,
+      "rawBytes": 1024,
+      "gzipBytes": 614,
+      "brotliBytes": 497,
+      "outputSha256": "024c55b6279d11315a394ac7834cee340439a5147b3fa941337161a2211b5df9",
+      "inputSha256": "0e1c2bea8ec43f028b8f1e0e3dde3a420d3a6416c4e54088fca1cb0c5af11d76",
+      "inputs": [
+        {
+          "url": "https://docs.scala-lang.org/ja/",
+          "sha256": "696aad34cf4b51fed0c1e3555304e19b883efa44362b6f47eee56ae2b584f093",
+          "lastModified": "Thu, 23 Jul 2026 03:30:14 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T07:50:24.896Z",
+      "adapter": "html-top-level-toc",
+      "upstreamVersion": "Scala documentation Japanese partial edition",
+      "attribution": "Scala documentation Japanese community translation © its contributors. Titles and direct links only; the documentation repository declares no separate reuse license.",
+      "licenseUrl": "https://www.scala-lang.org/license/",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Scala ツアー",
+        "チートシート"
+      ],
+      "qualification": "Partial Japanese community translation"
     },
     {
       "sourceId": "dart-docs",
@@ -529,8 +1064,32 @@
       "sourceKind": "official",
       "programmingLanguage": "dart",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/dart-docs.en.0b20a8d9a26b0495.json",
+      "recordCount": 1177,
+      "rawBytes": 92257,
+      "gzipBytes": 18364,
+      "brotliBytes": 14245,
+      "outputSha256": "0b20a8d9a26b0495e32eb8ca783f0f06be219ab7d51bbf22a65ddb8a264dbabf",
+      "inputSha256": "b899dff61f3a13d19c20d4c3c630fda304b44505cc494f8fa5b5be5c6286b50f",
+      "inputs": [
+        {
+          "url": "https://dart.dev/sitemap.xml",
+          "sha256": "be98a3199d75e546fbc4a21a9ff0bd58e89245c8bf3b5b03a15e40f56e9f4f6d",
+          "etag": "\"944d6588445264d54430aace639e7ef2b740ae36adf34424d088ce27c5b2c257-br\"",
+          "lastModified": "Thu, 23 Jul 2026 19:59:13 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T02:36:09.860Z",
+      "adapter": "sitemap",
+      "upstreamVersion": "Dart documentation rolling sitemap",
+      "attribution": "Dart documentation © Dart project contributors; BSD-3-Clause.",
+      "licenseUrl": "https://github.com/dart-lang/site-www/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Language",
+        "Effective Dart"
+      ]
     },
     {
       "sourceId": "dart-api",
@@ -538,8 +1097,31 @@
       "sourceKind": "official",
       "programmingLanguage": "dart",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/dart-api.en.94ef20997cf51b32.json",
+      "recordCount": 12881,
+      "rawBytes": 1260128,
+      "gzipBytes": 129808,
+      "brotliBytes": 105253,
+      "outputSha256": "94ef20997cf51b325e37116f4a70ef6ea4a7d32e4c3e2af6d370434131114b9d",
+      "inputSha256": "aa3ea75e51d799c93b3454202745c9fd0501049ae52d52837cc84b529ed6aa4f",
+      "inputs": [
+        {
+          "url": "https://api.dart.dev/index.json",
+          "sha256": "e1f519f6cb399cdadbfc30aeb801682f6be6367d7d0151f77b2628ff540dfa26",
+          "lastModified": "Tue, 09 Jun 2026 09:21:12 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:46:11.300Z",
+      "adapter": "dartdoc-index",
+      "upstreamVersion": "Dart API rolling",
+      "attribution": "Dart API documentation © Dart project contributors; BSD-3-Clause.",
+      "licenseUrl": "https://github.com/dart-lang/sdk/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "dart:async.Future",
+        "dart:core.String"
+      ]
     },
     {
       "sourceId": "elixir-docs",
@@ -547,8 +1129,38 @@
       "sourceKind": "official",
       "programmingLanguage": "elixir",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/elixir-docs.en.5f4585e4598065e6.json",
+      "recordCount": 2369,
+      "rawBytes": 158924,
+      "gzipBytes": 28185,
+      "brotliBytes": 24462,
+      "outputSha256": "5f4585e4598065e6c5fd545dbc6a6e34c6977d3a66a3f9c17b7233afe4c87b3e",
+      "inputSha256": "d090ac0c0a4f5e7e100e09fba2a74e15a91048fbabb6eb9287588f95f554487e",
+      "inputs": [
+        {
+          "url": "https://hexdocs.pm/elixir/1.20.1/Kernel.html",
+          "sha256": "1f92420faad1b223fee8313eb3b8368fde91cf6f690c01243c49a408a14bbdf1",
+          "etag": "W/\"6ffadba05ddb6258e8cc576c0268a0c1\"",
+          "lastModified": "Tue, 09 Jun 2026 14:08:48 GMT"
+        },
+        {
+          "url": "https://hexdocs.pm/elixir/1.20.1/dist/sidebar_items-AD19088B.js",
+          "sha256": "3f05ec2ec903184203e1537dd2b4e9934e7e863ea47a7bd03ffee1c64c634aef",
+          "etag": "W/\"ad19088b8a8b625d2396634ef4d336b6\"",
+          "lastModified": "Tue, 09 Jun 2026 14:08:50 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:41:05.730Z",
+      "adapter": "exdoc-sidebar",
+      "upstreamVersion": "Elixir 1.20.1",
+      "attribution": "Elixir documentation © Elixir contributors; Apache-2.0.",
+      "licenseUrl": "https://github.com/elixir-lang/elixir/blob/v1.20.1/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "GenServer",
+        "pattern matching"
+      ]
     },
     {
       "sourceId": "elixir-lang",
@@ -560,13 +1172,70 @@
       "reason": "Adapter not implemented."
     },
     {
+      "sourceId": "elixir-school",
+      "sourceName": "Elixir School",
+      "sourceKind": "community",
+      "programmingLanguage": "elixir",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/elixir-school.en.a5ce98bfe431b5c0.json",
+      "recordCount": 56,
+      "rawBytes": 2525,
+      "gzipBytes": 823,
+      "brotliBytes": 704,
+      "outputSha256": "a5ce98bfe431b5c02150c5a294dde99c32910fbba7c55652bcf6e4bf06b2040e",
+      "inputSha256": "a0f0bc92a789dad2ef1582786808e42f5860047065581247ea3377d95995addf",
+      "inputs": [
+        {
+          "url": "https://elixirschool.com/sitemap.xml",
+          "sha256": "f24f7a58db2e4d26d7f3a7697c60ee62b63df3b01f4a49e3782ea17f4ab668ef",
+          "etag": "\"533D1C2\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:24.569Z",
+      "adapter": "trusted-community-sitemap",
+      "upstreamVersion": "Elixir School English lessons rolling",
+      "attribution": "Elixir School content © Elixir School contributors; Apache-2.0.",
+      "licenseUrl": "https://github.com/elixirschool/elixirschool/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Pattern Matching",
+        "OTP Supervisors"
+      ],
+      "qualification": "A community-maintained learning site; translations can have different freshness, and the official Elixir docs remain authoritative.",
+      "qualificationJa": "コミュニティ運営の学習サイトです。翻訳ごとに更新状況が異なる場合があり、正確な仕様は公式Elixir文書を優先してください。"
+    },
+    {
       "sourceId": "erlang-docs",
       "sourceName": "Erlang/OTP Documentation",
       "sourceKind": "official",
       "programmingLanguage": "erlang",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/erlang-docs.en.3737c53c93bf693f.json",
+      "recordCount": 577,
+      "rawBytes": 26428,
+      "gzipBytes": 5141,
+      "brotliBytes": 4561,
+      "outputSha256": "3737c53c93bf693f084ffd348a816eb8fab9868c1d5ba0eae85795925a3b288c",
+      "inputSha256": "9b182d91c4f628acd145e376a2fa46fa1c80b149a63a88bfb763a05f8db4dbe6",
+      "inputs": [
+        {
+          "url": "https://www.erlang.org/doc/man_index.html",
+          "sha256": "b7295a38b8cfb3e533dd954d1d6bbfa538a6586771de173833364a6e2c05c2bf",
+          "etag": "\"9546dcf7f243eb0baf68a6f0637ae9e0-ssl-df\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:41:05.761Z",
+      "adapter": "html-link-index",
+      "upstreamVersion": "Erlang/OTP 29.0.3",
+      "attribution": "Erlang/OTP documentation © Ericsson AB; Apache-2.0.",
+      "licenseUrl": "https://github.com/erlang/otp/blob/OTP-29.0.3/LICENSE.txt",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "gen_server",
+        "supervisor"
+      ]
     },
     {
       "sourceId": "haskell-docs",
@@ -583,8 +1252,67 @@
       "sourceKind": "official",
       "programmingLanguage": "haskell",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/haskell-ghc-users-guide.en.380f941826d6e7ed.json",
+      "recordCount": 1103,
+      "rawBytes": 111190,
+      "gzipBytes": 22412,
+      "brotliBytes": 17224,
+      "outputSha256": "380f941826d6e7ed626fc9959a444649bd994d709605060cecf3d92dcaf15a7a",
+      "inputSha256": "ac4a87b26f48951a7865ae65706be3b3e797567b69acb1a30f04c3de23b2257d",
+      "inputs": [
+        {
+          "url": "https://downloads.haskell.org/ghc/latest/docs/users_guide/searchindex.js",
+          "sha256": "6473dde9996be45bb0b4dc66f041725ac69e16692c3029c1ffa484e4d51714e5",
+          "etag": "W/\"6944282d-9ce3b\"",
+          "lastModified": "Thu, 18 Dec 2025 16:13:33 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:46:11.681Z",
+      "adapter": "sphinx",
+      "upstreamVersion": "GHC latest User's Guide",
+      "attribution": "GHC User's Guide © The GHC Team; BSD-3-Clause.",
+      "licenseUrl": "https://downloads.haskell.org/ghc/latest/docs/users_guide/intro.html#the-glasgow-haskell-compiler-license",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "Using GHC",
+        "profiling"
+      ]
+    },
+    {
+      "sourceId": "learn-you-a-haskell",
+      "sourceName": "Learn You a Haskell (community edition)",
+      "sourceKind": "community",
+      "programmingLanguage": "haskell",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/learn-you-a-haskell.en.b45708f13691dae0.json",
+      "recordCount": 14,
+      "rawBytes": 1165,
+      "gzipBytes": 442,
+      "brotliBytes": 398,
+      "outputSha256": "b45708f13691dae002eff82859d6c79e03a9a7fccbc22526abf05c7ea29ffe89",
+      "inputSha256": "76155bd8a385cd428f8269fa3e925a419292a0972e6ceb99899ac67db677f7e5",
+      "inputs": [
+        {
+          "url": "https://learnyouahaskell.github.io/sitemap.xml",
+          "sha256": "6b5ded6f1a8e5cd1166f9d7eb7106e18c2c8d7c627a6401d243b2c9b548c795a",
+          "etag": "W/\"6a4a7954-c0f\"",
+          "lastModified": "Sun, 05 Jul 2026 15:33:40 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:24.520Z",
+      "adapter": "trusted-community-sitemap",
+      "upstreamVersion": "Learn You a Haskell community edition rolling",
+      "attribution": "Learn You a Haskell community edition © Miran Lipovača and contributors; CC BY-NC-SA 3.0.",
+      "licenseUrl": "https://github.com/learnyouahaskell/learnyouahaskell.github.io/blob/main/LICENSE",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "Higher Order Functions",
+        "Monads"
+      ],
+      "qualification": "A community-maintained edition published with the original author's permission; official GHC docs remain authoritative.",
+      "qualificationJa": "原著者の許可を得て保守されるコミュニティ版です。正確な仕様は公式GHC文書を優先してください。"
     },
     {
       "sourceId": "lua-manual",
@@ -592,8 +1320,32 @@
       "sourceKind": "official",
       "programmingLanguage": "lua",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/lua-manual.en.d8172358b3c2c7e0.json",
+      "recordCount": 530,
+      "rawBytes": 24794,
+      "gzipBytes": 4627,
+      "brotliBytes": 3882,
+      "outputSha256": "d8172358b3c2c7e09756c8848312ca50e2cf9b4202c8c448375ce4440de23a07",
+      "inputSha256": "a7d13ae421c647a098a43c076a793418f575714183b4f6c6690c0916889ba533",
+      "inputs": [
+        {
+          "url": "https://www.lua.org/manual/5.5/contents.html",
+          "sha256": "01f37e9aeca068362cf314c189ca7e7f352a0ae0d69ea84f15a258dd3642ef6c",
+          "etag": "\"6931c5aa-8816\"",
+          "lastModified": "Thu, 04 Dec 2025 17:32:26 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:41:06.351Z",
+      "adapter": "html-link-index",
+      "upstreamVersion": "Lua 5.5",
+      "attribution": "Lua 5.5 Reference Manual © Lua.org, PUC-Rio; Lua license.",
+      "licenseUrl": "https://www.lua.org/license.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "metatables",
+        "coroutines"
+      ]
     },
     {
       "sourceId": "perl-docs",
@@ -601,8 +1353,32 @@
       "sourceKind": "official",
       "programmingLanguage": "perl",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/perl-docs.en.095280cb6d55833e.json",
+      "recordCount": 1495,
+      "rawBytes": 84326,
+      "gzipBytes": 14315,
+      "brotliBytes": 12275,
+      "outputSha256": "095280cb6d55833e43bec1f1b3a859ef1b6361a6d000eeb35cc4761605b4ee84",
+      "inputSha256": "7f0b449abc4d99f99fb856d96a3fdf8988fa85fce5545a28afbabefc973681e7",
+      "inputs": [
+        {
+          "url": "https://documents.devdocs.io/perl~5.42/index.json",
+          "sha256": "f1bb639bf7e93148820cd86f70a39217c0292f1573909861b2ba733903cdf459",
+          "etag": "W/\"93378a189e5fdaf2451513ee70e409d3\"",
+          "lastModified": "Fri, 04 Jul 2025 08:27:13 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:41:05.480Z",
+      "adapter": "devdocs-perl",
+      "upstreamVersion": "Perl 5.42.0 via DevDocs",
+      "attribution": "Perl documentation © Perl contributors; Artistic License 1.0 or GPL-1.0-or-later.",
+      "licenseUrl": "https://dev.perl.org/licenses/",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "map",
+        "perlre"
+      ]
     },
     {
       "sourceId": "r-manuals",
@@ -610,8 +1386,67 @@
       "sourceKind": "official",
       "programmingLanguage": "r",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/r-manuals.en.1dbfc4db825c0ecf.json",
+      "recordCount": 21,
+      "rawBytes": 1333,
+      "gzipBytes": 297,
+      "brotliBytes": 251,
+      "outputSha256": "1dbfc4db825c0ecf5fcad4d4a5601292b2a3e7eea4e9bf4d983c4f2b5f508ffe",
+      "inputSha256": "804134cdddd0c2ab17ec842df03361adaf15c5525bf5f9d97cc634765247cb85",
+      "inputs": [
+        {
+          "url": "https://cran.r-project.org/manuals.html",
+          "sha256": "6b1aa7af7ddef432d7ed543fb602cc624c0406e67689d3858f39a640bb788c22",
+          "etag": "\"1e73-64f3eac297cac-gzip\"",
+          "lastModified": "Sun, 12 Apr 2026 07:54:15 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:41:07.992Z",
+      "adapter": "html-manual-list",
+      "upstreamVersion": "R release manuals rolling",
+      "attribution": "R manuals © The R Core Team; GPL-2.0-or-later.",
+      "licenseUrl": "https://www.r-project.org/Licenses/",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "R intro",
+        "R exts"
+      ]
+    },
+    {
+      "sourceId": "advanced-r",
+      "sourceName": "Advanced R (2nd edition)",
+      "sourceKind": "conventional",
+      "programmingLanguage": "r",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/advanced-r.en.773f124bc58cf451.json",
+      "recordCount": 33,
+      "rawBytes": 1873,
+      "gzipBytes": 582,
+      "brotliBytes": 471,
+      "outputSha256": "773f124bc58cf451f51a04750747be97d1844228892f329548197721e8a9138e",
+      "inputSha256": "abf6154b7c6e0e7442859bc766f7c00a01b4b50812edcf4a27042ea23ef14c16",
+      "inputs": [
+        {
+          "url": "https://adv-r.hadley.nz/",
+          "sha256": "cd48e581029d87d2d7aa2fb58456f120093db83feecb271b6c7e26eebddcfef6",
+          "etag": "W/\"67d24022-30a9\"",
+          "lastModified": "Thu, 13 Mar 2025 02:17:06 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:27.236Z",
+      "adapter": "bookdown-toc",
+      "upstreamVersion": "Advanced R second edition rolling",
+      "attribution": "Advanced R, Second Edition © Hadley Wickham; CC BY-NC-SA 4.0.",
+      "licenseUrl": "https://adv-r.hadley.nz/#license",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "Metaprogramming",
+        "Functionals"
+      ],
+      "qualification": "An advanced book about R internals and techniques, not an introductory course or the official R manuals.",
+      "qualificationJa": "Rの内部構造と高度な技法を扱う書籍であり、入門講座や公式Rマニュアルではありません。"
     },
     {
       "sourceId": "julia-docs",
@@ -619,8 +1454,32 @@
       "sourceKind": "official",
       "programmingLanguage": "julia",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/julia-docs.en.148681a392d27f72.json",
+      "recordCount": 3873,
+      "rawBytes": 318894,
+      "gzipBytes": 50939,
+      "brotliBytes": 41493,
+      "outputSha256": "148681a392d27f72841e930ff59267e0aafcbdf6989229966ab7f2936ba61d26",
+      "inputSha256": "02494562740ba0956a34bf03d5f3ade9930bdfa5a86d8dd841d3cacf0e66ff4d",
+      "inputs": [
+        {
+          "url": "https://docs.julialang.org/en/v1/search_index.js",
+          "sha256": "2dfc258181b1d49c83dc702666d5add3ae6e635b6f71f5dfca5cfeb202038321",
+          "etag": "W/\"6a6114de-362555\"",
+          "lastModified": "Wed, 22 Jul 2026 19:07:10 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:41:06.233Z",
+      "adapter": "documenter-search-index",
+      "upstreamVersion": "Julia v1 stable documentation",
+      "attribution": "Julia documentation © Julia contributors; MIT.",
+      "licenseUrl": "https://github.com/JuliaLang/julia/blob/master/LICENSE.md",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "multiple dispatch",
+        "broadcast"
+      ]
     },
     {
       "sourceId": "clojure-docs",
@@ -628,8 +1487,67 @@
       "sourceKind": "official",
       "programmingLanguage": "clojure",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/clojure-docs.en.5a15b5b3901db7df.json",
+      "recordCount": 69,
+      "rawBytes": 4358,
+      "gzipBytes": 1020,
+      "brotliBytes": 836,
+      "outputSha256": "5a15b5b3901db7dfaec81c630ce55149ae693e93e7394967476c7ebc75fdd5bc",
+      "inputSha256": "60a234f8054f88528501e99925c6a84241ffeb48a19981a91ad8c96d5556c877",
+      "inputs": [
+        {
+          "url": "https://clojure.org/sitemap.xml",
+          "sha256": "e59eb1c20df29b3adaee0342171003a94fa2565ffa0a6f3154ba537e7b362800",
+          "etag": "W/\"ac925b5ff16fd81816470ea1659d2bb6\"",
+          "lastModified": "Thu, 23 Jul 2026 16:10:57 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T02:36:19.708Z",
+      "adapter": "sitemap",
+      "upstreamVersion": "Clojure site rolling",
+      "attribution": "Clojure documentation © Rich Hickey and contributors; EPL-1.0.",
+      "licenseUrl": "https://clojure.org/community/license",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "reader",
+        "java interop"
+      ]
+    },
+    {
+      "sourceId": "clojure-guides",
+      "sourceName": "Clojure Guides",
+      "sourceKind": "community",
+      "programmingLanguage": "clojure",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/clojure-guides.en.5592181c9853ba54.json",
+      "recordCount": 36,
+      "rawBytes": 2598,
+      "gzipBytes": 766,
+      "brotliBytes": 644,
+      "outputSha256": "5592181c9853ba54646b43c45d67b2e2c553492e7e2d2ed305f69df40c987faa",
+      "inputSha256": "eaeb51446ea535373c0ee1d82c59994f4e638ed36eff865c4e62ebcf53724243",
+      "inputs": [
+        {
+          "url": "https://clojure-doc.org/sitemap.xml",
+          "sha256": "20f92fff6f2964b736cddf2f337a26b7e1e5e2a594baff4fdff8a65494430771",
+          "etag": "W/\"69bc4c9e-13d1\"",
+          "lastModified": "Thu, 19 Mar 2026 19:21:02 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:27.537Z",
+      "adapter": "trusted-community-sitemap",
+      "upstreamVersion": "Clojure Guides rolling",
+      "attribution": "Clojure Guides content © its respective primary authors; CC BY 3.0.",
+      "licenseUrl": "https://clojure-doc.org/articles/about/#license",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "Namespaces",
+        "Concurrency And Parallelism"
+      ],
+      "qualification": "Community-maintained guides; the official Clojure reference keeps authority and ranking priority.",
+      "qualificationJa": "コミュニティ運営のガイドです。正確な仕様と検索順位では公式Clojureリファレンスを優先します。"
     },
     {
       "sourceId": "groovy-docs",
@@ -637,8 +1555,32 @@
       "sourceKind": "official",
       "programmingLanguage": "groovy",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/groovy-docs.en.fcebf9d776d1fab7.json",
+      "recordCount": 1133,
+      "rawBytes": 69461,
+      "gzipBytes": 16686,
+      "brotliBytes": 14044,
+      "outputSha256": "fcebf9d776d1fab75aa9a242aeb2565f5ddf2d940567411edcf006f030febf9e",
+      "inputSha256": "9677adac277d9d90f976b9af25bfa037bc81fbea8585e88c7ae3be32cadd527d",
+      "inputs": [
+        {
+          "url": "https://docs.groovy-lang.org/docs/groovy-5.0.7/html/documentation/index.html?ModPagespeed=off",
+          "sha256": "35549bd54e4602df0e34942191e9077a6e1dafe25e7e17b403347fde2eccf0a7",
+          "etag": "\"25316d-121687af67c00-gzip\"",
+          "lastModified": "Thu, 31 Jan 1980 23:00:00 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T07:31:03.494Z",
+      "adapter": "html-link-index",
+      "upstreamVersion": "Apache Groovy 5.0.7",
+      "attribution": "Apache Groovy documentation © The Apache Software Foundation; Apache-2.0.",
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "closures",
+        "metaprogramming"
+      ]
     },
     {
       "sourceId": "objc-docs",
@@ -647,7 +1589,40 @@
       "programmingLanguage": "objc",
       "docsLocale": "en",
       "status": "blocked",
-      "reason": "Apple does not expose a stable redistributable documentation index."
+      "reason": "Apple's undocumented DocC JSON is excluded: Apple's Website Terms prohibit automated extraction and redistribution, and no documented distributable static index is offered."
+    },
+    {
+      "sourceId": "gnu-objc",
+      "sourceName": "GNU Objective-C Features",
+      "sourceKind": "official",
+      "programmingLanguage": "objc",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/gnu-objc.en.fcbfa6a91805f15a.json",
+      "recordCount": 23,
+      "rawBytes": 2136,
+      "gzipBytes": 634,
+      "brotliBytes": 522,
+      "outputSha256": "fcbfa6a91805f15afa97b39edf896c3d47f748c194e0bdd37e45b5f526dee114",
+      "inputSha256": "1b20c01fdafba5355cf65abfd0802cab8a9e4b207dc51d6075c464cc89174444",
+      "inputs": [
+        {
+          "url": "https://gcc.gnu.org/onlinedocs/gcc-15.2.0/gcc/index.html",
+          "sha256": "4141beb5468df884db0fa6448c22d1ccef10dd42e1b79a53671d81158a1e23be",
+          "etag": "\"122ad-63bd59adf6242\"",
+          "lastModified": "Fri, 08 Aug 2025 07:34:32 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T07:05:12.700Z",
+      "adapter": "gnu-objective-c-toc",
+      "upstreamVersion": "GNU Compiler Collection 15.2 Objective-C Features",
+      "attribution": "GNU Objective-C Features © Free Software Foundation; GNU Free Documentation License 1.3 or later.",
+      "licenseUrl": "https://gcc.gnu.org/onlinedocs/gcc-15.2.0/gcc/GNU-Free-Documentation-License.html",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "Fast Enumeration",
+        "Type Encoding"
+      ]
     },
     {
       "sourceId": "bash-manual",
@@ -655,8 +1630,38 @@
       "sourceKind": "official",
       "programmingLanguage": "bash",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/bash-manual.en.f2eccf2876ab17b2.json",
+      "recordCount": 508,
+      "rawBytes": 34331,
+      "gzipBytes": 7144,
+      "brotliBytes": 6114,
+      "outputSha256": "f2eccf2876ab17b2f49c28e80d0d5b2ea6e6b7dd863c48b7617d0c7663697079",
+      "inputSha256": "ef59a399872bd2026d23eba0ae4adbb5a8d374a2f4fc337ff8e241078dd2ae6e",
+      "inputs": [
+        {
+          "url": "https://documents.devdocs.io/bash/index.json",
+          "sha256": "5591e8cfcdd3aa5446c9059a7745a9ef222d3c81d9d1ee1d53b7ff180ffc99ff",
+          "etag": "W/\"2b4810b00ba7a5325883e5b087ebbd7c\"",
+          "lastModified": "Sun, 19 Jul 2026 11:13:36 GMT"
+        },
+        {
+          "url": "https://documents.devdocs.io/bash/db.json",
+          "sha256": "7e0fc2672b9b3f03bfff72e2a8b8d2972ddbebca9380148cdb717e61d61fedb7",
+          "etag": "W/\"43256759bb4d6e100f2edcb37d891333\"",
+          "lastModified": "Sun, 19 Jul 2026 11:13:35 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T08:01:47.679Z",
+      "adapter": "devdocs-original-url-map",
+      "upstreamVersion": "GNU Bash 5.3 maintainer copy via DevDocs",
+      "attribution": "GNU Bash Reference Manual © Free Software Foundation; GNU Free Documentation License.",
+      "licenseUrl": "https://tiswww.case.edu/php/chet/bash/bashref.html#GNU-Free-Documentation-License",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Shell Parameter Expansion",
+        "Conditional Constructs"
+      ]
     },
     {
       "sourceId": "powershell-docs",
@@ -664,8 +1669,32 @@
       "sourceKind": "official",
       "programmingLanguage": "powershell",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/powershell-docs.en.6d162167dc89cc1b.json",
+      "recordCount": 646,
+      "rawBytes": 92071,
+      "gzipBytes": 11322,
+      "brotliBytes": 9464,
+      "outputSha256": "6d162167dc89cc1b63ba39932f730c894926bddfd224d567bdbaa14e9599dacf",
+      "inputSha256": "9969ae31a5b73e5f67aeeb2388d1ebd7ac598488097c785dd20caf612f7d0e6d",
+      "inputs": [
+        {
+          "url": "https://learn.microsoft.com/en-us/powershell/scripting/toc.json",
+          "sha256": "3aae8dc690ae2fca3d28070da2a2bf267826aeb91e4cfc4bd54731d13a69378a",
+          "etag": "\"G2ch4BdmGbLbUMhgEhz8c+eOmKA=\"",
+          "lastModified": "Mon, 04 May 2026 17:11:10 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:35:27.969Z",
+      "adapter": "microsoft-learn-localized-toc",
+      "upstreamVersion": "Microsoft Learn localized TOC rolling",
+      "attribution": "PowerShell documentation © Microsoft and contributors; CC BY 4.0.",
+      "licenseUrl": "https://github.com/MicrosoftDocs/PowerShell-Docs/blob/main/LICENSE.md",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "What is PowerShell?",
+        "Install PowerShell 7"
+      ]
     },
     {
       "sourceId": "powershell-docs",
@@ -673,8 +1702,32 @@
       "sourceKind": "official",
       "programmingLanguage": "powershell",
       "docsLocale": "ja",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/powershell-docs.ja.f44248717d7e69f2.json",
+      "recordCount": 646,
+      "rawBytes": 101632,
+      "gzipBytes": 13021,
+      "brotliBytes": 10704,
+      "outputSha256": "f44248717d7e69f2a7fadb5de141de622ccfb2f8c982e16afc3313d7e96dd4a2",
+      "inputSha256": "c41c6596df6e22beb69882b18da6f2ec821235917c28fd99e598a11bddbc785a",
+      "inputs": [
+        {
+          "url": "https://learn.microsoft.com/ja-jp/powershell/scripting/toc.json",
+          "sha256": "7cac085b61d1a5436486bddbc708beee732781655a1d8d9cce5509ec59668abd",
+          "etag": "\"9Y8fyLwQW5H2uITFeCOxdifKaHA=\"",
+          "lastModified": "Mon, 04 May 2026 23:10:32 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:35:28.112Z",
+      "adapter": "microsoft-learn-localized-toc",
+      "upstreamVersion": "Microsoft Learn localized TOC rolling",
+      "attribution": "PowerShell documentation © Microsoft and contributors; CC BY 4.0.",
+      "licenseUrl": "https://github.com/MicrosoftDocs/PowerShell-Docs/blob/main/LICENSE.md",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "PowerShell とは",
+        "Windows に PowerShell 7 をインストールする"
+      ]
     },
     {
       "sourceId": "fsharp-docs",
@@ -682,8 +1735,32 @@
       "sourceKind": "official",
       "programmingLanguage": "fsharp",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/fsharp-docs.en.bbe83b93c7fc87c4.json",
+      "recordCount": 148,
+      "rawBytes": 11327,
+      "gzipBytes": 2543,
+      "brotliBytes": 2140,
+      "outputSha256": "bbe83b93c7fc87c4f9281ec6b8b3a91f61c69cf1bf891680a72e5679208eb7bb",
+      "inputSha256": "67619d389fa6b67701226d799aba00ba6cd567239eb3853d4b4795ea10c3b9ae",
+      "inputs": [
+        {
+          "url": "https://learn.microsoft.com/en-us/dotnet/fsharp/toc.json",
+          "sha256": "f07b04885447cd76395f4c3c719dabbc2c6b8ba84aa86923a86ebeba49027df7",
+          "etag": "\"43meC+KAHiG6aejwEuJtoFGdOEs=\"",
+          "lastModified": "Wed, 22 Apr 2026 21:20:37 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:35:27.857Z",
+      "adapter": "microsoft-learn-localized-toc",
+      "upstreamVersion": "Microsoft Learn localized TOC rolling",
+      "attribution": ".NET documentation © Microsoft and contributors; CC BY 4.0.",
+      "licenseUrl": "https://github.com/dotnet/docs/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "What is F#",
+        "Options"
+      ]
     },
     {
       "sourceId": "fsharp-docs",
@@ -691,8 +1768,67 @@
       "sourceKind": "official",
       "programmingLanguage": "fsharp",
       "docsLocale": "ja",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/fsharp-docs.ja.d5981ba9f7fabfe4.json",
+      "recordCount": 148,
+      "rawBytes": 12478,
+      "gzipBytes": 3380,
+      "brotliBytes": 2743,
+      "outputSha256": "d5981ba9f7fabfe4d83f0beaa75257c7955fad84d3efabd1cb292c9214e80391",
+      "inputSha256": "f0f42820b09b0a15a3afe4c2a47468678a7b71b0561533c14c9dd022e886b84e",
+      "inputs": [
+        {
+          "url": "https://learn.microsoft.com/ja-jp/dotnet/fsharp/toc.json",
+          "sha256": "6e258036993899728eafa088d003800d7d15c0da1af392a7e4be49948e0168d0",
+          "etag": "\"e0SpFJI645EE8UwIc8m1vbYlux0=\"",
+          "lastModified": "Tue, 28 Apr 2026 00:16:48 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:35:27.895Z",
+      "adapter": "microsoft-learn-localized-toc",
+      "upstreamVersion": "Microsoft Learn localized TOC rolling",
+      "attribution": ".NET documentation © Microsoft and contributors; CC BY 4.0.",
+      "licenseUrl": "https://github.com/dotnet/docs/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "F# とは",
+        "オプション"
+      ]
+    },
+    {
+      "sourceId": "fsharp-for-fun-and-profit",
+      "sourceName": "F# for Fun and Profit",
+      "sourceKind": "conventional",
+      "programmingLanguage": "fsharp",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/fsharp-for-fun-and-profit.en.5f68738e6a2da881.json",
+      "recordCount": 193,
+      "rawBytes": 15194,
+      "gzipBytes": 3875,
+      "brotliBytes": 3253,
+      "outputSha256": "5f68738e6a2da8817b05ccb2ae1f71ba6b0467a8ef8ef988ff0f82669dc57652",
+      "inputSha256": "f4a7a2773fb41c7b3ab0c61136535bff66fe823816070a5da780fee20588f78a",
+      "inputs": [
+        {
+          "url": "https://fsharpforfunandprofit.com/index.xml",
+          "sha256": "1b2fad1153c469c9ff717700be2a69410f39030ff3a1d3f2e05c73ba1a1f85dc",
+          "etag": "\"28a0b-6471c09014b00-gzip\"",
+          "lastModified": "Mon, 29 Dec 2025 19:13:16 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T15:09:35.719Z",
+      "adapter": "trusted-community-rss",
+      "upstreamVersion": "F# for Fun and Profit rolling",
+      "attribution": "Article titles and links from F# for Fun and Profit © Scott Wlaschin; text and images all rights reserved.",
+      "licenseUrl": "https://fsharpforfunandprofit.com/about/license/",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "F# syntax in 60 seconds",
+        "dependency cycle"
+      ],
+      "qualification": "Independent learning material; only titles and direct links are indexed because the site text is not openly relicensed.",
+      "qualificationJa": "独立系の学習資料です。サイト本文にオープンライセンスが明示されていないため、索引にはタイトルと直接リンクのみを収録します。"
     },
     {
       "sourceId": "vb-docs",
@@ -700,8 +1836,32 @@
       "sourceKind": "official",
       "programmingLanguage": "visualbasic",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/vb-docs.en.a66144a9af173b96.json",
+      "recordCount": 685,
+      "rawBytes": 70565,
+      "gzipBytes": 11855,
+      "brotliBytes": 10166,
+      "outputSha256": "a66144a9af173b96033d76384592d26816e1ef87a8dc273ba7f1c3b73ce68a7c",
+      "inputSha256": "21c9ca53c3a7d4cbaedf36a9d88aeb77cac056ce512193a59f5c516f644a30ae",
+      "inputs": [
+        {
+          "url": "https://learn.microsoft.com/en-us/dotnet/visual-basic/toc.json",
+          "sha256": "6ca43aa4c720835d5a34647d01c8922581715434e579c9d09db1c73ed4fef680",
+          "etag": "\"XbE62ikUmthZMqHbFz1INirwbYA=\"",
+          "lastModified": "Fri, 26 Jun 2026 19:11:27 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:35:28.026Z",
+      "adapter": "microsoft-learn-localized-toc",
+      "upstreamVersion": "Microsoft Learn localized TOC rolling",
+      "attribution": ".NET documentation © Microsoft and contributors; CC BY 4.0.",
+      "licenseUrl": "https://github.com/dotnet/docs/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "What's New for Visual Basic",
+        "Arrays"
+      ]
     },
     {
       "sourceId": "vb-docs",
@@ -709,8 +1869,32 @@
       "sourceKind": "official",
       "programmingLanguage": "visualbasic",
       "docsLocale": "ja",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/vb-docs.ja.6c674ca65fc318e0.json",
+      "recordCount": 685,
+      "rawBytes": 80174,
+      "gzipBytes": 13816,
+      "brotliBytes": 11607,
+      "outputSha256": "6c674ca65fc318e072b57d300e23c3c5f70e0de3d014544ec03c16bd90217950",
+      "inputSha256": "2f217554e48fc4d59397c9ddd3ce596e67b23052f32d25deb9efe6aa56e56fe8",
+      "inputs": [
+        {
+          "url": "https://learn.microsoft.com/ja-jp/dotnet/visual-basic/toc.json",
+          "sha256": "b4958035191e86aa447fab258df4973b8ba3644f0c3d1379bf34cc39c6c26a75",
+          "etag": "\"gpB/o9AhjUn7r6ZjQUkQ3KiJACc=\"",
+          "lastModified": "Tue, 28 Apr 2026 04:01:58 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:35:28.171Z",
+      "adapter": "microsoft-learn-localized-toc",
+      "upstreamVersion": "Microsoft Learn localized TOC rolling",
+      "attribution": ".NET documentation © Microsoft and contributors; CC BY 4.0.",
+      "licenseUrl": "https://github.com/dotnet/docs/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Visual Basic の新機能",
+        "配列"
+      ]
     },
     {
       "sourceId": "zig-docs",
@@ -718,8 +1902,73 @@
       "sourceKind": "official",
       "programmingLanguage": "zig",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/zig-docs.en.71130ec91702363a.json",
+      "recordCount": 703,
+      "rawBytes": 27358,
+      "gzipBytes": 5802,
+      "brotliBytes": 4595,
+      "outputSha256": "71130ec91702363adc49e1bf93233363b676bdc4dd41c929a2bf13caeb309302",
+      "inputSha256": "1c8d64824f845796f0af60e4e4cf9df6acbab0b80ab170ac1324a0a5c311b47a",
+      "inputs": [
+        {
+          "url": "https://ziglang.org/documentation/master/",
+          "sha256": "444b8b26d2e0983c844a3d8c010685f2d9805271cf7f93b88e69291d3394ce63",
+          "etag": "W/\"6a6364a8-ef637\"",
+          "lastModified": "Fri, 24 Jul 2026 13:12:08 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T15:31:30.462Z",
+      "adapter": "html-link-index",
+      "upstreamVersion": "Zig master rolling",
+      "attribution": "Zig documentation © Zig contributors; MIT.",
+      "licenseUrl": "https://github.com/ziglang/zig/blob/master/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "comptime",
+        "error unions"
+      ]
+    },
+    {
+      "sourceId": "zig-guide",
+      "sourceName": "zig.guide",
+      "sourceKind": "conventional",
+      "programmingLanguage": "zig",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/zig-guide.en.3c809bf59c8a8e0d.json",
+      "recordCount": 66,
+      "rawBytes": 4336,
+      "gzipBytes": 1070,
+      "brotliBytes": 906,
+      "outputSha256": "3c809bf59c8a8e0da411ad71e4f1a9f82d8b21d9c7c842d1cd456831a7afd4a6",
+      "inputSha256": "c69083aadf6db0e3487411753aacc28d79cbd649068bfc3be38a3108092927f8",
+      "inputs": [
+        {
+          "url": "https://zig.guide/",
+          "sha256": "4f0685967f53c5e1592f59647c659216735f88811e3e07ca1eff1e8f2da81601",
+          "etag": "\"t8d5e1d8q\"",
+          "lastModified": "Sun, 04 Jan 2026 23:32:25 GMT"
+        },
+        {
+          "url": "https://zig.guide/sitemap.xml",
+          "sha256": "a46a5c9b3812dd219bc7d51bb5687326f114bcfcab45718aa8d870225bac3e0b",
+          "etag": "\"t8d5e0szh\"",
+          "lastModified": "Sun, 04 Jan 2026 23:32:24 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T15:09:39.345Z",
+      "adapter": "trusted-community-sitemap",
+      "upstreamVersion": "zig.guide for Zig 0.15.2",
+      "attribution": "zig.guide content © zig.guide contributors; MIT.",
+      "licenseUrl": "https://github.com/sobeston/zig.guide/blob/master/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Comptime",
+        "Errors"
+      ],
+      "qualification": "Version-specific guide for Zig 0.15.2; compare version-sensitive behavior with the current official Zig documentation.",
+      "qualificationJa": "Zig 0.15.2向けのバージョン固定ガイドです。バージョン依存の挙動は最新の公式Zig文書とも照合してください。"
     },
     {
       "sourceId": "nim-docs",
@@ -727,8 +1976,31 @@
       "sourceKind": "official",
       "programmingLanguage": "nim",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/nim-docs.en.b241810ad0f8f954.json",
+      "recordCount": 198,
+      "rawBytes": 6773,
+      "gzipBytes": 1966,
+      "brotliBytes": 1665,
+      "outputSha256": "b241810ad0f8f954f0629fb40e56b4a56a10923d867814a2c9f53af1f1679f82",
+      "inputSha256": "292377b950f36ff165cdf44f3f21698cfc7d7d26efaefb91486e2377ba2013fc",
+      "inputs": [
+        {
+          "url": "https://nim-lang.org/docs/lib.html",
+          "sha256": "4d2f0c92af5367bc247cdce1d9ef6f06d2f89c04693c7ad578edbbc4f38407be",
+          "lastModified": "Fri, 24 Apr 2026 07:49:07 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:41:07.269Z",
+      "adapter": "html-link-index",
+      "upstreamVersion": "Nim stable documentation rolling",
+      "attribution": "Nim documentation © Nim contributors; MIT.",
+      "licenseUrl": "https://github.com/nim-lang/Nim/blob/devel/copying.txt",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "asyncdispatch",
+        "macros"
+      ]
     },
     {
       "sourceId": "crystal-docs",
@@ -736,8 +2008,32 @@
       "sourceKind": "official",
       "programmingLanguage": "crystal",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/crystal-docs.en.01748841eb2f8736.json",
+      "recordCount": 155,
+      "rawBytes": 12800,
+      "gzipBytes": 1962,
+      "brotliBytes": 1632,
+      "outputSha256": "01748841eb2f87369f407086f81dbdacbccdf7ccd2b855a37e571223f9757bd8",
+      "inputSha256": "fb1220cde8fdb7c993f15b67291be87e070d85a991a552122dd9227c1056c118",
+      "inputs": [
+        {
+          "url": "https://crystal-lang.org/reference/latest/sitemap.xml",
+          "sha256": "6e37bf533b93365afb1408d8d8a3ee510ab68bd3f0d96d543560b524e7a58d93",
+          "etag": "W/\"b64f0d60d8b5055cdb0db4dfbffc353a\"",
+          "lastModified": "Fri, 24 Jul 2026 09:27:03 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T15:31:30.326Z",
+      "adapter": "sitemap",
+      "upstreamVersion": "Crystal Reference 1.21",
+      "attribution": "Crystal Reference contributors; CC0 1.0.",
+      "licenseUrl": "https://github.com/crystal-lang/crystal-book/blob/master/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "concurrency",
+        "macros"
+      ]
     },
     {
       "sourceId": "d-docs",
@@ -745,8 +2041,70 @@
       "sourceKind": "official",
       "programmingLanguage": "d",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/d-docs.en.8fcf2a36461928e5.json",
+      "recordCount": 624,
+      "rawBytes": 27515,
+      "gzipBytes": 5382,
+      "brotliBytes": 4760,
+      "outputSha256": "8fcf2a36461928e5ba820b61b8829f2d9bb83f406f2e12208cc54f8b09c88515",
+      "inputSha256": "8d90bb5bac619996c37aee54ea0d11359934c751e8fff4fd171f87302656135a",
+      "inputs": [
+        {
+          "url": "https://dlang.org/spec/spec.html",
+          "sha256": "cd341d52bd5fe37b73f6379110453ec20e957f1198beaf6225f0783489cf0cfa",
+          "lastModified": "Fri, 24 Jul 2026 14:25:24 GMT"
+        },
+        {
+          "url": "https://dlang.org/phobos/index.html",
+          "sha256": "30ec28d89e9e33d39abce745cdd945ef54da974efb92be94f16c48e6475f7aaf",
+          "lastModified": "Fri, 24 Jul 2026 14:16:58 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T15:31:31.545Z",
+      "adapter": "html-link-index",
+      "upstreamVersion": "D language and Phobos latest",
+      "attribution": "D documentation © D Language Foundation and contributors; BSL-1.0.",
+      "licenseUrl": "https://github.com/dlang/dlang.org/blob/master/LICENSE.txt",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "templates",
+        "algorithm"
+      ]
+    },
+    {
+      "sourceId": "programming-in-d",
+      "sourceName": "Programming in D",
+      "sourceKind": "conventional",
+      "programmingLanguage": "d",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/programming-in-d.en.461c2ccfe3dd0ab6.json",
+      "recordCount": 93,
+      "rawBytes": 5653,
+      "gzipBytes": 1465,
+      "brotliBytes": 1242,
+      "outputSha256": "461c2ccfe3dd0ab6bebbd7bec00280dddc755d29b3b6ee08a05e10fb09f15cdb",
+      "inputSha256": "4e6db7f16fc179f61aa0b11ed1ed01510555b78404449a71e4ea0df2a6160bd5",
+      "inputs": [
+        {
+          "url": "https://ddili.org/ders/d.en/index.html",
+          "sha256": "d807fd5a278ed9a4d2ba27c5a2b30ce8e9ef7013554363d626fdc9db68b2e0e2",
+          "lastModified": "Tue, 22 Feb 2022 04:22:33 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:29.214Z",
+      "adapter": "programming-in-d-toc",
+      "upstreamVersion": "Programming in D rolling",
+      "attribution": "Programming in D © Ali Çehreli; CC BY-NC-SA 3.0 US.",
+      "licenseUrl": "https://ddili.org/copyright.html",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "Message Passing Concurrency",
+        "Ranges"
+      ],
+      "qualification": "A CC BY-NC-SA community-authored language book rather than the official D specification; it may lag the latest D release.",
+      "qualificationJa": "公式のD言語仕様ではなく、CC BY-NC-SAのコミュニティ著者による解説書です。最新のDリリースへの追従が遅れる場合があります。"
     },
     {
       "sourceId": "ocaml-docs",
@@ -754,8 +2112,65 @@
       "sourceKind": "official",
       "programmingLanguage": "ocaml",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/ocaml-docs.en.defdef3263246562.json",
+      "recordCount": 65,
+      "rawBytes": 4197,
+      "gzipBytes": 1103,
+      "brotliBytes": 887,
+      "outputSha256": "defdef326324656271feedce07fc832509383b9482c0143935d47b2fbb49f022",
+      "inputSha256": "a5e9e91e239195c6f6922eb2d916176b0128f6c817a210b64a6dc4536aceb67a",
+      "inputs": [
+        {
+          "url": "https://ocaml.org/sitemap.xml",
+          "sha256": "0ccc9158b01d4e7dc792187b1287b1b25daa7349e08a20a3f20d748ca7f4952a"
+        }
+      ],
+      "retrievedAt": "2026-07-24T08:51:54.770Z",
+      "adapter": "sitemap",
+      "upstreamVersion": "OCaml.org documentation rolling",
+      "attribution": "OCaml.org documentation © OCaml contributors; CC BY-SA 4.0.",
+      "licenseUrl": "https://github.com/ocaml/ocaml.org/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "tour of ocaml",
+        "installing ocaml"
+      ]
+    },
+    {
+      "sourceId": "cornell-ocaml",
+      "sourceName": "OCaml Programming: Correct + Efficient + Beautiful",
+      "sourceKind": "conventional",
+      "programmingLanguage": "ocaml",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/cornell-ocaml.en.0761e0593e5a535f.json",
+      "recordCount": 106,
+      "rawBytes": 7432,
+      "gzipBytes": 1570,
+      "brotliBytes": 1359,
+      "outputSha256": "0761e0593e5a535f775f5d89493bb7b107d07b55d9591a7f2de3040e130b9582",
+      "inputSha256": "dfb20540372b4e582656aa3636b2ca2a90231265bb26db9b238928904ac33a15",
+      "inputs": [
+        {
+          "url": "https://cs3110.github.io/textbook/searchindex.js",
+          "sha256": "678d7fef704d38ef757162f435de21e154f19107036a29eb4952052a880efc8d",
+          "etag": "W/\"6977d450-32f46\"",
+          "lastModified": "Mon, 26 Jan 2026 20:53:36 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:29.818Z",
+      "adapter": "sphinx-page-index",
+      "upstreamVersion": "Cornell CS 3110 textbook rolling",
+      "attribution": "OCaml Programming: Correct + Efficient + Beautiful © Cornell CS 3110 authors; CC BY-NC-ND 4.0.",
+      "licenseUrl": "https://github.com/cs3110/textbook/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Pattern Matching",
+        "Monads"
+      ],
+      "qualification": "Cornell's Spring 2026 course textbook; the index stores metadata only under CC BY-NC-ND.",
+      "qualificationJa": "Cornell大学の2026年春学期の教科書です。CC BY-NC-NDに従い、索引にはメタデータのみを収録します。"
     },
     {
       "sourceId": "solidity-docs",
@@ -763,8 +2178,100 @@
       "sourceKind": "official",
       "programmingLanguage": "solidity",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/solidity-docs.en.cfcc5272c961339e.json",
+      "recordCount": 563,
+      "rawBytes": 49485,
+      "gzipBytes": 10239,
+      "brotliBytes": 8589,
+      "outputSha256": "cfcc5272c961339eccbc4344f54f286f12af5faf4a9597d1940b8ed40b63bf1a",
+      "inputSha256": "d4d8b402b87111f3ce15440490c926fabb8c0b833ffa2c246bd5f639e9db853d",
+      "inputs": [
+        {
+          "url": "https://docs.soliditylang.org/en/latest/searchindex.js",
+          "sha256": "c232d65ef7866477005be4c85ace9b10955df549fad15f8388b484cae13d9d69",
+          "etag": "W/\"c59f01b0478baec2e1902bf0dc6c7123\"",
+          "lastModified": "Thu, 23 Jul 2026 22:03:38 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T02:36:19.192Z",
+      "adapter": "sphinx",
+      "upstreamVersion": "Solidity latest English",
+      "attribution": "Solidity documentation © Solidity contributors; GNU GPL v3.0.",
+      "licenseUrl": "https://github.com/argotorg/solidity/blob/develop/LICENSE.txt",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "smart contracts",
+        "mapping types"
+      ]
+    },
+    {
+      "sourceId": "solidity-docs-ja",
+      "sourceName": "Solidity Documentation (Japanese community translation)",
+      "sourceKind": "community",
+      "programmingLanguage": "solidity",
+      "docsLocale": "ja",
+      "status": "supported",
+      "path": "/search-index/solidity-docs-ja.ja.d416b45560ce0db2.json",
+      "recordCount": 563,
+      "rawBytes": 49794,
+      "gzipBytes": 10357,
+      "brotliBytes": 8651,
+      "outputSha256": "d416b45560ce0db2c950b22b062223845db8ee32ca33fc2c00fd0492d6b754b6",
+      "inputSha256": "6f93805535b7dead62fc3db793f0a3cd30e349ef5366312a486ae0e35b391e8b",
+      "inputs": [
+        {
+          "url": "https://docs.soliditylang.org/ja/latest/searchindex.js",
+          "sha256": "01d5f7bcd663101d722d0a3062d531c3245aa7fb2df9de50a1ffc71556ba5443",
+          "etag": "W/\"e81aa5e23dff511e627571f93e4998fa\"",
+          "lastModified": "Thu, 28 Aug 2025 10:15:04 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T07:50:31.548Z",
+      "adapter": "sphinx",
+      "upstreamVersion": "Solidity latest Japanese community translation",
+      "attribution": "Solidity documentation Japanese community translation; GNU GPL v3.0.",
+      "licenseUrl": "https://github.com/argotorg/solidity/blob/develop/LICENSE.txt",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "スマートコントラクト",
+        "マッピング型"
+      ],
+      "qualification": "Japanese community translation"
+    },
+    {
+      "sourceId": "solidity-by-example",
+      "sourceName": "Solidity by Example",
+      "sourceKind": "community",
+      "programmingLanguage": "solidity",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/solidity-by-example.en.860b1fa499e8d612.json",
+      "recordCount": 129,
+      "rawBytes": 7603,
+      "gzipBytes": 1999,
+      "brotliBytes": 1706,
+      "outputSha256": "860b1fa499e8d6126dd2bd864a616e56110c52e708baabbab9a801e72fc7f7be",
+      "inputSha256": "43adcc59ccf38a1136736ba7c6e9f35c5d6690051d639d77bd054da94bccdc35",
+      "inputs": [
+        {
+          "url": "https://raw.githubusercontent.com/Cyfrin/solidity-by-example.github.io/gh-pages/src/search.json",
+          "sha256": "d1c2147ed88eaf7d935f517192afa7327c9bb6a07e9adb1fe865f18d7856cf31",
+          "etag": "W/\"de8a8815bffff4a1f04fe0c986966f2495ca6f180603a59bf2192480da03072b\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:29.597Z",
+      "adapter": "solidity-by-example-search",
+      "upstreamVersion": "Solidity by Example rolling",
+      "attribution": "Solidity by Example © Tasuku Nakamura and contributors; MIT.",
+      "licenseUrl": "https://github.com/Cyfrin/solidity-by-example.github.io/blob/gh-pages/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Delegatecall",
+        "Merkle Tree"
+      ],
+      "qualification": "Example-oriented material targeting Solidity 0.8.x; use current official security guidance for production contracts.",
+      "qualificationJa": "Solidity 0.8系を対象にした例題中心の資料です。本番コントラクトでは最新の公式セキュリティ指針も確認してください。"
     },
     {
       "sourceId": "elm-guide",
@@ -772,17 +2279,63 @@
       "sourceKind": "official",
       "programmingLanguage": "elm",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/elm-guide.en.b784ac9ded24e60d.json",
+      "recordCount": 40,
+      "rawBytes": 1612,
+      "gzipBytes": 640,
+      "brotliBytes": 546,
+      "outputSha256": "b784ac9ded24e60d6cbab9ee5946c01c986abd781bfc996145574bc55624cf7a",
+      "inputSha256": "f37569f82cb4277049c04b26b9c0f045b4a21a5e164d7c9dd5b80e7b1737aacf",
+      "inputs": [
+        {
+          "url": "https://guide.elm-lang.org/search_index.json",
+          "sha256": "4c9cd355b3515ca68fd2e7d6969264f8b04e4c7a8ff23de24a182b9ae2504ff0",
+          "etag": "\"2fabbdf880a0e6bddf4d7935246f8990-ssl-df\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:46:16.514Z",
+      "adapter": "gitbook-search-index",
+      "upstreamVersion": "Elm Guide rolling",
+      "attribution": "Elm Guide © Evan Czaplicki and contributors; CC BY-NC-ND 4.0.",
+      "licenseUrl": "https://github.com/evancz/guide.elm-lang.org/blob/master/LICENSE",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "The Elm Architecture",
+        "Custom Types"
+      ]
     },
     {
       "sourceId": "elm-packages",
       "sourceName": "Elm Packages",
-      "sourceKind": "official",
+      "sourceKind": "conventional",
       "programmingLanguage": "elm",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/elm-packages.en.fb3eb7145ccd0943.json",
+      "recordCount": 3007,
+      "rawBytes": 209226,
+      "gzipBytes": 41801,
+      "brotliBytes": 35712,
+      "outputSha256": "fb3eb7145ccd09437c5897af3ab6639ee6040bf100a545e169980e17799e7c30",
+      "inputSha256": "073f795f3a21228e341d84f66536a240a455e9d8f3cd8c328798859222667a74",
+      "inputs": [
+        {
+          "url": "https://package.elm-lang.org/all-packages",
+          "sha256": "9dbdb4b5f7234ec7ccb599c0f865a9b358aa7f0727ea7f725b0b02c510915872",
+          "lastModified": "Fri, 24 Jul 2026 13:35:30 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T15:31:33.435Z",
+      "adapter": "elm-package-index",
+      "upstreamVersion": "Elm package catalog rolling",
+      "attribution": "Elm package catalog metadata; individual package licenses apply.",
+      "licenseUrl": "https://package.elm-lang.org/help/design-guidelines",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "elm/core",
+        "elm/json"
+      ]
     },
     {
       "sourceId": "racket-docs",
@@ -790,8 +2343,31 @@
       "sourceKind": "official",
       "programmingLanguage": "racket",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/racket-docs.en.0cf76eb6e839280e.json",
+      "recordCount": 1300,
+      "rawBytes": 67638,
+      "gzipBytes": 20883,
+      "brotliBytes": 18192,
+      "outputSha256": "0cf76eb6e839280e6fd3dd04a687fc4b19f26b2b8fa53a9a62557fbe49b6b3a0",
+      "inputSha256": "4b0a6de215ec135fedbb53cf35a3bbdb61684dc740b266d5f0541f7cd5267512",
+      "inputs": [
+        {
+          "url": "https://docs.racket-lang.org/",
+          "sha256": "dfeda81781e40a2ae38f67491278be65ae30ea36a84459f0958db245cc1282d7",
+          "lastModified": "Thu, 23 Jul 2026 08:27:04 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:31.326Z",
+      "adapter": "html-toc",
+      "upstreamVersion": "Racket documentation rolling manuals",
+      "attribution": "Racket documentation © Racket contributors; Apache 2.0 or MIT.",
+      "licenseUrl": "https://docs.racket-lang.org/license/index.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "The Racket Reference",
+        "Guide"
+      ]
     },
     {
       "sourceId": "cl-hyperspec",
@@ -800,7 +2376,74 @@
       "programmingLanguage": "commonlisp",
       "docsLocale": "en",
       "status": "disabled",
-      "reason": "The legacy community specification index is intentionally disabled."
+      "reason": "LispWorks permits only complete, unmodified HyperSpec redistribution and expressly forbids partial copies and derivative works, so its symbol index cannot seed a distributable metadata bundle."
+    },
+    {
+      "sourceId": "cl-language-reference",
+      "sourceName": "Common Lisp Technical Reference",
+      "sourceKind": "community",
+      "programmingLanguage": "commonlisp",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/cl-language-reference.en.2844d2a76d9fbd82.json",
+      "recordCount": 981,
+      "rawBytes": 84582,
+      "gzipBytes": 13792,
+      "brotliBytes": 11752,
+      "outputSha256": "2844d2a76d9fbd8226480394abd547da63fca0e1dff4e93d558f2743c80dd405",
+      "inputSha256": "398635d0e1bee8290f0941d2ee4000c50b6e0aba998f20eb1de793f8c11f478b",
+      "inputs": [
+        {
+          "url": "https://lisp-docs.github.io/cl-language-reference/sitemap.xml",
+          "sha256": "9271aab79e7d90182cb4b7597098300c6d13718abde91ed93a55b8c85dbb2861",
+          "etag": "W/\"69b16965-2bade\"",
+          "lastModified": "Wed, 11 Mar 2026 13:08:53 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T07:05:08.337Z",
+      "adapter": "common-lisp-sitemap",
+      "upstreamVersion": "Common Lisp Technical Reference rolling",
+      "attribution": "Common Lisp Technical Reference © 2023 LISP Docs; MIT. Based on public-domain dpANS3R sources.",
+      "licenseUrl": "https://github.com/lisp-docs/cl-language-reference/blob/main/LICENSE.md",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "mapcar",
+        "defmacro"
+      ]
+    },
+    {
+      "sourceId": "common-lisp-cookbook",
+      "sourceName": "The Common Lisp Cookbook",
+      "sourceKind": "community",
+      "programmingLanguage": "commonlisp",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/common-lisp-cookbook.en.d8a2b1932b8aba55.json",
+      "recordCount": 43,
+      "rawBytes": 2781,
+      "gzipBytes": 845,
+      "brotliBytes": 696,
+      "outputSha256": "d8a2b1932b8aba5566c20c967b2f33efd28f7c035df6896a73e9152cb71b8d30",
+      "inputSha256": "d7b2dab149d12bb9b64ceafbf756c2545390ba9f55537fd078f17a9ea646f9bf",
+      "inputs": [
+        {
+          "url": "https://raw.githubusercontent.com/LispCookbook/cl-cookbook/master/index.md",
+          "sha256": "aa944360331f1f2e87247d46cd643db16cee27c1fe4932f3601b2ce366c76fb1",
+          "etag": "W/\"411212d06c432f5b87dcf24339e69680be76ebbc653389b8aca3bb2d4f9fa10c\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T14:44:30.854Z",
+      "adapter": "markdown-link-index",
+      "upstreamVersion": "Common Lisp Cookbook rolling",
+      "attribution": "Common Lisp Cookbook © Common Lisp Cookbook Project and LispCookbook GitHub Group; permissive documentation license.",
+      "licenseUrl": "https://github.com/LispCookbook/cl-cookbook/blob/master/license.md",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Error and condition handling",
+        "Macros and Backquote"
+      ],
+      "qualification": "A practical community cookbook, not the ANSI Common Lisp specification; recipes can be implementation- or library-specific.",
+      "qualificationJa": "ANSI Common Lisp仕様ではなくコミュニティの実践的なクックブックで、処理系やライブラリ固有のレシピを含む場合があります。"
     },
     {
       "sourceId": "gfortran",
@@ -808,8 +2451,32 @@
       "sourceKind": "official",
       "programmingLanguage": "fortran",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/gfortran.en.b5b4c5e7e923e9fe.json",
+      "recordCount": 486,
+      "rawBytes": 35882,
+      "gzipBytes": 10593,
+      "brotliBytes": 8531,
+      "outputSha256": "b5b4c5e7e923e9feb907315b523bffeab3c5c3dc63b8296078681ed822742c11",
+      "inputSha256": "34c0696eae968c6c397e62a987fc2328d88157dd4aebddad5722619cccec3f45",
+      "inputs": [
+        {
+          "url": "https://gcc.gnu.org/onlinedocs/gfortran/index.html",
+          "sha256": "ccf6c85accf7cf4d27b72c06bcc41ebae7dcc5d4f187208850de2126046f0718",
+          "etag": "\"165c5-6569bc97cc3ac\"",
+          "lastModified": "Wed, 15 Jul 2026 00:56:00 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:46:28.255Z",
+      "adapter": "html-toc",
+      "upstreamVersion": "GNU Fortran rolling manual",
+      "attribution": "GNU Fortran manual © Free Software Foundation; GNU FDL 1.3 or later.",
+      "licenseUrl": "https://gcc.gnu.org/onlinedocs/gfortran/GNU-Free-Documentation-License.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "GNU Fortran Command Options",
+        "Intrinsic Procedures"
+      ]
     },
     {
       "sourceId": "fortran-lang",
@@ -817,8 +2484,32 @@
       "sourceKind": "conventional",
       "programmingLanguage": "fortran",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/fortran-lang.en.f68234633bec1895.json",
+      "recordCount": 2289,
+      "rawBytes": 192994,
+      "gzipBytes": 16119,
+      "brotliBytes": 11200,
+      "outputSha256": "f68234633bec18953a949bb6f062047d680587abaa130140c673365faf8aea62",
+      "inputSha256": "cbc548aa1e8a8c0df77e15b9c544213950dab50aa71f41f238f21c5c83fbbc6c",
+      "inputs": [
+        {
+          "url": "https://fortran-lang.org/searchindex.js",
+          "sha256": "bcc4b162c6aa2e8e944fe0472381fbb521319fa447e3e955181ebc7ac5202836",
+          "etag": "W/\"6a61af04-5af6d\"",
+          "lastModified": "Thu, 23 Jul 2026 06:04:52 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:46:17.128Z",
+      "adapter": "sphinx-pretty-url",
+      "upstreamVersion": "Fortran Lang rolling English",
+      "attribution": "Fortran Lang documentation © Fortran community contributors; MIT.",
+      "licenseUrl": "https://github.com/fortran-lang/webpage/blob/main/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Quickstart tutorial",
+        "Best Practices"
+      ]
     },
     {
       "sourceId": "haxe-manual",
@@ -826,8 +2517,31 @@
       "sourceKind": "official",
       "programmingLanguage": "haxe",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/haxe-manual.en.b201805d3be1a9b3.json",
+      "recordCount": 338,
+      "rawBytes": 17033,
+      "gzipBytes": 4236,
+      "brotliBytes": 3623,
+      "outputSha256": "b201805d3be1a9b383c727a97e4b835627bf5d7b1dddf75d644b9f415c59f3ec",
+      "inputSha256": "1ec85ac91eb2c55996daab01f3540f64c84879ac4786ecfedd322ecdc5c2b914",
+      "inputs": [
+        {
+          "url": "https://haxe.org/manual/introduction.html",
+          "sha256": "5e631240fd8dc627b72c26d97b6c6c4294fc9d7d2ca199a09245a75f06e96afd",
+          "lastModified": "Thu, 02 Jul 2026 09:35:49 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:41:08.900Z",
+      "adapter": "html-link-index",
+      "upstreamVersion": "Haxe Manual rolling",
+      "attribution": "Haxe Manual © Haxe Foundation and contributors; CC BY 4.0.",
+      "licenseUrl": "https://haxe.org/manual/introduction-license.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "abstract",
+        "macros"
+      ]
     },
     {
       "sourceId": "haxe-api",
@@ -853,8 +2567,64 @@
       "sourceKind": "official",
       "programmingLanguage": "sql",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/mysql-docs.en.79926be2152d1799.json",
+      "recordCount": 1336,
+      "rawBytes": 101043,
+      "gzipBytes": 24269,
+      "brotliBytes": 20095,
+      "outputSha256": "79926be2152d1799cd83c0242f6eaa65b9c4246980c36d184c56b24bf01a1133",
+      "inputSha256": "8a9bd42ecb9bc00d28edeb2f43f8ebe4d3ab6261079ce85ef585aaef0527cae3",
+      "inputs": [
+        {
+          "url": "https://docs.oracle.com/cd/E17952_01/mysql-8.4-en/index.html",
+          "sha256": "152093207d7f7b3226a25fb92f4deedc244b65e02c3a4e971877f2cfbda90fe9",
+          "etag": "\"777dacc177a33041e6ac18f11de5df27:1777984306.961913\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T07:24:35.226Z",
+      "adapter": "html-toc",
+      "upstreamVersion": "MySQL 8.4 Reference Manual",
+      "attribution": "MySQL 8.4 Reference Manual © Oracle.",
+      "licenseUrl": "https://dev.mysql.com/doc/refman/8.4/en/preface.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "SQL Statements",
+        "Backup and Recovery"
+      ]
+    },
+    {
+      "sourceId": "mysql-docs",
+      "sourceName": "MySQL Documentation",
+      "sourceKind": "official",
+      "programmingLanguage": "sql",
+      "docsLocale": "ja",
+      "status": "supported",
+      "path": "/search-index/mysql-docs.ja.691a83f8799083fe.json",
+      "recordCount": 1298,
+      "rawBytes": 112074,
+      "gzipBytes": 27109,
+      "brotliBytes": 21845,
+      "outputSha256": "691a83f8799083fef7f85e25e2eb1ab8014379b3d0882488d73ac211ec7ea947",
+      "inputSha256": "2539dad0abed2a7ee83f1fdff8ef10d51e21303a43ae044a254631452279ea54",
+      "inputs": [
+        {
+          "url": "https://docs.oracle.com/cd/E17952_01/mysql-8.0-ja/index.html",
+          "sha256": "45092bda36757225978ce0b8133d065321484c55b623cf04ca3c8487f6e9fcd0",
+          "etag": "\"0dbb7d07f4ceb7482605367f45292fde:1777984212.974418\""
+        }
+      ],
+      "retrievedAt": "2026-07-23T07:24:35.143Z",
+      "adapter": "html-toc",
+      "upstreamVersion": "MySQL 8.0 Japanese machine-translated manual",
+      "attribution": "MySQL 8.0 Japanese machine-translated Reference Manual © Oracle.",
+      "licenseUrl": "https://dev.mysql.com/doc/refman/8.0/ja/preface.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "SQL ステートメント",
+        "バックアップとリカバリ"
+      ],
+      "qualification": "Machine-translated MySQL 8.0 edition; English index is MySQL 8.4"
     },
     {
       "sourceId": "sqlite-docs",
@@ -862,8 +2632,32 @@
       "sourceKind": "official",
       "programmingLanguage": "sql",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/sqlite-docs.en.f793c4ea1e51e799.json",
+      "recordCount": 123,
+      "rawBytes": 5234,
+      "gzipBytes": 2132,
+      "brotliBytes": 1812,
+      "outputSha256": "f793c4ea1e51e799cf6de03e43cf71ee212992b4b3efdab980119696bd0211d0",
+      "inputSha256": "2c98913c682ff58f76e816ec4d8880f759f9da4b9ad70caa0515b13106d2db65",
+      "inputs": [
+        {
+          "url": "https://www.sqlite.org/docs.html",
+          "sha256": "40f271a0f19aa4e788aea6ef880633187f4cc5333f1f6961b3a919c9400a6586",
+          "etag": "\"m6a3ee4e2s86b8\"",
+          "lastModified": "Fri, 26 Jun 2026 20:45:22 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:46:18.854Z",
+      "adapter": "html-toc",
+      "upstreamVersion": "SQLite documentation rolling",
+      "attribution": "SQLite documentation; public domain.",
+      "licenseUrl": "https://www.sqlite.org/copyright.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "SQL Syntax",
+        "Query Planner"
+      ]
     },
     {
       "sourceId": "wasm-mdn",
@@ -871,8 +2665,32 @@
       "sourceKind": "conventional",
       "programmingLanguage": "webassembly",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/wasm-mdn.en.de7399cff4664515.json",
+      "recordCount": 268,
+      "rawBytes": 20806,
+      "gzipBytes": 2888,
+      "brotliBytes": 2542,
+      "outputSha256": "de7399cff4664515a1b259c4c120102af548e7a0553a75bac79985517d010988",
+      "inputSha256": "14543e84d0037a05220ca9f11d1666f0b07116563823b60225a5144970ec046e",
+      "inputs": [
+        {
+          "url": "https://developer.mozilla.org/en-US/search-index.json",
+          "sha256": "741151ec788de3a0cc918edb718d5547cb2ec3d44d7dd8311433e90d04cbcbfe",
+          "etag": "\"e2153e77c4174264fe95f8e4d7da63a6\"",
+          "lastModified": "Thu, 23 Jul 2026 01:28:27 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:33:42.868Z",
+      "adapter": "mdn-search-index",
+      "upstreamVersion": "MDN Web Docs en-US rolling search index",
+      "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
+      "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "WebAssembly",
+        "compile"
+      ]
     },
     {
       "sourceId": "wasm-mdn",
@@ -880,8 +2698,32 @@
       "sourceKind": "conventional",
       "programmingLanguage": "webassembly",
       "docsLocale": "ja",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/wasm-mdn.ja.cf5e5f0c381f3e92.json",
+      "recordCount": 45,
+      "rawBytes": 3805,
+      "gzipBytes": 877,
+      "brotliBytes": 708,
+      "outputSha256": "cf5e5f0c381f3e928576178b6211d33fc39144068ae5059240e3f77056d0e36a",
+      "inputSha256": "b76c98354ce38b633542a68ec93f51afb65198f6e90e919de91e1e638fd0d17f",
+      "inputs": [
+        {
+          "url": "https://developer.mozilla.org/ja/search-index.json",
+          "sha256": "5e33614c3f277d97fd82f4cb619a20fd3696f7086116effa83e55c25933d06e7",
+          "etag": "\"130c09b77c16f21c9ca995ad2b0ce882\"",
+          "lastModified": "Fri, 24 Jul 2026 01:15:01 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T02:36:21.729Z",
+      "adapter": "mdn-search-index",
+      "upstreamVersion": "MDN Web Docs ja rolling search index",
+      "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
+      "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "WebAssembly",
+        "テキスト形式"
+      ]
     },
     {
       "sourceId": "wasm-spec",
@@ -898,8 +2740,32 @@
       "sourceKind": "conventional",
       "programmingLanguage": "html",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/html-mdn.en.d59551e5dbcdfd9b.json",
+      "recordCount": 254,
+      "rawBytes": 17827,
+      "gzipBytes": 3656,
+      "brotliBytes": 3091,
+      "outputSha256": "d59551e5dbcdfd9b83b38853e308dc8c9c743ccff27853c56b8b11cadfdd0f1c",
+      "inputSha256": "14543e84d0037a05220ca9f11d1666f0b07116563823b60225a5144970ec046e",
+      "inputs": [
+        {
+          "url": "https://developer.mozilla.org/en-US/search-index.json",
+          "sha256": "741151ec788de3a0cc918edb718d5547cb2ec3d44d7dd8311433e90d04cbcbfe",
+          "etag": "\"e2153e77c4174264fe95f8e4d7da63a6\"",
+          "lastModified": "Thu, 23 Jul 2026 01:28:27 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:33:42.899Z",
+      "adapter": "mdn-search-index",
+      "upstreamVersion": "MDN Web Docs en-US rolling search index",
+      "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
+      "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "HTML elements",
+        "input"
+      ]
     },
     {
       "sourceId": "html-mdn",
@@ -907,8 +2773,67 @@
       "sourceKind": "conventional",
       "programmingLanguage": "html",
       "docsLocale": "ja",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/html-mdn.ja.121558c7c95a4006.json",
+      "recordCount": 253,
+      "rawBytes": 17965,
+      "gzipBytes": 4512,
+      "brotliBytes": 3721,
+      "outputSha256": "121558c7c95a40065ade14f7ee975eea4f04c53a7f28e3d62b0ea750fe9b81be",
+      "inputSha256": "b76c98354ce38b633542a68ec93f51afb65198f6e90e919de91e1e638fd0d17f",
+      "inputs": [
+        {
+          "url": "https://developer.mozilla.org/ja/search-index.json",
+          "sha256": "5e33614c3f277d97fd82f4cb619a20fd3696f7086116effa83e55c25933d06e7",
+          "etag": "\"130c09b77c16f21c9ca995ad2b0ce882\"",
+          "lastModified": "Fri, 24 Jul 2026 01:15:01 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T02:36:21.695Z",
+      "adapter": "mdn-search-index",
+      "upstreamVersion": "MDN Web Docs ja rolling search index",
+      "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
+      "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "ハイパーテキスト",
+        "入力要素"
+      ]
+    },
+    {
+      "sourceId": "webdev-html",
+      "sourceName": "web.dev Learn HTML",
+      "sourceKind": "conventional",
+      "programmingLanguage": "html",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/webdev-html.en.c78e6cc56d748757.json",
+      "recordCount": 23,
+      "rawBytes": 1179,
+      "gzipBytes": 412,
+      "brotliBytes": 337,
+      "outputSha256": "c78e6cc56d74875797d4dbdce103739291529bef1ef2bc240b4a838a1b04a750",
+      "inputSha256": "0a62d6a57a4af34d562d0508a665668028a35ed95caa20cde72e1392b5c4c29a",
+      "inputs": [
+        {
+          "url": "https://web.dev/learn/html/",
+          "sha256": "8df3c761be1ed57b32c8e7de37b7d28eb2a023ac91be9d5ea77d4e89a0cc35ca",
+          "canonicalizer": "webdev-course-links-v1",
+          "lastModified": "Wed, 22 Jul 2026 12:17:14 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T15:09:42.921Z",
+      "adapter": "webdev-course-index",
+      "upstreamVersion": "web.dev Learn HTML rolling",
+      "attribution": "web.dev Learn HTML © Google; CC BY 4.0.",
+      "licenseUrl": "https://developers.google.com/terms/site-policies",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Semantic HTML",
+        "Document Structure"
+      ],
+      "qualification": "A Google-authored practical course, not the WHATWG HTML specification.",
+      "qualificationJa": "Googleによる実践講座であり、WHATWG HTML仕様ではありません。"
     },
     {
       "sourceId": "css-mdn",
@@ -916,8 +2841,32 @@
       "sourceKind": "conventional",
       "programmingLanguage": "css",
       "docsLocale": "en",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/css-mdn.en.dc5ad8c64c36195e.json",
+      "recordCount": 1244,
+      "rawBytes": 87370,
+      "gzipBytes": 13998,
+      "brotliBytes": 12163,
+      "outputSha256": "dc5ad8c64c36195e7d9874d4e1e2193892e077215fbf31430946c3b0922737c1",
+      "inputSha256": "14543e84d0037a05220ca9f11d1666f0b07116563823b60225a5144970ec046e",
+      "inputs": [
+        {
+          "url": "https://developer.mozilla.org/en-US/search-index.json",
+          "sha256": "741151ec788de3a0cc918edb718d5547cb2ec3d44d7dd8311433e90d04cbcbfe",
+          "etag": "\"e2153e77c4174264fe95f8e4d7da63a6\"",
+          "lastModified": "Thu, 23 Jul 2026 01:28:27 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T06:33:43.039Z",
+      "adapter": "mdn-search-index",
+      "upstreamVersion": "MDN Web Docs en-US rolling search index",
+      "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
+      "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "display",
+        "selectors"
+      ]
     },
     {
       "sourceId": "css-mdn",
@@ -925,8 +2874,67 @@
       "sourceKind": "conventional",
       "programmingLanguage": "css",
       "docsLocale": "ja",
-      "status": "planned",
-      "reason": "Adapter not implemented."
+      "status": "supported",
+      "path": "/search-index/css-mdn.ja.074c2a38953cf76c.json",
+      "recordCount": 1188,
+      "rawBytes": 76598,
+      "gzipBytes": 15187,
+      "brotliBytes": 12642,
+      "outputSha256": "074c2a38953cf76c8bdf28eafa24bffbd8d0b7c19e66359e810198097af0a96a",
+      "inputSha256": "b76c98354ce38b633542a68ec93f51afb65198f6e90e919de91e1e638fd0d17f",
+      "inputs": [
+        {
+          "url": "https://developer.mozilla.org/ja/search-index.json",
+          "sha256": "5e33614c3f277d97fd82f4cb619a20fd3696f7086116effa83e55c25933d06e7",
+          "etag": "\"130c09b77c16f21c9ca995ad2b0ce882\"",
+          "lastModified": "Fri, 24 Jul 2026 01:15:01 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-24T02:36:21.933Z",
+      "adapter": "mdn-search-index",
+      "upstreamVersion": "MDN Web Docs ja rolling search index",
+      "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
+      "licenseUrl": "https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "カスケーディング",
+        "セレクター"
+      ]
+    },
+    {
+      "sourceId": "webdev-css",
+      "sourceName": "web.dev Learn CSS",
+      "sourceKind": "conventional",
+      "programmingLanguage": "css",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/webdev-css.en.eb220cccfe675a8b.json",
+      "recordCount": 40,
+      "rawBytes": 2083,
+      "gzipBytes": 638,
+      "brotliBytes": 553,
+      "outputSha256": "eb220cccfe675a8bd4aa151f604730caf1c857229f0378b60b54e3e18812f8f7",
+      "inputSha256": "c3367baf7f52828ea50564f7d8752d580e5d8a38be441d67e7088f2fe7bb6aab",
+      "inputs": [
+        {
+          "url": "https://web.dev/learn/css/",
+          "sha256": "6723e7c0cd4b4235af08d082471ba85580ad27827dc8f54523b4b4fded6f370f",
+          "canonicalizer": "webdev-course-links-v1",
+          "lastModified": "Wed, 22 Jul 2026 12:17:14 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-23T15:09:43.463Z",
+      "adapter": "webdev-course-index",
+      "upstreamVersion": "web.dev Learn CSS rolling",
+      "attribution": "web.dev Learn CSS © Google; CC BY 4.0.",
+      "licenseUrl": "https://developers.google.com/terms/site-policies",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "Container Queries",
+        "Cascade"
+      ],
+      "qualification": "A Google-authored practical course that complements, rather than replaces, MDN and CSS specifications.",
+      "qualificationJa": "Googleによる実践講座であり、MDNやCSS仕様を置き換えるものではなく補完する資料です。"
     }
   ]
 }

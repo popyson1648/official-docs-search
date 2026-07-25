@@ -4,6 +4,7 @@ import {
   normalizeSearchText,
   searchRecords,
   searchStoredIndexes,
+  searchStoredIndexesWithFacets,
   type SearchRecord,
   type SupportedSearchIndexManifestEntry,
   type StoredSearchIndexBundle
@@ -39,7 +40,9 @@ describe("federated documentation search", () => {
       docsLocale: "ja",
       status: "supported",
       path: "/search-index/python-docs.ja.fixture.json",
-      recordCount: 1
+      recordCount: 1,
+      qualification: "English caveat.",
+      qualificationJa: "日本語の注意書き。"
     };
 
     expect(expandSearchIndexBundle(bundle, entry)).toEqual([
@@ -47,7 +50,9 @@ describe("federated documentation search", () => {
         title: "リストオブジェクト",
         url: "https://docs.python.org/ja/3/c-api/list.html",
         docsLocale: "ja",
-        section: "C API"
+        section: "C API",
+        qualification: "English caveat.",
+        qualificationJa: "日本語の注意書き。"
       })
     ]);
   });
@@ -138,6 +143,95 @@ describe("federated documentation search", () => {
       new Set(["python", "rust"])
     );
     expect(results).toHaveLength(2);
+  });
+
+  it("returns deduplicated source facets for every match beyond the result limit", () => {
+    const entry = (
+      sourceId: string,
+      sourceName: string,
+      path: string
+    ): SupportedSearchIndexManifestEntry => ({
+      sourceId,
+      sourceName,
+      sourceKind: "official",
+      programmingLanguage: "javascript",
+      docsLocale: "en",
+      status: "supported",
+      path,
+      recordCount: 1
+    });
+    const mdnEntry = entry("mdn-js", "MDN JavaScript", "/search-index/mdn.fixture.json");
+    const ecmaEntry = entry(
+      "ecma-spec",
+      "ECMAScript Specification",
+      "/search-index/ecma.fixture.json"
+    );
+    const unrelatedEntry = entry(
+      "javascript-guide",
+      "JavaScript Guide",
+      "/search-index/guide.fixture.json"
+    );
+
+    const result = searchStoredIndexesWithFacets(
+      [
+        {
+          entry: mdnEntry,
+          bundle: {
+            schemaVersion: 2,
+            sourceId: mdnEntry.sourceId,
+            docsLocale: "en",
+            urlPrefix: "https://developer.mozilla.org/",
+            records: [["Promise", "promise.html"]]
+          }
+        },
+        {
+          entry: ecmaEntry,
+          bundle: {
+            schemaVersion: 2,
+            sourceId: ecmaEntry.sourceId,
+            docsLocale: "en",
+            urlPrefix: "https://tc39.es/ecma262/",
+            records: [["Promise objects", "promise-objects.html"]]
+          }
+        },
+        {
+          entry: { ...mdnEntry, path: "/search-index/mdn.second.fixture.json" },
+          bundle: {
+            schemaVersion: 2,
+            sourceId: mdnEntry.sourceId,
+            docsLocale: "en",
+            urlPrefix: "https://developer.mozilla.org/",
+            records: [["Promise constructor", "promise-constructor.html"]]
+          }
+        },
+        {
+          entry: unrelatedEntry,
+          bundle: {
+            schemaVersion: 2,
+            sourceId: unrelatedEntry.sourceId,
+            docsLocale: "en",
+            urlPrefix: "https://javascript.example/",
+            records: [["Modules", "modules.html"]]
+          }
+        }
+      ],
+      "promise",
+      1
+    );
+
+    expect(result.records).toHaveLength(1);
+    expect(result.facets).toEqual([
+      {
+        sourceId: "ecma-spec",
+        sourceName: "ECMAScript Specification",
+        programmingLanguage: "javascript"
+      },
+      {
+        sourceId: "mdn-js",
+        sourceName: "MDN JavaScript",
+        programmingLanguage: "javascript"
+      }
+    ]);
   });
 
   it.each([

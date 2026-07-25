@@ -17,6 +17,26 @@ describe("parseQuery", () => {
     expect(parsed.searchText).toBe("list");
   });
 
+  it("accepts whitespace after commas in a leading language list", () => {
+    const parsed = parseQuery("rust, js, go iterator", { knownLanguages });
+    expect(parsed.languages).toEqual(["rust", "javascript", "go"]);
+    expect(parsed.searchText).toBe("iterator");
+    expect(parsed.flags[0]).toMatchObject({
+      kind: "language",
+      token: "rust, js, go",
+      start: 0,
+      end: 12,
+      valid: true
+    });
+    expect(parsed.errors).toEqual([]);
+  });
+
+  it("keeps an invalid spaced language list in the search text", () => {
+    const parsed = parseQuery("rust, unknown iterator", { knownLanguages });
+    expect(parsed.languages).toEqual([]);
+    expect(parsed.searchText).toBe("rust, unknown iterator");
+  });
+
   it("preserves programming syntax in search text", () => {
     const parsed = parseQuery("lang:rust Vec::<T> collect::<Vec<_>>()", { knownLanguages });
     expect(parsed.languages).toEqual(["rust"]);
@@ -35,6 +55,17 @@ describe("parseQuery", () => {
   it("rejects flags inside search words", () => {
     const parsed = parseQuery("quick lang:python sort", { knownLanguages });
     expect(parsed.errors.map((error) => error.code)).toContain("flag_in_search_text");
+  });
+
+  it("accepts only the supported documentation locales", () => {
+    const valid = parseQuery("iterator locale:JA", { knownLanguages });
+    expect(valid.locale).toBe("ja");
+    expect(valid.errors).toEqual([]);
+
+    const invalid = parseQuery("iterator locale:fr", { knownLanguages });
+    expect(invalid.locale).toBeUndefined();
+    expect(invalid.errors.map((error) => error.code)).toContain("invalid_locale");
+    expect(invalid.flags.find((flag) => flag.kind === "locale")?.valid).toBe(false);
   });
 
   it("does not treat code-like colon text as a flag", () => {
@@ -71,6 +102,7 @@ describe("parseQuery with the shipped catalog", () => {
 
   it.each([
     ["py", "python"],
+    ["js", "javascript"],
     ["kt", "kotlin"],
     ["rs", "rust"]
   ])("an alias %j selects the %j documentation", (alias, canonical) => {

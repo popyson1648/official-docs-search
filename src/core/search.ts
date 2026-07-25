@@ -9,10 +9,23 @@ export interface SearchRecord {
   sourceName: string;
   sourceKind: SourceKind;
   section?: string;
+  qualification?: string;
+  qualificationJa?: string;
 }
 
 export interface RankedSearchRecord extends SearchRecord {
   score: number;
+}
+
+export interface SearchFacet {
+  sourceId: string;
+  sourceName: string;
+  programmingLanguage: string;
+}
+
+export interface StoredIndexSearchResult {
+  records: RankedSearchRecord[];
+  facets: SearchFacet[];
 }
 
 export type StoredSearchRecord = [title: string, urlSuffix: string, section?: string];
@@ -47,6 +60,8 @@ export interface SearchIndexManifestEntry {
   licenseUrl?: string;
   updateFrequency?: string;
   knownQueries?: string[];
+  qualification?: string;
+  qualificationJa?: string;
 }
 
 export interface SearchIndexManifest {
@@ -73,6 +88,37 @@ export function isSupportedSearchIndexEntry(
   return entry.status === "supported" && typeof entry.path === "string";
 }
 
+export function validateStoredSearchIndex(index: StoredSearchIndex): void {
+  const { bundle, entry } = index;
+  if (
+    !bundle ||
+    bundle.schemaVersion !== 2 ||
+    bundle.sourceId !== entry.sourceId ||
+    bundle.docsLocale !== entry.docsLocale ||
+    typeof bundle.urlPrefix !== "string" ||
+    !Array.isArray(bundle.records)
+  ) {
+    throw new Error(`Invalid search bundle structure: ${entry.path}`);
+  }
+  if (bundle.records.length !== entry.recordCount) {
+    throw new Error(`Search bundle count does not match its manifest entry: ${entry.path}`);
+  }
+  for (const record of bundle.records) {
+    if (
+      !Array.isArray(record) ||
+      record.length < 2 ||
+      record.length > 3 ||
+      typeof record[0] !== "string" ||
+      !record[0].trim() ||
+      typeof record[1] !== "string" ||
+      (record[2] !== undefined && typeof record[2] !== "string")
+    ) {
+      throw new Error(`Invalid search record in ${entry.path}`);
+    }
+    safeBundleUrl(bundle.urlPrefix, record[1], entry.path);
+  }
+}
+
 export function expandSearchIndexBundle(
   bundle: StoredSearchIndexBundle,
   entry: SupportedSearchIndexManifestEntry
@@ -94,6 +140,8 @@ export function expandSearchIndexBundle(
       sourceId: bundle.sourceId,
       sourceName: entry.sourceName,
       sourceKind: entry.sourceKind,
+      ...(entry.qualification ? { qualification: entry.qualification } : {}),
+      ...(entry.qualificationJa ? { qualificationJa: entry.qualificationJa } : {}),
       ...(section ? { section } : {})
     };
   });
@@ -117,20 +165,31 @@ export function searchStoredIndexes(
   query: string,
   limit = 50
 ): RankedSearchRecord[] {
+  return searchStoredIndexesWithFacets(indexes, query, limit).records;
+}
+
+export function searchStoredIndexesWithFacets(
+  indexes: StoredSearchIndex[],
+  query: string,
+  limit = 50
+): StoredIndexSearchResult {
   const normalizedQuery = normalizeSearchText(query);
   const tokens = unique(normalizedQuery.split(/\s+/).filter(Boolean));
-  if (tokens.length === 0) return [];
+  if (tokens.length === 0) return { records: [], facets: [] };
 
   const byLanguage = new Map<string, RankedSearchRecord[]>();
+  const facetsBySource = new Map<string, SearchFacet>();
   for (const { bundle, entry } of indexes) {
     if (bundle.sourceId !== entry.sourceId || bundle.docsLocale !== entry.docsLocale) {
       throw new Error(`Search bundle identity does not match its manifest entry: ${entry.path}`);
     }
     const bucket = byLanguage.get(entry.programmingLanguage) ?? [];
+    let sourceHasMatch = false;
     for (const [title, urlSuffix, section] of bundle.records) {
       const score = scoreText(title, section ?? "", entry.sourceKind, normalizedQuery, tokens);
       if (score <= 0) continue;
       const url = safeBundleUrl(bundle.urlPrefix, urlSuffix, entry.path);
+      sourceHasMatch = true;
       insertBounded(
         bucket,
         {
@@ -141,17 +200,29 @@ export function searchStoredIndexes(
           sourceId: entry.sourceId,
           sourceName: entry.sourceName,
           sourceKind: entry.sourceKind,
+          ...(entry.qualification ? { qualification: entry.qualification } : {}),
+          ...(entry.qualificationJa ? { qualificationJa: entry.qualificationJa } : {}),
           ...(section ? { section } : {}),
           score
         },
         limit
       );
     }
+    if (sourceHasMatch && !facetsBySource.has(entry.sourceId)) {
+      facetsBySource.set(entry.sourceId, {
+        sourceId: entry.sourceId,
+        sourceName: entry.sourceName,
+        programmingLanguage: entry.programmingLanguage
+      });
+    }
     byLanguage.set(entry.programmingLanguage, bucket);
   }
 
   const ranked = [...byLanguage.values()].flat().sort(compareRankedRecords);
-  return diversifyLanguages(ranked, limit);
+  return {
+    records: diversifyLanguages(ranked, limit),
+    facets: [...facetsBySource.values()].sort(compareSearchFacets)
+  };
 }
 
 export function scoreRecord(record: SearchRecord, normalizedQuery: string, tokens?: string[]): number {
@@ -249,6 +320,14 @@ function diversifyLanguages(records: RankedSearchRecord[], limit: number): Ranke
 
 function compareRankedRecords(left: RankedSearchRecord, right: RankedSearchRecord): number {
   return right.score - left.score || left.title.localeCompare(right.title) || left.url.localeCompare(right.url);
+}
+
+function compareSearchFacets(left: SearchFacet, right: SearchFacet): number {
+  return (
+    left.programmingLanguage.localeCompare(right.programmingLanguage) ||
+    left.sourceName.localeCompare(right.sourceName) ||
+    left.sourceId.localeCompare(right.sourceId)
+  );
 }
 
 function unique(values: string[]): string[] {

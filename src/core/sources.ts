@@ -29,6 +29,12 @@ export interface DocsSource {
   defaultEnabled: boolean;
   siteLocales: string[];
   indexes: DocsIndexSupport[];
+  qualification?: LocalizedSourceQualification;
+}
+
+export interface LocalizedSourceQualification {
+  en: string;
+  ja: string;
 }
 
 export interface DocsIndexSupport {
@@ -167,6 +173,13 @@ function normalizeLanguage(raw: Record<string, unknown>): DocsLanguage {
 }
 
 function normalizeSource(language: string, raw: Record<string, unknown>): DocsSource {
+  const qualificationEn = String(raw.qualification_en ?? "").trim();
+  const qualificationJa = String(raw.qualification_ja ?? "").trim();
+  if (Boolean(qualificationEn) !== Boolean(qualificationJa)) {
+    throw new Error(
+      `Source ${String(raw.id ?? "")} must provide both qualification_en and qualification_ja.`
+    );
+  }
   return {
     id: String(raw.id ?? ""),
     language,
@@ -179,7 +192,10 @@ function normalizeSource(language: string, raw: Record<string, unknown>): DocsSo
     siteLocales: stringArray(raw.site_locales),
     indexes: Array.isArray(raw.indexes)
       ? raw.indexes.map((index) => normalizeIndexSupport(index as Record<string, unknown>))
-      : []
+      : [],
+    ...(qualificationEn && qualificationJa
+      ? { qualification: { en: qualificationEn, ja: qualificationJa } }
+      : {})
   };
 }
 

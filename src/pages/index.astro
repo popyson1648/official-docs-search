@@ -2,6 +2,7 @@
 import { getSourceKindLabel, getUiLanguage, t } from "../core/i18n";
 import { parseQuery } from "../core/query";
 import type { SourceMode } from "../core/query";
+import { mergeNewLanguageSourceDefaults } from "../core/search-controls";
 import { getKnownLanguageIds, loadCatalog, resolveSearchScope } from "../core/sources";
 
 export const prerender = false;
@@ -17,6 +18,7 @@ const defaultSourceMode: SourceMode =
 const docsLocale = params.get("docsLocale") || Astro.cookies.get("ods_docs_locale")?.value || undefined;
 const selectedSourceIds = new Set(params.getAll("sourceId"));
 const hasExplicitSourceSelection = params.get("sourceSelection") === "explicit";
+const submittedSourceLanguageIds = new Set(params.getAll("sourceScopeLanguage"));
 
 const knownLanguages = getKnownLanguageIds(catalog);
 const parsed = parseQuery(q, {
@@ -24,7 +26,11 @@ const parsed = parseQuery(q, {
 });
 const sourceMode = parsed.sourceMode ?? defaultSourceMode;
 const locale = parsed.locale ?? docsLocale;
-const selectedIds =
+const requestedLanguageScope = resolveSearchScope(catalog, {
+  languages: parsed.languages,
+  sourceMode: "all"
+}).languages;
+const submittedSelectedIds =
   selectedSourceIds.size > 0 || hasExplicitSourceSelection
     ? selectedSourceIds
     : new Set(
@@ -33,6 +39,13 @@ const selectedIds =
           .filter((source) => source.defaultEnabled)
           .map((source) => source.id)
       );
+const selectedIds = hasExplicitSourceSelection
+  ? mergeNewLanguageSourceDefaults(
+      submittedSelectedIds,
+      submittedSourceLanguageIds,
+      requestedLanguageScope
+    )
+  : submittedSelectedIds;
 
 const scope = resolveSearchScope(catalog, {
   languages: parsed.languages,
@@ -47,6 +60,41 @@ const trustedScope = resolveSearchScope(catalog, {
 });
 
 const hasQuery = q.trim().length > 0;
+const sourceLanguages =
+  hasQuery && parsed.languages.length > 0 ? trustedScope.languages : catalog.languages;
+const preservedDisabledSourceIds =
+  sourceMode === "all"
+    ? []
+    : sourceLanguages
+        .flatMap((language) => language.sources)
+        .filter((source) => source.kind !== "official" && selectedIds.has(source.id))
+        .map((source) => source.id);
+const searchSyntaxRows = [
+  {
+    syntax: "<language> <search words>",
+    example: "js promise all"
+  },
+  {
+    syntax: "lang:<language> <search words>",
+    example: "lang:rust iterator"
+  },
+  {
+    syntax: "<language>, <language> <search words>",
+    example: "rust, ts generic"
+  },
+  {
+    syntax: "lang:<language>,<language> <search words>",
+    example: "lang:python,rust iterator"
+  },
+  {
+    syntax: "<search words> locale:ja",
+    example: "iterator locale:ja"
+  },
+  {
+    syntax: "<search words> source:all",
+    example: "proxy source:all"
+  }
+];
 ---
 
 <html lang={uiLanguage}>
@@ -88,9 +136,35 @@ const hasQuery = q.trim().length > 0;
             </button>
           </div>
         </div>
-        <form class="search-form" method="get" action="/" data-search-form>
+        <form
+          class="search-form"
+          method="get"
+          action="/"
+          data-search-form
+          data-docs-locale={locale ?? ""}
+          data-query-locale={parsed.locale ?? ""}
+        >
           <input type="hidden" name="ui" value={uiLanguage} data-ui-hidden />
           <input type="hidden" name="sourceSelection" value="explicit" />
+          {
+            sourceLanguages.map((language) => (
+              <input
+                type="hidden"
+                name="sourceScopeLanguage"
+                value={language.id}
+              />
+            ))
+          }
+          {
+            preservedDisabledSourceIds.map((sourceId) => (
+              <input
+                type="hidden"
+                name="sourceId"
+                value={sourceId}
+                data-preserved-source
+              />
+            ))
+          }
           <div class="query-row">
             <div class="search-group">
               <label class="sr-only" for="q">{t(uiLanguage, "queryLabel")}</label>
@@ -102,7 +176,7 @@ const hasQuery = q.trim().length > 0;
                   value={q}
                   autocomplete="off"
                   spellcheck="false"
-                  placeholder={t(uiLanguage, "queryPlaceholder")}
+                  aria-describedby="query-example"
                   data-query-input
                   autofocus
                 />
@@ -130,7 +204,7 @@ const hasQuery = q.trim().length > 0;
             )
           }
 
-          <p class="examples">
+          <p class="examples" id="query-example">
             <span class="lang-en">{t("en", "examples")}</span>
             <span class="lang-ja">{t("ja", "examples")}</span>
           </p>
@@ -182,7 +256,7 @@ const hasQuery = q.trim().length > 0;
             </summary>
             <div class="source-lists">
               {
-                (hasQuery && parsed.languages.length > 0 ? trustedScope.languages : catalog.languages).map((language) => (
+                sourceLanguages.map((language) => (
                   <div class="language-group">
                     <h3 class="language-name">{language.name}</h3>
                     <div class="source-grid">
@@ -191,8 +265,9 @@ const hasQuery = q.trim().length > 0;
                           const isOfficial = source.kind === "official";
                           const disabled = !isOfficial && sourceMode !== "all";
                           return (
-                            <label class:list={["source-option", { disabled }]}>
+                            <div class:list={["source-option", { disabled }]}>
                               <input
+                                id={`source-${source.id}`}
                                 type="checkbox"
                                 name="sourceId"
                                 value={source.id}
@@ -201,16 +276,50 @@ const hasQuery = q.trim().length > 0;
                                 class="pill-toggle"
                                 data-source-option
                                 data-source-kind={source.kind}
+                                data-supports-ja={String(source.siteLocales.includes("ja"))}
                               />
-                              <span>
-                                <strong>{source.name}</strong>
-                                <small>
-                                  {source.domains[0]} ·{" "}
-                                  <span class="lang-en">{getSourceKindLabel("en", source.kind)}</span>
-                                  <span class="lang-ja">{getSourceKindLabel("ja", source.kind)}</span>
-                                </small>
-                              </span>
-                            </label>
+                              <div class="source-copy">
+                                <label class="source-title" for={`source-${source.id}`}>
+                                  <strong>{source.name}</strong>
+                                </label>
+                                <div class="source-meta">
+                                  <span class="source-kind">
+                                    <span class="lang-en">{getSourceKindLabel("en", source.kind)}</span>
+                                    <span class="lang-ja">{getSourceKindLabel("ja", source.kind)}</span>
+                                  </span>
+                                  <a
+                                    class="source-link"
+                                    href={source.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={`${source.name}: ${source.domains[0]}`}
+                                  >
+                                    <span>{source.domains[0]}</span>
+                                    <span class="external-link-mark" aria-hidden="true">↗</span>
+                                  </a>
+                                  {
+                                    !source.siteLocales.includes("ja") && (
+                                      <span class="source-ja-unavailable">
+                                        <span class="lang-en">{t("en", "japaneseUnavailable")}</span>
+                                        <span class="lang-ja">{t("ja", "japaneseUnavailable")}</span>
+                                      </span>
+                                    )
+                                  }
+                                </div>
+                                {
+                                  source.qualification && (
+                                    <small class="source-qualification">
+                                      <span class="lang-en">
+                                        {t("en", "qualificationLabel")} {source.qualification.en}
+                                      </span>
+                                      <span class="lang-ja">
+                                        {t("ja", "qualificationLabel")}{source.qualification.ja}
+                                      </span>
+                                    </small>
+                                  )
+                                }
+                              </div>
+                            </div>
                           );
                         })
                       }
@@ -231,17 +340,18 @@ const hasQuery = q.trim().length > 0;
         )
       }
 
-      {
-        scope.localeNotices.length > 0 && (
-          <div class="locale-notice muted">
-            <small>
-              <span class="lang-en">Note: {t("en", "localeUnavailable")}</span>
-              <span class="lang-ja">※ {t("ja", "localeUnavailable")}</span>
-              ({scope.localeNotices.map((notice) => `${notice.language}: ${notice.sources.map((s) => s.name).join(", ")}`).join("; ")})
-            </small>
-          </div>
-        )
-      }
+      <div
+        class="locale-notice muted"
+        data-locale-notice
+        data-has-query={String(hasQuery)}
+        aria-live="polite"
+        hidden={hasQuery || scope.localeNotices.length === 0}
+      >
+        <small>
+          <span class="lang-en">Note: {t("en", "localeUnavailable")}</span>
+          <span class="lang-ja">※ {t("ja", "localeUnavailable")}</span>
+        </small>
+      </div>
 
       {
         hasQuery && (
@@ -257,12 +367,20 @@ const hasQuery = q.trim().length > 0;
                   data-search-results
                   data-query={parsed.searchText}
                   data-docs-locale={locale ?? ""}
-                  data-sources={JSON.stringify(scope.sources.map((source) => ({ id: source.id, name: source.name })))}
+                  data-sources={JSON.stringify(scope.sources.map((source) => ({
+                    id: source.id,
+                    name: source.name,
+                    programmingLanguage: source.language,
+                    programmingLanguageName:
+                      catalog.languages.find((language) => language.id === source.language)?.name ??
+                      source.language
+                  })))}
                 >
                   <p
                     class="search-status"
                     data-search-status
                     data-state="loading"
+                    role="status"
                     data-loading-en={t("en", "searchLoading")}
                     data-loading-ja={t("ja", "searchLoading")}
                     data-success-en={t("en", "resultCount")}
@@ -275,8 +393,9 @@ const hasQuery = q.trim().length > 0;
                     <span class="lang-en">{t("en", "searchLoading")}</span>
                     <span class="lang-ja">{t("ja", "searchLoading")}</span>
                   </p>
-                  <p
-                    class="index-coverage notice"
+                  <div data-result-filters hidden></div>
+                  <div
+                    class="index-coverage"
                     data-index-coverage
                     data-unsupported-en={t("en", "indexUnavailable")}
                     data-unsupported-ja={t("ja", "indexUnavailable")}
@@ -286,8 +405,12 @@ const hasQuery = q.trim().length > 0;
                     data-blocked-ja={t("ja", "indexBlocked")}
                     data-disabled-en={t("en", "indexDisabled")}
                     data-disabled-ja={t("ja", "indexDisabled")}
+                    data-locale-fallback-summary-en={t("en", "localeFallbackSummary")}
+                    data-locale-fallback-summary-ja={t("ja", "localeFallbackSummary")}
+                    data-index-load-failed-en={t("en", "indexLoadFailed")}
+                    data-index-load-failed-ja={t("ja", "indexLoadFailed")}
                     hidden
-                  ></p>
+                  ></div>
                   <ol class="result-list" data-result-list></ol>
                 </div>
               )
@@ -307,20 +430,33 @@ const hasQuery = q.trim().length > 0;
           <button class="icon-button" value="close" aria-label={t(uiLanguage, "close")}>×</button>
         </div>
         <div class="help-content">
-          <p><code>&lt;language&gt; &lt;search words&gt;</code></p>
-          <p><code>lang:&lt;language&gt; &lt;search words&gt;</code></p>
-          <p><code>lang:python,rust &lt;search words&gt;</code></p>
-          <p class="muted" style="margin-top: -6px; margin-bottom: 12px; font-size: 0.9em;">
-            <span class="lang-en">(File extensions like <code>.py</code> or <code>ts</code> can also be used)</span>
-            <span class="lang-ja">(<code>.py</code> や <code>ts</code> などの拡張子も指定できます)</span>
+          {
+            searchSyntaxRows.map((row) => (
+              <div class="help-rule">
+                <p class="help-syntax"><code>{row.syntax}</code></p>
+                <small class="help-example">
+                  <span class="lang-en">Example: {row.example}</span>
+                  <span class="lang-ja">例：{row.example}</span>
+                </small>
+              </div>
+            ))
+          }
+          <p class="help-note">
+            <span class="lang-en">{t("en", "multiTermAnd")}</span>
+            <span class="lang-ja">{t("ja", "multiTermAnd")}</span>
           </p>
-          <p><code>&lt;search words&gt; locale:ja</code></p>
-          <p><code>&lt;search words&gt; source:all</code></p>
-          <p>
+          <p class="help-note">
+            <span class="lang-en">{t("en", "shortAliases")}</span>
+            <span class="lang-ja">{t("ja", "shortAliases")}</span>
+          </p>
+          <p class="help-note">
             <span class="lang-en">{t("en", "flagsRule")}</span>
             <span class="lang-ja">{t("ja", "flagsRule")}</span>
           </p>
-          <p><code>::</code>, <code>?.</code>, <code>$</code>, <code>%</code>, <code>&lt;T&gt;</code> are searched as normal text.</p>
+          <p class="help-note">
+            <span class="lang-en">{t("en", "symbolsHelp")}</span>
+            <span class="lang-ja">{t("ja", "symbolsHelp")}</span>
+          </p>
         </div>
       </form>
     </dialog>

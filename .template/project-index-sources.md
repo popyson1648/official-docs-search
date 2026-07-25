@@ -4,31 +4,51 @@
 
 Store only titles or headings, optional section labels, and original HTTPS URLs.
 Do not store or republish documentation bodies.
-Record exact inputs, hashes, validators, retrieval time, versions, attribution, and license links in the generated manifest.
+Make the generated manifest the canonical per-source inventory for input and
+output hashes, validators, retrieval time, versions, attribution, licenses,
+cadence, known queries, counts, and sizes.
 
-Fetch only reviewed public static inputs with an identifying user agent, bounded timeout, and bounded retry count.
+Fetch only reviewed static indexes, tables of contents, sitemaps, or structured
+metadata with an identifying user agent, bounded concurrency, timeouts, and
+retries.
 Do not discovery-crawl or use upstream search endpoints.
-Record the robots review date, re-check rules and terms before changing endpoints, and stop if access becomes disallowed.
-Treat aggregation services as acquisition intermediaries, not replacements for underlying licenses.
+If a reviewed navigation page contains request-specific decoration, define and
+test a named canonical metadata projection and record its name in the manifest.
+Record the robots and terms review date and any host-specific crawl delay.
+Treat aggregators as acquisition intermediaries, not replacements for
+underlying licenses.
 
-## Supported Inputs
+## Supported Input Families
 
-Maintain one row for every supported source-and-locale index.
+Keep this document short by grouping supported indexes that share an adapter
+and collection policy.
+List every exact source-locale entry in the generated manifest.
 
-| Index | Input and adapter | License and required attribution | Update and robots policy |
-| --- | --- | --- | --- |
-| `python-docs/en` | DevDocs Python 3.14 index; `devdocs` | PSF License; attribute the Python Software Foundation. | Weekly; one index fetch, no docs crawl. |
-| `python-docs/ja` | Official Japanese Sphinx index; `sphinx` | PSF License; attribute the Python Software Foundation. | Weekly; one allowed static index fetch. |
-| `rust-docs/en` | DevDocs Rust index; `devdocs` | Apache-2.0 or MIT; attribute The Rust Project Developers. | Weekly; one index fetch, no docs crawl. |
-| `tc39-ecma262/en` | Public specification root; `ecmarkup` | Follow Ecma copyright and terms; attribute Ecma International. | Weekly; one page fetch, no site crawl. |
-| `mdn-js/en` | DevDocs JavaScript index; `devdocs` | CC BY-SA 2.5 or later; attribute Mozilla contributors. | Weekly; one index fetch, no MDN crawl. |
-| `typescript-docs/en` | DevDocs TypeScript index; `devdocs` | CC BY 4.0; attribute Microsoft and credit adapted DevDocs metadata. | Weekly; one index fetch, no docs crawl. |
-| `go-std/en` | DevDocs Go index mapped to versioned package links; `devdocs` | BSD-3-Clause; attribute The Go Authors and credit adapted DevDocs metadata. | Monthly; do not scrape package or search routes. |
-| `java-docs/en` | Two static Oracle Javadoc indexes; `javadoc-types` | Oracle copyright, all rights reserved; metadata and links only. | Monthly; no Oracle search route. |
-| `csharp-docs/en` | Pinned `dotnet/docs` C# TOC; `yaml-toc` | CC BY 4.0; attribute Microsoft. | Weekly; pinned raw file, no Learn crawl. |
-| `php-manual/en` | Public English function index; `php-manual-index` | CC BY 3.0 or later; attribute PHP Documentation Group. | Weekly; no `/search.php`. |
-| `php-manual/ja` | Public Japanese function index; `php-manual-index` | CC BY 3.0 or later; attribute PHP Documentation Group. | Weekly; no `/search.php`. |
-| `ruby-docs/en` | Static Ruby table of contents; `rdoc-toc` | Ruby License and component terms; attribute Ruby contributors. | Weekly; static page only. |
-| `ruby-docs/ja` | Four static Japanese reference indexes; `ruby-reference-index` | CC BY 3.0; attribute the Japanese Ruby Reference Manual. | Weekly; static pages only. |
+| Family | Supported indexes | Collection rule |
+| --- | --- | --- |
+| Static search metadata | List sources and locales. | State the exact artifact and no-crawl rule. |
+| Structured navigation | List sources and locales. | State the TOC, sitemap, or package-list boundary. |
+| Localized editions | List sources and locales. | Require actual localized titles and URLs. |
+| Conventional/community | List sources and locales. | Preserve source kind and edition qualifications. |
 
-Update generator metadata, this policy, and generated artifacts together when an input, version, license, attribution, cadence, or robots rule changes.
+For trusted teaching sources, record why the author or steward is credible,
+the reviewed static input boundary, and any age, version, scope, stewardship,
+or license qualification.
+Store the qualification in both English and Japanese and render it in the
+source picker and result metadata.
+
+## Locale Qualifications
+
+List maintained exact-locale bundles and document partial, stale,
+machine-translated, community, or rejected locale candidates.
+Never duplicate or relabel English metadata as another locale.
+
+## Blocked And Replacement Sources
+
+For every blocked or disabled source that affects language coverage, record the
+terms, stability, or distribution reason and name the reviewed replacement when
+one exists.
+
+Update job metadata, this policy, its project copy, and generated artifacts
+together when an input, version, license, attribution, cadence, qualification,
+or robots rule changes.

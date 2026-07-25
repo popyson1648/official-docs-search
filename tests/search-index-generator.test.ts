@@ -6,6 +6,7 @@ import {
   buildSearchIndexArtifacts,
   publishSearchIndexArtifacts
 } from "../scripts/search-index-generator.mjs";
+import { normalizeSphinxEntries } from "../scripts/search-index.mjs";
 
 const temporaryDirectories: string[] = [];
 const catalog = `
@@ -37,6 +38,42 @@ afterEach(() => {
 });
 
 describe("search index generation", () => {
+  it("normalizes inline Sphinx title markup to plain text", () => {
+    const records = normalizeSphinxEntries(
+      {
+        docnames: ["library/pathlib"],
+        titles: [
+          '<code class="xref"><span class="pre">pathlib</span></code> --- Object paths'
+        ],
+        alltitles: {
+          '<code class="pre">glob</code> comparison': [
+            [0, "comparison-to-the-glob-module"]
+          ]
+        }
+      },
+      {
+        sourceId: "python-docs",
+        programmingLanguage: "python",
+        docsLocale: "ja",
+        sourceKind: "official",
+        sourceName: "Python Documentation",
+        buildUrl: (path: string, fragment?: string | null) =>
+          `https://docs.example.test/${path}${fragment ? `#${fragment}` : ""}`
+      }
+    );
+
+    expect(records).toEqual([
+      expect.objectContaining({
+        title: "pathlib — Object paths"
+      }),
+      expect.objectContaining({
+        title: "glob comparison",
+        section: "pathlib — Object paths"
+      })
+    ]);
+    expect(JSON.stringify(records)).not.toContain("<code");
+  });
+
   it("reuses retrieval time and produces identical artifacts for identical input", async () => {
     const first = await build(fixtureJob(), new Date("2026-07-23T00:00:00Z"));
     const second = await build(
@@ -44,6 +81,121 @@ describe("search index generation", () => {
       new Date("2026-07-24T00:00:00Z"),
       first.manifest
     );
+
+    expect([...second.files]).toEqual([...first.files]);
+  });
+
+  it("copies bilingual catalog qualifications into supported manifest entries", async () => {
+    const qualifiedCatalog = catalog.replace(
+      'indexes = [\n  { locale = "en", status = "supported" },',
+      'qualification_en = "Current English caveat."\nqualification_ja = "現在の日本語の注意書き。"\nindexes = [\n  { locale = "en", status = "supported" },'
+    );
+    const generated = await buildSearchIndexArtifacts({
+      catalogSource: qualifiedCatalog,
+      jobs: [fixtureJob()],
+      fetcher: fixtureFetch,
+      now: () => new Date("2026-07-23T00:00:00Z")
+    });
+    const entry = generated.manifest.entries.find(
+      (candidate) => candidate.sourceId === "example-docs" && candidate.docsLocale === "en"
+    );
+
+    expect(entry).toMatchObject({
+      qualification: "Current English caveat.",
+      qualificationJa: "現在の日本語の注意書き。"
+    });
+  });
+
+  it("hashes declared canonical metadata instead of volatile page decoration", async () => {
+    const canonicalJob = (canonicalizer: string) => ({
+      ...fixtureJob(),
+      load: async ({
+        fetchText
+      }: {
+        fetchText: (
+          url: string,
+          options?: {
+            canonicalizer?: string;
+            canonicalize?: (source: string) => string;
+          }
+        ) => Promise<string>;
+      }) => {
+        await fetchText("https://input.test/index.html", {
+          canonicalizer,
+          canonicalize: (source) => source.replace(/ nonce="[^"]+"/g, "")
+        });
+        return [{ title: "Record", url: "https://example.test/docs/record" }];
+      }
+    });
+    const first = await buildSearchIndexArtifacts({
+      catalogSource: catalog,
+      jobs: [canonicalJob("fixture-links-v1")],
+      fetcher: async () => new Response('<a href="/record" nonce="first">Record</a>'),
+      now: () => new Date("2026-07-23T00:00:00Z")
+    });
+    const second = await buildSearchIndexArtifacts({
+      catalogSource: catalog,
+      jobs: [canonicalJob("fixture-links-v1")],
+      fetcher: async () => new Response('<a href="/record" nonce="second">Record</a>'),
+      previousManifest: first.manifest,
+      now: () => new Date("2026-07-24T00:00:00Z")
+    });
+
+    expect([...second.files]).toEqual([...first.files]);
+    const canonicalInput = (
+      second.manifest as unknown as { entries: Array<{ inputs: unknown[] }> }
+    ).entries[0].inputs[0];
+    expect(canonicalInput).toMatchObject({
+      canonicalizer: "fixture-links-v1"
+    });
+
+    const third = await buildSearchIndexArtifacts({
+      catalogSource: catalog,
+      jobs: [canonicalJob("fixture-links-v2")],
+      fetcher: async () => new Response('<a href="/record" nonce="third">Record</a>'),
+      previousManifest: second.manifest,
+      now: () => new Date("2026-07-25T00:00:00Z")
+    });
+    const versionedEntry = (
+      third.manifest as unknown as {
+        entries: Array<{
+          inputSha256: string;
+          retrievedAt: string;
+          inputs: Array<{ canonicalizer?: string }>;
+        }>;
+      }
+    ).entries[0];
+    expect(versionedEntry.inputs[0].canonicalizer).toBe("fixture-links-v2");
+    expect(versionedEntry.inputSha256).not.toBe(
+      (
+        second.manifest as unknown as {
+          entries: Array<{ inputSha256: string }>;
+        }
+      ).entries[0].inputSha256
+    );
+    expect(versionedEntry.retrievedAt).toBe("2026-07-25T00:00:00.000Z");
+  });
+
+  it("preserves prior validators when identical input is served with new CDN headers", async () => {
+    const first = await buildSearchIndexArtifacts({
+      catalogSource: catalog,
+      jobs: [fixtureJob()],
+      fetcher: async () =>
+        new Response('{"fixture":true}', {
+          headers: { etag: '"first"', "last-modified": "Thu, 23 Jul 2026 00:00:00 GMT" }
+        }),
+      now: () => new Date("2026-07-23T00:00:00Z")
+    });
+    const second = await buildSearchIndexArtifacts({
+      catalogSource: catalog,
+      jobs: [fixtureJob()],
+      fetcher: async () =>
+        new Response('{"fixture":true}', {
+          headers: { etag: '"second"', "last-modified": "Fri, 24 Jul 2026 00:00:00 GMT" }
+        }),
+      previousManifest: first.manifest,
+      now: () => new Date("2026-07-24T00:00:00Z")
+    });
 
     expect([...second.files]).toEqual([...first.files]);
   });
@@ -110,6 +262,66 @@ indexes = [{ locale = "en", status = "supported" }]
         JSON.parse(await fetchText("https://input.test/index.json"))
     };
     await expect(build(job, new Date("2026-07-23T00:00:00Z"))).rejects.toThrow();
+  });
+
+  it("rejects duplicate source-locale adapter jobs", async () => {
+    await expect(
+      buildSearchIndexArtifacts({
+        catalogSource: catalog,
+        jobs: [fixtureJob(), fixtureJob()],
+        fetcher: fixtureFetch
+      })
+    ).rejects.toThrow(/Duplicate adapter job: example-docs\/en/);
+  });
+
+  it("builds jobs concurrently while preserving catalog manifest order", async () => {
+    const secondSource = `
+[[languages.sources]]
+id = "second-docs"
+kind = "official"
+name = "Second Documentation"
+url = "https://second.test/docs/"
+domains = ["second.test"]
+path_prefixes = ["/docs/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+`;
+    let active = 0;
+    let maximumActive = 0;
+    const fetcher = async (input: string | URL | Request) => {
+      active += 1;
+      maximumActive = Math.max(maximumActive, active);
+      await new Promise((resolveDelay) =>
+        setTimeout(resolveDelay, String(input).includes("example") ? 10 : 1)
+      );
+      active -= 1;
+      return new Response('{"fixture":true}');
+    };
+    const secondJob = {
+      ...fixtureJob(),
+      sourceId: "second-docs",
+      urlPrefix: "https://second.test/docs/",
+      load: async ({ fetchText }: { fetchText: (url: string) => Promise<string> }) => {
+        await fetchText("https://input.test/second.json");
+        return [{ title: "Second", url: "https://second.test/docs/second" }];
+      }
+    };
+
+    const result = await buildSearchIndexArtifacts({
+      catalogSource: `${catalog}${secondSource}`,
+      jobs: [fixtureJob(), secondJob],
+      fetcher,
+      concurrency: 2,
+      now: () => new Date("2026-07-23T00:00:00Z")
+    });
+
+    expect(maximumActive).toBe(2);
+    expect(result.manifest.entries.map((entry) => entry.sourceId)).toEqual([
+      "example-docs",
+      "example-docs",
+      "second-docs"
+    ]);
   });
 
   it("rejects timeouts and non-success responses", async () => {

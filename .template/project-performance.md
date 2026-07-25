@@ -5,6 +5,8 @@
 Record the manifest date, supported bundle and record counts, raw bytes, generator gzip/Brotli sizes, production gzip/Brotli sizes, and compressed manifest size.
 State that selected bundles, not the complete catalog, are normally fetched.
 Keep generator regression sizes separate from production transfer sizes.
+Record per-bundle, default selected-set, and largest representative selected-set
+budgets with their current measurements.
 
 ## 10,000 DAU Transfer Model
 
@@ -35,9 +37,15 @@ Prefer native HTTP caching for content-addressed bundles:
 - One-year immutable caching for hashed bundles.
 - Revalidation plus content-derived `ETag` for the manifest.
 - gzip/Brotli negotiation with `Vary: Accept-Encoding`.
-- Worker-based JSON parsing and compact-tuple search off the main thread.
+- One page-lifetime worker for JSON parsing and compact-tuple search off the
+  main thread, with manifest and loaded-bundle reuse.
+- In-page result filters that re-search selected cached bundles without a
+  document request.
+- In-page Docs-locale changes instead of loading a new document.
 
 Defer IndexedDB and Cache API while they duplicate native caching and add quota, eviction, schema, invalidation, service-worker, privacy, and recovery complexity without an offline requirement.
 Revisit for offline search, failed warm-latency targets, or evidence that native caching is not retained.
 
-Record the mobile viewport, CPU throttling, warm latency target, and Long Task threshold used by automated browser verification.
+Record the mobile viewport, CPU and network throttling, first-switch and
+worker-cached switch targets, and Long Task threshold used by automated browser
+verification.

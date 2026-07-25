@@ -19,7 +19,7 @@ export interface QueryFlag {
 }
 
 export interface QueryError {
-  code: "flag_in_search_text" | "empty_search_text" | "invalid_source_mode";
+  code: "flag_in_search_text" | "empty_search_text" | "invalid_source_mode" | "invalid_locale";
   token?: string;
   message: string;
 }
@@ -35,6 +35,7 @@ export interface QueryParseOptions {
 }
 
 const SOURCE_VALUES = new Set(["official", "all"]);
+const LOCALE_VALUES = new Set(["en", "ja"]);
 
 export function parseQuery(raw: string, options: QueryParseOptions): ParsedQuery {
   const tokens = tokenize(raw);
@@ -57,18 +58,17 @@ export function parseQuery(raw: string, options: QueryParseOptions): ParsedQuery
   let locale: string | undefined;
   let sourceMode: SourceMode | undefined;
 
-  const first = tokens[0];
-  const bareLanguages = parseBareLanguageToken(first.value, options.knownLanguages);
-  if (bareLanguages.length > 0) {
-    languages.push(...bareLanguages);
+  const bareLanguagePrefix = parseBareLanguagePrefix(tokens, options.knownLanguages);
+  if (bareLanguagePrefix) {
+    languages.push(...bareLanguagePrefix.values);
     flags.push({
       kind: "language",
-      token: first.value,
-      start: first.start,
-      end: first.end,
+      token: raw.slice(bareLanguagePrefix.start, bareLanguagePrefix.end),
+      start: bareLanguagePrefix.start,
+      end: bareLanguagePrefix.end,
       valid: true
     });
-    start = 1;
+    start = bareLanguagePrefix.consumed;
   }
 
   while (start < end) {
@@ -77,7 +77,7 @@ export function parseQuery(raw: string, options: QueryParseOptions): ParsedQuery
     flags.push({ ...parsed.flag, valid: parsed.error === undefined });
     if (parsed.error) errors.push(parsed.error);
     if (parsed.flag.kind === "language") languages.splice(0, languages.length, ...parsed.values);
-    if (parsed.flag.kind === "locale") locale = parsed.values[0];
+    if (parsed.flag.kind === "locale" && !parsed.error) locale = parsed.values[0];
     if (parsed.flag.kind === "source" && isSourceMode(parsed.values[0])) sourceMode = parsed.values[0];
     start += 1;
   }
@@ -88,7 +88,7 @@ export function parseQuery(raw: string, options: QueryParseOptions): ParsedQuery
     flags.push({ ...parsed.flag, valid: parsed.error === undefined });
     if (parsed.error) errors.push(parsed.error);
     if (parsed.flag.kind === "language") languages.splice(0, languages.length, ...parsed.values);
-    if (parsed.flag.kind === "locale") locale = parsed.values[0];
+    if (parsed.flag.kind === "locale" && !parsed.error) locale = parsed.values[0];
     if (parsed.flag.kind === "source" && isSourceMode(parsed.values[0])) sourceMode = parsed.values[0];
     end -= 1;
   }
@@ -155,6 +155,30 @@ function parseBareLanguageToken(value: string, knownLanguages: Set<string>): str
   return parts;
 }
 
+function parseBareLanguagePrefix(
+  tokens: Token[],
+  knownLanguages: Set<string>
+): { values: string[]; consumed: number; start: number; end: number } | undefined {
+  const first = tokens[0];
+  if (!first) return undefined;
+
+  let combined = first.value;
+  let consumed = 1;
+  while (combined.endsWith(",") && consumed < tokens.length) {
+    combined += tokens[consumed].value;
+    consumed += 1;
+  }
+
+  const values = parseBareLanguageToken(combined, knownLanguages);
+  if (values.length === 0) return undefined;
+  return {
+    values,
+    consumed,
+    start: first.start,
+    end: tokens[consumed - 1].end
+  };
+}
+
 function parseFlagToken(token: Token):
   | {
       flag: Omit<QueryFlag, "valid">;
@@ -186,7 +210,14 @@ function parseFlagToken(token: Token):
         start: token.start,
         end: token.end
       },
-      values: locale ? [locale] : []
+      values: locale ? [locale] : [],
+      error: LOCALE_VALUES.has(locale)
+        ? undefined
+        : {
+            code: "invalid_locale",
+            token: token.value,
+            message: "Use locale:en or locale:ja."
+          }
     };
   }
 

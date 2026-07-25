@@ -13,6 +13,14 @@ export interface ResolvedSourceOptionState extends SourceOptionState {
   disabled: boolean;
 }
 
+export interface SourceDefaultsLanguage {
+  id: string;
+  sources: Array<{
+    id: string;
+    defaultEnabled: boolean;
+  }>;
+}
+
 const COOKIE_NAMES: Record<Preference, string> = {
   ui: "ods_ui",
   docsLocale: "ods_docs_locale",
@@ -40,6 +48,23 @@ export function resolveSourceOptionState(
   };
 }
 
+export function mergeNewLanguageSourceDefaults(
+  selectedIds: ReadonlySet<string>,
+  previousLanguageIds: ReadonlySet<string>,
+  nextLanguages: SourceDefaultsLanguage[]
+): Set<string> {
+  const merged = new Set(selectedIds);
+  if (previousLanguageIds.size === 0) return merged;
+
+  for (const language of nextLanguages) {
+    if (previousLanguageIds.has(language.id)) continue;
+    for (const source of language.sources) {
+      if (source.defaultEnabled) merged.add(source.id);
+    }
+  }
+  return merged;
+}
+
 export function removeLanguageFromQuery(value: string, languageId: string): string {
   const languageFlag = /\blang:([^\s]+)/i;
   const match = value.match(languageFlag);
@@ -52,6 +77,24 @@ export function removeLanguageFromQuery(value: string, languageId: string): stri
         ? value.replace(match[0], `lang:${remaining.join(",")}`)
         : value.replace(match[0], "")
     );
+  }
+
+  const spacedBareLanguages = value.match(
+    /^([^\s,]+(?:,\s*[^\s,]+)+)(?=\s|$)/
+  );
+  if (spacedBareLanguages) {
+    const remaining = spacedBareLanguages[1]
+      .split(",")
+      .map((language) => language.trim())
+      .filter(
+        (language) =>
+          normalizeLanguageId(language) !== normalizeLanguageId(languageId)
+      );
+    if (remaining.length !== spacedBareLanguages[1].split(",").length) {
+      return normalizeQueryWhitespace(
+        `${remaining.join(",")}${value.slice(spacedBareLanguages[0].length)}`
+      );
+    }
   }
 
   const tokens = value.match(/\S+|\s+/g) ?? [];

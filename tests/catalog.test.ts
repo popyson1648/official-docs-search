@@ -10,6 +10,26 @@ import { normalizeLanguageId } from "../src/core/query";
 const catalog = loadCatalog();
 const languages = catalog.languages;
 const allSources = languages.flatMap((language) => language.sources);
+const trustedCommunitySourceIds = [
+  "comprehensive-rust",
+  "javascript-info",
+  "typescript-deep-dive",
+  "go-by-example",
+  "cpp-core-guidelines",
+  "php-the-right-way",
+  "elixir-school",
+  "learn-you-a-haskell",
+  "advanced-r",
+  "clojure-guides",
+  "fsharp-for-fun-and-profit",
+  "zig-guide",
+  "programming-in-d",
+  "cornell-ocaml",
+  "solidity-by-example",
+  "common-lisp-cookbook",
+  "webdev-html",
+  "webdev-css"
+] as const;
 
 describe("docs catalog integrity", () => {
   it("has unique language ids", () => {
@@ -45,6 +65,44 @@ describe("docs catalog integrity", () => {
       expect(source.name, `name missing for ${source.id}`).toBeTruthy();
       expect(source.domains.length, `no domains for ${source.id}`).toBeGreaterThan(0);
       expect(validKinds.has(source.kind), `bad kind for ${source.id}`).toBe(true);
+    }
+  });
+
+  it("keeps localized source qualifications complete", () => {
+    for (const source of allSources) {
+      if (!source.qualification) continue;
+      expect(source.qualification.en, `${source.id} English qualification`).toBeTruthy();
+      expect(source.qualification.ja, `${source.id} Japanese qualification`).toBeTruthy();
+    }
+  });
+
+  it("admits the 18 reviewed non-official sources with visible bilingual qualifications", () => {
+    expect(trustedCommunitySourceIds).toHaveLength(18);
+    for (const id of trustedCommunitySourceIds) {
+      const source = allSources.find((candidate) => candidate.id === id);
+      expect(source, `${id} missing`).toBeDefined();
+      expect(source?.kind, `${id} must remain non-official`).not.toBe("official");
+      expect(source?.siteLocales).toEqual(["en"]);
+      expect(source?.indexes).toEqual([{ locale: "en", status: "supported" }]);
+      expect(source?.qualification?.en, `${id} English qualification`).toBeTruthy();
+      expect(source?.qualification?.ja, `${id} Japanese qualification`).toBeTruthy();
+      const language = languages.find((candidate) =>
+        candidate.sources.some((candidateSource) => candidateSource.id === id)
+      );
+      expect(
+        resolveSearchScope(catalog, {
+          languages: [language?.id ?? ""],
+          sourceMode: "official"
+        }).sources.map((candidate) => candidate.id),
+        `${id} leaked into official-only scope`
+      ).not.toContain(id);
+      expect(
+        resolveSearchScope(catalog, {
+          languages: [language?.id ?? ""],
+          sourceMode: "all"
+        }).sources.map((candidate) => candidate.id),
+        `${id} missing from source:all scope`
+      ).toContain(id);
     }
   });
 

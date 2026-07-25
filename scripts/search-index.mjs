@@ -1,4 +1,4 @@
-import { parse } from "parse5";
+import { parse, parseFragment } from "parse5";
 
 export function normalizeDevdocsEntries(index, options) {
   return uniqueRecords(
@@ -29,8 +29,9 @@ export function parseSphinxSearchIndex(source) {
 export function normalizeSphinxEntries(index, options) {
   const records = [];
   for (let position = 0; position < (index.docnames ?? []).length; position += 1) {
+    const title = plainHtmlText(index.titles?.[position]) || index.docnames[position];
     records.push({
-      title: index.titles?.[position] ?? index.docnames[position],
+      title,
       url: options.buildUrl(index.docnames[position]),
       programmingLanguage: options.programmingLanguage,
       docsLocale: options.docsLocale,
@@ -47,18 +48,25 @@ export function normalizeSphinxEntries(index, options) {
       const docname = index.docnames?.[position];
       if (!docname) continue;
       records.push({
-        title,
+        title: plainHtmlText(title),
         url: options.buildUrl(docname, fragment),
         programmingLanguage: options.programmingLanguage,
         docsLocale: options.docsLocale,
         sourceId: options.sourceId,
         sourceName: options.sourceName,
         sourceKind: options.sourceKind,
-        section: index.titles?.[position] ?? options.section
+        section: plainHtmlText(index.titles?.[position]) || options.section
       });
     }
   }
   return uniqueRecords(records);
+}
+
+export function plainHtmlText(value) {
+  return textContent(parseFragment(String(value ?? "")))
+    .replace(/\s+---\s+/g, " — ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function normalizeTc39Entries(html, options) {

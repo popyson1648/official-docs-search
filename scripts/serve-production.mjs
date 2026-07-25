@@ -104,26 +104,27 @@ async function loadSearchAssets() {
 
   const byUrl = new Map();
   const byFile = new Map();
-  addAsset("/search-index/manifest.json", manifestBytes, "manifest");
+  addAsset("/search-index/manifest.json", weakContentEtag(manifestBytes), "manifest");
 
   for (const entry of manifest.entries) {
     if (entry?.status !== "supported") continue;
     if (!entry || typeof entry.path !== "string" || !isSafeSearchIndexPath(entry.path)) {
       throw new Error(`Invalid search-index path in manifest: ${String(entry?.path)}`);
     }
-    const filePath = filePathForUrl(entry.path);
-    const bytes = await readFile(filePath);
+    if (!/^[a-f0-9]{64}$/i.test(entry.outputSha256 ?? "")) {
+      throw new Error(`Invalid search-index hash in manifest: ${String(entry.outputSha256)}`);
+    }
     const cache = hasContentHash(entry.path) ? "immutable" : "revalidate";
-    addAsset(entry.path, bytes, cache);
+    addAsset(entry.path, weakSha256Etag(entry.outputSha256), cache);
   }
 
   return { byUrl, byFile };
 
-  function addAsset(urlPath, bytes, cache) {
+  function addAsset(urlPath, etag, cache) {
     const filePath = filePathForUrl(urlPath);
     const asset = {
       cache,
-      etag: weakContentEtag(bytes)
+      etag
     };
     byUrl.set(urlPath, asset);
     byFile.set(filePath, asset);
@@ -149,6 +150,10 @@ function hasContentHash(urlPath) {
 function weakContentEtag(bytes) {
   const digest = createHash("sha256").update(bytes).digest("base64url");
   return `W/"sha256-${digest}"`;
+}
+
+function weakSha256Etag(hexDigest) {
+  return `W/"sha256-${Buffer.from(hexDigest, "hex").toString("base64url")}"`;
 }
 
 function requestPathname(request) {

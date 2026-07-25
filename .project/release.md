@@ -8,8 +8,10 @@ A release is needed after application, catalog, adapter, generated-index, depend
 
 1. If refreshing upstream data, run `npm run update:search-index` and review every generated diff.
 2. Run `npm run check:search-index` and `python3 scripts/verify.py`.
-3. Review `public/search-index/manifest.json`: 13 supported paths, statuses, input/output hashes, versions, counts, gzip/Brotli sizes, attribution, licenses, and known queries.
-4. Confirm single- and multi-language, non-official-source, EN/JA Docs locale, support-state, mobile, escaping, and safe-link flows.
+3. Review every supported path in `public/search-index/manifest.json`: statuses, input/output hashes, versions, counts, gzip/Brotli sizes, attribution, licenses, and known queries.
+4. Confirm all-language coverage, single- and multi-language search,
+   non-official sources, exact and fallback EN/JA Docs locale, partial failure,
+   support-state, mobile, escaping, and safe-link flows.
 5. Run `npm run build && npm start` and confirm the manifest revalidates while content-addressed bundles are gzip/Brotli encoded and immutable.
 6. Deploy the application and its matching `public/search-index/` artifacts together.
 7. Smoke-test original-document links and response headers on the deployed site.
