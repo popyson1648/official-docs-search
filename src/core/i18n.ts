@@ -9,9 +9,6 @@ const messages: Record<UiLanguage, Messages> = {
     queryLabel: "Search documentation",
     includeTrusted: "Include non-official sources",
     autoNonOfficial: "Use non-official references when no official web reference is available",
-    autoNonOfficialNotice:
-      "No official web reference is available for the following languages, so reviewed non-official references were enabled automatically. You can change this in settings.",
-    settings: "Change setting",
     sources: "Sources",
     help: "Search syntax",
     close: "Close",
@@ -64,9 +61,6 @@ const messages: Record<UiLanguage, Messages> = {
     queryLabel: "ドキュメント検索",
     includeTrusted: "公式以外のソースも含める",
     autoNonOfficial: "ウェブで閲覧できる公式リファレンスがない場合、非公式リファレンスを使う",
-    autoNonOfficialNotice:
-      "次の言語にはウェブで閲覧できる公式リファレンスがないため、確認済みの非公式リファレンスを自動で有効にしました。この設定は変更できます。",
-    settings: "設定を変更",
     sources: "Sources",
     help: "検索方法",
     close: "閉じる",

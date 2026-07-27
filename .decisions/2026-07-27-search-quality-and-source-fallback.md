@@ -10,7 +10,8 @@ Exact-first fuzzy search, document kinds, and per-language source fallback
 
 ## Status
 
-Accepted
+Accepted; automatic-fallback notice superseded by
+`2026-07-27-silent-automatic-fallback.md`
 
 ## Decision
 
@@ -39,7 +40,6 @@ Apply it independently per requested language and only to explicitly reviewed
 catalog sources.
 An explicit `source:official`, `source:all`, or disabled setting overrides the
 automatic behavior.
-Show one bilingual notice listing each affected language and source.
 
 Use one result-status element for both no-source and no-result states.
 When no sources are selected, do not fetch the manifest.
@@ -96,8 +96,8 @@ queries, count gates, attribution, and either reviewed license information or
 an explicit visible statement that the metadata source declares no license.
 Reference results generally rank above proposal records, except when the query
 strongly matches a proposal identifier or title.
-The automatic fallback is user-visible, persisted locally, and covered by
-source-resolution and browser tests.
+The automatic fallback is persisted locally and covered by source-resolution
+and browser tests.
 Search suggestions may load selected bundles before a submitted search, but
 reuse immutable HTTP responses and the worker cache.
 

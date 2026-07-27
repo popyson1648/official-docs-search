@@ -69,7 +69,7 @@ metadata order, a single-column source picker, right-aligned header actions, and
 desktop/mobile visibility.
 It also fixes the C++ completeness regression (`cpp sort`), conservative fuzzy
 recovery (`cpp srot`), cpprefjp Japanese results, proposal-source labeling and
-ranking, automatic-fallback notice/settings/override behavior, bounded
+ranking, silent automatic-fallback settings/override behavior, bounded
 keyboard suggestions, and one shared no-source/no-result status component.
 The no-source path must not request the manifest.
 Multi-language form coverage accepts whitespace after commas, adds default

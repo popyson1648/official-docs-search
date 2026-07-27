@@ -519,21 +519,20 @@ test("[catalog] C++ exact, fuzzy, and Japanese community searches return complet
   await page.close();
 });
 
-test("[catalog] automatic non-official fallback is visible, configurable, and overridden by source syntax", async () => {
+test("[catalog] automatic non-official fallback is silent, configurable, and overridden by source syntax", async () => {
   const page = await newPage();
 
   await gotoQuery(page, "cpp sort", "&docsLocale=en");
   await waitForResults(page);
   const automatic = await page.evaluate(() => ({
-    notice: document.querySelector("[data-auto-fallback-notice]")?.textContent,
+    notice: document.querySelector("[data-auto-fallback-notice]"),
     setting: document.querySelector("[data-auto-non-official-toggle]")?.checked,
     cpprefjp: {
       checked: document.querySelector('[data-source-option][value="cpprefjp"]')?.checked,
       disabled: document.querySelector('[data-source-option][value="cpprefjp"]')?.disabled
     }
   }));
-  assert.match(automatic.notice ?? "", /No official web reference.*enabled automatically/s);
-  assert.match(automatic.notice ?? "", /C\+\+.*cppreference C\+\+.*cpprefjp/s);
+  assert.equal(automatic.notice, null);
   assert.equal(automatic.setting, true);
   assert.deepEqual(automatic.cpprefjp, { checked: true, disabled: false });
 

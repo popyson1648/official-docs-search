@@ -50,7 +50,8 @@ unrelated license.
 List every language approved for per-language automatic fallback.
 Require an explicit reviewed policy flag, default the user setting deliberately,
 and keep `source:official` and `source:all` authoritative.
-Document the bilingual notice and the setting that disables fallback.
+Document the setting that disables fallback and whether automatic application
+is intentionally silent.
 
 ## Deferred Standards And Evolution Sources
 

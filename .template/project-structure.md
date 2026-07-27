@@ -30,8 +30,9 @@
    availability labels, and results.
 6. Derive exact language/site facets from all matches and re-search cached
    indexes for the selected source subset.
-7. Render original HTTPS links, actual locales, fallback and failure notices,
-   and explicit unsupported states.
+7. Render original HTTPS links, actual locales, locale-fallback and failure
+   notices, and explicit unsupported states; document whether source fallback
+   is intentionally silent.
 
 ## Areas That Require Extra Care
 

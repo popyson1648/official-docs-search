@@ -317,12 +317,6 @@ export function initializeSearchControls(
     if (event.target === dialog) dialog.close();
   });
 
-  root
-    .querySelector<HTMLElement>("[data-auto-fallback-settings-link]")
-    ?.addEventListener("click", () => {
-      queueMicrotask(() => autoNonOfficialToggle?.focus());
-    });
-
   root.querySelector("[data-active-tags]")?.addEventListener("click", (event) => {
     const target = event.target;
     const removeButton =

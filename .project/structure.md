@@ -64,8 +64,9 @@
 6. The runtime derives exact language/site facets from all matches; applied
    filters re-search the cached indexes for the selected source subset.
 7. The client renders original HTTPS links, actual content locales, document
-   kinds, proposal state and warnings, fallback notices, partial failures, and
-   explicit unsupported states.
+   kinds, proposal state and warnings, locale-fallback notices, partial
+   failures, and explicit unsupported states. Automatic non-official fallback
+   does not render a notice.
 
 ## Change Rules
 

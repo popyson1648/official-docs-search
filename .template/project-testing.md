@@ -69,7 +69,7 @@ Show the generic Japanese-availability notice before searching, but hide it
 when result-specific fallback details are available.
 Require regression coverage for common-symbol completeness, conservative typo
 recovery, exact-first reference-over-proposal ranking, official proposal
-identifiers, per-language automatic fallback and explicit overrides, bounded
+identifiers, silent per-language automatic fallback and explicit overrides, bounded
 accessible suggestions (keyboard, pointer, Escape, and IME), and one shared
 no-source/no-result status component.
 The no-source path must not fetch the manifest.

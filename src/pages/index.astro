@@ -443,29 +443,6 @@ const suggestionScopes = catalog.languages.map((language) => ({
       </div>
 
       {
-        hasQuery && scope.automaticFallbacks.length > 0 && (
-          <aside class="notice muted" data-auto-fallback-notice>
-            <p>
-              <span class="lang-en">{t("en", "autoNonOfficialNotice")}</span>
-              <span class="lang-ja">{t("ja", "autoNonOfficialNotice")}</span>
-            </p>
-            <ul>
-              {scope.automaticFallbacks.map((fallback) => (
-                <li>
-                  <strong>{fallback.language.name}</strong>
-                  {`: ${fallback.sources.map((source) => source.name).join(", ")}`}
-                </li>
-              ))}
-            </ul>
-            <a href="#auto-non-official" data-auto-fallback-settings-link>
-              <span class="lang-en">{t("en", "settings")}</span>
-              <span class="lang-ja">{t("ja", "settings")}</span>
-            </a>
-          </aside>
-        )
-      }
-
-      {
         hasQuery && (
           <section class="results" aria-label={t(uiLanguage, "resultsTitle")}>
             {

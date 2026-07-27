@@ -56,7 +56,7 @@ conventional; they do not receive an `Official` label or ranking boost.
 C, C++, Common Lisp, HTML, and CSS have no supported browsable official
 reference index.
 Their reviewed community or conventional references are enabled automatically
-by default with a bilingual notice.
+by default without an automatic-fallback notice.
 The persisted setting can disable this behavior, while `source:official` and
 `source:all` remain explicit overrides.
 WG21 is official proposal material, not a replacement for a current C++
