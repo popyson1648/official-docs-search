@@ -54,10 +54,11 @@ async function verifyEntry(entry, { fetcher, bundleReader }) {
   const bundle = bundleReader(entry);
   const query = entry.knownQueries?.[0];
   if (!query) throw new Error("No known query.");
-  const normalizedQuery = normalize(query);
-  const record = bundle.records.find(([title, , section = ""]) =>
-    normalize(`${title} ${section}`).includes(normalizedQuery)
-  );
+  const queryTokens = normalize(query).split(/\s+/).filter(Boolean);
+  const record = bundle.records.find(([title, , section = ""]) => {
+    const haystack = normalize(`${title} ${section}`);
+    return queryTokens.every((token) => haystack.includes(token));
+  });
   if (!record) throw new Error(`No known result for ${query}.`);
 
   const url = new URL(`${bundle.urlPrefix}${record[1]}`);
@@ -155,7 +156,12 @@ function readJson(path) {
 }
 
 function normalize(value) {
-  return value.normalize("NFKC").toLocaleLowerCase();
+  return value
+    .normalize("NFKC")
+    .toLocaleLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 async function fetchWithRetry(url) {

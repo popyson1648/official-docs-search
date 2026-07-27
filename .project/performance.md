@@ -10,10 +10,10 @@ bound.
 
 | Payload | Raw | gzip | Brotli |
 | --- | ---: | ---: | ---: |
-| All bundles, generator regression settings (gzip 9 / Brotli 11) | 17,226,801 B | 2,376,642 B | 1,838,551 B |
-| All bundles, production settings (gzip 6 / Brotli 5) | 17,226,801 B | 2,406,345 B | 2,181,133 B |
-| Manifest, production settings | 151,390 B | 35,153 B | 32,598 B |
-| All-bundle cold response including manifest | 17,378,191 B | 2,441,498 B | 2,213,731 B |
+| All bundles, generator regression settings (gzip 9 / Brotli 11) | 18,007,350 B | 2,463,438 B | 1,897,426 B |
+| All bundles, production settings (gzip 6 / Brotli 5) | 18,007,350 B | 2,493,911 B | 2,260,710 B |
+| Manifest, production settings | 151,390 B | 35,157 B | 32,594 B |
+| All-bundle cold response including manifest | 18,158,740 B | 2,529,068 B | 2,293,304 B |
 
 Manifest size fields use deterministic maximum-quality compression for
 regression checks.
@@ -21,7 +21,7 @@ Production transfer estimates use the server settings.
 Automated budgets require every bundle to remain below 750,000 Brotli-11 bytes,
 the default four-language English official set below 1,000,000 bytes, and the
 largest one-bundle set from four distinct languages below 2,000,000 bytes.
-The current sets are 382,734 B and 573,218 B respectively.
+The current sets are 382,486 B and 601,284 B respectively.
 
 ## 10,000 DAU Transfer Model
 
@@ -39,20 +39,20 @@ of 300,000 user-days:
 
 | Encoding | Bytes per cold visit | Monthly transfer | Cost at provider rate `P` |
 | --- | ---: | ---: | ---: |
-| gzip | 2,441,498 B | 732.449 GB (682.03 GiB) | `732.449 × P` |
-| Brotli | 2,213,731 B | 664.119 GB (618.50 GiB) | `664.119 × P` |
+| gzip | 2,529,068 B | 758.720 GB (706.61 GiB) | `758.720 × P` |
+| Brotli | 2,293,304 B | 687.991 GB (640.74 GiB) | `687.991 × P` |
 
 An ideal warm model assumes the same 10,000 browsers load all indexes once,
 unchanged manifest revalidation returns a bodyless `304`, and no bundle changes:
 
 | Encoding | Monthly body transfer | Cost at provider rate `P` |
 | --- | ---: | ---: |
-| gzip | 24.413 GB (22.74 GiB) | `24.413 × P` |
-| Brotli | 22.135 GB (20.61 GiB) | `22.135 × P` |
+| gzip | 25.291 GB (23.55 GiB) | `25.291 × P` |
+| Brotli | 22.933 GB (21.36 GiB) | `22.933 × P` |
 
-At an illustrative USD 0.05/GB, the all-bundle model is about USD 36.62/month
-cold with gzip or USD 33.20/month cold with Brotli, and about USD 1.22/month or
-USD 1.11/month respectively in the ideal warm model.
+At an illustrative USD 0.05/GB, the all-bundle model is about USD 37.94/month
+cold with gzip or USD 34.40/month cold with Brotli, and about USD 1.26/month or
+USD 1.15/month respectively in the ideal warm model.
 At USD 0.10/GB those estimates double.
 Replace the examples with the selected provider's allowance, egress rate, and
 request pricing before release budgeting.
@@ -79,6 +79,8 @@ Use the browser HTTP cache:
   same worker cache without a document request.
 - Changing the Docs locale updates the URL, preference, notices, and results in
   place instead of loading a new document.
+- A fixed four-card loading skeleton reserves result space; its wave and
+  centered indicator are CSS-only and stop under reduced motion.
 
 Do not add IndexedDB or Cache API without an offline or measured retention need.
 They duplicate the HTTP cache and add quota, eviction, schema, invalidation,

@@ -53,6 +53,11 @@ Fix the result classification/attribution/title/annotation order, shared
 source-kind badge styling, typography hierarchy, removable input-chip target
 size and keyboard behavior, compact successful result counts, 24 CSS-pixel
 source-control targets, and visible keyboard focus for Docs-locale controls.
+Require locale-fallback details before the count and test result-card loading
+skeletons, vertically centered progress, `aria-busy`, hidden assistive loading
+text, cleanup after completion, and reduced-motion suppression.
+Require representative qualified API titles for every structured adapter family
+and conservative context for ambiguous prose without invented namespaces.
 Require concrete unboxed examples for every search-syntax row, accurate alias
 wording, a persistent short `js promise all` example, one multi-token AND
 explanation in search help, and one compact fallback explanation with a

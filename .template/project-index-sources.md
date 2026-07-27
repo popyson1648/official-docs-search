@@ -18,6 +18,14 @@ Record the robots and terms review date and any host-specific crawl delay.
 Treat aggregators as acquisition intermediaries, not replacements for
 underlying licenses.
 
+## Result Title Policy
+
+State how canonical qualified API identifiers are preserved or derived from
+reviewed structured ownership metadata.
+For repeated prose headings, require contextual labels that do not invent
+language syntax.
+List source-family exceptions and preserve standards/proposal identifiers.
+
 ## Supported Input Families
 
 Keep this document short by grouping supported indexes that share an adapter

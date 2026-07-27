@@ -33,12 +33,13 @@ import { trustedCommunityGroupCJobs } from "./search-index/jobs/trusted-communit
 import { standardsGroupJobs } from "./search-index/jobs/standards-group.mjs";
 import { proposalsGroupJobs } from "./search-index/jobs/proposals-group.mjs";
 import { fetchDocumentationUrl } from "./search-index/http-fetch.mjs";
+import { qualifySearchRecordTitles } from "./search-index/title-qualification.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const outputDirectory = resolve(root, "public/search-index");
 const catalogSource = readFileSync(resolve(root, "src/data/docs-sources.toml"), "utf8");
 
-export const searchIndexJobs = [
+const rawSearchIndexJobs = [
   ...standardsGroupJobs,
   ...proposalsGroupJobs,
   ...trustedCommunityGroupAJobs,
@@ -336,6 +337,12 @@ export const searchIndexJobs = [
   ...replacementGroupFJobs,
   ...gnuJobs
 ];
+
+export const searchIndexJobs = rawSearchIndexJobs.map((job) => ({
+  ...job,
+  load: async (context) =>
+    qualifySearchRecordTitles(await job.load(context), job)
+}));
 
 if (
   process.argv[1] &&

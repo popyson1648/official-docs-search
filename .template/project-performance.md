@@ -51,6 +51,8 @@ Revisit for offline search, failed warm-latency targets, or evidence that native
 Record the mobile viewport, CPU and network throttling, first-switch and
 worker-cached switch targets, and Long Task threshold used by automated browser
 verification.
+Record whether the loading state reserves stable result space and whether its
+motion is CSS-only and suppressed for reduced-motion preferences.
 
 ## Verification Cost
 

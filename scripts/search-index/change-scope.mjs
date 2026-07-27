@@ -121,6 +121,7 @@ const allSourceFiles = new Set([
   "scripts/search-index.mjs",
   "scripts/search-index/http-fetch.mjs",
   "scripts/search-index/job-helpers.mjs",
+  "scripts/search-index/title-qualification.mjs",
   "src/data/docs-sources.toml"
 ]);
 

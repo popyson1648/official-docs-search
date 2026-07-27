@@ -87,6 +87,7 @@ export async function initializeSearchPage(
       status.dataset.noSourcesJa ?? "検索対象を1つ以上選択してください。"
     );
     status.dataset.state = "empty";
+    updateLoadingState(status, "empty");
     return {
       state: "empty",
       count: 0,
@@ -501,7 +502,22 @@ function setStatus(element: HTMLElement, state: "loading" | "success" | "empty" 
   element.dataset.state = state;
   if (state === "empty") element.dataset.emptyReason = "no-results";
   else delete element.dataset.emptyReason;
+  updateLoadingState(element, state);
   appendLocalizedText(element.ownerDocument, element, en, ja);
+}
+
+function updateLoadingState(
+  status: HTMLElement,
+  state: "loading" | "success" | "empty" | "error"
+): void {
+  const loading = state === "loading";
+  const results = status.closest<HTMLElement>("[data-search-results]");
+  if (!results) return;
+  results.setAttribute("aria-busy", String(loading));
+  results.dataset.loading = String(loading);
+  status.classList.toggle("sr-only", loading);
+  const loadingView = results.querySelector<HTMLElement>("[data-result-loading]");
+  if (loadingView) loadingView.hidden = !loading;
 }
 
 function statusMessage(element: HTMLElement, state: string, language: "en" | "ja", count: number): string {

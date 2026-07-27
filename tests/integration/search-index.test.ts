@@ -128,6 +128,34 @@ describe("generated search indexes", () => {
     expect(counts["tc39-proposals/en"]).toBeGreaterThanOrEqual(293);
   });
 
+  it("publishes qualified API titles and conservative prose context", () => {
+    const titleAt = (sourceId: string, locale: string, suffix: string) =>
+      records(sourceId, locale).find((record) => record.url.endsWith(suffix))?.title;
+
+    expect(titleAt("cpprefjp", "ja", "/reference/algorithm/sort.html")).toBe(
+      "std::sort"
+    );
+    expect(titleAt("cpprefjp", "ja", "/reference/list/list/sort.html")).toBe(
+      "std::list::sort"
+    );
+    expect(titleAt("ruby-docs", "en", "/Array.html#method-c-new")).toBe(
+      "Array::new"
+    );
+    expect(titleAt("ruby-docs", "ja", "/method/Benchmark=3a=3aJob/s/new.html")).toBe(
+      "Benchmark::Job.new"
+    );
+    expect(titleAt("elixir-docs", "en", "/Date.html#t:t/0")).toBe("Date.t()");
+    expect(titleAt("java-docs", "en", "/java/util/List.html")).toBe(
+      "java.util.List"
+    );
+    expect(titleAt("dart-docs", "en", "/tools/dartpad/troubleshoot")).toBe(
+      "Troubleshoot — dartpad"
+    );
+    expect(records("wg21-papers", "en").some((record) =>
+      record.title.startsWith("P2300R10:")
+    )).toBe(true);
+  });
+
   it("matches manifest counts and only emits catalog-approved result URLs", () => {
     for (const entry of supportedEntries) {
       const bundle = bundles.get(entry.path) as StoredSearchIndexBundle;

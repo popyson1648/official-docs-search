@@ -34,6 +34,8 @@
 - `src/pages/index.astro`: server-rendered search form and result shell.
 - `scripts/search-index.mjs`: shared DevDocs, Sphinx, Ecmarkup, Javadoc, and HTML normalization helpers.
 - `scripts/search-index/`: source-family job registries, parser modules, and job helpers.
+- `scripts/search-index/title-qualification.mjs`: preserves canonical qualified
+  API ownership and adds conservative context to repeated prose titles.
 - `scripts/search-index/change-scope.mjs`: maps changed source-family paths to
   the smallest safe live-index scope.
 - `scripts/generate-search-index.mjs`: the composed job registry and update/check CLI.
@@ -63,10 +65,13 @@
    results without replacing the current document.
 6. The runtime derives exact language/site facets from all matches; applied
    filters re-search the cached indexes for the selected source subset.
-7. The client renders original HTTPS links, actual content locales, document
-   kinds, proposal state and warnings, locale-fallback notices, partial
-   failures, and explicit unsupported states. Automatic non-official fallback
-   does not render a notice.
+7. While the worker is busy, the result region exposes `aria-busy`, a hidden
+   status announcement, and a reduced-motion-safe result-card skeleton.
+8. The client renders original HTTPS links, qualified result titles, actual
+   content locales, document kinds, proposal state and warnings,
+   locale-fallback notices before the count, partial failures, and explicit
+   unsupported states. Automatic non-official fallback does not render a
+   notice.
 
 ## Change Rules
 
@@ -74,5 +79,7 @@
 - Add a verified adapter and generated content-addressed bundle in the same change before declaring `supported`.
 - Keep unsupported sources visible as unsupported; never turn a missing bundle into a silent empty result.
 - Keep upstream titles, headings, and original URLs only; do not republish complete documentation pages.
+- Qualify a title only from reviewed structured ownership data; use prose
+  context rather than invented language syntax when ownership is ambiguous.
 - Keep browser DOM code in `src/client/` and reusable state/ranking logic in `src/core/`.
 - Update source policy, performance numbers, generated artifacts, and tests when an adapter or delivery contract changes.

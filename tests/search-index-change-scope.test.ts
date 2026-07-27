@@ -84,6 +84,7 @@ describe("search-index live change scope", () => {
       "scripts/search-index.mjs",
       "scripts/search-index/http-fetch.mjs",
       "scripts/search-index/job-helpers.mjs",
+      "scripts/search-index/title-qualification.mjs",
       "src/data/docs-sources.toml"
     ]) {
       expect(affectedSearchIndexKeys([path]), path).toBeNull();

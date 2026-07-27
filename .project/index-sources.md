@@ -24,6 +24,17 @@ before an endpoint moves or its collection method changes.
 DevDocs is an acquisition intermediary, not a replacement for the underlying
 documentation license.
 
+## Result Title Policy
+
+Preserve an upstream canonical qualified identifier when available.
+When structured metadata or a reviewed stable URL proves the owner, qualify
+API-like titles with their namespace, package, module, class, or type.
+cpprefjp, Ruby, ExDoc, and Javadoc have explicit source-family rules.
+For duplicate prose headings, append a section or concise URL-parent context
+only when it distinguishes records.
+Do not invent an API namespace from an ambiguous heading, and do not rewrite
+standard or proposal identifiers.
+
 ## Supported Input Families
 
 The manifest contains 90 supported source-locale indexes covering all 44

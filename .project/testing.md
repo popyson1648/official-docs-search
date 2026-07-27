@@ -80,6 +80,13 @@ order, shared source-kind badge styling, title-to-annotation typography
 hierarchy, removable input-chip dimensions, keyboard removal, and compact
 successful result counts. Compact source controls retain 24 CSS-pixel targets,
 and Docs-locale and chip-removal controls expose visible keyboard focus.
+Locale-fallback details precede the successful result count.
+Loading coverage fixes four result-card skeletons, a vertically centered
+indicator, screen-reader-only loading text, `aria-busy` cleanup, and static
+reduced-motion rendering at desktop and 390-by-800 mobile sizes.
+Title coverage requires canonical cpprefjp, Ruby, ExDoc, and Javadoc owners,
+conservative prose context, unchanged proposal identifiers, and no bare
+cpprefjp `sort` result.
 Search-guidance coverage requires one concrete unboxed example per syntax row,
 accurate alias wording, a persistent short `js promise all` example, one
 multi-token AND explanation in the search-syntax dialog, and one compact
@@ -113,3 +120,5 @@ changes when a later adapter fails, non-mutating check mode, failures for
 corrupt/timeout/non-success input, and explicit override for large count or
 compressed-size changes. Sphinx title and section metadata must be normalized to
 plain text before publication.
+Shared title qualification changes must select every source family in live
+change classification.

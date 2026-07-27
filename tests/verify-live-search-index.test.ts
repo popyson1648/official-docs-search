@@ -79,4 +79,37 @@ describe("live result verification selection", () => {
     ]);
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
+
+  it("matches known-query tokens across qualified title separators", async () => {
+    const fetcher = vi.fn(async () => new Response("ok"));
+    const results = await verifyLiveEntries(
+      [
+        {
+          sourceId: "cpprefjp",
+          docsLocale: "ja",
+          status: "supported",
+          updateFrequency: "weekly",
+          path: "/search-index/cpprefjp.json",
+          knownQueries: ["ranges_sort"]
+        }
+      ],
+      {
+        fetcher,
+        bundleReader: () => ({
+          urlPrefix: "https://cpprefjp.github.io/",
+          records: [
+            ["std::ranges::sort", "reference/algorithm/ranges_sort.html"]
+          ]
+        })
+      }
+    );
+
+    expect(results).toEqual([
+      {
+        message:
+          "cpprefjp/ja: 200 https://cpprefjp.github.io/reference/algorithm/ranges_sort.html"
+      }
+    ]);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
 });

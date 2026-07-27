@@ -116,6 +116,123 @@ async function waitForResultFilter(page) {
   );
 }
 
+test("[layout] result loading uses centered accessible wave skeletons", async () => {
+  const loadingManifest = {
+    schemaVersion: 2,
+    generatorVersion: "loading-fixture",
+    catalogSha256: "loading-fixture",
+    entries: [
+      {
+        sourceId: "python-docs",
+        sourceName: "Python Documentation",
+        sourceKind: "official",
+        programmingLanguage: "python",
+        docsLocale: "en",
+        status: "supported",
+        path: "/search-index/loading.fixture.json",
+        recordCount: 1
+      }
+    ]
+  };
+  const loadingBundle = {
+    schemaVersion: 2,
+    sourceId: "python-docs",
+    docsLocale: "en",
+    urlPrefix: "https://docs.python.org/3/",
+    records: [["Sorting HOW TO", "howto/sorting.html", "Python HOW TOs"]]
+  };
+  for (const reducedMotion of [false, true]) {
+    const page = await newPage({ width: reducedMotion ? 390 : 1280, height: 800 });
+    await page.setCacheEnabled(false);
+    if (reducedMotion) {
+      await page.emulateMediaFeatures([
+        { name: "prefers-reduced-motion", value: "reduce" }
+      ]);
+    }
+    await page.setRequestInterception(true);
+    page.on("request", async (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname === "/search-index/manifest.json") {
+        await new Promise((resolveDelay) => setTimeout(resolveDelay, 900));
+        await request.respond({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(loadingManifest)
+        });
+        return;
+      }
+      if (pathname === "/search-index/loading.fixture.json") {
+        await request.respond({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(loadingBundle)
+        });
+        return;
+      }
+      await request.continue();
+    });
+
+    await gotoQuery(
+      page,
+      "python sorting",
+      "&docsLocale=en&sourceSelection=explicit&sourceId=python-docs"
+    );
+    await page.waitForSelector("[data-result-loading]:not([hidden])");
+    const loading = await page.evaluate(() => {
+      const results = document.querySelector("[data-search-results]");
+      const view = document.querySelector("[data-result-loading]");
+      const spinner = document.querySelector(".result-loading-spinner");
+      const card = document.querySelector(".result-skeleton-card");
+      const status = document.querySelector("[data-search-status]");
+      const viewRect = view.getBoundingClientRect();
+      const spinnerRect = spinner.getBoundingClientRect();
+      return {
+        busy: results.getAttribute("aria-busy"),
+        skeletonCount: document.querySelectorAll(".result-skeleton-card").length,
+        statusState: status.getAttribute("data-state"),
+        statusScreenReaderOnly: status.classList.contains("sr-only"),
+        statusText: status.textContent,
+        centerDelta: Math.abs(
+          spinnerRect.top + spinnerRect.height / 2 -
+            (viewRect.top + viewRect.height / 2)
+        ),
+        waveAnimation: getComputedStyle(card, "::after").animationName,
+        spinnerAnimation: getComputedStyle(spinner).animationName
+      };
+    });
+    assert.equal(loading.busy, "true");
+    assert.equal(loading.skeletonCount, 4);
+    assert.equal(loading.statusState, "loading");
+    assert.equal(loading.statusScreenReaderOnly, true);
+    assert.match(loading.statusText, /Loading search results/);
+    assert.ok(loading.centerDelta <= 1);
+    if (reducedMotion) {
+      assert.equal(loading.waveAnimation, "none");
+      assert.equal(loading.spinnerAnimation, "none");
+    } else {
+      assert.equal(loading.waveAnimation, "result-skeleton-wave");
+      assert.equal(loading.spinnerAnimation, "result-loading-spin");
+    }
+
+    await waitForResults(page);
+    assert.deepEqual(
+      await page.$eval("[data-search-results]", (results) => ({
+        busy: results.getAttribute("aria-busy"),
+        loadingHidden: document.querySelector("[data-result-loading]").hidden,
+        statusScreenReaderOnly: document
+          .querySelector("[data-search-status]")
+          .classList.contains("sr-only")
+      })),
+      {
+        busy: "false",
+        loadingHidden: true,
+        statusScreenReaderOnly: false
+      }
+    );
+    await page.close();
+  }
+});
+
 async function snapshot(page) {
   return await page.evaluate(() => ({
     state: document.querySelector("[data-search-status]")?.dataset.state,
@@ -497,6 +614,16 @@ test("[catalog] C++ exact, fuzzy, and Japanese community searches return complet
   assert.ok(
     japanese.links.some((link) => new URL(link.href).hostname === "cpprefjp.github.io")
   );
+  const cpprefjpSortTitles = await page.$$eval(
+    '.result-item[data-source-id="cpprefjp"] h2 a',
+    (links) =>
+      links
+        .map((link) => link.textContent?.trim() ?? "")
+        .filter((title) => title.includes("sort"))
+  );
+  assert.ok(cpprefjpSortTitles.includes("std::sort"));
+  assert.ok(cpprefjpSortTitles.includes("std::list::sort"));
+  assert.ok(cpprefjpSortTitles.every((title) => title !== "sort"));
 
   await gotoQuery(page, "cpp P2300R10", "&docsLocale=en");
   await waitForResults(page);
@@ -1304,6 +1431,10 @@ test("[catalog] fallback notices group one compact explanation with a semantic s
       repeatedCopy: visibleGroup?.textContent?.includes(
         "日本語ドキュメントは未対応のため"
       ),
+      noticeBottom: element.getBoundingClientRect().bottom,
+      resultCountTop: document
+        .querySelector('[data-search-status][data-state="success"]')
+        ?.getBoundingClientRect().top,
       fontSize: Number.parseFloat(style.fontSize),
       backgroundColor: style.backgroundColor,
       borderWidths: [
@@ -1333,6 +1464,7 @@ test("[catalog] fallback notices group one compact explanation with a semantic s
   assert.equal(notice.sources.length, 4);
   assert.ok(notice.sourceListTop > notice.summaryBottom);
   assert.equal(notice.repeatedCopy, false);
+  assert.ok(notice.noticeBottom <= notice.resultCountTop);
   assert.ok(notice.fontSize <= 12);
   assert.equal(notice.backgroundColor, "rgba(0, 0, 0, 0)");
   assert.deepEqual(notice.borderWidths, ["0px", "0px", "0px", "0px"]);

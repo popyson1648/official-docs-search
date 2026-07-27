@@ -449,6 +449,8 @@ const suggestionScopes = catalog.languages.map((language) => ({
               parsed.errors.length > 0 ? null : (
                 <div
                   data-search-results
+                  data-loading="true"
+                  aria-busy="true"
                   data-query={parsed.searchText}
                   data-docs-locale={locale ?? ""}
                   data-no-sources={String(scope.sources.length === 0)}
@@ -461,26 +463,6 @@ const suggestionScopes = catalog.languages.map((language) => ({
                       source.language
                   })))}
                 >
-                  <p
-                    class="search-status"
-                    data-search-status
-                    data-state="loading"
-                    role="status"
-                    data-loading-en={t("en", "searchLoading")}
-                    data-loading-ja={t("ja", "searchLoading")}
-                    data-success-en={t("en", "resultCount")}
-                    data-success-ja={t("ja", "resultCount")}
-                    data-empty-en={t("en", "noResults")}
-                    data-empty-ja={t("ja", "noResults")}
-                    data-no-sources-en={t("en", "noSources")}
-                    data-no-sources-ja={t("ja", "noSources")}
-                    data-error-en={t("en", "searchProviderError")}
-                    data-error-ja={t("ja", "searchProviderError")}
-                  >
-                    <span class="lang-en">{t("en", "searchLoading")}</span>
-                    <span class="lang-ja">{t("ja", "searchLoading")}</span>
-                  </p>
-                  <div data-result-filters hidden></div>
                   <div
                     class="index-coverage"
                     data-index-coverage
@@ -498,6 +480,43 @@ const suggestionScopes = catalog.languages.map((language) => ({
                     data-index-load-failed-ja={t("ja", "indexLoadFailed")}
                     hidden
                   ></div>
+                  <p
+                    class="search-status sr-only"
+                    data-search-status
+                    data-state="loading"
+                    role="status"
+                    data-loading-en={t("en", "searchLoading")}
+                    data-loading-ja={t("ja", "searchLoading")}
+                    data-success-en={t("en", "resultCount")}
+                    data-success-ja={t("ja", "resultCount")}
+                    data-empty-en={t("en", "noResults")}
+                    data-empty-ja={t("ja", "noResults")}
+                    data-no-sources-en={t("en", "noSources")}
+                    data-no-sources-ja={t("ja", "noSources")}
+                    data-error-en={t("en", "searchProviderError")}
+                    data-error-ja={t("ja", "searchProviderError")}
+                  >
+                    <span class="lang-en">{t("en", "searchLoading")}</span>
+                    <span class="lang-ja">{t("ja", "searchLoading")}</span>
+                  </p>
+                  <div class="result-loading" data-result-loading aria-hidden="true">
+                    <ol class="result-skeleton-list">
+                      {
+                        Array.from({ length: 4 }, (_, index) => (
+                          <li class="result-skeleton-card" data-skeleton-index={index}>
+                            <span class="result-skeleton-line result-skeleton-tags"></span>
+                            <span class="result-skeleton-line result-skeleton-source"></span>
+                            <span class="result-skeleton-line result-skeleton-title"></span>
+                            <span class="result-skeleton-line result-skeleton-detail"></span>
+                          </li>
+                        ))
+                      }
+                    </ol>
+                    <span class="result-loading-indicator">
+                      <span class="result-loading-spinner"></span>
+                    </span>
+                  </div>
+                  <div data-result-filters hidden></div>
                   <ol class="result-list" data-result-list></ol>
                 </div>
               )

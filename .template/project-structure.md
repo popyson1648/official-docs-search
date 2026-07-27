@@ -33,11 +33,15 @@
 7. Render original HTTPS links, actual locales, locale-fallback and failure
    notices, and explicit unsupported states; document whether source fallback
    is intentionally silent.
+8. Document title qualification and loading-state ownership, including
+   `aria-busy`, reduced-motion behavior, and the boundary between verified API
+   ownership and prose context.
 
 ## Areas That Require Extra Care
 
 - Keep generated bundles synchronized with their adapters.
 - Report unsupported sources instead of silently returning an empty list.
 - Store only necessary index metadata and link to original documentation pages.
+- Never invent a qualified API title without reviewed ownership metadata.
 - Keep DOM controllers in `src/client/` and reusable logic in `src/core/`.
 - Keep source policy, transfer estimates, tests, and artifacts synchronized with adapter or delivery changes.
