@@ -28,6 +28,9 @@
    retaining partial results when one bundle fails or is malformed.
 5. Apply Docs-locale changes in page while synchronizing URL, preference,
    availability labels, and results.
+   Document whether setting descriptions are interactive labels or
+   non-interactive text with separately named controls, and define mobile
+   control alignment.
 6. Derive exact language/site facets from all matches and re-search cached
    indexes for the selected source subset.
 7. Render original HTTPS links, actual locales, locale-fallback and failure

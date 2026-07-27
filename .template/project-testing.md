@@ -47,6 +47,9 @@ a known `source:all` result, and localized source-picker/result qualifications.
 Verify per-source Japanese-availability labels, source metadata order, a
 single-column source picker, compact desktop/mobile controls, and right-aligned
 header actions.
+Fix title centering and header action order independently of translation width.
+For mobile settings, verify a shared control edge, separate descriptive text and
+control hit targets, and accessible naming.
 For multi-language forms, accept whitespace after commas, add defaults only for
 newly introduced languages, and preserve checked disabled non-official Sources.
 Fix the result classification/attribution/title/annotation order, shared

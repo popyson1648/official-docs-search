@@ -157,6 +157,10 @@ const suggestionScopes = catalog.languages.map((language) => ({
             <span class="lang-ja">{t("ja", "queryLabel")}</span>
           </h1>
           <div class="header-actions">
+            <button class="text-button" type="button" data-help-open>
+              <span class="lang-en">{t("en", "help")}</span>
+              <span class="lang-ja">{t("ja", "help")}</span>
+            </button>
             <fieldset class="lang-switch">
               <legend class="sr-only">{t(uiLanguage, "uiLanguage")}</legend>
               <label class:list={["lang-btn", { active: uiLanguage === "en" }]}>
@@ -168,10 +172,6 @@ const suggestionScopes = catalog.languages.map((language) => ({
                 JA
               </label>
             </fieldset>
-            <button class="text-button" type="button" data-help-open>
-              <span class="lang-en">{t("en", "help")}</span>
-              <span class="lang-ja">{t("ja", "help")}</span>
-            </button>
           </div>
         </div>
         <form
@@ -265,43 +265,45 @@ const suggestionScopes = catalog.languages.map((language) => ({
           </p>
 
           <div class="controls-row">
-            <div class="filters">
-              <label class="switch-label">
+            <div class="filters setting-row">
+              <span class="setting-label" id="include-trusted-label">
                 <span class="lang-en">{t("en", "includeTrusted")}</span>
                 <span class="lang-ja">{t("ja", "includeTrusted")}</span>
-                <input
-                  type="checkbox"
-                  name="sourceMode"
-                  value="all"
-                  class="pill-toggle"
-                  checked={sourceMode === "all"}
-                  data-source-toggle
-                />
-              </label>
+              </span>
+              <input
+                type="checkbox"
+                name="sourceMode"
+                value="all"
+                class="pill-toggle"
+                checked={sourceMode === "all"}
+                aria-labelledby="include-trusted-label"
+                data-source-toggle
+              />
             </div>
 
-            <div class="filters">
-              <label class="switch-label">
+            <div class="filters setting-row">
+              <span class="setting-label" id="auto-non-official-label">
                 <span class="lang-en">{t("en", "autoNonOfficial")}</span>
                 <span class="lang-ja">{t("ja", "autoNonOfficial")}</span>
-                <input
-                  id="auto-non-official"
-                  type="checkbox"
-                  name="autoNonOfficial"
-                  value="on"
-                  class="pill-toggle"
-                  checked={autoIncludeNonOfficialWhenNoOfficial}
-                  data-auto-non-official-toggle
-                />
-              </label>
+              </span>
+              <input
+                id="auto-non-official"
+                type="checkbox"
+                name="autoNonOfficial"
+                value="on"
+                class="pill-toggle"
+                checked={autoIncludeNonOfficialWhenNoOfficial}
+                aria-labelledby="auto-non-official-label"
+                data-auto-non-official-toggle
+              />
             </div>
 
-            <div class="filters">
-              <span class="filter-label">
+            <div class="filters docs-setting-row">
+              <span class="filter-label" id="docs-locale-label">
                 <span class="lang-en">{t("en", "docsLocale")}:</span>
                 <span class="lang-ja">{t("ja", "docsLocale")}:</span>
               </span>
-              <fieldset class="seg-toggle">
+              <fieldset class="seg-toggle" aria-labelledby="docs-locale-label">
                 <legend class="sr-only">{t(uiLanguage, "docsLocale")}</legend>
                 <label class:list={["seg-btn", { active: !locale }]}>
                   <input type="radio" name="docsLocale" value="" class="sr-only" checked={!locale} data-docs-radio>

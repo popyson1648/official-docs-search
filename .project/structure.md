@@ -63,6 +63,8 @@
    matches.
 5. A Docs-locale change updates the URL, preference, availability labels, and
    results without replacing the current document.
+   Global setting descriptions are non-interactive text associated to their
+   controls with accessible names; mobile controls share a fixed right edge.
 6. The runtime derives exact language/site facets from all matches; applied
    filters re-search the cached indexes for the selected source subset.
 7. While the worker is busy, the result region exposes `aria-busy`, a hidden

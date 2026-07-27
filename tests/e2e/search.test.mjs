@@ -1954,8 +1954,8 @@ test("[layout] results stay visible at desktop and mobile widths", async () => {
   }
 });
 
-test("[layout] header actions and source picker stay compact at desktop and mobile widths", async () => {
-  for (const width of [1280, 375]) {
+test("[layout] centered header and right-aligned settings stay predictable at desktop and mobile widths", async () => {
+  for (const width of [1280, 641, 390, 375]) {
     const page = await newPage({ width, height: 900 });
     await gotoQuery(
       page,
@@ -1963,6 +1963,10 @@ test("[layout] header actions and source picker stay compact at desktop and mobi
       "&docsLocale=ja&ui=ja"
     );
     await waitForResults(page);
+    const pageIdentity = await page.evaluate(() => ({
+      href: location.href,
+      timeOrigin: performance.timeOrigin
+    }));
     await page.$eval("details.source-details", (details) => {
       details.open = true;
     });
@@ -1972,7 +1976,16 @@ test("[layout] header actions and source picker stay compact at desktop and mobi
     );
     const layout = await page.evaluate(() => {
       const header = document.querySelector(".search-header").getBoundingClientRect();
+      const title = document.querySelector(".search-header h1").getBoundingClientRect();
       const actions = document.querySelector(".header-actions").getBoundingClientRect();
+      const help = document.querySelector("[data-help-open]").getBoundingClientRect();
+      const language = document.querySelector(".lang-switch").getBoundingClientRect();
+      const controls = document.querySelector(".controls-row").getBoundingClientRect();
+      const sourceToggle = document.querySelector("[data-source-toggle]").getBoundingClientRect();
+      const automaticToggle = document
+        .querySelector("[data-auto-non-official-toggle]")
+        .getBoundingClientRect();
+      const docsToggle = document.querySelector(".seg-toggle").getBoundingClientRect();
       const summaryStyle = getComputedStyle(document.querySelector(".source-details summary"));
       const titleStyle = getComputedStyle(document.querySelector(".source-title"));
       const optionStyle = getComputedStyle(document.querySelector(".source-option"));
@@ -1983,6 +1996,26 @@ test("[layout] header actions and source picker stay compact at desktop and mobi
       const sourceToggleRect = document.querySelector("[data-source-option]").getBoundingClientRect();
       return {
         rightGap: Math.abs(header.right - actions.right),
+        titleCenterGap: Math.abs(
+          title.left + title.width / 2 - (header.left + header.width / 2)
+        ),
+        titleAboveActions: title.bottom <= actions.top,
+        helpBeforeLanguage: help.right <= language.left,
+        actionTags: [...document.querySelector(".header-actions").children].map(
+          (element) => element.tagName
+        ),
+        sourceToggleRightGap: Math.abs(controls.right - sourceToggle.right),
+        automaticToggleRightGap: Math.abs(controls.right - automaticToggle.right),
+        docsToggleRightGap: Math.abs(controls.right - docsToggle.right),
+        sourceToggleLabelledBy: document
+          .querySelector("[data-source-toggle]")
+          .getAttribute("aria-labelledby"),
+        automaticToggleLabelledBy: document
+          .querySelector("[data-auto-non-official-toggle]")
+          .getAttribute("aria-labelledby"),
+        automaticLabelText: document
+          .querySelector("#auto-non-official-label .lang-ja")
+          .textContent,
         summaryFont: Number.parseFloat(summaryStyle.fontSize),
         titleFont: Number.parseFloat(titleStyle.fontSize),
         optionPaddingTop: Number.parseFloat(optionStyle.paddingTop),
@@ -1995,6 +2028,24 @@ test("[layout] header actions and source picker stay compact at desktop and mobi
       };
     });
     assert.ok(layout.rightGap <= 1, `header actions right gap was ${layout.rightGap}px at ${width}px`);
+    assert.ok(
+      layout.titleCenterGap <= 1,
+      `title center gap was ${layout.titleCenterGap}px at ${width}px`
+    );
+    assert.equal(layout.helpBeforeLanguage, true);
+    assert.deepEqual(layout.actionTags, ["BUTTON", "FIELDSET"]);
+    assert.equal(layout.sourceToggleLabelledBy, "include-trusted-label");
+    assert.equal(layout.automaticToggleLabelledBy, "auto-non-official-label");
+    assert.equal(
+      layout.automaticLabelText,
+      "ウェブで読める公式リファレンスがない場合、非公式リファレンスを使う"
+    );
+    if (width <= 760) {
+      assert.equal(layout.titleAboveActions, true);
+      assert.ok(layout.sourceToggleRightGap <= 1);
+      assert.ok(layout.automaticToggleRightGap <= 1);
+      assert.ok(layout.docsToggleRightGap <= 1);
+    }
     assert.ok(layout.summaryFont <= 14, `source summary font was ${layout.summaryFont}px`);
     assert.ok(layout.titleFont <= 13, `source title font was ${layout.titleFont}px`);
     assert.ok(layout.optionPaddingTop <= 7, `source option padding was ${layout.optionPaddingTop}px`);
@@ -2004,6 +2055,24 @@ test("[layout] header actions and source picker stay compact at desktop and mobi
     assert.ok(layout.titleHeight >= 24);
     assert.ok(layout.sourceLinkHeight >= 24);
     assert.ok(layout.sourceToggleHeight >= 24);
+    const settingsBeforeTextClicks = await page.evaluate(() => ({
+      source: document.querySelector("[data-source-toggle]").checked,
+      automatic: document.querySelector("[data-auto-non-official-toggle]").checked
+    }));
+    await page.click("#include-trusted-label");
+    await page.click("#auto-non-official-label");
+    assert.deepEqual(
+      await page.evaluate(() => ({
+        source: document.querySelector("[data-source-toggle]").checked,
+        automatic: document.querySelector("[data-auto-non-official-toggle]").checked,
+        href: location.href,
+        timeOrigin: performance.timeOrigin
+      })),
+      {
+        ...settingsBeforeTextClicks,
+        ...pageIdentity
+      }
+    );
     await page.focus('[data-docs-radio][value="en"]');
     const docsFocus = await page.$eval(
       '[data-docs-radio][value="en"]',

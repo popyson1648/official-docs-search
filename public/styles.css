@@ -263,8 +263,9 @@ small {
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  margin-left: auto;
   flex: 0 0 auto;
+  grid-column: 3;
+  justify-self: end;
 }
 
 .header-actions .text-button {
@@ -1223,8 +1224,8 @@ html[lang="ja"] .lang-en {
 }
 
 .search-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   margin-bottom: 20px;
   gap: 16px;
@@ -1233,8 +1234,10 @@ html[lang="ja"] .lang-en {
 }
 
 .search-header h1 {
+  grid-column: 2;
   margin: 0;
   font-size: 1.7rem;
+  text-align: center;
 }
 
 .fpill {
@@ -1287,19 +1290,12 @@ html[lang="ja"] .lang-en {
   background: var(--border);
 }
 
-.switch-label {
+.setting-label {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   font-size: 13px;
   font-weight: 600;
-  cursor: pointer;
   color: var(--text);
-  user-select: none;
-}
-
-.switch-label .pill-toggle {
-  margin: 0;
 }
 
 .seg-toggle {
@@ -1344,14 +1340,35 @@ html[lang="ja"] .lang-en {
   outline-offset: 2px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 760px) {
   .search-header {
-    flex-wrap: wrap;
+    grid-template-columns: minmax(0, 1fr);
     gap: 12px;
   }
 
+  .search-header h1 {
+    grid-column: 1;
+  }
+
   .header-actions {
-    margin-left: auto;
+    grid-column: 1;
+    justify-self: end;
+  }
+
+  .controls-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .setting-row,
+  .docs-setting-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
   }
 
 }

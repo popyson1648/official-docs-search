@@ -67,6 +67,11 @@ explicit support states, empty/error states, escaping,
 safe new-tab links, per-source Japanese-availability labels, compact source
 metadata order, a single-column source picker, right-aligned header actions, and
 desktop/mobile visibility.
+Header-layout coverage keeps the title geometrically centered, orders Search
+syntax before EN/JA, and moves mobile actions below the title.
+Mobile setting coverage fixes the two switches and Docs-locale control to one
+right edge, keeps setting descriptions non-interactive, and verifies accessible
+control names independently of translated text length.
 It also fixes the C++ completeness regression (`cpp sort`), conservative fuzzy
 recovery (`cpp srot`), cpprefjp Japanese results, proposal-source labeling and
 ranking, silent automatic-fallback settings/override behavior, bounded
