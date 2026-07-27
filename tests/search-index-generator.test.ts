@@ -85,6 +85,46 @@ describe("search index generation", () => {
     expect([...second.files]).toEqual([...first.files]);
   });
 
+  it("sorts parallel input provenance independently of response completion order", async () => {
+    const parallelJob = {
+      ...fixtureJob(),
+      load: async ({
+        fetchText
+      }: {
+        fetchText: (url: string) => Promise<string>;
+      }) => {
+        await Promise.all([
+          fetchText("https://input.test/a.json"),
+          fetchText("https://input.test/b.json")
+        ]);
+        return [{ title: "Record", url: "https://example.test/docs/record" }];
+      }
+    };
+    const fetchWithDelay = (slowSuffix: string) =>
+      async (input: string | URL | Request) => {
+        const url = String(input);
+        await new Promise((resolveDelay) =>
+          setTimeout(resolveDelay, url.endsWith(slowSuffix) ? 10 : 0)
+        );
+        return new Response(url.endsWith("a.json") ? "a" : "b");
+      };
+    const first = await buildSearchIndexArtifacts({
+      catalogSource: catalog,
+      jobs: [parallelJob],
+      fetcher: fetchWithDelay("a.json"),
+      now: () => new Date("2026-07-23T00:00:00Z")
+    });
+    const second = await buildSearchIndexArtifacts({
+      catalogSource: catalog,
+      jobs: [parallelJob],
+      fetcher: fetchWithDelay("b.json"),
+      previousManifest: first.manifest,
+      now: () => new Date("2026-07-24T00:00:00Z")
+    });
+
+    expect([...second.files]).toEqual([...first.files]);
+  });
+
   it("copies bilingual catalog qualifications into supported manifest entries", async () => {
     const qualifiedCatalog = catalog.replace(
       'indexes = [\n  { locale = "en", status = "supported" },',

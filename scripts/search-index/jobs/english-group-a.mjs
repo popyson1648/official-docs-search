@@ -3,6 +3,7 @@ import {
   devdocsJob,
   linkRecords
 } from "../job-helpers.mjs";
+import { cppreferenceJob } from "../cppreference-job.mjs";
 import {
   findExDocSidebarUrl,
   normalizeBashDevdocs,
@@ -14,29 +15,31 @@ import {
 } from "../english-group-a-parsers.mjs";
 
 export const englishGroupAJobs = [
-  htmlLinksJob({
+  cppreferenceJob({
     sourceId: "cppreference-c",
     programmingLanguage: "c",
     sourceKind: "community",
     sourceName: "cppreference C",
-    inputUrl: "https://en.cppreference.com/c/index",
-    upstreamVersion: "cppreference C rolling",
+    docsLocale: "en",
+    origin: "https://en.cppreference.com/",
+    namespacePrefix: "c",
     urlPrefix: "https://en.cppreference.com/c/",
-    minimumRecords: 350,
-    knownQueries: ["atomic", "type support"],
+    minimumRecords: 600,
+    knownQueries: ["atomic", "type support", "qsort"],
     attribution: "cppreference content; CC BY-SA 3.0 and GFDL.",
     licenseUrl: "https://en.cppreference.com/Cppreference:Copyright/CC-BY-SA"
   }),
-  htmlLinksJob({
+  cppreferenceJob({
     sourceId: "cppreference-cpp",
     programmingLanguage: "cpp",
     sourceKind: "community",
     sourceName: "cppreference C++",
-    inputUrl: "https://en.cppreference.com/cpp/index",
-    upstreamVersion: "cppreference C++ rolling",
+    docsLocale: "en",
+    origin: "https://en.cppreference.com/",
+    namespacePrefix: "cpp",
     urlPrefix: "https://en.cppreference.com/cpp/",
-    minimumRecords: 190,
-    knownQueries: ["ranges", "concepts library"],
+    minimumRecords: 6_000,
+    knownQueries: ["ranges", "concepts library", "std::sort"],
     attribution: "cppreference content; CC BY-SA 3.0 and GFDL.",
     licenseUrl: "https://en.cppreference.com/Cppreference:Copyright/CC-BY-SA"
   }),

@@ -1,12 +1,13 @@
 {
   "schemaVersion": 2,
   "generatorVersion": "2",
-  "catalogSha256": "617eeb89b01d4aac9295fea7e92efd08afed528b3ed59ec979dc63f596aa8088",
+  "catalogSha256": "9b48026079b49351528294e76eae3d165a29948038d3b5e9cfb7dce840dc508f",
   "entries": [
     {
       "sourceId": "python-docs",
       "sourceName": "Python Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "python",
       "docsLocale": "en",
       "status": "supported",
@@ -40,25 +41,26 @@
       "sourceId": "python-docs",
       "sourceName": "Python Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "python",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/python-docs.ja.32f2ca4f0b1952c4.json",
-      "recordCount": 6541,
-      "rawBytes": 658111,
-      "gzipBytes": 134393,
-      "brotliBytes": 87705,
-      "outputSha256": "32f2ca4f0b1952c4aa2eae30b9c95b0beea4c9fafbf94536e6a843cae8e945ce",
-      "inputSha256": "7e8c37ae2c600dd44fc2ca58fcdae16e52f6a2ee947062b7afafbc0da5981c6d",
+      "path": "/search-index/python-docs.ja.1cbae2b7e93dada1.json",
+      "recordCount": 6543,
+      "rawBytes": 658168,
+      "gzipBytes": 134361,
+      "brotliBytes": 87682,
+      "outputSha256": "1cbae2b7e93dada11a10fe6424d5f25c915f1dcfbbd780b5356e00501a4f0ba6",
+      "inputSha256": "2a5593815e99fbe72c3a39daed57963beccfab635ffbfb5c956a59ae5941761d",
       "inputs": [
         {
           "url": "https://docs.python.org/ja/3/searchindex.js",
-          "sha256": "24bacd099f363d8605e7a1d775e28875fe10e88a35ae00ebb5b68f2a36a050ce",
-          "etag": "\"6a632022-4d54ce\"",
-          "lastModified": "Fri, 24 Jul 2026 08:19:46 GMT"
+          "sha256": "465aaff65190eb630bf3f1fd47cb4a8a4b6bafa01ca188afbba30d07473207e2",
+          "etag": "\"6a65d076-4d54dd\"",
+          "lastModified": "Sun, 26 Jul 2026 09:16:38 GMT"
         }
       ],
-      "retrievedAt": "2026-07-24T08:51:34.089Z",
+      "retrievedAt": "2026-07-27T06:24:14.910Z",
       "adapter": "sphinx",
       "upstreamVersion": "Python 3 Japanese latest",
       "attribution": "Python documentation © Python Software Foundation; PSF License.",
@@ -70,9 +72,47 @@
       ]
     },
     {
+      "sourceId": "python-peps",
+      "sourceName": "Python Enhancement Proposals",
+      "sourceKind": "official",
+      "documentKind": "proposal",
+      "programmingLanguage": "python",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/python-peps.en.44ec700b72e48ab2.json",
+      "recordCount": 732,
+      "rawBytes": 88238,
+      "gzipBytes": 22478,
+      "brotliBytes": 18566,
+      "outputSha256": "44ec700b72e48ab2956a11f27bfc7a04eed16bc5514e57d557c674b65cbf83fe",
+      "inputSha256": "d01dc94574aa6206fa72f34ed1bc00df10372e0a213849690afb17281b49f2cd",
+      "inputs": [
+        {
+          "url": "https://peps.python.org/api/peps.json",
+          "sha256": "1833c3a513d57acfd580c7c30fcebb07c076dc3a5be6b657e0a43aea0d83b5fe",
+          "etag": "W/\"6a62bdb6-66ad9\"",
+          "lastModified": "Fri, 24 Jul 2026 01:19:50 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-27T06:24:15.000Z",
+      "adapter": "pep-json",
+      "upstreamVersion": "PEP index rolling",
+      "attribution": "Python Enhancement Proposal metadata © Python contributors; individual PEPs are public domain or CC0-1.0.",
+      "licenseUrl": "https://peps.python.org/pep-0001/",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "PEP 8",
+        "PEP 703",
+        "typing"
+      ],
+      "qualification": "PEPs include drafts, rejected, withdrawn, deferred, and superseded proposals; status is shown on every result.",
+      "qualificationJa": "PEPには草案・却下・撤回・保留・置換済みの提案が含まれます。各結果に状態を表示します。"
+    },
+    {
       "sourceId": "rust-docs",
       "sourceName": "Rust Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "rust",
       "docsLocale": "en",
       "status": "supported",
@@ -106,6 +146,7 @@
       "sourceId": "comprehensive-rust",
       "sourceName": "Comprehensive Rust",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "rust",
       "docsLocale": "en",
       "status": "supported",
@@ -140,6 +181,7 @@
       "sourceId": "tc39-ecma262",
       "sourceName": "ECMAScript Specification",
       "sourceKind": "official",
+      "documentKind": "specification",
       "programmingLanguage": "javascript",
       "docsLocale": "en",
       "status": "supported",
@@ -170,9 +212,66 @@
       ]
     },
     {
+      "sourceId": "tc39-proposals",
+      "sourceName": "TC39 Proposals",
+      "sourceKind": "official",
+      "documentKind": "proposal",
+      "programmingLanguage": "javascript",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/tc39-proposals.en.a2382d30a4eb455a.json",
+      "recordCount": 294,
+      "rawBytes": 31903,
+      "gzipBytes": 7056,
+      "brotliBytes": 5982,
+      "outputSha256": "a2382d30a4eb455afcfe6b0a25e56ff48ef104e928a18ad720a229a4b878d50a",
+      "inputSha256": "90ea329d0c886bc004d08a575b733021aa55f1fdc550a7371d7e09e61b8ca6e7",
+      "inputs": [
+        {
+          "url": "https://raw.githubusercontent.com/tc39/proposals/main/finished-proposals.md",
+          "sha256": "2141ef360fa4c1b41dea30906fb48d6dec3240267430dbd9b5c4a91053aab2b0",
+          "etag": "W/\"4b5a086f7bc864df533e7bd4cdfc7b9f771ad12c6e0fd7f66fe40bfd32c28bc7\""
+        },
+        {
+          "url": "https://raw.githubusercontent.com/tc39/proposals/main/inactive-proposals.md",
+          "sha256": "9769b41c4e5cc922ddb643bc5e3727b51252b33886635030c8f01dc481085cce",
+          "etag": "W/\"2492d7d3144a61f4d63b76645f01332b42f3bcd00fc166a343aa6f6d46ba4978\""
+        },
+        {
+          "url": "https://raw.githubusercontent.com/tc39/proposals/main/README.md",
+          "sha256": "c7e320424a0e67ee9ca747c3c4541d500f4cb3ad58213d1f0adea1b665e57f55",
+          "etag": "W/\"7fc8bd9e696412f3150b032a5d4d155139c6a919047942fe5f176eb5d7502c30\""
+        },
+        {
+          "url": "https://raw.githubusercontent.com/tc39/proposals/main/stage-0-proposals.md",
+          "sha256": "697a9d44bc06af8195d0c6e16c6b262be857875b529b2319cf781dabfc8782e4",
+          "etag": "W/\"38836cf083573197dc0786805a8ad54be463d67303631a834bdc50debfab966b\""
+        },
+        {
+          "url": "https://raw.githubusercontent.com/tc39/proposals/main/stage-1-proposals.md",
+          "sha256": "2d3e35547eacd9718d13f43eae117faf656328970efeb49f9fb32c37528efcbf",
+          "etag": "W/\"66e8f51c17604cfcade22f239405775da3da3f42137feff402d5607283221f4f\""
+        }
+      ],
+      "retrievedAt": "2026-07-27T06:44:53.161Z",
+      "adapter": "tc39-proposal-markdown",
+      "upstreamVersion": "TC39 proposals rolling",
+      "attribution": "Metadata-only index of the official tc39/proposals tracking tables; that repository declares no explicit reuse license.",
+      "licenseUrl": "https://github.com/tc39/proposals",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "decorators",
+        "pipeline operator",
+        "iterator helpers"
+      ],
+      "qualification": "TC39 stages describe proposal maturity. This metadata-only index follows the official tracking tables; their repository declares no explicit reuse license.",
+      "qualificationJa": "TC39のStageは提案の成熟度を示します。公式追跡表のメタデータのみを索引化しており、そのリポジトリには明示的な再利用ライセンスがありません。"
+    },
+    {
       "sourceId": "mdn-js",
       "sourceName": "MDN Web Docs",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "javascript",
       "docsLocale": "en",
       "status": "supported",
@@ -206,6 +305,7 @@
       "sourceId": "mdn-js",
       "sourceName": "MDN Web Docs",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "javascript",
       "docsLocale": "ja",
       "status": "supported",
@@ -215,16 +315,16 @@
       "gzipBytes": 13803,
       "brotliBytes": 11317,
       "outputSha256": "c17728a582cf2b831b2d7cb0fd8d3485b2faf428e2cfee27cddac611ac9aec99",
-      "inputSha256": "6d3ec58a0c2de0f48bcb5514bb323c1b9dee4a3393dd8eb6b13f61e1efe3bca6",
+      "inputSha256": "3217a9671e710396ae4a860cf1bb36220cbf5136b30b73b8f0557862d50cffec",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/ja/search-index.json",
-          "sha256": "053f70ed0f959eff05503373ee7ee73a50971daacd5b801ceb24305ad89d3ab4",
-          "etag": "\"3a088aa1d8d7fdcbb6a7c0e7d5cfad37\"",
-          "lastModified": "Sat, 25 Jul 2026 01:21:16 GMT"
+          "sha256": "0c9d5592b3a1df47b7dc0557a203ff7969dad81f48f2ec39aad9a372c16f5e21",
+          "etag": "\"b72ee282e3b083a943c2c1ebfbfb39fc\"",
+          "lastModified": "Mon, 27 Jul 2026 01:17:49 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:03:55.492Z",
+      "retrievedAt": "2026-07-27T06:24:21.245Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs ja rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
@@ -239,6 +339,7 @@
       "sourceId": "javascript-info",
       "sourceName": "The Modern JavaScript Tutorial",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "javascript",
       "docsLocale": "en",
       "status": "supported",
@@ -248,15 +349,15 @@
       "gzipBytes": 3518,
       "brotliBytes": 2995,
       "outputSha256": "202a5823531547213bccb5dcd15a2d69d7b87747b182e7bc8797f27d28385038",
-      "inputSha256": "b03530425e4bbcfa5a49def466e7aeefa3de9d9cf4f9193db8c78f1d7d97c5d5",
+      "inputSha256": "92bc3f7db9d70194e24883abb4b51b63d2e1ada4c5c1e6e2f3f3a55b38fb03a7",
       "inputs": [
         {
           "url": "https://javascript.info/",
-          "sha256": "6a8220c2e604aa1b7200db197b0daa3c73a7d834fa14683d642ecb1c1c43af18",
-          "etag": "W/\"d0e1-v8znMaJehSR4AsSPMmU+sGjfe3A\""
+          "sha256": "56fdb8c1dd129f63ad7b349557f871efe9579e9ac04c0858f1e45a2ea8897cab",
+          "etag": "W/\"d0d0-/xSUvvJlDTHmAaiemBPIgTbiPxQ\""
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:02.155Z",
+      "retrievedAt": "2026-07-27T06:24:23.367Z",
       "adapter": "html-course-toc",
       "upstreamVersion": "The Modern JavaScript Tutorial rolling",
       "attribution": "The Modern JavaScript Tutorial © Ilya Kantor and contributors. Repository terms are based on CC BY-NC 4.0; the site terms describe CC BY-NC-SA. Titles and direct links only.",
@@ -273,6 +374,7 @@
       "sourceId": "typescript-docs",
       "sourceName": "TypeScript Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "typescript",
       "docsLocale": "en",
       "status": "supported",
@@ -306,6 +408,7 @@
       "sourceId": "typescript-deep-dive",
       "sourceName": "TypeScript Deep Dive",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "typescript",
       "docsLocale": "en",
       "status": "supported",
@@ -315,19 +418,19 @@
       "gzipBytes": 1932,
       "brotliBytes": 1655,
       "outputSha256": "7c28b9683e1ecb5149b92bd3b735b8b1f21386517b00ceae5b09676e28507ac0",
-      "inputSha256": "b3b3ef21dbfb888b51bd2b2e4083453f45e7888ca311b6d053a315f1c5fbf6d2",
+      "inputSha256": "6cc53fd0264a009fda031facf0b6d9020f288579676803fc34fd2045bbbfa699",
       "inputs": [
+        {
+          "url": "https://basarat.gitbook.io/typescript/sitemap-pages.xml",
+          "sha256": "7e906763e759801ff5f2c94af56dcf2681d303774a82290b2ffd9ddcf0abf3c8"
+        },
         {
           "url": "https://raw.githubusercontent.com/basarat/typescript-book/master/SUMMARY.md",
           "sha256": "1e134bc8fac6a87a09b5d9b7e37bbb987f9ffc8f53d7112506f976b512c0d562",
           "etag": "W/\"eeba139a8259353145599fd08521fbc326f0bce4fb52a81cbed4bb9a847eb7fb\""
-        },
-        {
-          "url": "https://basarat.gitbook.io/typescript/sitemap-pages.xml",
-          "sha256": "7e906763e759801ff5f2c94af56dcf2681d303774a82290b2ffd9ddcf0abf3c8"
         }
       ],
-      "retrievedAt": "2026-07-23T14:44:17.047Z",
+      "retrievedAt": "2026-07-27T06:44:54.526Z",
       "adapter": "gitbook-summary-sitemap",
       "upstreamVersion": "TypeScript Deep Dive GitBook rolling",
       "attribution": "TypeScript Deep Dive © Basarat Ali Syed; CC BY 4.0.",
@@ -344,6 +447,7 @@
       "sourceId": "go-docs",
       "sourceName": "Go Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "go",
       "docsLocale": "en",
       "status": "supported",
@@ -375,6 +479,7 @@
       "sourceId": "go-std",
       "sourceName": "Go Standard Library",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "go",
       "docsLocale": "en",
       "status": "supported",
@@ -408,6 +513,7 @@
       "sourceId": "go-by-example",
       "sourceName": "Go by Example",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "go",
       "docsLocale": "en",
       "status": "supported",
@@ -443,58 +549,71 @@
       "sourceId": "cppreference-c",
       "sourceName": "cppreference C",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "c",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/cppreference-c.en.a3e146d6bcb3c5c9.json",
-      "recordCount": 380,
-      "rawBytes": 12961,
-      "gzipBytes": 3212,
-      "brotliBytes": 2695,
-      "outputSha256": "a3e146d6bcb3c5c954085f55a7a00b66a4199c2625c9e33e364544d13a0f16db",
-      "inputSha256": "f4d0841c918ac81fdcaff40f75132d34bd0ea672328317f4a2a1906e293537cd",
+      "path": "/search-index/cppreference-c.en.7cedee5465c837b0.json",
+      "recordCount": 656,
+      "rawBytes": 38370,
+      "gzipBytes": 8472,
+      "brotliBytes": 7105,
+      "outputSha256": "7cedee5465c837b08228499424e769eb5b0fc15dd3013b78b9319d0ce69a1a03",
+      "inputSha256": "bfd3c0cabba4299e9c42eb49c9d642b1f406e3e62654b99f55cf4a62f85dcb30",
       "inputs": [
         {
-          "url": "https://en.cppreference.com/c/index",
-          "sha256": "937604826c0cf41061f97761474f268673c51e5b6aa3890ae62e7936ee0845e1",
-          "lastModified": "Sat, 18 Jul 2026 04:57:48 GMT"
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=c%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2",
+          "sha256": "36d59a005b36c644636dee23c15f3856f96d677198b7fc5aa2d16cb7574bb028",
+          "lastModified": "Mon, 27 Jul 2026 06:24:22 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=c%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=c%2Fstring%2Fbyte%2Fisprint",
+          "sha256": "fd3322eaac4e12237bb4d67cce2b5854644c45f402405d5e1e3dd6dd770f4471",
+          "lastModified": "Mon, 27 Jul 2026 06:24:22 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:01.995Z",
-      "adapter": "html-link-index",
+      "retrievedAt": "2026-07-27T06:24:23.346Z",
+      "adapter": "mediawiki-allpages",
       "upstreamVersion": "cppreference C rolling",
       "attribution": "cppreference content; CC BY-SA 3.0 and GFDL.",
       "licenseUrl": "https://en.cppreference.com/Cppreference:Copyright/CC-BY-SA",
       "updateFrequency": "weekly",
       "knownQueries": [
         "atomic",
-        "type support"
+        "type support",
+        "qsort"
       ]
     },
     {
       "sourceId": "cppreference-c",
       "sourceName": "cppreference C",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "c",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/cppreference-c.ja.fdae67a60c63a0b7.json",
-      "recordCount": 39,
-      "rawBytes": 2269,
-      "gzipBytes": 926,
-      "brotliBytes": 716,
-      "outputSha256": "fdae67a60c63a0b787c607aafb2ea462187968f107098b7fa85e1b02a0610a59",
-      "inputSha256": "9352797414f9a6f95cd098e70820bbc531272db66b81fb59a748f6987f907222",
+      "path": "/search-index/cppreference-c.ja.89ddb7d89c55a254.json",
+      "recordCount": 548,
+      "rawBytes": 31384,
+      "gzipBytes": 7565,
+      "brotliBytes": 6250,
+      "outputSha256": "89ddb7d89c55a2541fa742bef9f9fed407dfb80a83c0a4428cc2afd97ee3d8ea",
+      "inputSha256": "da97d2875ced84d87cb5a780a86faa9f487a8b6111f5fae1aae186fc8f42fc83",
       "inputs": [
         {
-          "url": "https://ja.cppreference.com/c",
-          "sha256": "2f0279c9499a509f79f084052e0e2d858bb12b5f8675d55e50262b2d50bef3d7",
-          "lastModified": "Sat, 18 Jul 2026 03:13:50 GMT"
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=c%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2",
+          "sha256": "c68f7b13c0f1f9e952cb74bfb7a193527743c12d5829ce9c45ceba9eda72326f",
+          "lastModified": "Mon, 27 Jul 2026 06:13:22 GMT"
+        },
+        {
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=c%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=c%2Fsymbol_index",
+          "sha256": "13d30b32a543bd2ef6ff9518fbf167d77a3ce1e297aa75e85354d1243e2cdf3b",
+          "lastModified": "Mon, 27 Jul 2026 06:13:23 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:02.087Z",
-      "adapter": "scoped-html-toc",
-      "upstreamVersion": "cppreference Japanese C rolling (partial translation)",
+      "retrievedAt": "2026-07-27T06:24:22.254Z",
+      "adapter": "mediawiki-allpages",
+      "upstreamVersion": "cppreference C rolling",
       "attribution": "Partial Japanese community translation of cppreference; CC BY-SA 3.0 and GFDL.",
       "licenseUrl": "https://ja.cppreference.com/Cppreference:Copyright/CC-BY-SA",
       "updateFrequency": "weekly",
@@ -508,58 +627,161 @@
       "sourceId": "cppreference-cpp",
       "sourceName": "cppreference C++",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "cpp",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/cppreference-cpp.en.1d366cc52626c2eb.json",
-      "recordCount": 214,
-      "rawBytes": 7533,
-      "gzipBytes": 2274,
-      "brotliBytes": 1877,
-      "outputSha256": "1d366cc52626c2eba2477644e5c15ef6e067cceeb7d7bdb8f8f0de9adb489f21",
-      "inputSha256": "782b6a1ec17b657c0724559357f1574e10bcc291fa68acba88326560609096ce",
+      "path": "/search-index/cppreference-cpp.en.86f31dcc7187dc73.json",
+      "recordCount": 6324,
+      "rawBytes": 622414,
+      "gzipBytes": 77236,
+      "brotliBytes": 63635,
+      "outputSha256": "86f31dcc7187dc73b2653f0453659bd41cc826663f9f07f399472ed3345fca59",
+      "inputSha256": "ef74dbc996810ece514e77827f564ba5b82f3e793842991ae0fada33245734dd",
       "inputs": [
         {
-          "url": "https://en.cppreference.com/cpp/index",
-          "sha256": "5140e1a1a8f3763b57e564e61741179d37175f78dba4fbfd8736e4b8ca7720a7",
-          "lastModified": "Sat, 18 Jul 2026 01:49:42 GMT"
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2",
+          "sha256": "42d6924c1642bedc54097a1d9f40130f181dafd7f6d44593a8bd1819037c15d3",
+          "lastModified": "Mon, 27 Jul 2026 06:10:44 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fchrono%2Futc_clock%2Ffrom_stream",
+          "sha256": "20749515dc9440408fcc5c2c77da65d10945cffce346e7953bde12ad9227071b",
+          "lastModified": "Mon, 27 Jul 2026 06:23:18 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fcontainer%2Flist%2Fpop_back",
+          "sha256": "9306f204b7dbc8ca647968dd99e31c23201857a26365918a2cde952b21090cf1",
+          "lastModified": "Mon, 27 Jul 2026 06:23:19 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fcontract%2Fevaluation_semantic",
+          "sha256": "960acadb7e4fa9d690bb67b7b6cb00fd0051a9bf8c22764ad2cf63fbe438b29b",
+          "lastModified": "Mon, 27 Jul 2026 06:23:19 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fexperimental%2Fpolymorphic_allocator%2Fresource",
+          "sha256": "106a4c32b683121b25e86fa2af51bb95b68f55cfe41462cab19e01679cb899b9",
+          "lastModified": "Mon, 27 Jul 2026 06:23:19 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fheader%2Fexperimental%2Fexecution",
+          "sha256": "33521fe44f7a7014891ad0293cedab903a374c5b3b5598a2f59fc6accdbfd79b",
+          "lastModified": "Mon, 27 Jul 2026 06:23:20 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fiterator%2Fbasic_const_iterator%2Fbasic_const_iterator",
+          "sha256": "e6d72f4ab4bd74b88f6764fa040218006c068fab7846f134ef2c52a33ad4b004",
+          "lastModified": "Mon, 27 Jul 2026 06:23:20 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Flocale%2Fctype%2Fis",
+          "sha256": "b017a0020351c74b1984909f1a4c6a87a17416be7160e028c4bd2a748e90f88c",
+          "lastModified": "Mon, 27 Jul 2026 06:23:21 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fmeta%2Fis_namespace_member",
+          "sha256": "df2a9709aeea785f68cd19f29238abd2a7d5f947c6f5982d4c727a026297c435",
+          "lastModified": "Mon, 27 Jul 2026 06:23:21 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fnumeric%2Frandom%2Fpiecewise_linear_distribution%2Freset",
+          "sha256": "83a25552d4546e98e3d79d8a1b147097f36f0062765bde3c3884a5de69b58631",
+          "lastModified": "Mon, 27 Jul 2026 06:23:21 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Franges%2Fslide_view%2Fsentinel%2Fsentinel",
+          "sha256": "472490840717c4852eec0e7dbe6d2a9e6ebc6c61ce541202ef5ebbca2cd654eb",
+          "lastModified": "Mon, 27 Jul 2026 06:23:22 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fthread%2Fbarrier%2F%7Ebarrier",
+          "sha256": "2bf3c413013759061a0e9d1332f972ff820a2b4eb2c68ba83c46048711ab1ab7",
+          "lastModified": "Mon, 27 Jul 2026 06:23:22 GMT"
+        },
+        {
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Futility%2Fexpected%2Foperator*",
+          "sha256": "0f878dc3625507048c97feb52f5a3c7ab7fa23a9f5fb91bb1a818b6ec503760b",
+          "lastModified": "Mon, 27 Jul 2026 06:23:23 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:02.046Z",
-      "adapter": "html-link-index",
+      "retrievedAt": "2026-07-27T06:24:23.311Z",
+      "adapter": "mediawiki-allpages",
       "upstreamVersion": "cppreference C++ rolling",
       "attribution": "cppreference content; CC BY-SA 3.0 and GFDL.",
       "licenseUrl": "https://en.cppreference.com/Cppreference:Copyright/CC-BY-SA",
       "updateFrequency": "weekly",
       "knownQueries": [
         "ranges",
-        "concepts library"
+        "concepts library",
+        "std::sort"
       ]
     },
     {
       "sourceId": "cppreference-cpp",
       "sourceName": "cppreference C++",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "cpp",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/cppreference-cpp.ja.290290d88fa15482.json",
-      "recordCount": 99,
-      "rawBytes": 6080,
-      "gzipBytes": 1850,
-      "brotliBytes": 1498,
-      "outputSha256": "290290d88fa15482196b52502dba857fb20bf553550ff5bc0f6e3bb830dc5c10",
-      "inputSha256": "3680f56b1443ee29c6e1470e23c86378ef923de802eee5cc3043784743451e7c",
+      "path": "/search-index/cppreference-cpp.ja.66809e6013f0c33e.json",
+      "recordCount": 4007,
+      "rawBytes": 369046,
+      "gzipBytes": 48743,
+      "brotliBytes": 39917,
+      "outputSha256": "66809e6013f0c33e9705f9fd9c54cb5e1ef8cfce4d4abd2433c3e78b1cf7465f",
+      "inputSha256": "7e6b62c38fff44a6b4627f51e99e8504450544e5ce490f363cdb92315123eff6",
       "inputs": [
         {
-          "url": "https://ja.cppreference.com/cpp",
-          "sha256": "a1d9de686f9c7419a253fb37468ad1ee34c59caf8fb55f1e57748f88b2e3e983",
-          "lastModified": "Sat, 18 Jul 2026 03:56:53 GMT"
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2",
+          "sha256": "060d3707f9bfdd3730773ab530a58d17fa7cf1937b02c53fa0092c639fc2166e",
+          "lastModified": "Mon, 27 Jul 2026 06:13:19 GMT"
+        },
+        {
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fconcepts%2Fderived_from",
+          "sha256": "d6a537b8e6cf8b2908a971e1fc87df51589625ae8256959c860f404d11a238b8",
+          "lastModified": "Mon, 27 Jul 2026 06:13:19 GMT"
+        },
+        {
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fcontainer%2Funordered_set%2Fswap",
+          "sha256": "032abbbe0ffbce17586c98bd8d2eec2d171d87c16f1a277784e48a48a5b47cac",
+          "lastModified": "Mon, 27 Jul 2026 06:13:20 GMT"
+        },
+        {
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fio%2Fbasic_streambuf%2Fbasic_streambuf",
+          "sha256": "7214706c36af029450925b86819fb1dea96b7ba9c3deff80d67b690cba1e3124",
+          "lastModified": "Mon, 27 Jul 2026 06:13:20 GMT"
+        },
+        {
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Flanguage%2Fnested_types",
+          "sha256": "843a993f444c20fb56d5227fc2da40abc84c69c312e3c6aab2dfa736409541f5",
+          "lastModified": "Mon, 27 Jul 2026 06:13:21 GMT"
+        },
+        {
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fnamed_req%2FTimedMutex",
+          "sha256": "f500c833a7116e3aec8e8f10ac922f52e4c6e5163760d7619d627332f9344c97",
+          "lastModified": "Mon, 27 Jul 2026 06:13:21 GMT"
+        },
+        {
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fnumeric%2Fvalarray%2Fsinh",
+          "sha256": "8887ff4dca45c480b9e621423759b0c9b9f1403832a55533fce37cfb246efbad",
+          "lastModified": "Mon, 27 Jul 2026 06:13:21 GMT"
+        },
+        {
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fthread%2Fshared_timed_mutex%2Ftry_lock_for",
+          "sha256": "7328e2c7b4a00f6feac320985402a3fe380d2ec6acb5a7b2e7aa72347ff008bc",
+          "lastModified": "Mon, 27 Jul 2026 06:13:22 GMT"
+        },
+        {
+          "url": "https://ja.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Futility%2Fvariant%2Fvalueless_by_exception",
+          "sha256": "7616ecf921f148bea5b56a282c59c95ae680bbed4043869bcf66a3de3b53ff0d",
+          "lastModified": "Mon, 27 Jul 2026 06:13:22 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:02.168Z",
-      "adapter": "scoped-html-toc",
-      "upstreamVersion": "cppreference Japanese C++ rolling (partial translation)",
+      "retrievedAt": "2026-07-27T06:24:29.951Z",
+      "adapter": "mediawiki-allpages",
+      "upstreamVersion": "cppreference C++ rolling",
       "attribution": "Partial Japanese community translation of cppreference; CC BY-SA 3.0 and GFDL.",
       "licenseUrl": "https://ja.cppreference.com/Cppreference:Copyright/CC-BY-SA",
       "updateFrequency": "weekly",
@@ -570,9 +792,234 @@
       "qualification": "Partial Japanese community edition"
     },
     {
+      "sourceId": "cpprefjp",
+      "sourceName": "cpprefjp",
+      "sourceKind": "community",
+      "documentKind": "reference",
+      "programmingLanguage": "cpp",
+      "docsLocale": "ja",
+      "status": "supported",
+      "path": "/search-index/cpprefjp.ja.bda77dfd52a696fb.json",
+      "recordCount": 6617,
+      "rawBytes": 485642,
+      "gzipBytes": 58120,
+      "brotliBytes": 45947,
+      "outputSha256": "bda77dfd52a696fb8267448980089266027140ac1df45c1652d67b6385362986",
+      "inputSha256": "d3255c544750d117375dd71fdddeb1c5324d7793c53820e93ff4ce5bfe7425d3",
+      "inputs": [
+        {
+          "url": "https://cpprefjp.github.io/sitemap.xml",
+          "sha256": "e4822079327e565dbfae9cde54a1cd4057f92c0aeb85013d409057d3d9900e5e",
+          "etag": "W/\"6a662a59-176ca6\"",
+          "lastModified": "Sun, 26 Jul 2026 15:40:09 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-27T06:24:23.785Z",
+      "adapter": "sitemap",
+      "upstreamVersion": "cpprefjp rolling",
+      "attribution": "cpprefjp contributors; CC BY 4.0.",
+      "licenseUrl": "https://github.com/cpprefjp/site/blob/master/LICENSE",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "ranges_sort",
+        "sort",
+        "vector"
+      ],
+      "qualification": "A Japanese community reference published under CC BY 4.0; verify normative details against standards material.",
+      "qualificationJa": "CC BY 4.0で公開される日本語コミュニティリファレンスです。規範的な詳細は標準資料でも確認してください。"
+    },
+    {
+      "sourceId": "wg21-papers",
+      "sourceName": "WG21 Papers",
+      "sourceKind": "official",
+      "documentKind": "proposal",
+      "programmingLanguage": "cpp",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/wg21-papers.en.2bd053fd472c3e82.json",
+      "recordCount": 7550,
+      "rawBytes": 1148946,
+      "gzipBytes": 202981,
+      "brotliBytes": 138531,
+      "outputSha256": "2bd053fd472c3e82f078afea9940635cc24d04b69c4558f3f28f7fef8316156d",
+      "inputSha256": "8aa29998f11af1dfed7946f0e8d9629e3f88d704d26a8e22642d59a8b2ec9bc5",
+      "inputs": [
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/",
+          "sha256": "313ce13e3f602d0e79e46f1c51a6e322b3a450856d651a96444de98cf4b2a4e8"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1989/",
+          "sha256": "b95d80aef698c1d8232471b2f60c8f846c1ab1ba7787a95a9dc576ac37911744"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1990/",
+          "sha256": "3deb1e9a8436a8f0633b8de5905d0b2c486920c53e0b1bf054283f6c41607ae1"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1991/",
+          "sha256": "ad4d4cfa756c1894fef088b77d11bf508e69e9d917f3ef7985ac4f0f24170290"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1992/",
+          "sha256": "205be3849c8602c5241b5744ea939ecd9713afeb245804469fe6ec9d78524f2b"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1993/",
+          "sha256": "4273f19d7dd1e471ec4eb61df60ea97165a5e9fdd49365070cf5dafce8f701fd"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1994/",
+          "sha256": "ac5d7cda8a5ec1155e00f9c8f572a2f503d60b53e0b466f0080f35f121e910fa"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1995/",
+          "sha256": "b287b34c5f87fc245d9010f91299cbc4258fc6ad2fb90401f313c79df26078bf"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1996/",
+          "sha256": "79bb62d7ccf269bdbcd9486aef221acbe018a76ef9de6825526636fcaa106139"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1997/",
+          "sha256": "a4fa7c406c85df2bfcc6c29f89fbcf794aa610f46678ce181d498313f12747a2"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1998/",
+          "sha256": "6a2aaa1fcb65226a2b2a5eab91c56e61f21222c54de90b24cdad4cf78f498ab9"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/1999/",
+          "sha256": "c96f9254627953bbf4c294b31c191085ae1cb96d69b84a6f81717ef5fa6d8b43"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2000/",
+          "sha256": "0f9f110b8a4c517a9c7517653c60b87d836d9c1f0b4e4eba92b7a3ebd8b2c7b9"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2001/",
+          "sha256": "54c4f9ed4eb91da9e30f26db40c95b446dd921dc0ddf6d0e0decec449c79fc95"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2002/",
+          "sha256": "794c9503a8f2ad1498c95feb71ffaa3d5911b12563edaa6d466d66b184a47f8b"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2003/",
+          "sha256": "c50e1c7bb0baec4bd7ebd90b73421b8aa24ed8c64b83292f1e70bdf5eaba6c24"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2004/",
+          "sha256": "781c451471f4318fb2b08381085d593c3cfa178292b9aa647e6cdb863ab89551"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/",
+          "sha256": "da6e89932d04e5b29433f503cfa81b6be5b5d624a3c549716b427241a6918fd3"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/",
+          "sha256": "daf3b7b1919f2a45bd14ef6e240eab190618906486e30417e683d26b33947ff8"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/",
+          "sha256": "b6220e860c6e9eeac14482a777ae1009e1acdaae84ced74cdb0d59510b241ce1"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/",
+          "sha256": "88c2fca6e1f885ffaa2b0cc5989cfd3ed01ba1c2d39f53328e428d80f56f774d"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2009/",
+          "sha256": "671e4185905843ce976462006759c1565f02d3ed1fefa9f8c1f6ca0d40f5f150"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2010/",
+          "sha256": "42eeef30d1ea428202d50511d9e706dcf24332ac54f5b344b192432ecf2122b9"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/",
+          "sha256": "c5a45b774371e87c2e6a926a0b451ec8d421bc3a6aa83488a3060e0f42c1eb1a"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/",
+          "sha256": "b67bd6adcd19181fa88163f225bb16542b5231a4952b34f26cd95720c6e6e496"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/",
+          "sha256": "9b54bd330377a6859d3a133a775fbbaf82b9176309ccdc5bd5b23567660fe6f5"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/",
+          "sha256": "a6873ef63ddcdcb4891bed126f4b8e11be7fffcc26351144783145b9f8911852"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/",
+          "sha256": "2f0289f5b337395eb7f47410f7fcb25b3371b24c83add9e11ffb3ad02b311717"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/",
+          "sha256": "30f0fd5456cda14de5d1d89347fcc3974135aa8c14149b1039e36aeddd1a8a77"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/",
+          "sha256": "ed657a39d87067b93212fc79192a52d8320d9916f8543bd88d4d7cb5aade08b9"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/",
+          "sha256": "b70c50279ca9d7277249db57a2998d60ad28fe0a2f5ffbbc800d4694ba3d73d5"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/",
+          "sha256": "1127aa15e3c40038ce3d98a1d872cbd538baf4ac982dd1d4e9b60e6a99ebfe57"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/",
+          "sha256": "e2b4e29f2c7af703fc0ace9b2b48775c5316a08655a8fa734820e05e26070616"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/",
+          "sha256": "3a9c25d7350fd235451d52fc52869da7ef4c2b4c0faa7da242a899c7c27f15ea"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/",
+          "sha256": "633bd99ec1d50c75b56dce5dccaa2a212e9d530cf5b29c4cc72885e5bf56d32e"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/",
+          "sha256": "0646e5a8612eac1fce3c690cc2e67fd5513a0425bc858fcc718230752791a6eb"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/",
+          "sha256": "b037d9cdedebfb8f1654a46b87a825e57bf20156c470ef4b93b22c52a44b4087"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2025/",
+          "sha256": "b027c6489ee7af88fc2067be9431612d34821054308384367ca9c285c143d7b1"
+        },
+        {
+          "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2026/",
+          "sha256": "44d422c4c7f9101b496f87d748955afa367f6b24e2f0c63600b4dcd1ede57693"
+        }
+      ],
+      "retrievedAt": "2026-07-27T06:45:04.190Z",
+      "adapter": "wg21-paper-index",
+      "upstreamVersion": "WG21 papers rolling",
+      "attribution": "ISO/IEC JTC 1/SC 22/WG 21 public paper metadata; copyright and reuse terms are set by each paper and its authors.",
+      "licenseUrl": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/",
+      "updateFrequency": "monthly",
+      "knownQueries": [
+        "P2300",
+        "contracts",
+        "reflection"
+      ],
+      "qualification": "Committee papers can be drafts, rejected, withdrawn, or superseded; they do not necessarily describe adopted C++ behavior.",
+      "qualificationJa": "委員会文書には草案・却下・撤回・置換済みのものがあり、採用済みのC++仕様を示すとは限りません。"
+    },
+    {
       "sourceId": "cpp-core-guidelines",
       "sourceName": "C++ Core Guidelines",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "cpp",
       "docsLocale": "en",
       "status": "supported",
@@ -607,6 +1054,7 @@
       "sourceId": "csharp-docs",
       "sourceName": "Microsoft C# Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "csharp",
       "docsLocale": "en",
       "status": "supported",
@@ -639,6 +1087,7 @@
       "sourceId": "csharp-docs",
       "sourceName": "Microsoft C# Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "csharp",
       "docsLocale": "ja",
       "status": "supported",
@@ -672,6 +1121,7 @@
       "sourceId": "java-docs",
       "sourceName": "Oracle Java Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "java",
       "docsLocale": "en",
       "status": "supported",
@@ -711,6 +1161,7 @@
       "sourceId": "java-docs",
       "sourceName": "Oracle Java Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "java",
       "docsLocale": "ja",
       "status": "supported",
@@ -747,9 +1198,47 @@
       ]
     },
     {
+      "sourceId": "openjdk-jeps",
+      "sourceName": "JDK Enhancement Proposals",
+      "sourceKind": "official",
+      "documentKind": "proposal",
+      "programmingLanguage": "java",
+      "docsLocale": "en",
+      "status": "supported",
+      "path": "/search-index/openjdk-jeps.en.070073c183de52ad.json",
+      "recordCount": 505,
+      "rawBytes": 54435,
+      "gzipBytes": 11683,
+      "brotliBytes": 9563,
+      "outputSha256": "070073c183de52ad5192c524dbfe4a86e108dfb72260c61952d245ccfd4014e3",
+      "inputSha256": "ef0513efe5ef8ad27a12d48232f8757c87e12dec2a869e9e64c3cd200f3ef394",
+      "inputs": [
+        {
+          "url": "https://openjdk.org/jeps/0",
+          "sha256": "7d598a91aad978018614da192c6b11e68e8bb56f10987082d735f0948b3ff92c",
+          "etag": "\"6a654ca4-2f93c\"",
+          "lastModified": "Sat, 25 Jul 2026 23:54:12 GMT"
+        }
+      ],
+      "retrievedAt": "2026-07-27T06:24:24.552Z",
+      "adapter": "openjdk-jep-index",
+      "upstreamVersion": "OpenJDK JEP index rolling",
+      "attribution": "OpenJDK JEP metadata © Oracle and/or its affiliates; GPLv2.",
+      "licenseUrl": "https://openjdk.org/legal/gplv2+ce.html",
+      "updateFrequency": "weekly",
+      "knownQueries": [
+        "JEP 444",
+        "virtual threads",
+        "structured concurrency"
+      ],
+      "qualification": "JEP status is shown explicitly; drafts and candidates are not delivered JDK features.",
+      "qualificationJa": "JEPの状態を明示します。DraftやCandidateは、提供済みのJDK機能ではありません。"
+    },
+    {
       "sourceId": "php-manual",
       "sourceName": "PHP Manual",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "php",
       "docsLocale": "en",
       "status": "supported",
@@ -781,24 +1270,25 @@
       "sourceId": "php-manual",
       "sourceName": "PHP Manual",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "php",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/php-manual.ja.4d3928ff0adf875c.json",
-      "recordCount": 9147,
-      "rawBytes": 536007,
-      "gzipBytes": 91168,
-      "brotliBytes": 73366,
-      "outputSha256": "4d3928ff0adf875ce79da507b4577e0a75f5b5f81a274304007958832595e5f9",
-      "inputSha256": "c4e0c1d948fbc1799734802ca53ddefe49fd1777353fcf16f026d991e84a2953",
+      "path": "/search-index/php-manual.ja.bdfaa7b9b279baa4.json",
+      "recordCount": 9149,
+      "rawBytes": 536137,
+      "gzipBytes": 91187,
+      "brotliBytes": 73385,
+      "outputSha256": "bdfaa7b9b279baa43ee104b4130eab94c5847480696b1e9a10106d8ee2620471",
+      "inputSha256": "abe22a401f6c721d0debe1d38021a433d91a2456fd35e4240103304bfd4e6dbf",
       "inputs": [
         {
           "url": "https://www.php.net/manual/ja/indexes.functions.php",
-          "sha256": "3584c297b0461c8f9bbf07afdf06fda6c53a65904e1e16a54f475ff3c0b70293",
-          "lastModified": "Thu, 23 Jul 2026 14:22:18 GMT"
+          "sha256": "b4365710aa14151933d1f3332a3ea6691353a79125bcb25afb7858ff6aa39238",
+          "lastModified": "Mon, 27 Jul 2026 04:22:38 GMT"
         }
       ],
-      "retrievedAt": "2026-07-23T14:44:19.279Z",
+      "retrievedAt": "2026-07-27T06:24:28.401Z",
       "adapter": "php-manual-index",
       "upstreamVersion": "PHP Manual rolling",
       "attribution": "PHP Manual © PHP Documentation Group, CC BY 3.0 or later.",
@@ -812,6 +1302,7 @@
       "sourceId": "php-the-right-way",
       "sourceName": "PHP: The Right Way",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "php",
       "docsLocale": "en",
       "status": "supported",
@@ -847,6 +1338,7 @@
       "sourceId": "ruby-docs",
       "sourceName": "Ruby Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "ruby",
       "docsLocale": "en",
       "status": "supported",
@@ -880,22 +1372,29 @@
       "sourceId": "ruby-docs",
       "sourceName": "Ruby Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "ruby",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/ruby-docs.ja.8da6bd8e1dbbe817.json",
-      "recordCount": 11873,
-      "rawBytes": 669820,
-      "gzipBytes": 100407,
-      "brotliBytes": 82754,
-      "outputSha256": "8da6bd8e1dbbe8170d71a555cfe963b3bdcfa18f62a8cd6ffe9904be9915ad56",
-      "inputSha256": "2b2ca0a48addaf846165176d2986c736b29aa3cdd7292fbe9988a47fd169f364",
+      "path": "/search-index/ruby-docs.ja.025f1e8205099138.json",
+      "recordCount": 11917,
+      "rawBytes": 672127,
+      "gzipBytes": 100741,
+      "brotliBytes": 82949,
+      "outputSha256": "025f1e8205099138f6f055aba05b1f828b023cf8e5b045aa731ed8a837932270",
+      "inputSha256": "84afb1a2f43c6ac8b98d4678db5d5e946325e9d2682ab3140391f98a1ceac811",
       "inputs": [
         {
           "url": "https://docs.ruby-lang.org/ja/3.4/class/index.html",
-          "sha256": "e2078f3db47eff3945ab0f73da1f61cb0e0c8be3b19aad995b3564a143969ec2",
-          "etag": "W/\"6a63d6da-c2937\"",
-          "lastModified": "Fri, 24 Jul 2026 21:19:22 GMT"
+          "sha256": "027d44e158504afbf54d3b7f8bbd660ddf2cb943179fa6d84add2213456441cb",
+          "etag": "W/\"6a6679df-c34e0\"",
+          "lastModified": "Sun, 26 Jul 2026 21:19:27 GMT"
+        },
+        {
+          "url": "https://docs.ruby-lang.org/ja/3.4/doc/index.html",
+          "sha256": "2ab8bb0b019aebe642c18fd25015c45d96e9ea19651be99e6bd4f1ba5b1447d8",
+          "etag": "W/\"6a5f28b1-1a6a\"",
+          "lastModified": "Tue, 21 Jul 2026 08:07:13 GMT"
         },
         {
           "url": "https://docs.ruby-lang.org/ja/3.4/function/index.html",
@@ -908,15 +1407,9 @@
           "sha256": "6f596b9fc3c49640d82f9d6053ef9d02661090c98848edb2b74663bb83350a82",
           "etag": "W/\"6a5f28b2-7444\"",
           "lastModified": "Tue, 21 Jul 2026 08:07:14 GMT"
-        },
-        {
-          "url": "https://docs.ruby-lang.org/ja/3.4/doc/index.html",
-          "sha256": "2ab8bb0b019aebe642c18fd25015c45d96e9ea19651be99e6bd4f1ba5b1447d8",
-          "etag": "W/\"6a5f28b1-1a6a\"",
-          "lastModified": "Tue, 21 Jul 2026 08:07:13 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:06.161Z",
+      "retrievedAt": "2026-07-27T06:45:02.120Z",
       "adapter": "ruby-reference-index",
       "upstreamVersion": "Ruby 3.4 Japanese Reference",
       "attribution": "Ruby Reference Manual Japanese edition, CC BY 3.0.",
@@ -931,6 +1424,7 @@
       "sourceId": "swift-docs",
       "sourceName": "Swift Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "swift",
       "docsLocale": "en",
       "status": "supported",
@@ -964,6 +1458,7 @@
       "sourceId": "kotlin-docs",
       "sourceName": "Kotlin Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "kotlin",
       "docsLocale": "en",
       "status": "supported",
@@ -997,6 +1492,7 @@
       "sourceId": "scala-docs",
       "sourceName": "Scala Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "scala",
       "docsLocale": "en",
       "status": "supported",
@@ -1029,6 +1525,7 @@
       "sourceId": "scala-docs-ja",
       "sourceName": "Scala Documentation (Japanese community translation)",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "scala",
       "docsLocale": "ja",
       "status": "supported",
@@ -1062,25 +1559,26 @@
       "sourceId": "dart-docs",
       "sourceName": "Dart Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "dart",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/dart-docs.en.0b20a8d9a26b0495.json",
-      "recordCount": 1177,
-      "rawBytes": 92257,
-      "gzipBytes": 18364,
-      "brotliBytes": 14245,
-      "outputSha256": "0b20a8d9a26b0495e32eb8ca783f0f06be219ab7d51bbf22a65ddb8a264dbabf",
-      "inputSha256": "439606b7ed5b86826e13ed84d312b6d85d8e12ecdf5dad40690ac0ecf7553d32",
+      "path": "/search-index/dart-docs.en.bb89283c86d3afc9.json",
+      "recordCount": 1184,
+      "rawBytes": 92707,
+      "gzipBytes": 18474,
+      "brotliBytes": 14269,
+      "outputSha256": "bb89283c86d3afc9ca926339b4501903733ecea57e99536200c03cd78726b052",
+      "inputSha256": "26ca1ce1c2a8d8216a797c8f0385168954b9d09ce1f779ac275a00c51256002d",
       "inputs": [
         {
           "url": "https://dart.dev/sitemap.xml",
-          "sha256": "d95790e3e98f331956febe3ff409067e48066cc71cf1944394c4044c60b15cde",
-          "etag": "\"295db9e417f45682114265323e5a424db09f608a3ae1e9be47afc6612b01c412-br\"",
-          "lastModified": "Fri, 24 Jul 2026 17:29:56 GMT"
+          "sha256": "7251e14ddbb92d4f816c088f04fd8d812da796ac947bd19a5e48c760ecebfb3c",
+          "etag": "\"c48ebc5318aa3cf12a1a4d87a50fd1f49d1d1d65626f82284f6d0843f3d46386-br\"",
+          "lastModified": "Sat, 25 Jul 2026 20:29:05 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:07.588Z",
+      "retrievedAt": "2026-07-27T06:24:30.992Z",
       "adapter": "sitemap",
       "upstreamVersion": "Dart documentation rolling sitemap",
       "attribution": "Dart documentation © Dart project contributors; BSD-3-Clause.",
@@ -1095,6 +1593,7 @@
       "sourceId": "dart-api",
       "sourceName": "Dart API Reference",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "dart",
       "docsLocale": "en",
       "status": "supported",
@@ -1127,6 +1626,7 @@
       "sourceId": "elixir-docs",
       "sourceName": "Elixir Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "elixir",
       "docsLocale": "en",
       "status": "supported",
@@ -1136,22 +1636,22 @@
       "gzipBytes": 28185,
       "brotliBytes": 24462,
       "outputSha256": "5f4585e4598065e6c5fd545dbc6a6e34c6977d3a66a3f9c17b7233afe4c87b3e",
-      "inputSha256": "d090ac0c0a4f5e7e100e09fba2a74e15a91048fbabb6eb9287588f95f554487e",
+      "inputSha256": "ababd9c10cb02f6a57b76373356414a7098f78ed637ff209a7af2c4e767ceea3",
       "inputs": [
-        {
-          "url": "https://hexdocs.pm/elixir/1.20.1/Kernel.html",
-          "sha256": "1f92420faad1b223fee8313eb3b8368fde91cf6f690c01243c49a408a14bbdf1",
-          "etag": "W/\"6ffadba05ddb6258e8cc576c0268a0c1\"",
-          "lastModified": "Tue, 09 Jun 2026 14:08:48 GMT"
-        },
         {
           "url": "https://hexdocs.pm/elixir/1.20.1/dist/sidebar_items-AD19088B.js",
           "sha256": "3f05ec2ec903184203e1537dd2b4e9934e7e863ea47a7bd03ffee1c64c634aef",
           "etag": "W/\"ad19088b8a8b625d2396634ef4d336b6\"",
           "lastModified": "Tue, 09 Jun 2026 14:08:50 GMT"
+        },
+        {
+          "url": "https://hexdocs.pm/elixir/1.20.1/Kernel.html",
+          "sha256": "1f92420faad1b223fee8313eb3b8368fde91cf6f690c01243c49a408a14bbdf1",
+          "etag": "W/\"6ffadba05ddb6258e8cc576c0268a0c1\"",
+          "lastModified": "Tue, 09 Jun 2026 14:08:48 GMT"
         }
       ],
-      "retrievedAt": "2026-07-23T06:41:05.730Z",
+      "retrievedAt": "2026-07-27T06:45:05.470Z",
       "adapter": "exdoc-sidebar",
       "upstreamVersion": "Elixir 1.20.1",
       "attribution": "Elixir documentation © Elixir contributors; Apache-2.0.",
@@ -1166,6 +1666,7 @@
       "sourceId": "elixir-lang",
       "sourceName": "Elixir Lang Guides",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "elixir",
       "docsLocale": "en",
       "status": "planned",
@@ -1175,6 +1676,7 @@
       "sourceId": "elixir-school",
       "sourceName": "Elixir School",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "elixir",
       "docsLocale": "en",
       "status": "supported",
@@ -1209,6 +1711,7 @@
       "sourceId": "erlang-docs",
       "sourceName": "Erlang/OTP Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "erlang",
       "docsLocale": "en",
       "status": "supported",
@@ -1241,6 +1744,7 @@
       "sourceId": "haskell-docs",
       "sourceName": "Haskell Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "haskell",
       "docsLocale": "en",
       "status": "planned",
@@ -1250,6 +1754,7 @@
       "sourceId": "haskell-ghc-users-guide",
       "sourceName": "GHC User's Guide",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "haskell",
       "docsLocale": "en",
       "status": "supported",
@@ -1283,6 +1788,7 @@
       "sourceId": "learn-you-a-haskell",
       "sourceName": "Learn You a Haskell (community edition)",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "haskell",
       "docsLocale": "en",
       "status": "supported",
@@ -1318,6 +1824,7 @@
       "sourceId": "lua-manual",
       "sourceName": "Lua Reference Manual",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "lua",
       "docsLocale": "en",
       "status": "supported",
@@ -1351,6 +1858,7 @@
       "sourceId": "perl-docs",
       "sourceName": "Perl Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "perl",
       "docsLocale": "en",
       "status": "supported",
@@ -1384,6 +1892,7 @@
       "sourceId": "r-manuals",
       "sourceName": "R Manuals",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "r",
       "docsLocale": "en",
       "status": "supported",
@@ -1417,6 +1926,7 @@
       "sourceId": "advanced-r",
       "sourceName": "Advanced R (2nd edition)",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "r",
       "docsLocale": "en",
       "status": "supported",
@@ -1452,6 +1962,7 @@
       "sourceId": "julia-docs",
       "sourceName": "Julia Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "julia",
       "docsLocale": "en",
       "status": "supported",
@@ -1485,6 +1996,7 @@
       "sourceId": "clojure-docs",
       "sourceName": "Clojure Reference",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "clojure",
       "docsLocale": "en",
       "status": "supported",
@@ -1518,6 +2030,7 @@
       "sourceId": "clojure-guides",
       "sourceName": "Clojure Guides",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "clojure",
       "docsLocale": "en",
       "status": "supported",
@@ -1553,6 +2066,7 @@
       "sourceId": "groovy-docs",
       "sourceName": "Groovy Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "groovy",
       "docsLocale": "en",
       "status": "supported",
@@ -1586,6 +2100,7 @@
       "sourceId": "objc-docs",
       "sourceName": "Objective-C Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "objc",
       "docsLocale": "en",
       "status": "blocked",
@@ -1595,6 +2110,7 @@
       "sourceId": "gnu-objc",
       "sourceName": "GNU Objective-C Features",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "objc",
       "docsLocale": "en",
       "status": "supported",
@@ -1628,6 +2144,7 @@
       "sourceId": "bash-manual",
       "sourceName": "Bash Reference Manual",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "bash",
       "docsLocale": "en",
       "status": "supported",
@@ -1637,22 +2154,22 @@
       "gzipBytes": 7144,
       "brotliBytes": 6114,
       "outputSha256": "f2eccf2876ab17b2f49c28e80d0d5b2ea6e6b7dd863c48b7617d0c7663697079",
-      "inputSha256": "ef59a399872bd2026d23eba0ae4adbb5a8d374a2f4fc337ff8e241078dd2ae6e",
+      "inputSha256": "ae398d88a69b93bd45b4e90df461f799dc402ab6f9e5d06ef8c0ac1e7a2156ee",
       "inputs": [
-        {
-          "url": "https://documents.devdocs.io/bash/index.json",
-          "sha256": "5591e8cfcdd3aa5446c9059a7745a9ef222d3c81d9d1ee1d53b7ff180ffc99ff",
-          "etag": "W/\"2b4810b00ba7a5325883e5b087ebbd7c\"",
-          "lastModified": "Sun, 19 Jul 2026 11:13:36 GMT"
-        },
         {
           "url": "https://documents.devdocs.io/bash/db.json",
           "sha256": "7e0fc2672b9b3f03bfff72e2a8b8d2972ddbebca9380148cdb717e61d61fedb7",
           "etag": "W/\"43256759bb4d6e100f2edcb37d891333\"",
           "lastModified": "Sun, 19 Jul 2026 11:13:35 GMT"
+        },
+        {
+          "url": "https://documents.devdocs.io/bash/index.json",
+          "sha256": "5591e8cfcdd3aa5446c9059a7745a9ef222d3c81d9d1ee1d53b7ff180ffc99ff",
+          "etag": "W/\"2b4810b00ba7a5325883e5b087ebbd7c\"",
+          "lastModified": "Sun, 19 Jul 2026 11:13:36 GMT"
         }
       ],
-      "retrievedAt": "2026-07-23T08:01:47.679Z",
+      "retrievedAt": "2026-07-27T06:45:09.539Z",
       "adapter": "devdocs-original-url-map",
       "upstreamVersion": "GNU Bash 5.3 maintainer copy via DevDocs",
       "attribution": "GNU Bash Reference Manual © Free Software Foundation; GNU Free Documentation License.",
@@ -1667,6 +2184,7 @@
       "sourceId": "powershell-docs",
       "sourceName": "PowerShell Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "powershell",
       "docsLocale": "en",
       "status": "supported",
@@ -1700,6 +2218,7 @@
       "sourceId": "powershell-docs",
       "sourceName": "PowerShell Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "powershell",
       "docsLocale": "ja",
       "status": "supported",
@@ -1733,6 +2252,7 @@
       "sourceId": "fsharp-docs",
       "sourceName": "F# Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "fsharp",
       "docsLocale": "en",
       "status": "supported",
@@ -1766,6 +2286,7 @@
       "sourceId": "fsharp-docs",
       "sourceName": "F# Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "fsharp",
       "docsLocale": "ja",
       "status": "supported",
@@ -1799,6 +2320,7 @@
       "sourceId": "fsharp-for-fun-and-profit",
       "sourceName": "F# for Fun and Profit",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "fsharp",
       "docsLocale": "en",
       "status": "supported",
@@ -1834,6 +2356,7 @@
       "sourceId": "vb-docs",
       "sourceName": "Visual Basic Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "visualbasic",
       "docsLocale": "en",
       "status": "supported",
@@ -1867,6 +2390,7 @@
       "sourceId": "vb-docs",
       "sourceName": "Visual Basic Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "visualbasic",
       "docsLocale": "ja",
       "status": "supported",
@@ -1900,6 +2424,7 @@
       "sourceId": "zig-docs",
       "sourceName": "Zig Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "zig",
       "docsLocale": "en",
       "status": "supported",
@@ -1909,16 +2434,16 @@
       "gzipBytes": 5802,
       "brotliBytes": 4595,
       "outputSha256": "71130ec91702363adc49e1bf93233363b676bdc4dd41c929a2bf13caeb309302",
-      "inputSha256": "1c8d64824f845796f0af60e4e4cf9df6acbab0b80ab170ac1324a0a5c311b47a",
+      "inputSha256": "387efcf7a37af3b68563587f8ce5afe595e792e686aec0f8fb9893260df3e487",
       "inputs": [
         {
           "url": "https://ziglang.org/documentation/master/",
-          "sha256": "444b8b26d2e0983c844a3d8c010685f2d9805271cf7f93b88e69291d3394ce63",
-          "etag": "W/\"6a6364a8-ef637\"",
-          "lastModified": "Fri, 24 Jul 2026 13:12:08 GMT"
+          "sha256": "90b7d05d222679a8006b9d0ec2cb9fa5c866ed046c373c7facda66f059f578cf",
+          "etag": "W/\"6a65a7f1-ef636\"",
+          "lastModified": "Sun, 26 Jul 2026 06:23:45 GMT"
         }
       ],
-      "retrievedAt": "2026-07-24T15:31:30.462Z",
+      "retrievedAt": "2026-07-27T06:24:41.061Z",
       "adapter": "html-link-index",
       "upstreamVersion": "Zig master rolling",
       "attribution": "Zig documentation © Zig contributors; MIT.",
@@ -1933,6 +2458,7 @@
       "sourceId": "zig-guide",
       "sourceName": "zig.guide",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "zig",
       "docsLocale": "en",
       "status": "supported",
@@ -1974,6 +2500,7 @@
       "sourceId": "nim-docs",
       "sourceName": "Nim Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "nim",
       "docsLocale": "en",
       "status": "supported",
@@ -2006,6 +2533,7 @@
       "sourceId": "crystal-docs",
       "sourceName": "Crystal Reference",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "crystal",
       "docsLocale": "en",
       "status": "supported",
@@ -2039,6 +2567,7 @@
       "sourceId": "d-docs",
       "sourceName": "D Language Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "d",
       "docsLocale": "en",
       "status": "supported",
@@ -2048,20 +2577,20 @@
       "gzipBytes": 5382,
       "brotliBytes": 4760,
       "outputSha256": "8fcf2a36461928e5ba820b61b8829f2d9bb83f406f2e12208cc54f8b09c88515",
-      "inputSha256": "24598a3ce208dce4cd7290ca25c2b9b1c5eb7f18ec99a2c6413780428634caca",
+      "inputSha256": "b07862947279a472b16fd7975be158a8f09154bb88ff81f0dd63c7a7efc45e73",
       "inputs": [
         {
-          "url": "https://dlang.org/spec/spec.html",
-          "sha256": "860676293461edf1525eb658ceb2f8bcec53bbc6d6a87603c55a66a75dac4a9f",
-          "lastModified": "Sat, 25 Jul 2026 01:16:16 GMT"
+          "url": "https://dlang.org/phobos/index.html",
+          "sha256": "a4da1ec869744f07059529f52266f050c3f6ecc52b67950b12b3577e48c9cac3",
+          "lastModified": "Sun, 26 Jul 2026 22:54:24 GMT"
         },
         {
-          "url": "https://dlang.org/phobos/index.html",
-          "sha256": "aaa6c52e07c086c2f3042f27af15d3a77ffacaf0bf9c0f5735b3fa8805309bf5",
-          "lastModified": "Sat, 25 Jul 2026 01:08:23 GMT"
+          "url": "https://dlang.org/spec/spec.html",
+          "sha256": "f2460ef62ac61dc9cb6cebc482f91831f3fdbf77606f323eb13ec087948b2162",
+          "lastModified": "Sun, 26 Jul 2026 23:02:51 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:09.812Z",
+      "retrievedAt": "2026-07-27T06:45:12.077Z",
       "adapter": "html-link-index",
       "upstreamVersion": "D language and Phobos latest",
       "attribution": "D documentation © D Language Foundation and contributors; BSL-1.0.",
@@ -2076,6 +2605,7 @@
       "sourceId": "programming-in-d",
       "sourceName": "Programming in D",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "d",
       "docsLocale": "en",
       "status": "supported",
@@ -2110,6 +2640,7 @@
       "sourceId": "ocaml-docs",
       "sourceName": "OCaml Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "ocaml",
       "docsLocale": "en",
       "status": "supported",
@@ -2141,6 +2672,7 @@
       "sourceId": "cornell-ocaml",
       "sourceName": "OCaml Programming: Correct + Efficient + Beautiful",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "ocaml",
       "docsLocale": "en",
       "status": "supported",
@@ -2176,6 +2708,7 @@
       "sourceId": "solidity-docs",
       "sourceName": "Solidity Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "solidity",
       "docsLocale": "en",
       "status": "supported",
@@ -2209,6 +2742,7 @@
       "sourceId": "solidity-docs-ja",
       "sourceName": "Solidity Documentation (Japanese community translation)",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "solidity",
       "docsLocale": "ja",
       "status": "supported",
@@ -2243,6 +2777,7 @@
       "sourceId": "solidity-by-example",
       "sourceName": "Solidity by Example",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "solidity",
       "docsLocale": "en",
       "status": "supported",
@@ -2277,6 +2812,7 @@
       "sourceId": "elm-guide",
       "sourceName": "Elm Guide",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "elm",
       "docsLocale": "en",
       "status": "supported",
@@ -2309,24 +2845,25 @@
       "sourceId": "elm-packages",
       "sourceName": "Elm Packages",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "elm",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/elm-packages.en.6f228abba6c1fc44.json",
+      "path": "/search-index/elm-packages.en.4777b88afe2d33b3.json",
       "recordCount": 3008,
       "rawBytes": 209273,
-      "gzipBytes": 41810,
-      "brotliBytes": 35722,
-      "outputSha256": "6f228abba6c1fc44907bc79b7c2a3677b37ca4f490650c7d906f218929c2df91",
-      "inputSha256": "4ed751560433a56306cbf50908e7b24b9180862e3587635d8c573eb7243052c2",
+      "gzipBytes": 41809,
+      "brotliBytes": 35725,
+      "outputSha256": "4777b88afe2d33b3cbedce97e52d66b98b48eea6b7a305568861d01dcbcd35e5",
+      "inputSha256": "7b5dd88f0d182a38b30726517ddea819df5d905f0a9c898866a11f2b0c500f9c",
       "inputs": [
         {
           "url": "https://package.elm-lang.org/all-packages",
-          "sha256": "fbe496169b42937a1f6575cf7e96b9a3428ad5e4f4296f103f7a5ca58767635c",
-          "lastModified": "Fri, 24 Jul 2026 23:48:29 GMT"
+          "sha256": "ed4db53365174be5bc39433962e6b5d369c132db77a5046d21dbcc5fbd3a45b5",
+          "lastModified": "Mon, 27 Jul 2026 06:10:07 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:12.630Z",
+      "retrievedAt": "2026-07-27T06:24:44.671Z",
       "adapter": "elm-package-index",
       "upstreamVersion": "Elm package catalog rolling",
       "attribution": "Elm package catalog metadata; individual package licenses apply.",
@@ -2341,6 +2878,7 @@
       "sourceId": "racket-docs",
       "sourceName": "Racket Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "racket",
       "docsLocale": "en",
       "status": "supported",
@@ -2373,6 +2911,7 @@
       "sourceId": "cl-hyperspec",
       "sourceName": "Common Lisp HyperSpec",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "commonlisp",
       "docsLocale": "en",
       "status": "disabled",
@@ -2382,6 +2921,7 @@
       "sourceId": "cl-language-reference",
       "sourceName": "Common Lisp Technical Reference",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "commonlisp",
       "docsLocale": "en",
       "status": "supported",
@@ -2415,6 +2955,7 @@
       "sourceId": "common-lisp-cookbook",
       "sourceName": "The Common Lisp Cookbook",
       "sourceKind": "community",
+      "documentKind": "reference",
       "programmingLanguage": "commonlisp",
       "docsLocale": "en",
       "status": "supported",
@@ -2449,6 +2990,7 @@
       "sourceId": "gfortran",
       "sourceName": "GNU Fortran Manual",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "fortran",
       "docsLocale": "en",
       "status": "supported",
@@ -2482,6 +3024,7 @@
       "sourceId": "fortran-lang",
       "sourceName": "Fortran Lang",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "fortran",
       "docsLocale": "en",
       "status": "supported",
@@ -2515,6 +3058,7 @@
       "sourceId": "haxe-manual",
       "sourceName": "Haxe Manual",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "haxe",
       "docsLocale": "en",
       "status": "supported",
@@ -2547,6 +3091,7 @@
       "sourceId": "haxe-api",
       "sourceName": "Haxe API",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "haxe",
       "docsLocale": "en",
       "status": "planned",
@@ -2556,6 +3101,7 @@
       "sourceId": "postgresql-docs",
       "sourceName": "PostgreSQL Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "sql",
       "docsLocale": "en",
       "status": "planned",
@@ -2565,6 +3111,7 @@
       "sourceId": "mysql-docs",
       "sourceName": "MySQL Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "sql",
       "docsLocale": "en",
       "status": "supported",
@@ -2597,6 +3144,7 @@
       "sourceId": "mysql-docs",
       "sourceName": "MySQL Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "sql",
       "docsLocale": "ja",
       "status": "supported",
@@ -2630,6 +3178,7 @@
       "sourceId": "sqlite-docs",
       "sourceName": "SQLite Documentation",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "sql",
       "docsLocale": "en",
       "status": "supported",
@@ -2663,6 +3212,7 @@
       "sourceId": "wasm-mdn",
       "sourceName": "WebAssembly on MDN",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "webassembly",
       "docsLocale": "en",
       "status": "supported",
@@ -2696,6 +3246,7 @@
       "sourceId": "wasm-mdn",
       "sourceName": "WebAssembly on MDN",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "webassembly",
       "docsLocale": "ja",
       "status": "supported",
@@ -2705,16 +3256,16 @@
       "gzipBytes": 877,
       "brotliBytes": 708,
       "outputSha256": "cf5e5f0c381f3e928576178b6211d33fc39144068ae5059240e3f77056d0e36a",
-      "inputSha256": "6d3ec58a0c2de0f48bcb5514bb323c1b9dee4a3393dd8eb6b13f61e1efe3bca6",
+      "inputSha256": "3217a9671e710396ae4a860cf1bb36220cbf5136b30b73b8f0557862d50cffec",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/ja/search-index.json",
-          "sha256": "053f70ed0f959eff05503373ee7ee73a50971daacd5b801ceb24305ad89d3ab4",
-          "etag": "\"3a088aa1d8d7fdcbb6a7c0e7d5cfad37\"",
-          "lastModified": "Sat, 25 Jul 2026 01:21:16 GMT"
+          "sha256": "0c9d5592b3a1df47b7dc0557a203ff7969dad81f48f2ec39aad9a372c16f5e21",
+          "etag": "\"b72ee282e3b083a943c2c1ebfbfb39fc\"",
+          "lastModified": "Mon, 27 Jul 2026 01:17:49 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:13.710Z",
+      "retrievedAt": "2026-07-27T06:24:46.054Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs ja rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
@@ -2729,6 +3280,7 @@
       "sourceId": "wasm-spec",
       "sourceName": "WebAssembly Specification",
       "sourceKind": "official",
+      "documentKind": "reference",
       "programmingLanguage": "webassembly",
       "docsLocale": "en",
       "status": "planned",
@@ -2738,6 +3290,7 @@
       "sourceId": "html-mdn",
       "sourceName": "HTML on MDN",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "html",
       "docsLocale": "en",
       "status": "supported",
@@ -2771,6 +3324,7 @@
       "sourceId": "html-mdn",
       "sourceName": "HTML on MDN",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "html",
       "docsLocale": "ja",
       "status": "supported",
@@ -2780,16 +3334,16 @@
       "gzipBytes": 4512,
       "brotliBytes": 3721,
       "outputSha256": "121558c7c95a40065ade14f7ee975eea4f04c53a7f28e3d62b0ea750fe9b81be",
-      "inputSha256": "6d3ec58a0c2de0f48bcb5514bb323c1b9dee4a3393dd8eb6b13f61e1efe3bca6",
+      "inputSha256": "3217a9671e710396ae4a860cf1bb36220cbf5136b30b73b8f0557862d50cffec",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/ja/search-index.json",
-          "sha256": "053f70ed0f959eff05503373ee7ee73a50971daacd5b801ceb24305ad89d3ab4",
-          "etag": "\"3a088aa1d8d7fdcbb6a7c0e7d5cfad37\"",
-          "lastModified": "Sat, 25 Jul 2026 01:21:16 GMT"
+          "sha256": "0c9d5592b3a1df47b7dc0557a203ff7969dad81f48f2ec39aad9a372c16f5e21",
+          "etag": "\"b72ee282e3b083a943c2c1ebfbfb39fc\"",
+          "lastModified": "Mon, 27 Jul 2026 01:17:49 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:13.814Z",
+      "retrievedAt": "2026-07-27T06:24:46.156Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs ja rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
@@ -2804,6 +3358,7 @@
       "sourceId": "webdev-html",
       "sourceName": "web.dev Learn HTML",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "html",
       "docsLocale": "en",
       "status": "supported",
@@ -2839,6 +3394,7 @@
       "sourceId": "css-mdn",
       "sourceName": "CSS on MDN",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "css",
       "docsLocale": "en",
       "status": "supported",
@@ -2872,6 +3428,7 @@
       "sourceId": "css-mdn",
       "sourceName": "CSS on MDN",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "css",
       "docsLocale": "ja",
       "status": "supported",
@@ -2881,16 +3438,16 @@
       "gzipBytes": 15224,
       "brotliBytes": 12631,
       "outputSha256": "7a586ec9af45bb2225eae978777fffd9984b041241232883d2959386700d5d07",
-      "inputSha256": "6d3ec58a0c2de0f48bcb5514bb323c1b9dee4a3393dd8eb6b13f61e1efe3bca6",
+      "inputSha256": "3217a9671e710396ae4a860cf1bb36220cbf5136b30b73b8f0557862d50cffec",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/ja/search-index.json",
-          "sha256": "053f70ed0f959eff05503373ee7ee73a50971daacd5b801ceb24305ad89d3ab4",
-          "etag": "\"3a088aa1d8d7fdcbb6a7c0e7d5cfad37\"",
-          "lastModified": "Sat, 25 Jul 2026 01:21:16 GMT"
+          "sha256": "0c9d5592b3a1df47b7dc0557a203ff7969dad81f48f2ec39aad9a372c16f5e21",
+          "etag": "\"b72ee282e3b083a943c2c1ebfbfb39fc\"",
+          "lastModified": "Mon, 27 Jul 2026 01:17:49 GMT"
         }
       ],
-      "retrievedAt": "2026-07-25T05:04:14.533Z",
+      "retrievedAt": "2026-07-27T06:24:46.902Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs ja rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
@@ -2905,6 +3462,7 @@
       "sourceId": "webdev-css",
       "sourceName": "web.dev Learn CSS",
       "sourceKind": "conventional",
+      "documentKind": "reference",
       "programmingLanguage": "css",
       "docsLocale": "en",
       "status": "supported",

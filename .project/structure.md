@@ -16,12 +16,18 @@
 
 - `src/core/query.ts`: parses language, source, and locale query syntax.
 - `src/core/sources.ts`: loads the canonical catalog, resolves scope and support states, and validates result URLs.
-- `src/core/search.ts`: validates bundle identity, scans compact tuples without expanding every record, ranks matches, and diversifies languages.
+- `src/core/search.ts`: validates bundle identity, caches normalized compact
+  records, applies exact-first bounded typo tolerance, ranks document kinds and
+  lifecycle states, and diversifies languages.
 - `src/core/search-runtime.ts`: fetches and validates manifest-selected bundles and isolates unavailable, failed, or malformed sources.
 - `src/core/result-filters.ts`: resolves language and source facet selections with OR-within and AND-across semantics.
 - `src/core/highlight.ts` and `src/core/search-controls.ts`: pure query-highlight and preference/selection helpers.
-- `src/client/search-controls.ts`: binds query, in-page locale, source, cookie, URL, tag, and help controls.
-- `src/client/search-results.ts`: reuses the page-lifetime worker, rejects stale responses, and renders external strings with DOM text APIs and safe links.
+- `src/client/search-controls.ts`: binds query, debounced accessible
+  suggestions, IME handling, in-page locale, automatic fallback, source,
+  cookie, URL, tag, and help controls.
+- `src/client/search-results.ts`: reuses the page-lifetime worker for results
+  and suggestions, rejects stale responses, and renders external strings with
+  DOM text APIs and safe links.
 - `src/client/search-result-filters.ts`: renders compact accessible language/site filters and applied-filter pills.
 - `src/client/search-page.ts`: small browser initialization entry point.
 - `src/client/search.worker.ts`: parses and searches selected indexes off the main thread.
@@ -45,8 +51,9 @@
 ## Runtime Data Flow
 
 1. Astro resolves the initial query, catalog scope, locale, and selected sources.
-2. The client requests the complete status manifest and keeps it in the
-   page-lifetime worker.
+2. If at least one source is selected, the client requests the complete status
+   manifest and keeps it in the page-lifetime worker; the no-source state makes
+   no index request.
 3. The runtime prefers an exact locale and visibly falls back from Japanese to
    the source's English bundle when no Japanese index exists.
 4. The worker fetches and caches matching supported bundles, keeps successful
@@ -56,8 +63,9 @@
    results without replacing the current document.
 6. The runtime derives exact language/site facets from all matches; applied
    filters re-search the cached indexes for the selected source subset.
-7. The client renders original HTTPS links, actual content locales, fallback
-   notices, partial failures, and explicit unsupported states.
+7. The client renders original HTTPS links, actual content locales, document
+   kinds, proposal state and warnings, fallback notices, partial failures, and
+   explicit unsupported states.
 
 ## Change Rules
 

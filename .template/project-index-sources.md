@@ -30,12 +30,33 @@ List every exact source-locale entry in the generated manifest.
 | Structured navigation | List sources and locales. | State the TOC, sitemap, or package-list boundary. |
 | Localized editions | List sources and locales. | Require actual localized titles and URLs. |
 | Conventional/community | List sources and locales. | Preserve source kind and edition qualifications. |
+| Official standards/proposals | List standards, RFC, and evolution indexes. | Store bounded metadata and direct URLs; preserve lifecycle state and distinguish proposals from adopted specifications. |
 
 For trusted teaching sources, record why the author or steward is credible,
 the reviewed static input boundary, and any age, version, scope, stewardship,
 or license qualification.
 Store the qualification in both English and Japanese and render it in the
 source picker and result metadata.
+
+Keep source authority and document kind separate.
+An official proposal archive is not an official current reference, and draft,
+rejected, withdrawn, or superseded records must be visibly qualified.
+If a metadata repository declares no explicit reuse license, store metadata
+only and state that limitation visibly instead of linking to a nonexistent or
+unrelated license.
+
+## Automatic Non-official Fallback
+
+List every language approved for per-language automatic fallback.
+Require an explicit reviewed policy flag, default the user setting deliberately,
+and keep `source:official` and `source:all` authoritative.
+Document the bilingual notice and the setting that disables fallback.
+
+## Deferred Standards And Evolution Sources
+
+Record audited but deferred proposal, RFC, specification, and evolution
+archives with the missing admission condition.
+Do not treat arbitrary issue labels or pull requests as official proposals.
 
 ## Locale Qualifications
 

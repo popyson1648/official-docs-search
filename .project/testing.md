@@ -59,7 +59,7 @@ Both live commands are non-mutating.
 ## Required Browser Coverage
 
 E2E coverage includes at least one real result for every catalog language,
-all 17 supported Japanese indexes, all 27 language-level JA-to-EN fallbacks,
+all 18 supported Japanese indexes, all language-level JA-to-EN fallbacks,
 single- and multi-language results, non-official source enable/disable with
 selection preservation, exact and fallback Docs locales, UI locale independence,
 HTTP and malformed-bundle partial failure, visible edition qualifications,
@@ -67,6 +67,11 @@ explicit support states, empty/error states, escaping,
 safe new-tab links, per-source Japanese-availability labels, compact source
 metadata order, a single-column source picker, right-aligned header actions, and
 desktop/mobile visibility.
+It also fixes the C++ completeness regression (`cpp sort`), conservative fuzzy
+recovery (`cpp srot`), cpprefjp Japanese results, proposal-source labeling and
+ranking, automatic-fallback notice/settings/override behavior, bounded
+keyboard suggestions, and one shared no-source/no-result status component.
+The no-source path must not request the manifest.
 Multi-language form coverage accepts whitespace after commas, adds default
 Sources only for newly introduced languages, and preserves checked non-official
 Sources while their controls are disabled.
@@ -90,7 +95,7 @@ switches and choices that keep the panel open, outside-pointer dismissal,
 Escape and Back focus restoration, active-trigger state, localized accessible
 names, 260/180 ms width morphing, 375 px viewport containment, coarse-pointer
 targets, and reduced-motion suppression.
-The 18 admitted non-official teaching sources must remain excluded from
+The 18 admitted English teaching sources and cpprefjp must remain excluded from
 official-only searches, return a known result under `source:all`, and expose
 their English/Japanese qualification in the source picker and result metadata.
 Under 4× CPU throttling and Fast 3G with the browser cache disabled, an uncached

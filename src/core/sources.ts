@@ -4,6 +4,7 @@ import type { SourceMode } from "./query";
 import { normalizeLanguageId } from "./query";
 
 export type SourceKind = "official" | "conventional" | "community";
+export type DocumentKind = "reference" | "specification" | "proposal" | "design-record";
 export type IndexSupportStatus = "supported" | "planned" | "blocked" | "disabled";
 
 export interface DocsCatalog {
@@ -15,6 +16,7 @@ export interface DocsLanguage {
   name: string;
   aliases: string[];
   bareAliases: string[];
+  autoNonOfficialFallback: boolean;
   sources: DocsSource[];
 }
 
@@ -22,6 +24,7 @@ export interface DocsSource {
   id: string;
   language: string;
   kind: SourceKind;
+  documentKind: DocumentKind;
   name: string;
   url: string;
   domains: string[];
@@ -47,6 +50,12 @@ export interface ResolvedSearchScope {
   languages: DocsLanguage[];
   sources: DocsSource[];
   localeNotices: LocaleNotice[];
+  automaticFallbacks: AutomaticSourceFallback[];
+}
+
+export interface AutomaticSourceFallback {
+  language: DocsLanguage;
+  sources: DocsSource[];
 }
 
 export interface LocaleNotice {
@@ -60,6 +69,7 @@ interface ResolveOptions {
   locale?: string;
   sourceMode: SourceMode;
   enabledSourceIds?: Set<string>;
+  autoIncludeNonOfficialWhenNoOfficial?: boolean;
 }
 
 let cachedCatalog: DocsCatalog | undefined;
@@ -97,19 +107,34 @@ export function resolveSearchScope(catalog: DocsCatalog, options: ResolveOptions
     : [];
 
   const selectedLanguages = languages.length > 0 ? languages : catalog.languages.slice(0, 4);
-  const sourceKinds = options.sourceMode === "all"
-    ? new Set<SourceKind>(["official", "conventional", "community"])
-    : new Set<SourceKind>(["official"]);
-
-  const sources = selectedLanguages.flatMap((language) =>
-    language.sources.filter((source) => {
-      if (!sourceKinds.has(source.kind)) return false;
+  const automaticFallbacks: AutomaticSourceFallback[] = [];
+  const sources = selectedLanguages.flatMap((language) => {
+    const automaticallyIncludeNonOfficial =
+      options.sourceMode === "official" &&
+      options.autoIncludeNonOfficialWhenNoOfficial === true &&
+      language.autoNonOfficialFallback;
+    const selected = language.sources.filter((source) => {
+      const kindAllowed =
+        options.sourceMode === "all" ||
+        source.kind === "official" ||
+        automaticallyIncludeNonOfficial;
+      if (!kindAllowed) return false;
       if (options.enabledSourceIds && !options.enabledSourceIds.has(source.id)) {
         return false;
       }
       return true;
-    })
-  );
+    });
+    const automaticallyIncluded = selected.filter(
+      (source) => source.kind !== "official"
+    );
+    if (automaticallyIncludeNonOfficial && automaticallyIncluded.length > 0) {
+      automaticFallbacks.push({
+        language,
+        sources: automaticallyIncluded
+      });
+    }
+    return selected;
+  });
 
   const localeNotices = options.locale
     ? selectedLanguages.flatMap((language) => {
@@ -131,7 +156,8 @@ export function resolveSearchScope(catalog: DocsCatalog, options: ResolveOptions
   return {
     languages: selectedLanguages,
     sources,
-    localeNotices
+    localeNotices,
+    automaticFallbacks
   };
 }
 
@@ -168,6 +194,7 @@ function normalizeLanguage(raw: Record<string, unknown>): DocsLanguage {
     name: String(raw.name ?? id),
     aliases: stringArray(raw.aliases),
     bareAliases: stringArray(raw.bare_aliases),
+    autoNonOfficialFallback: raw.auto_non_official_fallback === true,
     sources: sources.map((source) => normalizeSource(id, source as Record<string, unknown>))
   };
 }
@@ -184,6 +211,7 @@ function normalizeSource(language: string, raw: Record<string, unknown>): DocsSo
     id: String(raw.id ?? ""),
     language,
     kind: normalizeSourceKind(raw.kind),
+    documentKind: normalizeDocumentKind(raw.document_kind),
     name: String(raw.name ?? raw.id ?? ""),
     url: String(raw.url ?? ""),
     domains: stringArray(raw.domains),
@@ -215,6 +243,17 @@ function normalizeIndexSupport(raw: Record<string, unknown>): DocsIndexSupport {
 function normalizeSourceKind(value: unknown): SourceKind {
   if (value === "conventional" || value === "community") return value;
   return "official";
+}
+
+function normalizeDocumentKind(value: unknown): DocumentKind {
+  if (
+    value === "specification" ||
+    value === "proposal" ||
+    value === "design-record"
+  ) {
+    return value;
+  }
+  return "reference";
 }
 
 function stringArray(value: unknown): string[] {

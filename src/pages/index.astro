@@ -1,5 +1,5 @@
 ---
-import { getSourceKindLabel, getUiLanguage, t } from "../core/i18n";
+import { getDocumentKindLabel, getSourceKindLabel, getUiLanguage, t } from "../core/i18n";
 import { parseQuery } from "../core/query";
 import type { SourceMode } from "../core/query";
 import { mergeNewLanguageSourceDefaults } from "../core/search-controls";
@@ -12,10 +12,23 @@ const params = Astro.url.searchParams;
 const q = params.get("q") ?? "";
 const uiLanguage = getUiLanguage(params.get("ui") ?? Astro.cookies.get("ods_ui")?.value);
 const cookieSourceMode = Astro.cookies.get("ods_source")?.value;
+const cookieAutoNonOfficial = Astro.cookies.get("ods_auto_non_official")?.value;
 const formSourceMode = params.get("sourceMode");
 const defaultSourceMode: SourceMode =
   formSourceMode === "all" || cookieSourceMode === "all" ? "all" : "official";
 const docsLocale = params.get("docsLocale") || Astro.cookies.get("ods_docs_locale")?.value || undefined;
+const hasExplicitAutoNonOfficialSetting =
+  params.get("autoNonOfficialSetting") === "explicit";
+const autoIncludeNonOfficialWhenNoOfficial = hasExplicitAutoNonOfficialSetting
+  ? params.get("autoNonOfficial") === "on"
+  : cookieAutoNonOfficial !== "off";
+if (hasExplicitAutoNonOfficialSetting) {
+  Astro.cookies.set(
+    "ods_auto_non_official",
+    autoIncludeNonOfficialWhenNoOfficial ? "on" : "off",
+    { path: "/", maxAge: 31_536_000, sameSite: "lax" }
+  );
+}
 const selectedSourceIds = new Set(params.getAll("sourceId"));
 const hasExplicitSourceSelection = params.get("sourceSelection") === "explicit";
 const submittedSourceLanguageIds = new Set(params.getAll("sourceScopeLanguage"));
@@ -51,7 +64,9 @@ const scope = resolveSearchScope(catalog, {
   languages: parsed.languages,
   locale,
   sourceMode,
-  enabledSourceIds: selectedIds
+  enabledSourceIds: selectedIds,
+  autoIncludeNonOfficialWhenNoOfficial:
+    parsed.sourceMode === undefined && autoIncludeNonOfficialWhenNoOfficial
 });
 const trustedScope = resolveSearchScope(catalog, {
   languages: parsed.languages,
@@ -67,7 +82,18 @@ const preservedDisabledSourceIds =
     ? []
     : sourceLanguages
         .flatMap((language) => language.sources)
-        .filter((source) => source.kind !== "official" && selectedIds.has(source.id))
+        .filter(
+          (source) =>
+            source.kind !== "official" &&
+            !(
+              parsed.sourceMode === undefined &&
+              autoIncludeNonOfficialWhenNoOfficial &&
+              catalog.languages.find((language) =>
+                language.sources.some((candidate) => candidate.id === source.id)
+              )?.autoNonOfficialFallback
+            ) &&
+            selectedIds.has(source.id)
+        )
         .map((source) => source.id);
 const searchSyntaxRows = [
   {
@@ -95,6 +121,18 @@ const searchSyntaxRows = [
     example: "proxy source:all"
   }
 ];
+const suggestionScopes = catalog.languages.map((language) => ({
+  id: language.id,
+  aliases: [...language.aliases, ...language.bareAliases],
+  autoNonOfficialFallback: language.autoNonOfficialFallback,
+  sources: language.sources
+    .filter((source) => selectedIds.has(source.id))
+    .map((source) => ({
+      id: source.id,
+      name: source.name,
+      kind: source.kind
+    }))
+}));
 ---
 
 <html lang={uiLanguage}>
@@ -146,6 +184,7 @@ const searchSyntaxRows = [
         >
           <input type="hidden" name="ui" value={uiLanguage} data-ui-hidden />
           <input type="hidden" name="sourceSelection" value="explicit" />
+          <input type="hidden" name="autoNonOfficialSetting" value="explicit" />
           {
             sourceLanguages.map((language) => (
               <input
@@ -168,7 +207,12 @@ const searchSyntaxRows = [
           <div class="query-row">
             <div class="search-group">
               <label class="sr-only" for="q">{t(uiLanguage, "queryLabel")}</label>
-              <div class="query-stack" data-query-stack data-known-languages={JSON.stringify(Array.from(knownLanguages))}>
+              <div
+                class="query-stack"
+                data-query-stack
+                data-known-languages={JSON.stringify(Array.from(knownLanguages))}
+                data-suggestion-scopes={JSON.stringify(suggestionScopes)}
+              >
                 <div class="query-highlight" aria-hidden="true" data-query-highlight></div>
                 <input
                   id="q"
@@ -177,9 +221,20 @@ const searchSyntaxRows = [
                   autocomplete="off"
                   spellcheck="false"
                   aria-describedby="query-example"
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-expanded="false"
+                  aria-controls="search-suggestions"
                   data-query-input
                   autofocus
                 />
+                <div
+                  id="search-suggestions"
+                  class="search-suggestions"
+                  role="listbox"
+                  data-search-suggestions
+                  hidden
+                ></div>
               </div>
               <button type="submit">
                 <span class="lang-en">{t("en", "search")}</span>
@@ -226,6 +281,22 @@ const searchSyntaxRows = [
             </div>
 
             <div class="filters">
+              <label class="switch-label">
+                <span class="lang-en">{t("en", "autoNonOfficial")}</span>
+                <span class="lang-ja">{t("ja", "autoNonOfficial")}</span>
+                <input
+                  id="auto-non-official"
+                  type="checkbox"
+                  name="autoNonOfficial"
+                  value="on"
+                  class="pill-toggle"
+                  checked={autoIncludeNonOfficialWhenNoOfficial}
+                  data-auto-non-official-toggle
+                />
+              </label>
+            </div>
+
+            <div class="filters">
               <span class="filter-label">
                 <span class="lang-en">{t("en", "docsLocale")}:</span>
                 <span class="lang-ja">{t("ja", "docsLocale")}:</span>
@@ -263,7 +334,14 @@ const searchSyntaxRows = [
                       {
                         language.sources.map((source) => {
                           const isOfficial = source.kind === "official";
-                          const disabled = !isOfficial && sourceMode !== "all";
+                          const automaticFallbackAllowed =
+                            parsed.sourceMode === undefined &&
+                            autoIncludeNonOfficialWhenNoOfficial &&
+                            language.autoNonOfficialFallback;
+                          const disabled =
+                            !isOfficial &&
+                            sourceMode !== "all" &&
+                            !automaticFallbackAllowed;
                           return (
                             <div class:list={["source-option", { disabled }]}>
                               <input
@@ -276,6 +354,7 @@ const searchSyntaxRows = [
                                 class="pill-toggle"
                                 data-source-option
                                 data-source-kind={source.kind}
+                                data-auto-fallback-allowed={String(automaticFallbackAllowed)}
                                 data-supports-ja={String(source.siteLocales.includes("ja"))}
                               />
                               <div class="source-copy">
@@ -287,6 +366,16 @@ const searchSyntaxRows = [
                                     <span class="lang-en">{getSourceKindLabel("en", source.kind)}</span>
                                     <span class="lang-ja">{getSourceKindLabel("ja", source.kind)}</span>
                                   </span>
+                                  {source.documentKind !== "reference" && (
+                                    <span class="source-kind">
+                                      <span class="lang-en">
+                                        {getDocumentKindLabel("en", source.documentKind)}
+                                      </span>
+                                      <span class="lang-ja">
+                                        {getDocumentKindLabel("ja", source.documentKind)}
+                                      </span>
+                                    </span>
+                                  )}
                                   <a
                                     class="source-link"
                                     href={source.url}
@@ -354,19 +443,38 @@ const searchSyntaxRows = [
       </div>
 
       {
+        hasQuery && scope.automaticFallbacks.length > 0 && (
+          <aside class="notice muted" data-auto-fallback-notice>
+            <p>
+              <span class="lang-en">{t("en", "autoNonOfficialNotice")}</span>
+              <span class="lang-ja">{t("ja", "autoNonOfficialNotice")}</span>
+            </p>
+            <ul>
+              {scope.automaticFallbacks.map((fallback) => (
+                <li>
+                  <strong>{fallback.language.name}</strong>
+                  {`: ${fallback.sources.map((source) => source.name).join(", ")}`}
+                </li>
+              ))}
+            </ul>
+            <a href="#auto-non-official" data-auto-fallback-settings-link>
+              <span class="lang-en">{t("en", "settings")}</span>
+              <span class="lang-ja">{t("ja", "settings")}</span>
+            </a>
+          </aside>
+        )
+      }
+
+      {
         hasQuery && (
-          <section class="results" aria-live="polite" aria-label={t(uiLanguage, "resultsTitle")}>
+          <section class="results" aria-label={t(uiLanguage, "resultsTitle")}>
             {
-              parsed.errors.length > 0 ? null : scope.sources.length === 0 ? (
-                <p class="notice">
-                  <span class="lang-en">{t("en", "noSources")}</span>
-                  <span class="lang-ja">{t("ja", "noSources")}</span>
-                </p>
-              ) : (
+              parsed.errors.length > 0 ? null : (
                 <div
                   data-search-results
                   data-query={parsed.searchText}
                   data-docs-locale={locale ?? ""}
+                  data-no-sources={String(scope.sources.length === 0)}
                   data-sources={JSON.stringify(scope.sources.map((source) => ({
                     id: source.id,
                     name: source.name,
@@ -387,6 +495,8 @@ const searchSyntaxRows = [
                     data-success-ja={t("ja", "resultCount")}
                     data-empty-en={t("en", "noResults")}
                     data-empty-ja={t("ja", "noResults")}
+                    data-no-sources-en={t("en", "noSources")}
+                    data-no-sources-ja={t("ja", "noSources")}
                     data-error-en={t("en", "searchProviderError")}
                     data-error-ja={t("ja", "searchProviderError")}
                   >

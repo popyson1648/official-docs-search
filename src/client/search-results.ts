@@ -1,5 +1,5 @@
 import type { RankedSearchRecord } from "../core/search";
-import { getSourceKindLabel, t } from "../core/i18n";
+import { getDocumentKindLabel, getSourceKindLabel, t } from "../core/i18n";
 import {
   resolveResultSourceFilters,
   type ResultFilterSource
@@ -25,6 +25,11 @@ export interface SearchPageOutcome {
   unsupportedSources: string[];
   fallbackSources: string[];
   failedSources: string[];
+}
+
+export interface SearchSuggestion {
+  value: string;
+  sourceName: string;
 }
 
 interface PendingWorkerRequest {
@@ -66,6 +71,30 @@ export async function initializeSearchPage(
   const docsLocale = results.dataset.docsLocale ?? "";
   const requestedSources = parseRequestedSources(results.dataset.sources);
   const filterSession = getResultFilterSession(root, query, requestedSources);
+  if (requestedSources.length === 0 || results.dataset.noSources === "true") {
+    resultFilterControls.get(root)?.destroy();
+    resultFilterControls.delete(root);
+    filterMount.replaceChildren();
+    filterMount.hidden = true;
+    list.replaceChildren();
+    coverage.replaceChildren();
+    coverage.hidden = true;
+    status.dataset.emptyReason = "no-sources";
+    appendLocalizedText(
+      root,
+      status,
+      status.dataset.noSourcesEn ?? "Select at least one search source.",
+      status.dataset.noSourcesJa ?? "検索対象を1つ以上選択してください。"
+    );
+    status.dataset.state = "empty";
+    return {
+      state: "empty",
+      count: 0,
+      unsupportedSources: [],
+      fallbackSources: [],
+      failedSources: []
+    };
+  }
   if (typeof performance !== "undefined") {
     performance.clearMarks("ods-search-start");
     performance.mark("ods-search-start");
@@ -278,6 +307,9 @@ function renderResult(root: Document, record: RankedSearchRecord): HTMLLIElement
     textPart(root, record.docsLocale.toUpperCase(), "result-classification-tag"),
     sourceKindPart(root, record.sourceKind)
   );
+  if (record.documentKind && record.documentKind !== "reference") {
+    classification.append(documentKindPart(root, record.documentKind));
+  }
 
   const attribution = root.createElement("div");
   attribution.className = "result-attribution";
@@ -303,6 +335,31 @@ function renderResult(root: Document, record: RankedSearchRecord): HTMLLIElement
     );
     annotations.append(qualification);
   }
+  if (record.proposalStatus) {
+    const status = root.createElement("span");
+    status.className = "result-proposal-status";
+    appendLocalizedText(
+      root,
+      status,
+      `${t("en", "proposalStatus")}: ${record.proposalStatus}`,
+      `${t("ja", "proposalStatus")}: ${record.proposalStatus}`
+    );
+    annotations.append(status);
+  }
+  if (
+    record.documentKind === "proposal" &&
+    isNonCurrentProposalStatus(record.proposalStatus)
+  ) {
+    const warning = root.createElement("span");
+    warning.className = "result-qualification";
+    appendLocalizedText(
+      root,
+      warning,
+      t("en", "proposalWarning"),
+      t("ja", "proposalWarning")
+    );
+    annotations.append(warning);
+  }
 
   const heading = root.createElement("h2");
   const link = root.createElement("a");
@@ -317,6 +374,13 @@ function renderResult(root: Document, record: RankedSearchRecord): HTMLLIElement
   return item;
 }
 
+function isNonCurrentProposalStatus(status: string | undefined): boolean {
+  if (!status) return true;
+  return !/\b(?:accepted|active|adopted|approved|final|finished|implemented|complete)\b|closed\s*\/\s*delivered/i.test(
+    status
+  );
+}
+
 function textPart(root: Document, value: string, className: string): HTMLSpanElement {
   const part = root.createElement("span");
   part.className = className;
@@ -328,6 +392,18 @@ function sourceKindPart(root: Document, kind: string): HTMLSpanElement {
   const part = root.createElement("span");
   part.className = "source-kind";
   appendLocalizedText(root, part, getSourceKindLabel("en", kind), getSourceKindLabel("ja", kind));
+  return part;
+}
+
+function documentKindPart(root: Document, kind: string): HTMLSpanElement {
+  const part = root.createElement("span");
+  part.className = "source-kind document-kind";
+  appendLocalizedText(
+    root,
+    part,
+    getDocumentKindLabel("en", kind),
+    getDocumentKindLabel("ja", kind)
+  );
   return part;
 }
 
@@ -423,6 +499,8 @@ function setStatus(element: HTMLElement, state: "loading" | "success" | "empty" 
   const en = statusMessage(element, state, "en", count);
   const ja = statusMessage(element, state, "ja", count);
   element.dataset.state = state;
+  if (state === "empty") element.dataset.emptyReason = "no-results";
+  else delete element.dataset.emptyReason;
   appendLocalizedText(element.ownerDocument, element, en, ja);
 }
 
@@ -531,6 +609,23 @@ async function searchInWorker(request: SearchRuntimeRequest): Promise<SearchRunt
     pendingWorkerRequests.set(id, { resolve, reject, timeout });
     worker.postMessage({ id, request });
   });
+}
+
+export async function searchForSuggestions(
+  request: SearchRuntimeRequest
+): Promise<SearchSuggestion[]> {
+  if (request.sources.length === 0 || request.query.trim().length < 3) return [];
+  const result = await searchInWorker({ ...request, limit: 12 });
+  const seen = new Set<string>();
+  const suggestions: SearchSuggestion[] = [];
+  for (const record of result.records) {
+    const key = record.title.toLocaleLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    suggestions.push({ value: record.title, sourceName: record.sourceName });
+    if (suggestions.length >= 8) break;
+  }
+  return suggestions;
 }
 
 function getSearchWorker(): Worker {

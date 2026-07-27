@@ -50,6 +50,33 @@ describe("search-index live change scope", () => {
     ).toContain("gfortran/en");
   });
 
+  it("isolates C/C++, standards, and proposal adapter changes", () => {
+    expect(
+      affectedSearchIndexKeys([
+        "scripts/search-index/cppreference-parsers.mjs"
+      ])
+    ).toEqual([
+      "cppreference-c/en",
+      "cppreference-c/ja",
+      "cppreference-cpp/en",
+      "cppreference-cpp/ja"
+    ]);
+    expect(
+      affectedSearchIndexKeys([
+        "scripts/search-index/standards-parsers.mjs"
+      ])
+    ).toEqual(["wg21-papers/en"]);
+    expect(
+      affectedSearchIndexKeys([
+        "scripts/search-index/proposal-parsers.mjs"
+      ])
+    ).toEqual([
+      "openjdk-jeps/en",
+      "python-peps/en",
+      "tc39-proposals/en"
+    ]);
+  });
+
   it("selects all sources for shared runtime, transport, and catalog changes", () => {
     for (const path of [
       "scripts/generate-search-index.mjs",

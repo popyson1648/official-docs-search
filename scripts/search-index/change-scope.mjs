@@ -8,8 +8,36 @@ import { replacementGroupFJobs } from "./jobs/replacements-group-f.mjs";
 import { trustedCommunityGroupAJobs } from "./jobs/trusted-community-group-a.mjs";
 import { trustedCommunityGroupBJobs } from "./jobs/trusted-community-group-b.mjs";
 import { trustedCommunityGroupCJobs } from "./jobs/trusted-community-group-c.mjs";
+import { standardsGroupJobs } from "./jobs/standards-group.mjs";
+import { proposalsGroupJobs } from "./jobs/proposals-group.mjs";
+
+const cppreferenceJobs = [
+  ...englishGroupAJobs,
+  ...japaneseGroupEJobs
+].filter((job) => job.sourceId === "cppreference-c" || job.sourceId === "cppreference-cpp");
 
 const groupRules = [
+  {
+    files: [
+      "scripts/search-index/cppreference-job.mjs",
+      "scripts/search-index/cppreference-parsers.mjs"
+    ],
+    jobs: cppreferenceJobs
+  },
+  {
+    files: [
+      "scripts/search-index/jobs/standards-group.mjs",
+      "scripts/search-index/standards-parsers.mjs"
+    ],
+    jobs: standardsGroupJobs
+  },
+  {
+    files: [
+      "scripts/search-index/jobs/proposals-group.mjs",
+      "scripts/search-index/proposal-parsers.mjs"
+    ],
+    jobs: proposalsGroupJobs
+  },
   {
     files: [
       "scripts/search-index/jobs/english-group-a.mjs",

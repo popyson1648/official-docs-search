@@ -176,7 +176,7 @@ function record(title, url, options, section) {
     title,
     url,
     programmingLanguage: options.programmingLanguage,
-    docsLocale: "en",
+    docsLocale: options.docsLocale ?? "en",
     sourceId: options.sourceId,
     sourceName: options.sourceName,
     sourceKind: options.sourceKind,

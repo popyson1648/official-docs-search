@@ -23,7 +23,7 @@ const trustedCommunitySourceIds = new Set([
   "elixir-school", "learn-you-a-haskell", "advanced-r", "clojure-guides",
   "fsharp-for-fun-and-profit", "zig-guide", "programming-in-d",
   "cornell-ocaml", "solidity-by-example", "common-lisp-cookbook",
-  "webdev-html", "webdev-css"
+  "webdev-html", "webdev-css", "cpprefjp"
 ]);
 
 function records(sourceId: string, docsLocale: string) {
@@ -37,7 +37,7 @@ function records(sourceId: string, docsLocale: string) {
 
 describe("generated search indexes", () => {
   it("keeps the approved language and locale coverage matrix", () => {
-    expect(supportedEntries).toHaveLength(85);
+    expect(supportedEntries).toHaveLength(90);
     expect(
       new Set(manifest.entries.map((entry) => entry.programmingLanguage)
     ).size).toBe(44);
@@ -46,20 +46,22 @@ describe("generated search indexes", () => {
     ).size).toBe(44);
     expect(
       supportedEntries.filter((entry) => entry.docsLocale === "ja")
-    ).toHaveLength(17);
+    ).toHaveLength(18);
   });
 
   it("keeps every admitted non-official source qualified in both UI languages", () => {
     const admittedEntries = supportedEntries.filter((entry) =>
       trustedCommunitySourceIds.has(entry.sourceId)
     );
-    expect(admittedEntries).toHaveLength(18);
+    expect(admittedEntries).toHaveLength(19);
     for (const entry of admittedEntries) {
       const catalogSource = catalogSources.find(
         (source) => source.id === entry.sourceId
       );
       expect(entry.sourceKind, entry.sourceId).not.toBe("official");
-      expect(entry.docsLocale, entry.sourceId).toBe("en");
+      expect(entry.docsLocale, entry.sourceId).toBe(
+        entry.sourceId === "cpprefjp" ? "ja" : "en"
+      );
       expect(entry.qualification, `${entry.sourceId} English qualification`).toBe(
         catalogSource?.qualification?.en
       );
@@ -76,6 +78,7 @@ describe("generated search indexes", () => {
           key: `${source.id}/${index.locale}`,
           name: source.name,
           kind: source.kind,
+          documentKind: source.documentKind,
           language: language.id,
           status: index.status,
           reason: index.reason
@@ -86,6 +89,7 @@ describe("generated search indexes", () => {
       key: `${entry.sourceId}/${entry.docsLocale}`,
       name: entry.sourceName,
       kind: entry.sourceKind,
+      documentKind: entry.documentKind ?? "reference",
       language: entry.programmingLanguage,
       status: entry.status,
       reason: entry.reason
@@ -115,6 +119,13 @@ describe("generated search indexes", () => {
     expect(counts["php-manual/ja"]).toBeGreaterThan(9_000);
     expect(counts["ruby-docs/en"]).toBeGreaterThan(16_000);
     expect(counts["ruby-docs/ja"]).toBeGreaterThan(11_500);
+    expect(counts["cppreference-cpp/en"]).toBeGreaterThan(6_000);
+    expect(counts["cppreference-cpp/ja"]).toBeGreaterThan(3_800);
+    expect(counts["cpprefjp/ja"]).toBeGreaterThan(6_000);
+    expect(counts["wg21-papers/en"]).toBeGreaterThan(7_000);
+    expect(counts["python-peps/en"]).toBeGreaterThan(600);
+    expect(counts["openjdk-jeps/en"]).toBeGreaterThan(450);
+    expect(counts["tc39-proposals/en"]).toBeGreaterThanOrEqual(293);
   });
 
   it("matches manifest counts and only emits catalog-approved result URLs", () => {
@@ -189,6 +200,23 @@ describe("generated search indexes", () => {
     expect(searchRecords(records("ruby-docs", "ja"), "Enumerable")[0]?.url).toMatch(
       /^https:\/\/docs\.ruby-lang\.org\/ja\/3\.4\//
     );
+    expect(searchRecords(records("cppreference-cpp", "en"), "sort")[0]?.title).toContain("sort");
+    expect(searchRecords(records("cppreference-cpp", "en"), "srot")[0]?.title).toContain("sort");
+    expect(searchRecords(records("cpprefjp", "ja"), "sort")[0]?.url).toMatch(
+      /^https:\/\/cpprefjp\.github\.io\//
+    );
+    expect(searchRecords(records("wg21-papers", "en"), "P2300R10")[0]?.url).toMatch(
+      /^https:\/\/www\.open-std\.org\/jtc1\/sc22\/wg21\/docs\/papers\//
+    );
+    expect(searchRecords(records("python-peps", "en"), "PEP 703")[0]?.url).toBe(
+      "https://peps.python.org/pep-0703/"
+    );
+    expect(searchRecords(records("openjdk-jeps", "en"), "JEP 444")[0]?.url).toBe(
+      "https://openjdk.org/jeps/444"
+    );
+    expect(searchRecords(records("tc39-proposals", "en"), "Decorators")[0]?.url).toMatch(
+      /^https:\/\/github\.com\/tc39\/proposal-decorators/
+    );
   });
 
   it("returns a known result for every supported source and locale", () => {
@@ -199,6 +227,25 @@ describe("generated search indexes", () => {
         searchRecords(records(entry.sourceId, entry.docsLocale), query as string).length,
         `${entry.sourceId}/${entry.docsLocale}: ${query}`
       ).toBeGreaterThan(0);
+    }
+  });
+
+  it("returns every declared regression query for new standards and proposal sources", () => {
+    for (const sourceId of [
+      "cpprefjp",
+      "wg21-papers",
+      "python-peps",
+      "openjdk-jeps",
+      "tc39-proposals"
+    ]) {
+      const entry = supportedEntries.find((candidate) => candidate.sourceId === sourceId);
+      expect(entry, sourceId).toBeDefined();
+      for (const query of entry?.knownQueries ?? []) {
+        expect(
+          searchRecords(records(sourceId, entry?.docsLocale ?? "en"), query).length,
+          `${sourceId}: ${query}`
+        ).toBeGreaterThan(0);
+      }
     }
   });
 

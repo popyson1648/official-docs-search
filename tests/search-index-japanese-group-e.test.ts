@@ -6,6 +6,7 @@ describe("Japanese group E search-index jobs", () => {
   it("exports the assigned locale-specific jobs", () => {
     expect(japaneseGroupEJobs.map((job) => `${job.sourceId}/${job.docsLocale}`)).toEqual([
       "cppreference-c/ja",
+      "cpprefjp/ja",
       "cppreference-cpp/ja",
       "go-docs/en"
     ]);

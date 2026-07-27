@@ -8,6 +8,10 @@ const messages: Record<UiLanguage, Messages> = {
     search: "Search",
     queryLabel: "Search documentation",
     includeTrusted: "Include non-official sources",
+    autoNonOfficial: "Use non-official references when no official web reference is available",
+    autoNonOfficialNotice:
+      "No official web reference is available for the following languages, so reviewed non-official references were enabled automatically. You can change this in settings.",
+    settings: "Change setting",
     sources: "Sources",
     help: "Search syntax",
     close: "Close",
@@ -46,13 +50,23 @@ const messages: Record<UiLanguage, Messages> = {
     symbolsHelp: "Symbols such as ::, ?., $, %, and <T> are searched as ordinary text.",
     sourceOfficial: "Official",
     sourceConventional: "Conventional",
-    sourceCommunity: "Community"
+    sourceCommunity: "Community",
+    documentReference: "Reference",
+    documentSpecification: "Specification",
+    documentProposal: "Proposal / RFC",
+    documentDesignRecord: "Design record",
+    proposalStatus: "Status",
+    proposalWarning: "This proposal may not describe current adopted behavior."
   },
   ja: {
     title: "Official Docs Search",
     search: "検索",
     queryLabel: "ドキュメント検索",
     includeTrusted: "公式以外のソースも含める",
+    autoNonOfficial: "ウェブで閲覧できる公式リファレンスがない場合、非公式リファレンスを使う",
+    autoNonOfficialNotice:
+      "次の言語にはウェブで閲覧できる公式リファレンスがないため、確認済みの非公式リファレンスを自動で有効にしました。この設定は変更できます。",
+    settings: "設定を変更",
     sources: "Sources",
     help: "検索方法",
     close: "閉じる",
@@ -90,7 +104,13 @@ const messages: Record<UiLanguage, Messages> = {
     symbolsHelp: "::、?.、$、%、<T> などの記号は通常の検索文字として扱われます。",
     sourceOfficial: "公式",
     sourceConventional: "事実上の公式",
-    sourceCommunity: "コミュニティ"
+    sourceCommunity: "コミュニティ",
+    documentReference: "リファレンス",
+    documentSpecification: "仕様書",
+    documentProposal: "提案・RFC",
+    documentDesignRecord: "設計記録",
+    proposalStatus: "状態",
+    proposalWarning: "この提案は、現在採用されている仕様を示すとは限りません。"
   }
 };
 
@@ -107,6 +127,16 @@ export function getSourceKindLabel(language: UiLanguage, kind: string): string {
     official: "sourceOfficial",
     conventional: "sourceConventional",
     community: "sourceCommunity"
+  };
+  return keys[kind] ? t(language, keys[kind]) : kind;
+}
+
+export function getDocumentKindLabel(language: UiLanguage, kind: string): string {
+  const keys: Record<string, string> = {
+    reference: "documentReference",
+    specification: "documentSpecification",
+    proposal: "documentProposal",
+    "design-record": "documentDesignRecord"
   };
   return keys[kind] ? t(language, keys[kind]) : kind;
 }

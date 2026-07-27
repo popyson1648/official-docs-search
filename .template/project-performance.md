@@ -39,6 +39,8 @@ Prefer native HTTP caching for content-addressed bundles:
 - gzip/Brotli negotiation with `Vary: Accept-Encoding`.
 - One page-lifetime worker for JSON parsing and compact-tuple search off the
   main thread, with manifest and loaded-bundle reuse.
+- Cached normalized searchable fields and bounded recent result reuse for
+  debounced suggestions and repeated queries.
 - In-page result filters that re-search selected cached bundles without a
   document request.
 - In-page Docs-locale changes instead of loading a new document.

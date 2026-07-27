@@ -2,18 +2,18 @@
 
 ## Current Snapshot
 
-The 2026-07-24 manifest contains 85 supported bundles for 44 languages, 17
-Japanese bundles, and 175,812 records.
+The 2026-07-27 manifest contains 90 supported bundles for 44 languages, 18
+Japanese bundles, and 202,404 records.
 Search normally fetches only bundles selected by language, source mode, and
 requested Docs locale; all-bundle totals are a conservative catalog-wide upper
 bound.
 
 | Payload | Raw | gzip | Brotli |
 | --- | ---: | ---: | ---: |
-| All bundles, generator regression settings (gzip 9 / Brotli 11) | 14,615,433 B | 1,951,307 B | 1,512,615 B |
-| All bundles, production settings (gzip 6 / Brotli 5) | 14,615,433 B | 1,975,165 B | 1,797,594 B |
-| Manifest, production settings | 121,345 B | 28,673 B | 26,677 B |
-| All-bundle cold response including manifest | 14,736,778 B | 2,003,838 B | 1,824,271 B |
+| All bundles, generator regression settings (gzip 9 / Brotli 11) | 17,226,801 B | 2,376,642 B | 1,838,551 B |
+| All bundles, production settings (gzip 6 / Brotli 5) | 17,226,801 B | 2,406,345 B | 2,181,133 B |
+| Manifest, production settings | 151,390 B | 35,153 B | 32,598 B |
+| All-bundle cold response including manifest | 17,378,191 B | 2,441,498 B | 2,213,731 B |
 
 Manifest size fields use deterministic maximum-quality compression for
 regression checks.
@@ -21,7 +21,7 @@ Production transfer estimates use the server settings.
 Automated budgets require every bundle to remain below 750,000 Brotli-11 bytes,
 the default four-language English official set below 1,000,000 bytes, and the
 largest one-bundle set from four distinct languages below 2,000,000 bytes.
-The current sets are 358,186 B and 539,940 B respectively.
+The current sets are 382,734 B and 573,218 B respectively.
 
 ## 10,000 DAU Transfer Model
 
@@ -34,25 +34,25 @@ Use 30 days, 10,000 daily active users, and decimal provider GB.
 
 `monthly transfer cost = monthly transfer GB × provider price per GB`
 
-An upper-bound cold model delivers all 85 bundles and the manifest on every one
+An upper-bound cold model delivers all 90 bundles and the manifest on every one
 of 300,000 user-days:
 
 | Encoding | Bytes per cold visit | Monthly transfer | Cost at provider rate `P` |
 | --- | ---: | ---: | ---: |
-| gzip | 2,003,838 B | 601.151 GB (559.87 GiB) | `601.151 × P` |
-| Brotli | 1,824,271 B | 547.281 GB (509.70 GiB) | `547.281 × P` |
+| gzip | 2,441,498 B | 732.449 GB (682.03 GiB) | `732.449 × P` |
+| Brotli | 2,213,731 B | 664.119 GB (618.50 GiB) | `664.119 × P` |
 
 An ideal warm model assumes the same 10,000 browsers load all indexes once,
 unchanged manifest revalidation returns a bodyless `304`, and no bundle changes:
 
 | Encoding | Monthly body transfer | Cost at provider rate `P` |
 | --- | ---: | ---: |
-| gzip | 20.038 GB (18.66 GiB) | `20.038 × P` |
-| Brotli | 18.243 GB (16.99 GiB) | `18.243 × P` |
+| gzip | 24.413 GB (22.74 GiB) | `24.413 × P` |
+| Brotli | 22.135 GB (20.61 GiB) | `22.135 × P` |
 
-At an illustrative USD 0.05/GB, the all-bundle model is about USD 30.06/month
-cold with gzip or USD 27.36/month cold with Brotli, and about USD 1.00/month or
-USD 0.91/month respectively in the ideal warm model.
+At an illustrative USD 0.05/GB, the all-bundle model is about USD 36.62/month
+cold with gzip or USD 33.20/month cold with Brotli, and about USD 1.22/month or
+USD 1.11/month respectively in the ideal warm model.
 At USD 0.10/GB those estimates double.
 Replace the examples with the selected provider's allowance, egress rate, and
 request pricing before release budgeting.
@@ -73,6 +73,8 @@ Use the browser HTTP cache:
   main thread.
 - The worker reuses the manifest and successfully loaded content-addressed
   bundles while the page remains open.
+- The worker caches normalized searchable fields and a bounded set of recent
+  result requests; debounced suggestions reuse the same worker and bundles.
 - Result-language and site filters re-search the selected subset through the
   same worker cache without a document request.
 - Changing the Docs locale updates the URL, preference, notices, and results in

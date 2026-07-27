@@ -17,6 +17,20 @@ default_enabled = true
 site_locales = ["en", "ja"]
 indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
 
+[[languages.sources]]
+id = "python-peps"
+kind = "official"
+document_kind = "proposal"
+name = "Python Enhancement Proposals"
+url = "https://peps.python.org/"
+domains = ["peps.python.org"]
+path_prefixes = ["/pep-"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "PEPs include drafts, rejected, withdrawn, deferred, and superseded proposals; status is shown on every result."
+qualification_ja = "PEPには草案・却下・撤回・保留・置換済みの提案が含まれます。各結果に状態を表示します。"
+
 [[languages]]
 id = "rust"
 name = "Rust"
@@ -55,6 +69,7 @@ bare_aliases = ["javascript", "js"]
 [[languages.sources]]
 id = "tc39-ecma262"
 kind = "official"
+document_kind = "specification"
 name = "ECMAScript Specification"
 url = "https://tc39.es/ecma262/"
 domains = ["tc39.es"]
@@ -62,6 +77,20 @@ path_prefixes = ["/ecma262/"]
 default_enabled = true
 site_locales = ["en"]
 indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "tc39-proposals"
+kind = "official"
+document_kind = "proposal"
+name = "TC39 Proposals"
+url = "https://github.com/tc39/proposals"
+domains = ["github.com"]
+path_prefixes = ["/tc39/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "TC39 stages describe proposal maturity. This metadata-only index follows the official tracking tables; their repository declares no explicit reuse license."
+qualification_ja = "TC39のStageは提案の成熟度を示します。公式追跡表のメタデータのみを索引化しており、そのリポジトリには明示的な再利用ライセンスがありません。"
 
 [[languages.sources]]
 id = "mdn-js"
@@ -160,6 +189,7 @@ qualification_ja = "例題中心の学習資料であり、Go言語仕様やAPI�
 [[languages]]
 id = "c"
 name = "C"
+auto_non_official_fallback = true
 aliases = []
 bare_aliases = ["c"]
 
@@ -177,6 +207,7 @@ indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "s
 [[languages]]
 id = "cpp"
 name = "C++"
+auto_non_official_fallback = true
 aliases = ["c++", "cplusplus"]
 bare_aliases = ["cpp", "c++", "cplusplus"]
 
@@ -190,6 +221,33 @@ path_prefixes = ["/cpp/"]
 default_enabled = true
 site_locales = ["en", "ja"]
 indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
+
+[[languages.sources]]
+id = "cpprefjp"
+kind = "community"
+name = "cpprefjp"
+url = "https://cpprefjp.github.io/"
+domains = ["cpprefjp.github.io"]
+path_prefixes = ["/lang/", "/reference/"]
+default_enabled = true
+site_locales = ["ja"]
+indexes = [{ locale = "ja", status = "supported" }]
+qualification_en = "A Japanese community reference published under CC BY 4.0; verify normative details against standards material."
+qualification_ja = "CC BY 4.0で公開される日本語コミュニティリファレンスです。規範的な詳細は標準資料でも確認してください。"
+
+[[languages.sources]]
+id = "wg21-papers"
+kind = "official"
+document_kind = "proposal"
+name = "WG21 Papers"
+url = "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/"
+domains = ["www.open-std.org", "open-std.org"]
+path_prefixes = ["/jtc1/sc22/wg21/docs/papers/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "Committee papers can be drafts, rejected, withdrawn, or superseded; they do not necessarily describe adopted C++ behavior."
+qualification_ja = "委員会文書には草案・却下・撤回・置換済みのものがあり、採用済みのC++仕様を示すとは限りません。"
 
 [[languages.sources]]
 id = "cpp-core-guidelines"
@@ -237,6 +295,20 @@ path_prefixes = ["/en/java/", "/javase/jp/"]
 default_enabled = true
 site_locales = ["en", "ja"]
 indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "supported" }]
+
+[[languages.sources]]
+id = "openjdk-jeps"
+kind = "official"
+document_kind = "proposal"
+name = "JDK Enhancement Proposals"
+url = "https://openjdk.org/jeps/0"
+domains = ["openjdk.org"]
+path_prefixes = ["/jeps/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+qualification_en = "JEP status is shown explicitly; drafts and candidates are not delivered JDK features."
+qualification_ja = "JEPの状態を明示します。DraftやCandidateは、提供済みのJDK機能ではありません。"
 
 [[languages]]
 id = "php"
@@ -913,6 +985,7 @@ indexes = [{ locale = "en", status = "supported" }]
 [[languages]]
 id = "commonlisp"
 name = "Common Lisp"
+auto_non_official_fallback = true
 aliases = ["lisp", "cl", "common-lisp"]
 bare_aliases = ["commonlisp"]
 
@@ -1074,6 +1147,7 @@ indexes = [{ locale = "en", status = "planned", reason = "Adapter not implemente
 [[languages]]
 id = "html"
 name = "HTML"
+auto_non_official_fallback = true
 aliases = []
 bare_aliases = ["html"]
 
@@ -1104,6 +1178,7 @@ qualification_ja = "Googleによる実践講座であり、WHATWG HTML仕様で�
 [[languages]]
 id = "css"
 name = "CSS"
+auto_non_official_fallback = true
 aliases = []
 bare_aliases = ["css"]
 

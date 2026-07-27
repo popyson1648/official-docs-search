@@ -28,7 +28,8 @@ const trustedCommunitySourceIds = [
   "solidity-by-example",
   "common-lisp-cookbook",
   "webdev-html",
-  "webdev-css"
+  "webdev-css",
+  "cpprefjp"
 ] as const;
 
 describe("docs catalog integrity", () => {
@@ -76,14 +77,15 @@ describe("docs catalog integrity", () => {
     }
   });
 
-  it("admits the 18 reviewed non-official sources with visible bilingual qualifications", () => {
-    expect(trustedCommunitySourceIds).toHaveLength(18);
+  it("admits the 19 reviewed non-official sources with visible bilingual qualifications", () => {
+    expect(trustedCommunitySourceIds).toHaveLength(19);
     for (const id of trustedCommunitySourceIds) {
       const source = allSources.find((candidate) => candidate.id === id);
       expect(source, `${id} missing`).toBeDefined();
       expect(source?.kind, `${id} must remain non-official`).not.toBe("official");
-      expect(source?.siteLocales).toEqual(["en"]);
-      expect(source?.indexes).toEqual([{ locale: "en", status: "supported" }]);
+      const expectedLocale = id === "cpprefjp" ? "ja" : "en";
+      expect(source?.siteLocales).toEqual([expectedLocale]);
+      expect(source?.indexes).toEqual([{ locale: expectedLocale, status: "supported" }]);
       expect(source?.qualification?.en, `${id} English qualification`).toBeTruthy();
       expect(source?.qualification?.ja, `${id} Japanese qualification`).toBeTruthy();
       const language = languages.find((candidate) =>

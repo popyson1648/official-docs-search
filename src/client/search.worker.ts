@@ -31,15 +31,34 @@ interface WorkerScope {
 const scope = globalThis as unknown as WorkerScope;
 const bundleCache = new Map<string, Promise<StoredSearchIndexBundle>>();
 const manifestCache = new Map<string, Promise<SearchIndexManifest>>();
+const resultCache = new Map<string, Promise<SearchRuntimeResult>>();
 
 scope.addEventListener("message", (event) => {
   const { id, request } = event.data;
-  void runSearchRequest(request, fetch, bundleCache, manifestCache)
-    .then((result) => scope.postMessage({ id, result }))
-    .catch((error: unknown) =>
+  const cacheKey = JSON.stringify([
+    request.query,
+    request.docsLocale,
+    request.limit ?? 60,
+    request.sources.map((source) => source.id).sort()
+  ]);
+  let pending = resultCache.get(cacheKey);
+  if (!pending) {
+    pending = runSearchRequest(request, fetch, bundleCache, manifestCache);
+    resultCache.set(cacheKey, pending);
+    if (resultCache.size > 24) {
+      resultCache.delete(resultCache.keys().next().value ?? "");
+    }
+  }
+  void pending
+    .then((result) => {
+      if (result.failedSources.length > 0) resultCache.delete(cacheKey);
+      scope.postMessage({ id, result });
+    })
+    .catch((error: unknown) => {
+      resultCache.delete(cacheKey);
       scope.postMessage({
         id,
         error: error instanceof Error ? error.message : String(error)
-      })
-    );
+      });
+    });
 });

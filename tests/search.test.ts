@@ -19,6 +19,7 @@ function record(overrides: Partial<SearchRecord> = {}): SearchRecord {
     sourceId: "python-docs",
     sourceName: "Python Documentation",
     sourceKind: "official",
+    documentKind: "reference",
     ...overrides
   };
 }
@@ -71,6 +72,69 @@ describe("federated documentation search", () => {
     expect(results.map((result) => result.url)).toEqual([
       "https://example.test/one",
       "https://example.test/two"
+    ]);
+  });
+
+  it("uses conservative typo tolerance while keeping exact matches first", () => {
+    const records = [
+      record({ title: "std::sort", url: "https://example.test/sort" }),
+      record({ title: "std::stable_sort", url: "https://example.test/stable-sort" }),
+      record({ title: "short", url: "https://example.test/short" })
+    ];
+
+    expect(searchRecords(records, "sort").map((result) => result.url)).toEqual([
+      "https://example.test/sort",
+      "https://example.test/stable-sort"
+    ]);
+    expect(searchRecords(records, "srot").map((result) => result.url)).toContain(
+      "https://example.test/sort"
+    );
+    expect(searchRecords(records, "sot")).toEqual([]);
+  });
+
+  it("keeps every exact language result before fuzzy results from another language", () => {
+    const results = searchRecords(
+      [
+        record({ title: "sort", url: "https://cpp.test/sort" }),
+        record({ title: "sort details", url: "https://cpp.test/sort-details" }),
+        record({
+          title: "srot",
+          url: "https://rust.test/srot",
+          programmingLanguage: "rust",
+          sourceId: "rust-docs",
+          sourceName: "Rust Documentation"
+        })
+      ],
+      "sort"
+    );
+
+    expect(results.map((result) => result.url)).toEqual([
+      "https://cpp.test/sort",
+      "https://cpp.test/sort-details",
+      "https://rust.test/srot"
+    ]);
+  });
+
+  it("ranks reference results ahead of proposal papers for broad API queries", () => {
+    const results = searchRecords(
+      [
+        record({
+          title: "std::execution",
+          url: "https://example.test/reference",
+          documentKind: "reference"
+        }),
+        record({
+          title: "P2300R10: std::execution",
+          url: "https://example.test/paper",
+          documentKind: "proposal"
+        })
+      ],
+      "execution"
+    );
+
+    expect(results.map((result) => result.url)).toEqual([
+      "https://example.test/reference",
+      "https://example.test/paper"
     ]);
   });
 

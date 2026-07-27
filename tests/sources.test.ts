@@ -28,6 +28,36 @@ domains = ["developer.mozilla.org"]
 default_enabled = true
 site_locales = ["en", "ja"]
 indexes = [{ locale = "en", status = "supported" }, { locale = "ja", status = "planned", reason = "Fixture." }]
+
+[[languages]]
+id = "cpp"
+name = "C++"
+auto_non_official_fallback = true
+aliases = ["c++"]
+bare_aliases = ["cpp"]
+
+[[languages.sources]]
+id = "cppreference"
+kind = "community"
+name = "cppreference"
+url = "https://en.cppreference.com/cpp/"
+domains = ["en.cppreference.com"]
+path_prefixes = ["/cpp/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
+
+[[languages.sources]]
+id = "wg21"
+kind = "official"
+document_kind = "proposal"
+name = "WG21 Papers"
+url = "https://www.open-std.org/"
+domains = ["www.open-std.org"]
+path_prefixes = ["/jtc1/"]
+default_enabled = true
+site_locales = ["en"]
+indexes = [{ locale = "en", status = "supported" }]
 `;
 
 describe("sources", () => {
@@ -57,6 +87,35 @@ describe("sources", () => {
       enabledSourceIds: new Set()
     });
     expect(scope.sources).toEqual([]);
+  });
+
+  it("automatically adds reviewed non-official references per language", () => {
+    const scope = resolveSearchScope(catalog, {
+      languages: ["javascript", "cpp"],
+      sourceMode: "official",
+      enabledSourceIds: new Set(["ecma", "mdn", "cppreference", "wg21"]),
+      autoIncludeNonOfficialWhenNoOfficial: true
+    });
+    expect(scope.sources.map((source) => source.id)).toEqual([
+      "ecma",
+      "cppreference",
+      "wg21"
+    ]);
+    expect(scope.automaticFallbacks).toHaveLength(1);
+    expect(scope.automaticFallbacks[0].language.id).toBe("cpp");
+    expect(scope.automaticFallbacks[0].sources.map((source) => source.id)).toEqual([
+      "cppreference"
+    ]);
+  });
+
+  it("keeps automatic fallback disabled when the setting is off", () => {
+    const scope = resolveSearchScope(catalog, {
+      languages: ["cpp"],
+      sourceMode: "official",
+      autoIncludeNonOfficialWhenNoOfficial: false
+    });
+    expect(scope.sources.map((source) => source.id)).toEqual(["wg21"]);
+    expect(scope.automaticFallbacks).toEqual([]);
   });
 
   it("reports locale gaps", () => {

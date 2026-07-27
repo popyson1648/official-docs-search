@@ -30,6 +30,8 @@ import { gnuJobs } from "./search-index/jobs/gnu.mjs";
 import { trustedCommunityGroupAJobs } from "./search-index/jobs/trusted-community-group-a.mjs";
 import { trustedCommunityGroupBJobs } from "./search-index/jobs/trusted-community-group-b.mjs";
 import { trustedCommunityGroupCJobs } from "./search-index/jobs/trusted-community-group-c.mjs";
+import { standardsGroupJobs } from "./search-index/jobs/standards-group.mjs";
+import { proposalsGroupJobs } from "./search-index/jobs/proposals-group.mjs";
 import { fetchDocumentationUrl } from "./search-index/http-fetch.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -37,6 +39,8 @@ const outputDirectory = resolve(root, "public/search-index");
 const catalogSource = readFileSync(resolve(root, "src/data/docs-sources.toml"), "utf8");
 
 export const searchIndexJobs = [
+  ...standardsGroupJobs,
+  ...proposalsGroupJobs,
   ...trustedCommunityGroupAJobs,
   ...trustedCommunityGroupBJobs,
   ...trustedCommunityGroupCJobs,

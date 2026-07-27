@@ -324,7 +324,11 @@ test("[smoke] Sphinx section context renders as plain text instead of raw markup
 
 test("[smoke] single-language official search returns real linked results in new tabs", async () => {
   const page = await newPage();
-  await gotoQuery(page, "python list", "&docsLocale=en");
+  await gotoQuery(
+    page,
+    "python list",
+    "&docsLocale=en&sourceSelection=explicit&sourceId=python-docs"
+  );
   await waitForResults(page);
   const result = await snapshot(page);
 
@@ -464,6 +468,152 @@ test("[catalog] one multi-language query returns results for every selected lang
     new Set(result.links.map((link) => new URL(link.href).hostname)),
     new Set(["docs.python.org", "doc.rust-lang.org"])
   );
+  await page.close();
+});
+
+test("[catalog] C++ exact, fuzzy, and Japanese community searches return complete reference results", async () => {
+  const page = await newPage();
+
+  await gotoQuery(page, "cpp sort", "&docsLocale=en");
+  await waitForResults(page);
+  const exact = await snapshot(page);
+  assert.equal(exact.sources[0], "cppreference-cpp");
+  assert.ok(
+    exact.links.some((link) => new URL(link.href).pathname === "/cpp/algorithm/sort")
+  );
+
+  await gotoQuery(page, "cpp srot", "&docsLocale=en");
+  await waitForResults(page);
+  assert.ok(
+    (await snapshot(page)).links.some(
+      (link) => new URL(link.href).pathname === "/cpp/algorithm/sort"
+    )
+  );
+
+  await gotoQuery(page, "cpp sort", "&docsLocale=ja");
+  await waitForResults(page);
+  const japanese = await snapshot(page);
+  assert.ok(japanese.sources.includes("cpprefjp"));
+  assert.ok(
+    japanese.links.some((link) => new URL(link.href).hostname === "cpprefjp.github.io")
+  );
+
+  await gotoQuery(page, "cpp P2300R10", "&docsLocale=en");
+  await waitForResults(page);
+  const paper = await page.$eval(
+    '.result-item[data-source-id="wg21-papers"]',
+    (item) => ({
+      href: item.querySelector("h2 a")?.href,
+      documentKind: item.querySelector(".document-kind")?.textContent,
+      status: item.querySelector(".result-proposal-status")?.textContent,
+      warning: [...item.querySelectorAll(".result-qualification")]
+        .map((part) => part.textContent)
+        .join(" ")
+    })
+  );
+  assert.match(paper.href ?? "", /\/p2300r10\.(?:html|pdf)$/i);
+  assert.match(paper.documentKind ?? "", /Proposal/);
+  assert.match(paper.status ?? "", /Status: Adopted/);
+  assert.match(paper.warning ?? "", /Committee papers can be drafts/);
+  assert.doesNotMatch(paper.warning ?? "", /may not describe current adopted behavior/);
+  await page.close();
+});
+
+test("[catalog] automatic non-official fallback is visible, configurable, and overridden by source syntax", async () => {
+  const page = await newPage();
+
+  await gotoQuery(page, "cpp sort", "&docsLocale=en");
+  await waitForResults(page);
+  const automatic = await page.evaluate(() => ({
+    notice: document.querySelector("[data-auto-fallback-notice]")?.textContent,
+    setting: document.querySelector("[data-auto-non-official-toggle]")?.checked,
+    cpprefjp: {
+      checked: document.querySelector('[data-source-option][value="cpprefjp"]')?.checked,
+      disabled: document.querySelector('[data-source-option][value="cpprefjp"]')?.disabled
+    }
+  }));
+  assert.match(automatic.notice ?? "", /No official web reference.*enabled automatically/s);
+  assert.match(automatic.notice ?? "", /C\+\+.*cppreference C\+\+.*cpprefjp/s);
+  assert.equal(automatic.setting, true);
+  assert.deepEqual(automatic.cpprefjp, { checked: true, disabled: false });
+
+  await gotoQuery(page, "cpp sort source:official", "&docsLocale=en");
+  await waitForResults(page);
+  assert.equal(await page.$("[data-auto-fallback-notice]"), null);
+  assert.equal(
+    await page.$eval('[data-source-option][value="cpprefjp"]', (input) => input.disabled),
+    true
+  );
+  assert.ok((await snapshot(page)).sources.every((source) => source === "wg21-papers"));
+
+  await page.goto(
+    `${app.baseUrl}/?q=${encodeURIComponent("cpp sort")}&ui=en&docsLocale=en&autoNonOfficialSetting=explicit`,
+    { waitUntil: "domcontentloaded" }
+  );
+  await waitForResults(page);
+  assert.equal(await page.$("[data-auto-fallback-notice]"), null);
+  assert.equal(
+    await page.$eval("[data-auto-non-official-toggle]", (input) => input.checked),
+    false
+  );
+  assert.equal(
+    await page.$eval('[data-source-option][value="cpprefjp"]', (input) => input.disabled),
+    true
+  );
+  await page.close();
+});
+
+test("[smoke] search suggestions use the indexed fuzzy search and support keyboard selection", async () => {
+  const page = await newPage();
+  await page.goto(`${app.baseUrl}/?ui=en`, { waitUntil: "domcontentloaded" });
+  await page.type("[data-query-input]", "cpp sor");
+  await page.click("[data-help-open]");
+  await new Promise((resolveDelay) => setTimeout(resolveDelay, 400));
+  assert.equal(await page.$eval("[data-search-suggestions]", (list) => list.hidden), true);
+  await page.$eval("[data-help-dialog]", (dialog) => dialog.close());
+
+  await page.$eval("[data-query-input]", (input) => {
+    input.value = "";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await page.type(
+    "[data-query-input]",
+    "cpp, rust ranges   sort source:all"
+  );
+  await page.waitForSelector("[data-search-suggestions]:not([hidden]) [role='option']", {
+    timeout: 20_000
+  });
+  const suggestions = await page.evaluate(() => ({
+    expanded: document.querySelector("[data-query-input]")?.getAttribute("aria-expanded"),
+    values: [...document.querySelectorAll("[data-search-suggestions] [role='option']")]
+      .map((option) => option.textContent),
+    count: document.querySelectorAll("[data-search-suggestions] [role='option']").length
+  }));
+  assert.equal(suggestions.expanded, "true");
+  assert.ok(suggestions.count > 0 && suggestions.count <= 8);
+  assert.ok(suggestions.values.some((value) => /sort/i.test(value)));
+
+  await page.keyboard.press("Escape");
+  await new Promise((resolveDelay) => setTimeout(resolveDelay, 300));
+  assert.equal(await page.$eval("[data-search-suggestions]", (list) => list.hidden), true);
+  await page.keyboard.type(" ");
+  await page.waitForSelector("[data-search-suggestions]:not([hidden]) [role='option']", {
+    timeout: 20_000
+  });
+  await page.keyboard.press("ArrowDown");
+  assert.equal(
+    await page.$eval("[data-query-input]", (input) => input.getAttribute("aria-activedescendant")),
+    "search-suggestion-0"
+  );
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 20_000 }),
+    page.keyboard.press("Enter")
+  ]);
+  const selectedQuery = (new URL(page.url()).searchParams.get("q") ?? "").trim();
+  assert.match(selectedQuery, /^cpp, rust /);
+  assert.match(selectedQuery, / source:all$/);
+  assert.match(selectedQuery, /sort/i);
+  await waitForResults(page);
   await page.close();
 });
 
@@ -1005,7 +1155,12 @@ test("[filters] enabling and disabling a non-official source changes the result 
   const page = await newPage();
   await gotoQuery(page, "javascript proxy", "&docsLocale=en");
   await waitForResults(page);
-  assert.ok((await snapshot(page)).sources.every((source) => source === "tc39-ecma262"));
+  assert.equal((await snapshot(page)).sources.includes("mdn-js"), false);
+  assert.ok(
+    (await snapshot(page)).sources.every((source) =>
+      ["tc39-ecma262", "tc39-proposals"].includes(source)
+    )
+  );
 
   await clickAndWaitForNavigation(page, "[data-source-toggle]");
   await waitForResults(page);
@@ -1029,7 +1184,11 @@ test("[filters] enabling and disabling a non-official source changes the result 
 
 test("[catalog] documentation locale and UI locale switch independently", async () => {
   const page = await newPage();
-  await gotoQuery(page, "python list", "&docsLocale=en");
+  await gotoQuery(
+    page,
+    "python list",
+    "&docsLocale=en&sourceSelection=explicit&sourceId=python-docs"
+  );
   await waitForResults(page);
   assert.ok((await snapshot(page)).locales.every((locale) => locale === "en"));
 
@@ -1198,7 +1357,11 @@ test("[catalog] a failed bundle is reported without discarding successful result
     }
   });
 
-  await gotoQuery(page, "python,rust list source:official", "&docsLocale=en");
+  await gotoQuery(
+    page,
+    "python,rust list source:official",
+    "&docsLocale=en&sourceSelection=explicit&sourceId=python-docs&sourceId=rust-docs"
+  );
   await waitForResults(page);
   const result = await snapshot(page);
   assert.ok(result.sources.includes("python-docs"));
@@ -1330,7 +1493,7 @@ test(
   async () => {
     const supported = searchManifest.entries.filter((entry) => entry.status === "supported");
     const japanese = supported.filter((entry) => entry.docsLocale === "ja");
-    assert.equal(japanese.length, 17);
+    assert.equal(japanese.length, 18);
 
     for (const entry of japanese) {
       const page = await newPage();
@@ -1339,7 +1502,7 @@ test(
       await gotoQuery(
         page,
         `lang:${entry.programmingLanguage} ${entry.knownQueries[0]} ${sourceFlag}`,
-        "&docsLocale=ja"
+        `&docsLocale=ja&sourceSelection=explicit&sourceId=${encodeURIComponent(entry.sourceId)}`
       );
       await waitForResults(page);
       const result = await snapshot(page);
@@ -1576,10 +1739,56 @@ test("[catalog] blocked and disabled index states are distinguishable", async ()
 });
 
 test("[catalog] empty and index-load failure states are explicit", async () => {
+  const noSourcesPage = await newPage();
+  let manifestRequests = 0;
+  await noSourcesPage.setRequestInterception(true);
+  noSourcesPage.on("request", async (request) => {
+    if (new URL(request.url()).pathname === "/search-index/manifest.json") {
+      manifestRequests += 1;
+    }
+    await request.continue();
+  });
+  await noSourcesPage.goto(
+    `${app.baseUrl}/?q=${encodeURIComponent("python list")}&ui=en&sourceSelection=explicit`,
+    { waitUntil: "domcontentloaded" }
+  );
+  await noSourcesPage.waitForSelector(
+    '[data-search-status][data-state="empty"][data-empty-reason="no-sources"]'
+  );
+  const noSourcesStatus = await noSourcesPage.$eval("[data-search-status]", (status) => ({
+    tag: status.tagName,
+    className: status.className,
+    role: status.getAttribute("role"),
+    text: status.textContent
+  }));
+  assert.match(noSourcesStatus.text, /Select at least one search source/);
+  assert.equal(manifestRequests, 0);
+  await noSourcesPage.close();
+
   const emptyPage = await newPage();
   await gotoQuery(emptyPage, "python zzz-no-such-document-zzz", "&docsLocale=en");
-  await emptyPage.waitForSelector('[data-search-status][data-state="empty"]');
-  assert.match(await emptyPage.$eval("[data-search-status]", (status) => status.textContent), /No results/);
+  await emptyPage.waitForSelector(
+    '[data-search-status][data-state="empty"][data-empty-reason="no-results"]'
+  );
+  const noResultsStatus = await emptyPage.$eval("[data-search-status]", (status) => ({
+    tag: status.tagName,
+    className: status.className,
+    role: status.getAttribute("role"),
+    text: status.textContent
+  }));
+  assert.match(noResultsStatus.text, /No results/);
+  assert.deepEqual(
+    {
+      tag: noSourcesStatus.tag,
+      className: noSourcesStatus.className,
+      role: noSourcesStatus.role
+    },
+    {
+      tag: noResultsStatus.tag,
+      className: noResultsStatus.className,
+      role: noResultsStatus.role
+    }
+  );
   await emptyPage.close();
 
   const errorPage = await newPage();
@@ -1824,14 +2033,18 @@ test("[performance] documentation locale switch avoids navigation and meets cold
     }).observe({ type: "longtask", buffered: true });
   });
 
-  await gotoQuery(page, "python list", "&docsLocale=en");
+  await gotoQuery(
+    page,
+    "python list",
+    "&docsLocale=en&sourceSelection=explicit&sourceId=python-docs"
+  );
   await waitForResults(page);
   const timeOrigin = await page.evaluate(() => {
     document.documentElement.dataset.performanceDocument = "preserved";
     return performance.timeOrigin;
   });
 
-  const coldStartedAt = Date.now();
+  const coldStartedAt = performance.now();
   await page.$eval('[data-docs-radio][value="ja"]', (radio) => radio.click());
   await page.waitForFunction(
     () =>
@@ -1839,9 +2052,9 @@ test("[performance] documentation locale switch avoids navigation and meets cold
       document.querySelector("[data-search-status]")?.dataset.state === "success",
     { timeout: 20_000 }
   );
-  const coldDuration = Date.now() - coldStartedAt;
+  const coldDuration = performance.now() - coldStartedAt;
 
-  const warmStartedAt = Date.now();
+  const warmStartedAt = performance.now();
   await page.$eval('[data-docs-radio][value="en"]', (radio) => radio.click());
   await page.waitForFunction(
     () =>
@@ -1849,7 +2062,7 @@ test("[performance] documentation locale switch avoids navigation and meets cold
       document.querySelector("[data-search-status]")?.dataset.state === "success",
     { timeout: 20_000 }
   );
-  const warmDuration = Date.now() - warmStartedAt;
+  const warmDuration = performance.now() - warmStartedAt;
 
   const performanceResult = await page.evaluate(() => {
     const startedAt = performance.getEntriesByName("ods-search-start").at(-1)?.startTime ?? 0;

@@ -13,6 +13,25 @@ describe("search controls", () => {
     );
     expect(preferenceCookie("docsLocale", "ja-JP")).toContain("ods_docs_locale=ja-JP");
     expect(preferenceCookie("sourceMode", "all")).toContain("ods_source=all");
+    expect(preferenceCookie("autoNonOfficial", "off")).toContain(
+      "ods_auto_non_official=off"
+    );
+  });
+
+  it("keeps reviewed automatic fallback sources interactive", () => {
+    const state = resolveSourceOptionState(
+      [
+        {
+          id: "cppreference",
+          kind: "community",
+          checked: true,
+          automaticFallbackAllowed: true
+        }
+      ],
+      false
+    );
+    expect(state.options[0].disabled).toBe(false);
+    expect(state.preservedIds).toEqual([]);
   });
 
   it("preserves checked non-official sources while their controls are disabled", () => {

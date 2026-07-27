@@ -83,6 +83,7 @@ export async function buildSearchIndexArtifacts({
       sourceId: source.id,
       sourceName: source.name,
       sourceKind: source.kind,
+      documentKind: source.documentKind,
       programmingLanguage: source.programmingLanguage,
       docsLocale: support.locale,
       status: support.status,
@@ -137,6 +138,13 @@ export async function buildSearchIndexArtifacts({
     const records = await job.load({ fetchText });
     validateRecords(source, job, records);
     if (inputs.length === 0) throw new Error(`${key} did not record an input.`);
+    inputs.sort(
+      (left, right) =>
+        left.url.localeCompare(right.url) ||
+        String(left.canonicalizer ?? "").localeCompare(
+          String(right.canonicalizer ?? "")
+        )
+    );
 
     const bundle = {
       schemaVersion: SEARCH_INDEX_SCHEMA_VERSION,
@@ -146,7 +154,10 @@ export async function buildSearchIndexArtifacts({
       records: records.map((record) => [
         record.title,
         record.url.slice(job.urlPrefix.length),
-        ...(record.section ? [record.section] : [])
+        ...(record.section || record.proposalStatus
+          ? [record.section ?? ""]
+          : []),
+        ...(record.proposalStatus ? [record.proposalStatus] : [])
       ])
     };
     const bundleBytes = `${JSON.stringify(bundle)}\n`;
@@ -387,6 +398,7 @@ export function parseIndexCatalog(source) {
         id: String(source.id ?? ""),
         name: String(source.name ?? source.id ?? ""),
         kind: normalizeKind(source.kind),
+        documentKind: normalizeDocumentKind(source.document_kind),
         programmingLanguage: String(language.id ?? ""),
         domains: stringArray(source.domains),
         pathPrefixes: stringArray(source.path_prefixes),
@@ -512,6 +524,17 @@ function enforceChangeGates(job, previous, recordCount, gzipBytes, brotliBytes, 
 function normalizeKind(value) {
   if (value === "conventional" || value === "community") return value;
   return "official";
+}
+
+function normalizeDocumentKind(value) {
+  if (
+    value === "specification" ||
+    value === "proposal" ||
+    value === "design-record"
+  ) {
+    return value;
+  }
+  return "reference";
 }
 
 function stringArray(value) {

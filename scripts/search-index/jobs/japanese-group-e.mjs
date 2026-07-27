@@ -1,35 +1,68 @@
+import { normalizeSitemap } from "../english-group-a-parsers.mjs";
 import { normalizeScopedHtmlLinks } from "../japanese-group-e-parsers.mjs";
+import { cppreferenceJob } from "../cppreference-job.mjs";
 
 export const japaneseGroupEJobs = [
-  htmlTocJob({
+  cppreferenceJob({
     sourceId: "cppreference-c",
     programmingLanguage: "c",
     docsLocale: "ja",
     sourceKind: "community",
     sourceName: "cppreference C",
-    inputUrl: "https://ja.cppreference.com/c",
-    upstreamVersion: "cppreference Japanese C rolling (partial translation)",
+    origin: "https://ja.cppreference.com/",
+    namespacePrefix: "c",
     qualification: "Partial Japanese community edition",
     urlPrefix: "https://ja.cppreference.com/c/",
-    accept: ({ url }) => url.pathname !== "/c",
-    minimumRecords: 38,
+    minimumRecords: 500,
     knownQueries: ["動的メモリ管理", "アトミック操作"],
     attribution:
       "Partial Japanese community translation of cppreference; CC BY-SA 3.0 and GFDL.",
     licenseUrl: "https://ja.cppreference.com/Cppreference:Copyright/CC-BY-SA"
   }),
-  htmlTocJob({
+  {
+    sourceId: "cpprefjp",
+    programmingLanguage: "cpp",
+    docsLocale: "ja",
+    adapter: "sitemap",
+    upstreamVersion: "cpprefjp rolling",
+    urlPrefix: "https://cpprefjp.github.io/",
+    minimumRecords: 5_000,
+    maximumRecordDropRatio: 0.2,
+    maximumSizeChangeRatio: 0.5,
+    knownQueries: ["ranges_sort", "sort", "vector"],
+    attribution: "cpprefjp contributors; CC BY 4.0.",
+    licenseUrl: "https://github.com/cpprefjp/site/blob/master/LICENSE",
+    qualification: "Japanese community reference",
+    qualificationJa: "日本語コミュニティによるリファレンス",
+    updateFrequency: "weekly",
+    load: async ({ fetchText }) =>
+      normalizeSitemap(
+        await fetchText("https://cpprefjp.github.io/sitemap.xml"),
+        {
+          sourceId: "cpprefjp",
+          programmingLanguage: "cpp",
+          docsLocale: "ja",
+          sourceKind: "community",
+          sourceName: "cpprefjp",
+          urlPrefixes: [
+            "https://cpprefjp.github.io/lang/",
+            "https://cpprefjp.github.io/reference/"
+          ],
+          section: "cpprefjp"
+        }
+      )
+  },
+  cppreferenceJob({
     sourceId: "cppreference-cpp",
     programmingLanguage: "cpp",
     docsLocale: "ja",
     sourceKind: "community",
     sourceName: "cppreference C++",
-    inputUrl: "https://ja.cppreference.com/cpp",
-    upstreamVersion: "cppreference Japanese C++ rolling (partial translation)",
+    origin: "https://ja.cppreference.com/",
+    namespacePrefix: "cpp",
     qualification: "Partial Japanese community edition",
     urlPrefix: "https://ja.cppreference.com/cpp/",
-    accept: ({ url }) => url.pathname !== "/cpp",
-    minimumRecords: 95,
+    minimumRecords: 3_800,
     knownQueries: ["コンセプトライブラリ", "範囲ライブラリ"],
     attribution:
       "Partial Japanese community translation of cppreference; CC BY-SA 3.0 and GFDL.",

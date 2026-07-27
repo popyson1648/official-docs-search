@@ -19,14 +19,14 @@ The manifest records that canonicalizer; web.dev course pages use
 Use the project user agent, bounded concurrency, a 30-second timeout with
 bounded retry, and no discovery crawling or upstream search endpoints.
 GNU GCC requests are serialized with the published 60-second crawl delay.
-Robots rules and site terms were reviewed on 2026-07-23 and must be rechecked
+Robots rules and site terms were reviewed through 2026-07-27 and must be rechecked
 before an endpoint moves or its collection method changes.
 DevDocs is an acquisition intermediary, not a replacement for the underlying
 documentation license.
 
 ## Supported Input Families
 
-The manifest contains 85 supported source-locale indexes covering all 44
+The manifest contains 90 supported source-locale indexes covering all 44
 catalog languages.
 The table groups inputs by collection method; the manifest remains canonical
 for per-index versions, licenses, and attribution.
@@ -35,27 +35,44 @@ for per-index versions, licenses, and attribution.
 | --- | --- | --- |
 | DevDocs metadata | Python, Rust, MDN JavaScript EN, TypeScript, Go standard library, Bash, and Perl | Fetch the maintained metadata per source and link to the reviewed upstream documentation. Bash also reads DevDocs' page map to link each record to its exact anchor in the Bash maintainer's current 5.3 manual copy. |
 | Native generated indexes | Python JA and GHC/Solidity Sphinx, Java EN/JA Javadoc, Julia Documenter, Swift DocC, Dart API, Elixir ExDoc, and ECMA-262 | Parse only the public static search or navigation artifact. |
+| Official standards and proposals | WG21 paper tables, Python PEP JSON, OpenJDK JEP index, and TC39 proposal tables | Store identifiers, titles, direct official URLs, and available lifecycle metadata only. Label these records as proposals and never imply that a draft, rejected, withdrawn, or superseded record is adopted behavior. |
+| MediaWiki page metadata | cppreference C/C++ EN/JA | Enumerate the reviewed `c` or `cpp` namespace through the public API and use display titles with direct original page URLs; do not fetch page bodies. |
 | Localized first-party TOCs | Microsoft Learn C#/PowerShell/F#/Visual Basic EN/JA, PHP EN/JA, Ruby EN/JA, MySQL EN/JA, and MDN JavaScript/WebAssembly/HTML/CSS EN/JA | Preserve the actual locale and localized title; never relabel an English URL as Japanese. |
 | Official structured pages | Go guides, Kotlin, Dart guides, Erlang, Lua, R, Clojure, Groovy, GNU Objective-C, GNU Fortran, Fortran Lang, Zig, Nim, D, OCaml, Elm, Racket, Haxe, and SQLite | Fetch only the declared sitemap, top-level TOC, package list, or manual index. |
 | Trusted teaching metadata | Comprehensive Rust, The Modern JavaScript Tutorial, TypeScript Deep Dive, Go by Example, C++ Core Guidelines, PHP: The Right Way, Elixir School, Learn You a Haskell, Advanced R, Clojure Guides, F# for Fun and Profit, zig.guide, Programming in D, Cornell OCaml, Solidity by Example, Common Lisp Cookbook, and web.dev Learn HTML/CSS | Require `source:all`; index only reviewed titles/headings and original links; show bilingual scope, version, freshness, or license qualifications wherever needed. |
-| Other conventional/community metadata | cppreference C/C++ EN/JA, Scala JA, Solidity JA, Elm packages, and the Common Lisp Technical Reference | Require `source:all`; retain source kind and edition qualifications in the catalog and manifest. |
+| Other conventional/community metadata | cpprefjp JA, cppreference C/C++ EN/JA, Scala JA, Solidity JA, Elm packages, and the Common Lisp Technical Reference | Retain source kind and edition qualifications in the catalog and manifest. cpprefjp uses only its published `/lang/` and `/reference/` sitemap entries. |
+
+WG21 archive pages do not grant one archive-wide content license; each paper
+and its authors retain their own copyright and reuse terms.
+The official `tc39/proposals` tracker declares no explicit reuse license, so
+its adapter stores metadata only, points externally designated proposals back
+to their exact official tracker row, and shows that limitation bilingually.
+PEP metadata preserves code punctuation, and JBS-backed OpenJDK drafts are
+labeled as drafts rather than assigned JEP numbers.
 
 Scala EN is official.
 Scala JA and Solidity JA are separate community source IDs, and Elm Packages is
 conventional; they do not receive an `Official` label or ranking boost.
-C, C++, Common Lisp, WebAssembly, HTML, and CSS currently have no supported
-official index, so users must enable non-official sources (`source:all`) for
-their supported community or conventional index.
+C, C++, Common Lisp, HTML, and CSS have no supported browsable official
+reference index.
+Their reviewed community or conventional references are enabled automatically
+by default with a bilingual notice.
+The persisted setting can disable this behavior, while `source:official` and
+`source:all` remain explicit overrides.
+WG21 is official proposal material, not a replacement for a current C++
+reference.
 
 ## Japanese Coverage And Qualifications
 
-Seventeen maintained Japanese bundles are supported:
+Eighteen maintained Japanese bundles are supported:
 Python, JavaScript, C, C++, C#, Java, PHP, Ruby, Scala, PowerShell, F#, Visual
-Basic, Solidity, SQL through MySQL, WebAssembly, HTML, and CSS.
+Basic, Solidity, SQL through MySQL, WebAssembly, HTML, CSS, and cpprefjp.
 Japanese requests for every other language visibly fall back to English and
 results remain labeled `EN`.
 
 - cppreference C/C++ and Scala JA are partial editions.
+- cpprefjp is a separate Japanese community reference published under CC BY
+  4.0 and is not labeled official.
 - Solidity JA is a community translation hosted with the project.
 - MySQL JA is the official machine-translated 8.0 edition and trails the
   English 8.4 edition.
@@ -71,7 +88,8 @@ metadata, rather than existing only in maintenance documentation.
 
 ## Trusted Non-official Source Qualifications
 
-The 18 admitted English teaching sources have an identified author or steward,
+The 18 admitted English teaching sources and the separately admitted Japanese
+cpprefjp reference have an identified author or steward,
 useful current coverage, a stable reviewed index input, and reviewable reuse or
 site terms.
 They never receive an official ranking boost.
@@ -113,6 +131,8 @@ The 2026-07-23 review produced these acquisition boundaries:
 | Native search metadata | `api.dart.dev`, `developer.mozilla.org`, `docs.julialang.org`, `docs.oracle.com`, `docs.python.org`, `docs.swift.org`, `downloads.haskell.org`, `learn.microsoft.com` | Declared public search/index artifacts only; no search endpoint or page crawl. |
 | Sitemaps and structured catalogs | `clojure.org`, `clojure-doc.org`, `crystal-lang.org`, `dart.dev`, `elixirschool.com`, `fortran-lang.org`, `fsharpforfunandprofit.com`, `javascript.info`, `kotlinlang.org`, `learnyouahaskell.github.io`, `lisp-docs.github.io`, `ocaml.org`, `package.elm-lang.org`, `web.dev`, `zig.guide` | Reviewed sitemap/catalog path only; excluded disallowed or off-scope paths. |
 | Static TOCs and manual indexes | `adv-r.hadley.nz`, `basarat.gitbook.io`, `cran.r-project.org`, `cs3110.github.io`, `ddili.org`, `dlang.org`, `docs.groovy-lang.org`, `docs.racket-lang.org`, `docs.ruby-lang.org`, `docs.scala-lang.org`, `docs.soliditylang.org`, `en.cppreference.com`, `go.dev`, `gobyexample.com`, `google.github.io`, `guide.elm-lang.org`, `haxe.org`, `hexdocs.pm`, `isocpp.github.io`, `ja.cppreference.com`, `lispcookbook.github.io`, `nim-lang.org`, `phptherightway.com`, `raw.githubusercontent.com`, `solidity-by-example.org`, `tc39.es`, `www.erlang.org`, `www.lua.org`, `www.php.net`, `www.sqlite.org`, `ziglang.org` | One or a bounded declared set of public pages or primary-repository navigation files; no discovery crawl. Dynamic links must remain on their reviewed origin/version prefix. |
+| Standards and proposal indexes | `www.open-std.org`, `peps.python.org`, `openjdk.org`, `raw.githubusercontent.com/tc39` | Official year tables, JSON metadata, index pages, or repository-maintained proposal tables only; no paper bodies, issue searches, or arbitrary pull requests. Preserve code punctuation and raw lifecycle state, and record source-specific copyright or missing-license limitations. |
+| Community sitemap | `cpprefjp.github.io` | Published sitemap restricted to `/lang/` and `/reference/`; direct Japanese result URLs and CC BY 4.0 attribution. |
 | GNU manuals | `gcc.gnu.org` | Allowed manual inputs, serialized with the published 60-second crawl delay. |
 | Excluded by terms | `developer.apple.com`, `www.lispworks.com` | Apple automated extraction/redistribution is blocked; HyperSpec partial/derived redistribution is disabled. Reviewed replacements remain separate sources. |
 
@@ -135,3 +155,14 @@ Reference based on public-domain dpANS3R sources.
 Any input, version, license, attribution, cadence, qualification, or robots
 change must update the job metadata, this policy and template, and generated
 manifest in one reviewed change.
+
+## Deferred Standards And Evolution Sources
+
+WG14 documents, C# proposals, Go proposals, Rust RFCs, Swift Evolution, Kotlin
+KEEP, Scala SIPs, PHP RFCs, Dart proposals, WebAssembly proposals,
+WHATWG/W3C specifications, and CSSWG drafts were reviewed as candidates.
+They are not admitted in this tranche because at least one of lifecycle-state
+normalization, bounded metadata acquisition, stable direct-result scope, or
+reuse-term review remains incomplete.
+An issue label or open pull request alone is not enough to classify a record as
+an official language proposal.
