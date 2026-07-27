@@ -245,8 +245,67 @@ small {
   flex-wrap: wrap;
 }
 
-.query-row button {
+.search-submit {
   min-width: 100px;
+}
+
+.search-help-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+}
+
+.search-help-button:hover {
+  background: color-mix(in srgb, var(--surface) 90%, #000);
+}
+
+.search-help-button svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.search-help-button .search-help-dot {
+  fill: currentColor;
+  stroke: none;
+}
+
+.search-help-tooltip {
+  position: absolute;
+  z-index: 30;
+  right: 0;
+  bottom: calc(100% + 8px);
+  width: max-content;
+  max-width: min(220px, calc(100vw - 32px));
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: var(--text);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(2px);
+  transition: opacity 100ms ease, transform 100ms ease;
+  white-space: nowrap;
+}
+
+.search-help-button:hover .search-help-tooltip,
+.search-help-button:focus .search-help-tooltip {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .controls-row {
@@ -266,12 +325,6 @@ small {
   flex: 0 0 auto;
   grid-column: 3;
   justify-self: end;
-}
-
-.header-actions .text-button {
-  min-width: 80px;
-  min-height: 40px;
-  padding: 6px 16px;
 }
 
 .filters {
@@ -967,8 +1020,10 @@ html:not([lang="ja"]) [data-search-form][data-docs-locale="ja"] .source-ja-unava
   }
 
   .result-skeleton-card::after,
-  .result-loading-spinner {
+  .result-loading-spinner,
+  .search-help-tooltip {
     animation: none !important;
+    transition: none !important;
   }
 }
 
@@ -1172,6 +1227,11 @@ code {
   .query-stack {
     flex: 1 1 auto;
   }
+
+  .search-submit {
+    min-width: 84px;
+    padding-inline: 12px;
+  }
 }
 
 html[lang="en"] .lang-ja {
@@ -1353,7 +1413,7 @@ html[lang="ja"] .lang-en {
   .header-actions {
     grid-column: 1;
     justify-self: stretch;
-    justify-content: space-between;
+    justify-content: flex-end;
     width: 100%;
   }
 

@@ -47,7 +47,10 @@ a known `source:all` result, and localized source-picker/result qualifications.
 Verify per-source Japanese-availability labels, source metadata order, a
 single-column source picker, compact desktop/mobile controls, and right-aligned
 header actions.
-Fix title centering and header action order independently of translation width.
+Fix title centering and right-aligned EN/JA independently of translation width.
+Place a 44 CSS-pixel, labelled Search syntax dialog trigger after the visible
+Search submit button. Verify localized hover/keyboard-focus tooltip text, dialog
+focus return, query usability, and no page overflow down to 320 CSS pixels.
 For mobile settings, verify a shared control edge, separate descriptive text and
 control hit targets, and accessible naming.
 Record narrow header edge alignment and the maximum allowed gap between compact

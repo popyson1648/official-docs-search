@@ -10,7 +10,8 @@ Center the search title and separate setting descriptions from controls
 
 ## Status
 
-Accepted
+Accepted; Search syntax placement superseded by
+`2026-07-27-contextual-search-help.md`
 
 ## Decision
 

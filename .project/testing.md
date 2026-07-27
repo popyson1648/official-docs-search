@@ -67,13 +67,17 @@ explicit support states, empty/error states, escaping,
 safe new-tab links, per-source Japanese-availability labels, compact source
 metadata order, a single-column source picker, right-aligned header actions, and
 desktop/mobile visibility.
-Header-layout coverage keeps the title geometrically centered, orders Search
-syntax before EN/JA, and moves mobile actions below the title.
+Header-layout coverage keeps the title geometrically centered and EN/JA aligned
+to the right independently of translation width.
 Mobile setting coverage fixes the two switches and Docs-locale control to one
 right edge, keeps setting descriptions non-interactive, and verifies accessible
 control names independently of translated text length.
-At narrow widths, Search syntax uses the left edge, EN/JA uses the right edge,
-and the right-aligned Docs label stays within 8 CSS pixels of its control.
+Search-help coverage places a 44 CSS-pixel, labelled dialog trigger after the
+visible Search submit button, shows its localized tooltip on hover and keyboard
+focus, restores focus after dialog close, and keeps the query usable without
+page overflow down to 320 CSS pixels.
+At narrow widths, EN/JA uses the right edge and the right-aligned Docs label
+stays within 8 CSS pixels of its control.
 Tests that replace manifest or bundle responses run the search on the page
 thread so Puppeteer interception owns those fetches deterministically; normal
 catalog and performance coverage continues to exercise the Web Worker.

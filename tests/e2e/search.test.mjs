@@ -285,6 +285,19 @@ test("[smoke] initial page, help, validation, and language tags work", async () 
 
   await page.click("[data-help-open]");
   assert.equal(await page.$eval("[data-help-dialog]", (dialog) => dialog.open), true);
+  assert.equal(
+    await page.$eval("[data-help-dialog]", (dialog) => dialog.getAttribute("aria-labelledby")),
+    "search-help-dialog-title"
+  );
+  assert.equal(
+    await page.$eval(":focus", (element) => element.matches("[data-help-dialog] .icon-button")),
+    true
+  );
+  await page.click("[data-help-dialog] .icon-button");
+  assert.equal(
+    await page.$eval(":focus", (element) => element.matches("[data-help-open]")),
+    true
+  );
 
   await gotoQuery(page, "python");
   assert.match(await page.$eval(".notice.error", (notice) => notice.textContent), /Enter search words/);
@@ -320,6 +333,30 @@ test("[smoke] search guidance uses concrete unboxed examples and accurate aliase
   assert.equal(
     await page.$eval("[data-query-input]", (element) => element.hasAttribute("placeholder")),
     false
+  );
+  assert.deepEqual(
+    await page.$eval("[data-help-open]", (button) => ({
+      controls: button.getAttribute("aria-controls"),
+      hasPopup: button.getAttribute("aria-haspopup"),
+      type: button.getAttribute("type")
+    })),
+    {
+      controls: "search-help-dialog",
+      hasPopup: "dialog",
+      type: "button"
+    }
+  );
+  await page.focus("[data-query-input]");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  assert.equal(
+    await page.$eval(":focus", (element) => element.matches("[data-help-open]")),
+    true
+  );
+  await new Promise((resolveDelay) => setTimeout(resolveDelay, 150));
+  assert.equal(
+    await page.$eval(".search-help-tooltip", (element) => getComputedStyle(element).opacity),
+    "1"
   );
   await page.click("[data-query-input]");
   const inputFocus = await page.$eval("[data-query-input]", (element) => {
@@ -1967,8 +2004,8 @@ test("[layout] results stay visible at desktop and mobile widths", async () => {
   }
 });
 
-test("[layout] centered header and right-aligned settings stay predictable at desktop and mobile widths", async () => {
-  for (const width of [1280, 641, 390, 375]) {
+test("[layout] contextual search help, centered header, and right-aligned settings stay predictable", async () => {
+  for (const width of [1280, 641, 390, 375, 320]) {
     const page = await newPage({ width, height: 900 });
     await gotoQuery(
       page,
@@ -1992,6 +2029,9 @@ test("[layout] centered header and right-aligned settings stay predictable at de
       const title = document.querySelector(".search-header h1").getBoundingClientRect();
       const actions = document.querySelector(".header-actions").getBoundingClientRect();
       const help = document.querySelector("[data-help-open]").getBoundingClientRect();
+      const searchGroup = document.querySelector(".search-group").getBoundingClientRect();
+      const query = document.querySelector("[data-query-input]").getBoundingClientRect();
+      const search = document.querySelector(".search-submit").getBoundingClientRect();
       const language = document.querySelector(".lang-switch").getBoundingClientRect();
       const controls = document.querySelector(".controls-row").getBoundingClientRect();
       const sourceToggle = document.querySelector("[data-source-toggle]").getBoundingClientRect();
@@ -2014,12 +2054,17 @@ test("[layout] centered header and right-aligned settings stay predictable at de
           title.left + title.width / 2 - (header.left + header.width / 2)
         ),
         titleAboveActions: title.bottom <= actions.top,
-        helpBeforeLanguage: help.right <= language.left,
-        helpLeftGap: Math.abs(header.left - help.left),
         languageRightGap: Math.abs(header.right - language.right),
         actionTags: [...document.querySelector(".header-actions").children].map(
           (element) => element.tagName
         ),
+        queryBeforeSearch: query.right <= search.left,
+        searchBeforeHelp: search.right <= help.left,
+        helpRightGap: Math.abs(searchGroup.right - help.right),
+        queryWidth: query.width,
+        helpWidth: help.width,
+        helpHeight: help.height,
+        pageOverflows: document.documentElement.scrollWidth > window.innerWidth,
         sourceToggleRightGap: Math.abs(controls.right - sourceToggle.right),
         automaticToggleRightGap: Math.abs(controls.right - automaticToggle.right),
         docsToggleRightGap: Math.abs(controls.right - docsToggle.right),
@@ -2049,8 +2094,14 @@ test("[layout] centered header and right-aligned settings stay predictable at de
       layout.titleCenterGap <= 1,
       `title center gap was ${layout.titleCenterGap}px at ${width}px`
     );
-    assert.equal(layout.helpBeforeLanguage, true);
-    assert.deepEqual(layout.actionTags, ["BUTTON", "FIELDSET"]);
+    assert.deepEqual(layout.actionTags, ["FIELDSET"]);
+    assert.equal(layout.queryBeforeSearch, true);
+    assert.equal(layout.searchBeforeHelp, true);
+    assert.ok(layout.helpRightGap <= 1, `help right gap was ${layout.helpRightGap}px at ${width}px`);
+    assert.ok(layout.queryWidth >= 140, `query width was ${layout.queryWidth}px at ${width}px`);
+    assert.ok(layout.helpWidth >= 44);
+    assert.ok(layout.helpHeight >= 44);
+    assert.equal(layout.pageOverflows, false);
     assert.equal(layout.sourceToggleLabelledBy, "include-trusted-label");
     assert.equal(layout.automaticToggleLabelledBy, "auto-non-official-label");
     assert.equal(
@@ -2062,7 +2113,6 @@ test("[layout] centered header and right-aligned settings stay predictable at de
       assert.ok(layout.sourceToggleRightGap <= 1);
       assert.ok(layout.automaticToggleRightGap <= 1);
       assert.ok(layout.docsToggleRightGap <= 1);
-      assert.ok(layout.helpLeftGap <= 1);
       assert.ok(layout.languageRightGap <= 1);
       assert.ok(layout.docsLabelGap >= 0 && layout.docsLabelGap <= 8);
     }

@@ -157,10 +157,6 @@ const suggestionScopes = catalog.languages.map((language) => ({
             <span class="lang-ja">{t("ja", "queryLabel")}</span>
           </h1>
           <div class="header-actions">
-            <button class="text-button" type="button" data-help-open>
-              <span class="lang-en">{t("en", "help")}</span>
-              <span class="lang-ja">{t("ja", "help")}</span>
-            </button>
             <fieldset class="lang-switch">
               <legend class="sr-only">{t(uiLanguage, "uiLanguage")}</legend>
               <label class:list={["lang-btn", { active: uiLanguage === "en" }]}>
@@ -236,9 +232,37 @@ const suggestionScopes = catalog.languages.map((language) => ({
                   hidden
                 ></div>
               </div>
-              <button type="submit">
+              <button class="search-submit" type="submit">
                 <span class="lang-en">{t("en", "search")}</span>
                 <span class="lang-ja">{t("ja", "search")}</span>
+              </button>
+              <button
+                class="search-help-button"
+                type="button"
+                data-help-open
+                aria-labelledby="search-help-label"
+                aria-haspopup="dialog"
+                aria-controls="search-help-dialog"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="22"
+                  height="22"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M9.8 9.1a2.4 2.4 0 0 1 4.65.85c0 1.8-2.45 2.05-2.45 3.65"></path>
+                  <circle class="search-help-dot" cx="12" cy="17.2" r=".75"></circle>
+                </svg>
+                <span class="sr-only" id="search-help-label">
+                  <span class="lang-en">{t("en", "help")}</span>
+                  <span class="lang-ja">{t("ja", "help")}</span>
+                </span>
+                <span class="search-help-tooltip" aria-hidden="true">
+                  <span class="lang-en">{t("en", "help")}</span>
+                  <span class="lang-ja">{t("ja", "help")}</span>
+                </span>
               </button>
             </div>
           </div>
@@ -528,10 +552,15 @@ const suggestionScopes = catalog.languages.map((language) => ({
       }
     </main>
 
-    <dialog class="help-dialog" data-help-dialog>
+    <dialog
+      class="help-dialog"
+      id="search-help-dialog"
+      aria-labelledby="search-help-dialog-title"
+      data-help-dialog
+    >
       <form method="dialog">
         <div class="dialog-header">
-          <h2>
+          <h2 id="search-help-dialog-title">
             <span class="lang-en">{t("en", "help")}</span>
             <span class="lang-ja">{t("ja", "help")}</span>
           </h2>
