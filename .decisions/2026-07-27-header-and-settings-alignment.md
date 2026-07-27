@@ -16,8 +16,8 @@ Accepted
 
 Keep the search title geometrically centered independently of the header actions.
 Order the actions as Search syntax followed by the EN/JA UI-language control.
-On narrow viewports, place the title on its own row and right-align the actions
-below it.
+On narrow viewports, place the title on its own row and the actions below it,
+with Search syntax at the left edge and EN/JA at the right edge.
 
 Render global setting descriptions as non-interactive text next to separately
 labelled form controls. On narrow viewports, each setting occupies a full-width
@@ -45,6 +45,7 @@ visible control while `aria-labelledby` retains an accessible name.
 ## Consequences
 
 - Mobile setting descriptions may wrap without moving their controls.
+- The compact Docs label stays next to its right-aligned segmented control.
 - The switch itself, rather than its whole row, is the pointer target.
 - Header and settings geometry require desktop and mobile browser coverage.
 - Source names inside the expandable source picker remain checkbox labels.

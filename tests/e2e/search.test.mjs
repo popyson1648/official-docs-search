@@ -1985,6 +1985,7 @@ test("[layout] centered header and right-aligned settings stay predictable at de
       const automaticToggle = document
         .querySelector("[data-auto-non-official-toggle]")
         .getBoundingClientRect();
+      const docsLabel = document.querySelector("#docs-locale-label").getBoundingClientRect();
       const docsToggle = document.querySelector(".seg-toggle").getBoundingClientRect();
       const summaryStyle = getComputedStyle(document.querySelector(".source-details summary"));
       const titleStyle = getComputedStyle(document.querySelector(".source-title"));
@@ -2001,12 +2002,15 @@ test("[layout] centered header and right-aligned settings stay predictable at de
         ),
         titleAboveActions: title.bottom <= actions.top,
         helpBeforeLanguage: help.right <= language.left,
+        helpLeftGap: Math.abs(header.left - help.left),
+        languageRightGap: Math.abs(header.right - language.right),
         actionTags: [...document.querySelector(".header-actions").children].map(
           (element) => element.tagName
         ),
         sourceToggleRightGap: Math.abs(controls.right - sourceToggle.right),
         automaticToggleRightGap: Math.abs(controls.right - automaticToggle.right),
         docsToggleRightGap: Math.abs(controls.right - docsToggle.right),
+        docsLabelGap: docsToggle.left - docsLabel.right,
         sourceToggleLabelledBy: document
           .querySelector("[data-source-toggle]")
           .getAttribute("aria-labelledby"),
@@ -2045,6 +2049,9 @@ test("[layout] centered header and right-aligned settings stay predictable at de
       assert.ok(layout.sourceToggleRightGap <= 1);
       assert.ok(layout.automaticToggleRightGap <= 1);
       assert.ok(layout.docsToggleRightGap <= 1);
+      assert.ok(layout.helpLeftGap <= 1);
+      assert.ok(layout.languageRightGap <= 1);
+      assert.ok(layout.docsLabelGap >= 0 && layout.docsLabelGap <= 8);
     }
     assert.ok(layout.summaryFont <= 14, `source summary font was ${layout.summaryFont}px`);
     assert.ok(layout.titleFont <= 13, `source title font was ${layout.titleFont}px`);

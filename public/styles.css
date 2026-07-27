@@ -1352,7 +1352,9 @@ html[lang="ja"] .lang-en {
 
   .header-actions {
     grid-column: 1;
-    justify-self: end;
+    justify-self: stretch;
+    justify-content: space-between;
+    width: 100%;
   }
 
   .controls-row {
@@ -1369,6 +1371,16 @@ html[lang="ja"] .lang-en {
     align-items: center;
     width: 100%;
     gap: 16px;
+  }
+
+  .docs-setting-row {
+    grid-template-columns: auto auto;
+    justify-content: end;
+    gap: 8px;
+  }
+
+  .docs-setting-row .filter-label {
+    margin-right: 0;
   }
 
 }

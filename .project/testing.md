@@ -72,6 +72,8 @@ syntax before EN/JA, and moves mobile actions below the title.
 Mobile setting coverage fixes the two switches and Docs-locale control to one
 right edge, keeps setting descriptions non-interactive, and verifies accessible
 control names independently of translated text length.
+At narrow widths, Search syntax uses the left edge, EN/JA uses the right edge,
+and the right-aligned Docs label stays within 8 CSS pixels of its control.
 It also fixes the C++ completeness regression (`cpp sort`), conservative fuzzy
 recovery (`cpp srot`), cpprefjp Japanese results, proposal-source labeling and
 ranking, silent automatic-fallback settings/override behavior, bounded
