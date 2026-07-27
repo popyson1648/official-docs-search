@@ -90,6 +90,15 @@ async function newPage({ width = 1280, height = 900 } = {}) {
   return page;
 }
 
+async function disableSearchWorker(page) {
+  await page.evaluateOnNewDocument(() => {
+    Object.defineProperty(globalThis, "Worker", {
+      value: undefined,
+      configurable: true
+    });
+  });
+}
+
 async function gotoQuery(page, query, extras = "") {
   await page.goto(`${app.baseUrl}/?q=${encodeURIComponent(query)}&ui=en${extras}`, {
     waitUntil: "domcontentloaded",
@@ -143,6 +152,7 @@ test("[layout] result loading uses centered accessible wave skeletons", async ()
   };
   for (const reducedMotion of [false, true]) {
     const page = await newPage({ width: reducedMotion ? 390 : 1280, height: 800 });
+    await disableSearchWorker(page);
     await page.setCacheEnabled(false);
     if (reducedMotion) {
       await page.emulateMediaFeatures([
@@ -459,6 +469,7 @@ test("[smoke] single-language official search returns real linked results in new
 
 test("[smoke] query and search-index strings render as text without executing markup", async () => {
   const page = await newPage();
+  await disableSearchWorker(page);
   const searchPayload =
     'safety </input><img id="query-xss" src=x onerror="globalThis.__odsXss=1">';
   const queryPayload = `python ${searchPayload}`;
@@ -1477,6 +1488,7 @@ test("[catalog] fallback notices group one compact explanation with a semantic s
 
 test("[catalog] a failed bundle is reported without discarding successful results", async () => {
   const page = await newPage();
+  await disableSearchWorker(page);
   await page.setCacheEnabled(false);
   await page.setRequestInterception(true);
   page.on("request", async (request) => {
@@ -1923,6 +1935,7 @@ test("[catalog] empty and index-load failure states are explicit", async () => {
   await emptyPage.close();
 
   const errorPage = await newPage();
+  await disableSearchWorker(errorPage);
   await errorPage.setRequestInterception(true);
   errorPage.on("request", async (request) => {
     if (new URL(request.url()).pathname === "/search-index/manifest.json") {

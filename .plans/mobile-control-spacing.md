@@ -28,7 +28,8 @@ control, while separating Search syntax to the left from EN/JA on the right.
    syntax to the left edge and EN/JA to the right edge.
 2. Size the narrow Docs row to its label and segmented control, then align that
    compact group to the right edge with an 8 px gap.
-3. Add responsive geometry assertions and run full verification.
+3. Add responsive geometry assertions, keep mocked network responses
+   deterministic in CI, and run full verification.
 4. Commit, push to `dev`, and monitor CI.
 
 ## Verification
