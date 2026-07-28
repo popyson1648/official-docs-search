@@ -2519,6 +2519,10 @@ test("[layout] contextual search help, centered header, and right-aligned settin
       const sourceToggleRect = document.querySelector("[data-source-option]").getBoundingClientRect();
       const sourceToggleElement = document.querySelector("[data-source-toggle]");
       const checkedToggleBackground = getComputedStyle(sourceToggleElement).backgroundColor;
+      const headerStyle = getComputedStyle(document.querySelector(".search-header"));
+      const languageHighlightStyle = getComputedStyle(
+        document.querySelector(".query-highlight .flag-token")
+      );
       const uncheckedToggle = sourceToggleElement.cloneNode();
       uncheckedToggle.checked = false;
       uncheckedToggle.style.transition = "none";
@@ -2565,7 +2569,9 @@ test("[layout] contextual search help, centered header, and right-aligned settin
         sourceLinkHeight: sourceLinkRect.height,
         sourceToggleHeight: sourceToggleRect.height,
         checkedToggleBackground,
-        uncheckedToggleBackground
+        uncheckedToggleBackground,
+        headerBorderBottomWidth: headerStyle.borderBottomWidth,
+        languageHighlightBackground: languageHighlightStyle.backgroundColor
       };
     });
     assert.ok(layout.rightGap <= 1, `header actions right gap was ${layout.rightGap}px at ${width}px`);
@@ -2606,6 +2612,8 @@ test("[layout] contextual search help, centered header, and right-aligned settin
     assert.ok(layout.sourceToggleHeight >= 24);
     assert.equal(layout.checkedToggleBackground, "rgb(28, 31, 35)");
     assert.equal(layout.uncheckedToggleBackground, "rgb(100, 107, 117)");
+    assert.equal(layout.headerBorderBottomWidth, "0px");
+    assert.equal(layout.languageHighlightBackground, "rgb(249, 248, 51)");
     const settingsBeforeTextClicks = await page.evaluate(() => ({
       source: document.querySelector("[data-source-toggle]").checked,
       automatic: document.querySelector("[data-auto-non-official-toggle]").checked

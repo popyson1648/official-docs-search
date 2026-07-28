@@ -132,10 +132,10 @@ h1 {
 }
 
 .query-highlight .flag-token {
-  background-color: #FBFF21;
+  background-color: #F9F833;
   color: var(--text);
   border-radius: 2px;
-  box-shadow: 0 0 0 3px #FBFF21;
+  box-shadow: 0 0 0 3px #F9F833;
 }
 
 .query-highlight .invalid {
@@ -1508,7 +1508,6 @@ html[lang="ja"] .lang-en {
   align-items: center;
   margin-bottom: 20px;
   gap: 16px;
-  border-bottom: 1px solid var(--border);
   padding-bottom: 16px;
 }
 
