@@ -3,19 +3,26 @@ import {
   mergeNewLanguageSourceDefaults,
   preferenceCookie,
   removeLanguageFromQuery,
+  resolveDocumentationLocale,
   resolveSourceOptionState,
   sourcePolicyFromLegacyPreferences
 } from "../src/core/search-controls";
 
 describe("search controls", () => {
-  it("builds persistent UI, Docs locale, and source-policy cookies", () => {
+  it("builds persistent UI and source-policy cookies", () => {
     expect(preferenceCookie("ui", "ja")).toBe(
       "ods_ui=ja; path=/; max-age=31536000; SameSite=Lax"
     );
-    expect(preferenceCookie("docsLocale", "ja-JP")).toContain("ods_docs_locale=ja-JP");
     expect(preferenceCookie("sourcePolicy", "fallback")).toContain(
       "ods_source_policy=fallback"
     );
+  });
+
+  it("uses the UI language unless the query explicitly selects a locale", () => {
+    expect(resolveDocumentationLocale(undefined, "ja")).toBe("ja");
+    expect(resolveDocumentationLocale("", "ja")).toBe("ja");
+    expect(resolveDocumentationLocale("en", "ja")).toBe("en");
+    expect(resolveDocumentationLocale("ja", "en")).toBe("ja");
   });
 
   it("keeps reviewed automatic fallback sources selected and interactive", () => {

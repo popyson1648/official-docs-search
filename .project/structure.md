@@ -71,7 +71,9 @@
 
 ## Runtime Data Flow
 
-1. Astro resolves the initial query, catalog scope, locale, and selected sources.
+1. Astro resolves the initial query, catalog scope, unified EN/JA language, and
+   selected sources. The interface language supplies the documentation
+   preference unless `locale:en` or `locale:ja` overrides it for the query.
 2. If at least one source is selected, the client requests the lightweight
    runtime status manifest and keeps it in the page-lifetime worker; the
    complete provenance manifest stays available for generation and server
@@ -81,10 +83,12 @@
 4. The worker fetches and caches matching supported bundles, keeps successful
    bundles when one load fails, scans compact tuples, and ranks/diversifies
    matches.
-5. A Docs-locale change updates the URL, preference, availability labels, and
-   results without replacing the current document.
-   Global setting descriptions are non-interactive text associated to their
-   controls with accessible names; mobile controls share a fixed right edge.
+5. A top-right EN/JA change updates the interface, URL, preference,
+   availability labels, and results without replacing the current document.
+   Legacy independent Docs-locale state is migrated once and removed.
+   The source-policy description remains non-interactive text associated with
+   its control. On mobile the right-aligned row stays horizontal when its
+   localized contents fit and wraps complete items when they do not.
 6. The runtime derives exact language/site facets from all matches; applied
    filters re-search the cached indexes for the selected source subset.
    Result order stays relevance-first by default and can switch in place to

@@ -15,8 +15,8 @@ import {
 } from "./search-results";
 
 export interface SearchControlCallbacks {
-  onDocsLocaleIntent?(docsLocale: string): void | Promise<void>;
-  onDocsLocaleChange?(
+  onLanguageIntent?(docsLocale: string): void | Promise<void>;
+  onLanguageChange?(
     docsLocale: string,
     warmup?: Promise<void>
   ): void | Promise<void>;
@@ -41,7 +41,7 @@ export function initializeSearchControls(
     root.querySelectorAll<HTMLInputElement>("[data-source-policy-radio]");
   const sourceDetails = root.querySelector<HTMLDetailsElement>(".source-details");
   const uiRadios = root.querySelectorAll<HTMLInputElement>("[data-ui-radio]");
-  const docsRadios = root.querySelectorAll<HTMLInputElement>("[data-docs-radio]");
+  const results = root.querySelector<HTMLElement>("[data-search-results]");
   const dialog = root.querySelector<HTMLDialogElement>("[data-help-dialog]");
   const helpOpen = root.querySelector<HTMLButtonElement>("[data-help-open]");
   const queryStack = root.querySelector<HTMLElement>("[data-query-stack]");
@@ -55,9 +55,10 @@ export function initializeSearchControls(
   let activeSuggestion = -1;
   let composing = false;
   let renderedSuggestions: SearchSuggestion[] = [];
-  const docsLocaleWarmups = new Map<string, Promise<void>>();
+  const languageWarmups = new Map<string, Promise<void>>();
 
   restoreSourceDetailsState(root, sourceDetails);
+  migrateLegacyLanguageUrl(root);
 
   const renderHighlight = () => {
     if (!input || !highlight) return;
@@ -250,17 +251,67 @@ export function initializeSearchControls(
   }
 
   uiRadios.forEach((radio) => {
+    const warmLanguage = () => {
+      if (
+        radio.checked ||
+        !callbacks.onLanguageIntent ||
+        !allowsIntentPrefetch(root.defaultView)
+      ) {
+        return;
+      }
+      const effectiveLocale = form?.dataset.queryLocale || radio.value;
+      if (
+        effectiveLocale ===
+          (results?.dataset.docsLocale ?? form?.dataset.docsLocale ?? "") ||
+        languageWarmups.has(effectiveLocale)
+      ) {
+        return;
+      }
+      const pending = Promise.resolve().then(() =>
+        callbacks.onLanguageIntent?.(effectiveLocale)
+      );
+      languageWarmups.set(effectiveLocale, pending);
+      void pending.catch(() => {
+        if (languageWarmups.get(effectiveLocale) === pending) {
+          languageWarmups.delete(effectiveLocale);
+        }
+      });
+    };
+    radio.parentElement?.addEventListener("pointerenter", warmLanguage);
+    radio.addEventListener("focus", warmLanguage);
     radio.addEventListener("change", () => {
+      if (!radio.checked) return;
+      const previousLocale =
+        results?.dataset.docsLocale ?? form?.dataset.docsLocale ?? "";
+      const nextUiLanguage = radio.value === "ja" ? "ja" : "en";
+      const effectiveLocale = form?.dataset.queryLocale || nextUiLanguage;
+      const warmup = languageWarmups.get(effectiveLocale);
+      languageWarmups.delete(effectiveLocale);
+      if (form) form.dataset.docsLocale = effectiveLocale;
+      if (results) results.dataset.docsLocale = effectiveLocale;
+      if (results && effectiveLocale !== previousLocale) {
+        void callbacks.onLanguageChange?.(effectiveLocale, warmup);
+      }
+
       root.cookie = preferenceCookie("ui", radio.value);
       if (uiHidden) uiHidden.value = radio.value;
       root.documentElement.lang = radio.value;
-      const nextUiLanguage = radio.value === "ja" ? "ja" : "en";
       root.title = t(nextUiLanguage, "title");
+      updateLanguageUrl(root, nextUiLanguage);
       root
         .querySelector<HTMLElement>("[data-back-to-top]")
         ?.setAttribute("aria-label", t(nextUiLanguage, "pageTop"));
+      root
+        .querySelectorAll<HTMLElement>("[data-localized-aria-label]")
+        .forEach((element) => {
+          const label =
+            nextUiLanguage === "ja"
+              ? element.dataset.labelJa
+              : element.dataset.labelEn;
+          if (label) element.setAttribute("aria-label", label);
+        });
       uiRadios.forEach((candidate) => candidate.parentElement?.classList.remove("active"));
-      if (radio.checked) radio.parentElement?.classList.add("active");
+      radio.parentElement?.classList.add("active");
     });
   });
 
@@ -317,49 +368,6 @@ export function initializeSearchControls(
       form?.requestSubmit();
     });
   });
-
-  docsRadios.forEach((radio) => {
-    const warmDocsLocale = () => {
-      if (
-        radio.checked ||
-        !callbacks.onDocsLocaleIntent ||
-        !allowsIntentPrefetch(root.defaultView)
-      ) {
-        return;
-      }
-      const effectiveLocale = form?.dataset.queryLocale || radio.value;
-      if (
-        effectiveLocale === (results?.dataset.docsLocale ?? "") ||
-        docsLocaleWarmups.has(effectiveLocale)
-      ) {
-        return;
-      }
-      const pending = Promise.resolve().then(() =>
-        callbacks.onDocsLocaleIntent?.(effectiveLocale)
-      );
-      docsLocaleWarmups.set(effectiveLocale, pending);
-      void pending.catch(() => {
-        if (docsLocaleWarmups.get(effectiveLocale) === pending) {
-          docsLocaleWarmups.delete(effectiveLocale);
-        }
-      });
-    };
-    radio.parentElement?.addEventListener("pointerenter", warmDocsLocale);
-    radio.addEventListener("focus", warmDocsLocale);
-    radio.addEventListener("change", () => {
-      root.cookie = preferenceCookie("docsLocale", radio.value);
-      updateDocsLocaleUrl(root, radio.value);
-      const effectiveLocale = form?.dataset.queryLocale || radio.value;
-      const warmup = docsLocaleWarmups.get(effectiveLocale);
-      docsLocaleWarmups.delete(effectiveLocale);
-      if (form) form.dataset.docsLocale = effectiveLocale;
-      if (results) results.dataset.docsLocale = effectiveLocale;
-      updateDocsRadioState(docsRadios, effectiveLocale);
-      void callbacks.onDocsLocaleChange?.(effectiveLocale, warmup);
-    });
-  });
-
-  const results = root.querySelector<HTMLElement>("[data-search-results]");
 
   helpOpen?.addEventListener("click", () => dialog?.showModal());
   dialog?.addEventListener("click", (event) => {
@@ -447,24 +455,29 @@ function restoreSourceDetailsState(
   }
 }
 
-function updateDocsLocaleUrl(root: Document, docsLocale: string): void {
+function updateLanguageUrl(root: Document, uiLanguage: string): void {
   const view = root.defaultView;
   if (!view) return;
   const url = new URL(view.location.href);
-  if (docsLocale) url.searchParams.set("docsLocale", docsLocale);
-  else url.searchParams.delete("docsLocale");
+  url.searchParams.set("ui", uiLanguage);
+  url.searchParams.delete("docsLocale");
   view.history.replaceState(view.history.state, "", url);
 }
 
-function updateDocsRadioState(
-  radios: NodeListOf<HTMLInputElement>,
-  docsLocale: string
-): void {
-  radios.forEach((radio) => {
-    const active = radio.value === docsLocale;
-    radio.checked = active;
-    radio.parentElement?.classList.toggle("active", active);
-  });
+function migrateLegacyLanguageUrl(root: Document): void {
+  const view = root.defaultView;
+  if (!view) return;
+  const url = new URL(view.location.href);
+  if (!url.searchParams.has("docsLocale")) return;
+  const requestedUiLanguage = url.searchParams.get("ui");
+  if (requestedUiLanguage !== "en" && requestedUiLanguage !== "ja") {
+    url.searchParams.set(
+      "ui",
+      root.documentElement.lang === "ja" ? "ja" : "en"
+    );
+  }
+  url.searchParams.delete("docsLocale");
+  view.history.replaceState(view.history.state, "", url);
 }
 
 function allowsIntentPrefetch(view: Window | null): boolean {

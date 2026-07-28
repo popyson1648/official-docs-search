@@ -10,7 +10,9 @@ Keep requested documentation locale separate from actual content locale
 
 ## Status
 
-Accepted
+Accepted; the requested-versus-actual content-locale model remains active.
+The separate visible UI/Docs preference relationship was superseded by
+`2026-07-28-unified-interface-and-document-language.md`.
 
 ## Decision
 

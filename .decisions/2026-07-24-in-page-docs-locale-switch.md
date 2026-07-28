@@ -10,7 +10,9 @@ Keep documentation-locale changes in page and reuse one search worker
 
 ## Status
 
-Accepted
+Accepted; the independent visible Docs control and preference were superseded
+by `2026-07-28-unified-interface-and-document-language.md`. The in-page worker
+and cache decision remains active for the unified language control.
 
 ## Decision
 

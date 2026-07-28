@@ -22,19 +22,20 @@
 
 ## Runtime Data Flow
 
-1. Resolve the initial query, catalog scope, locale, and selected sources on the
-   server.
+1. Resolve the initial query, catalog scope, interface and effective
+   documentation languages, and selected sources on the server. Document the
+   precedence of persistent preferences and query-level overrides.
 2. Fetch and retain a lightweight runtime status manifest in a page-lifetime
    worker while keeping the complete provenance manifest canonical.
 3. Prefer an exact content locale and visibly fall back from Japanese to English
    only when the source has no Japanese index.
 4. Fetch, cache, validate, and search matching supported bundles in the worker,
    retaining partial results when one bundle fails or is malformed.
-5. Apply Docs-locale changes in page while synchronizing URL, preference,
-   availability labels, and results.
+5. Apply unified language changes in page while synchronizing interface copy,
+   URL, preference, availability labels, and results.
    Document whether setting descriptions are interactive labels or
-   non-interactive text with separately named controls, and define mobile
-   control alignment.
+   non-interactive text with separately named controls. Define mobile alignment
+   and localized-width wrapping behavior.
 6. Derive exact language/site facets from all matches and re-search cached
    indexes for the selected source subset. Document any result-order choices,
    default, tie-breaker, and whether changing order causes an index fetch.

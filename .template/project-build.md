@@ -17,7 +17,9 @@ Run `npm install`.
 - Use `npm run preview` only for Astro preview, not production delivery verification.
 
 The application has no runtime search-provider key.
-The browser fetches only supported bundles matching selected sources and Docs locale.
+The browser fetches only supported bundles matching selected sources and the
+effective documentation language. Document whether the interface language is
+the default and how a query-level locale override behaves.
 
 When fonts are product assets, document whether face declarations and binaries
 are local or remote, the exact family/weight contract, the refresh command, and

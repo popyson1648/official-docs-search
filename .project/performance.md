@@ -5,8 +5,9 @@
 The 2026-07-27 manifest contains 90 supported bundles for 44 languages, 18
 Japanese bundles, and 202,404 records.
 Search normally fetches only bundles selected by language, source mode, and
-requested Docs locale; all-bundle totals are a conservative catalog-wide upper
-bound.
+effective documentation language; all-bundle totals are a conservative
+catalog-wide upper bound. The top-right EN/JA choice supplies that language
+unless the query contains an explicit `locale:` override.
 
 | Payload | Raw | gzip | Brotli |
 | --- | ---: | ---: | ---: |
@@ -52,16 +53,21 @@ results were pixel-identical to the pre-change baseline.
 | Source policy change | 5,323 ms | 751 ms |
 | Source selection plus Search | 5,273 ms | 798 ms |
 | Next same-language search | 5,268 ms | 780 ms |
-| Docs locale, cold | 1,205 ms | 1,127 ms |
-| Docs locale, worker-cached | 54 ms | 65 ms |
-| UI language | 54 ms | 74 ms |
+| Unified language, cold | Separate controls | 3,762 ms |
+| Unified language, worker-cached | Separate controls | 47 ms |
 | Smooth back to top | 647 ms | 639 ms |
 
 Client-routed GET forms retain the worker and parsed indexes while preserving
-normal no-JavaScript GET behavior. A non-selected Docs locale is warmed only
-after pointer or keyboard intent; prefetch is disabled for data-saver, 2G, and
-slow-2G connections. Search creates only the first 15 result groups until the
-user requests another batch.
+normal no-JavaScript GET behavior. The alternate language's search request is
+warmed only after pointer or keyboard intent; prefetch is disabled for
+data-saver, 2G, and slow-2G connections. Search creates only the first 15 result
+groups until the user requests another batch.
+
+The unified cold measurement on 2026-07-28 waits for both search completion and
+`document.fonts.ready`. Unlike the former Docs-only control, it also exposes
+Japanese interface copy and therefore starts the required LINE Seed JP WOFF2
+subsets. The font remains part of the visual contract; the cold budget includes
+that real transfer rather than hiding it by changing or removing the typeface.
 
 ## 10,000 DAU Transfer Model
 
@@ -120,12 +126,13 @@ Use the browser HTTP cache:
 - GET search and source-policy submissions use client routing so the worker and
   parsed indexes survive while URL, history, focus, and no-JavaScript behavior
   remain intact.
-- A Docs-locale pointer or focus intent warms the same worker request unless
-  reduced-data connection signals prohibit it.
+- An alternate-language pointer or focus intent warms the same worker request
+  unless reduced-data connection signals prohibit it.
 - Result-language and site filters re-search the selected subset through the
   same worker cache without a document request.
-- Changing the Docs locale updates the URL, preference, notices, and results in
-  place instead of loading a new document.
+- Changing EN/JA updates the interface, URL, preference, notices, and preferred
+  result language in place instead of loading a new document. An explicit
+  `locale:` query continues to override only the result language.
 - A fixed four-card loading skeleton reserves result space; its wave and
   centered indicator are CSS-only and stop under reduced motion.
 
@@ -135,14 +142,18 @@ privacy, recovery, and service-worker lifecycle concerns.
 
 The E2E gate uses a 390×800 viewport and 4× CPU throttling.
 With Fast 3G and the browser cache disabled, the first Python EN-to-JA locale
-switch must finish within 1,500 ms.
+switch must finish within 4,500 ms, including newly requested LINE Seed JP
+subsets.
 A repeated switch to a bundle already held by the worker must finish within
 500 ms with no search-time Long Task over 50 ms.
 
 Before in-page switching, the Python EN-to-JA interaction took 3,956 ms under
 those conditions.
-The implementation measurement on 2026-07-24 was 1,364 ms for the first switch
-and 80 ms for the repeated switch.
+The former independent Docs-only control measured 1,127 ms cold and 65 ms
+worker-cached. The unified interface/documentation control measured 3,762 ms
+cold with font completion and 47 ms worker-cached on 2026-07-28; the added cold
+time is concurrent Japanese interface-font delivery, not a document navigation
+or main-thread search regression.
 
 ## Verification Cost
 

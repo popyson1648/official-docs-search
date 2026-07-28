@@ -18,7 +18,9 @@ Run `npm install`.
 - Use `npm run preview` only for Astro preview; it does not exercise the custom production delivery contract.
 
 The build does not call a paid search API and needs no public search-provider key.
-The browser fetches only supported bundles matching the selected sources and Docs locale.
+The browser fetches only supported bundles matching the selected sources and
+effective documentation language. The EN/JA interface language is the default;
+an explicit `locale:en` or `locale:ja` query overrides it for that search.
 
 ## Font Delivery
 

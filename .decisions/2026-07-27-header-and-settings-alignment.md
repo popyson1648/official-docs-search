@@ -10,8 +10,9 @@ Center the search title and separate setting descriptions from controls
 
 ## Status
 
-Accepted; Search syntax placement superseded by
-`2026-07-27-contextual-search-help.md`
+Accepted; Search syntax placement was superseded by
+`2026-07-27-contextual-search-help.md`, and the independent Docs row was
+superseded by `2026-07-28-unified-interface-and-document-language.md`.
 
 ## Decision
 

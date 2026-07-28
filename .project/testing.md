@@ -70,26 +70,24 @@ Both live commands are non-mutating.
 E2E coverage includes at least one real result for every catalog language,
 all 18 supported Japanese indexes, all language-level JA-to-EN fallbacks,
 single- and multi-language results, the three-state non-official-source policy
-with selection preservation, exact and fallback Docs locales, UI locale
-independence, HTTP and malformed-bundle partial failure, visible edition
-qualifications, explicit support states, empty/error states, escaping,
-safe new-tab links, per-source Japanese-availability labels, compact source
-metadata order, a single-column source picker, right-aligned header actions, and
-desktop/mobile visibility.
+with selection preservation, unified UI/documentation language behavior,
+explicit `locale:` overrides, legacy Docs-state migration, HTTP and
+malformed-bundle partial failure, visible edition qualifications, explicit
+support states, empty/error states, escaping, safe new-tab links, per-source
+Japanese-availability labels, compact source metadata order, a single-column
+source picker, right-aligned header actions, and desktop/mobile visibility.
 Header-layout coverage keeps the title geometrically centered and EN/JA aligned
 to the right independently of translation width; on mobile the global EN/JA
 control precedes the page title.
-Mobile setting coverage places the right-aligned Docs-locale control before a
-compact, right-aligned, always-visible three-state source policy, keeps each
-punctuation-free label beside its control and both rows within the content
-width, keeps setting descriptions non-interactive, and verifies accessible
-control names independently of translated text length.
+Mobile setting coverage keeps the compact, right-aligned, always-visible
+three-state source policy within the content width. Its non-interactive label
+stays beside the control when the localized widths fit; otherwise complete
+items wrap without clipping, overlapping, or horizontal page overflow.
 Search-help coverage places a 44 CSS-pixel, labelled dialog trigger after the
 visible Search submit button, shows its localized tooltip on hover and keyboard
 focus, restores focus after dialog close, and keeps the query usable without
 page overflow down to 320 CSS pixels.
-At narrow widths, EN/JA uses the right edge and the right-aligned Docs label
-stays within 8 CSS pixels of its control.
+At narrow widths, the unified EN/JA control uses the right edge above the title.
 Tests that replace manifest or bundle responses run the search on the page
 thread so Puppeteer interception owns those fetches deterministically; normal
 catalog and performance coverage continues to exercise the Web Worker.
@@ -110,8 +108,8 @@ brightness-derived black/white tag text across the full palette, source-kind
 styling, title-to-metadata typography, removable input-chip dimensions,
 language-color ownership of only the query-chip label segment, neutral remove
 segments, keyboard removal, and compact successful result counts. Compact
-source controls retain 24 CSS-pixel targets, and Docs-locale and chip-removal
-controls expose visible keyboard focus.
+source controls retain 24 CSS-pixel targets, and unified-language and
+chip-removal controls expose visible keyboard focus.
 Duplicate-result coverage conservatively groups only qualified reference
 symbols from distinct origins, preserves every safe source link, keeps
 ambiguous and proposal records separate, renders at most 15 groups initially,
@@ -156,8 +154,10 @@ The 18 admitted English teaching sources and cpprefjp must remain excluded from
 official-only searches, return a known result under `source:all`, and expose
 their English/Japanese qualification in the source picker and result metadata.
 Under 4× CPU throttling and Fast 3G with the browser cache disabled, an uncached
-Python EN-to-JA Docs-locale switch must complete within 1,500 ms without a new
-document request.
+Python EN-to-JA unified-language switch must complete within 4,500 ms without a
+new document request. This cold budget includes the preserved LINE Seed JP
+font-subset requests triggered by changing the visible interface and waits for
+`document.fonts.ready`.
 A repeated switch using the page-lifetime worker cache must complete within
 500 ms and produce no search-time Long Task over 50 ms.
 A result container without a non-empty original-document link is not a successful search test.

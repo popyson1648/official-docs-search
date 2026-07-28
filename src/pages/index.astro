@@ -5,6 +5,7 @@ import type { SourceMode } from "../core/query";
 import {
   isSourcePolicy,
   mergeNewLanguageSourceDefaults,
+  resolveDocumentationLocale,
   resolveSourceOptionState,
   sourcePolicyFromLegacyPreferences
 } from "../core/search-controls";
@@ -22,7 +23,35 @@ export const prerender = false;
 const catalog = loadCatalog();
 const params = Astro.url.searchParams;
 const q = params.get("q") ?? "";
-const uiLanguage = getUiLanguage(params.get("ui") ?? Astro.cookies.get("ods_ui")?.value);
+const languagePreference = (value: string | null | undefined) =>
+  value === "en" || value === "ja" ? value : undefined;
+const requestedUiLanguage = languagePreference(params.get("ui"));
+const legacyUrlLanguage = languagePreference(params.get("docsLocale"));
+const storedUiLanguage = languagePreference(Astro.cookies.get("ods_ui")?.value);
+const legacyStoredLanguage = languagePreference(
+  Astro.cookies.get("ods_docs_locale")?.value
+);
+const uiLanguage = getUiLanguage(
+  requestedUiLanguage ??
+    legacyUrlLanguage ??
+    storedUiLanguage ??
+    legacyStoredLanguage
+);
+if (
+  !requestedUiLanguage &&
+  !legacyUrlLanguage &&
+  !storedUiLanguage &&
+  legacyStoredLanguage
+) {
+  Astro.cookies.set("ods_ui", uiLanguage, {
+    path: "/",
+    maxAge: 31_536_000,
+    sameSite: "lax"
+  });
+}
+if (Astro.cookies.has("ods_docs_locale")) {
+  Astro.cookies.delete("ods_docs_locale", { path: "/" });
+}
 const cookieSourcePolicy = Astro.cookies.get("ods_source_policy")?.value;
 const cookieSourceMode = Astro.cookies.get("ods_source")?.value;
 const cookieAutoNonOfficial = Astro.cookies.get("ods_auto_non_official")?.value;
@@ -39,7 +68,6 @@ if (isSourcePolicy(formSourcePolicy)) {
     sameSite: "lax"
   });
 }
-const docsLocale = params.get("docsLocale") || Astro.cookies.get("ods_docs_locale")?.value || undefined;
 const selectedSourceIds = new Set(params.getAll("sourceId"));
 const hasExplicitSourceSelection = params.get("sourceSelection") === "explicit";
 const submittedSourceLanguageIds = new Set(params.getAll("sourceScopeLanguage"));
@@ -58,7 +86,7 @@ const sourceMode: SourceMode =
   effectiveSourcePolicy === "all" ? "all" : "official";
 const autoIncludeNonOfficialWhenNoOfficial =
   effectiveSourcePolicy === "fallback";
-const locale = parsed.locale ?? docsLocale;
+const locale = resolveDocumentationLocale(parsed.locale, uiLanguage);
 const requestedLanguageScope = resolveSearchScope(catalog, {
   languages: parsed.languages,
   sourceMode: "all"
@@ -175,8 +203,11 @@ const suggestionScopes = catalog.languages.map((language) => ({
             <span class="lang-ja">{t("ja", "queryLabel")}</span>
           </h1>
           <div class="header-actions">
-            <fieldset class="lang-switch">
-              <legend class="sr-only">{t(uiLanguage, "uiLanguage")}</legend>
+            <fieldset class="lang-switch" data-language-switch>
+              <legend class="sr-only">
+                <span class="lang-en">{t("en", "uiLanguage")}</span>
+                <span class="lang-ja">{t("ja", "uiLanguage")}</span>
+              </legend>
               <label class:list={["lang-btn", { active: uiLanguage === "en" }]}>
                 <input type="radio" name="ui" value="en" class="sr-only" checked={uiLanguage === "en"} data-ui-radio>
                 EN
@@ -289,7 +320,14 @@ const suggestionScopes = catalog.languages.map((language) => ({
 
           {
             parsed.languages.length > 0 && (
-              <div class="active-tags" data-active-tags aria-label={t(uiLanguage, "activeTags")}>
+              <div
+                class="active-tags"
+                data-active-tags
+                data-localized-aria-label
+                data-label-en={t("en", "activeTags")}
+                data-label-ja={t("ja", "activeTags")}
+                aria-label={t(uiLanguage, "activeTags")}
+              >
                 {parsed.languages.map((lang) => {
                   const langName = catalog.languages.find((l) => l.id === lang)?.name || lang;
                   const languageColor = getLanguageColor(lang);
@@ -336,7 +374,10 @@ const suggestionScopes = catalog.languages.map((language) => ({
                 <span class="lang-ja">{t("ja", "sourcePolicyLabel")}</span>
               </span>
               <fieldset class="seg-toggle source-policy-toggle" aria-labelledby="source-policy-label">
-                <legend class="sr-only">{t(uiLanguage, "sourcePolicyLabel")}</legend>
+                <legend class="sr-only">
+                  <span class="lang-en">{t("en", "sourcePolicyLabel")}</span>
+                  <span class="lang-ja">{t("ja", "sourcePolicyLabel")}</span>
+                </legend>
                 <label class:list={["seg-btn", { active: effectiveSourcePolicy === "official" }]}>
                   <input
                     type="radio"
@@ -376,28 +417,6 @@ const suggestionScopes = catalog.languages.map((language) => ({
               </fieldset>
             </div>
 
-            <div class="filters docs-setting-row">
-              <span class="filter-label" id="docs-locale-label">
-                <span class="lang-en">{t("en", "docsLocale")}</span>
-                <span class="lang-ja">{t("ja", "docsLocale")}</span>
-              </span>
-              <fieldset class="seg-toggle" aria-labelledby="docs-locale-label">
-                <legend class="sr-only">{t(uiLanguage, "docsLocale")}</legend>
-                <label class:list={["seg-btn", { active: !locale }]}>
-                  <input type="radio" name="docsLocale" value="" class="sr-only" checked={!locale} data-docs-radio>
-                  <span class="lang-en">All</span>
-                  <span class="lang-ja">すべて</span>
-                </label>
-                <label class:list={["seg-btn", { active: locale === "en" }]}>
-                  <input type="radio" name="docsLocale" value="en" class="sr-only" checked={locale === "en"} data-docs-radio>
-                  EN
-                </label>
-                <label class:list={["seg-btn", { active: locale === "ja" }]}>
-                  <input type="radio" name="docsLocale" value="ja" class="sr-only" checked={locale === "ja"} data-docs-radio>
-                  JA
-                </label>
-              </fieldset>
-            </div>
           </div>
 
           <details class="source-details">
@@ -504,7 +523,13 @@ const suggestionScopes = catalog.languages.map((language) => ({
 
       {
         hasQuery && (
-          <section class="results" aria-label={t(uiLanguage, "resultsTitle")}>
+          <section
+            class="results"
+            data-localized-aria-label
+            data-label-en={t("en", "resultsTitle")}
+            data-label-ja={t("ja", "resultsTitle")}
+            aria-label={t(uiLanguage, "resultsTitle")}
+          >
             {
               parsed.errors.length > 0 ? null : (
                 <div
@@ -616,7 +641,14 @@ const suggestionScopes = catalog.languages.map((language) => ({
             <span class="lang-en">{t("en", "help")}</span>
             <span class="lang-ja">{t("ja", "help")}</span>
           </h2>
-          <button class="icon-button" value="close" aria-label={t(uiLanguage, "close")}>×</button>
+          <button
+            class="icon-button"
+            value="close"
+            data-localized-aria-label
+            data-label-en={t("en", "close")}
+            data-label-ja={t("ja", "close")}
+            aria-label={t(uiLanguage, "close")}
+          >×</button>
         </div>
         <div class="help-content">
           {

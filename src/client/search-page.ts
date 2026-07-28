@@ -5,10 +5,10 @@ import { initializeSearchPage, warmSearchPage } from "./search-results";
 export async function initializeClientSearchPage(root: Document = document): Promise<void> {
   initializeBackToTop(root);
   initializeSearchControls(root, {
-    onDocsLocaleIntent: async (docsLocale) => {
+    onLanguageIntent: async (docsLocale) => {
       await warmSearchPage(root, docsLocale);
     },
-    onDocsLocaleChange: async (_docsLocale, warmup) => {
+    onLanguageChange: async (_docsLocale, warmup) => {
       await initializeSearchPage(root, fetch, warmup);
     }
   });

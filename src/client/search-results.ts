@@ -172,10 +172,12 @@ export async function initializeSearchPage(
 
   setStatus(status, "loading");
   try {
-    try {
-      await warmup;
-    } catch {
-      // Intent prefetch failures stay silent. The normal request below retries.
+    if (warmup) {
+      try {
+        await warmup;
+      } catch {
+        // Intent prefetch failures stay silent. The normal request below retries.
+      }
     }
     const baseResult = await executeSearch(
       searchRequest(query, docsLocale, requestedSources),

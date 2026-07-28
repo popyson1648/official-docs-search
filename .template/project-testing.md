@@ -57,9 +57,9 @@ Place a 44 CSS-pixel, labelled Search syntax dialog trigger after the visible
 Search submit button. Verify localized hover/keyboard-focus tooltip text, dialog
 focus return, query usability, and no page overflow down to 320 CSS pixels.
 For mobile settings, verify a shared control edge, separate descriptive text and
-control hit targets, and accessible naming.
-Record narrow header edge alignment and the maximum allowed gap between compact
-setting labels and their controls.
+control hit targets, accessible naming, and item-level wrapping driven by
+localized intrinsic widths. Require viewport containment whether a row fits or
+wraps.
 When browser tests replace worker-fetched responses, define how interception is
 made deterministic while retaining separate production-worker coverage.
 For multi-language forms, accept whitespace after commas, add defaults only for
@@ -70,7 +70,7 @@ selection rules across the full palette, marker ownership, shared source-kind
 styling, typography hierarchy, language-only color ownership, split query-chip
 label/remove presentation, removable input-chip target size and keyboard
 behavior, compact successful result counts, 24 CSS-pixel source-control targets,
-and visible keyboard focus for Docs-locale controls.
+and visible keyboard focus for the unified language control.
 Conservatively group qualified reference symbols only across distinct origins,
 preserve every source link, keep ambiguous/proposal records separate, show 15
 groups initially, and test localized incremental disclosure without navigation.
@@ -112,8 +112,9 @@ accessible suggestions (keyboard, pointer, Escape, and IME), and one shared
 no-source/no-result status component.
 The no-source path must not fetch the manifest.
 Under constrained network and CPU conditions, budget the first in-page
-Docs-locale switch separately from a repeated worker-cached switch and require
-no new document request or warm-switch Long Task over 50 ms.
+unified-language switch separately from a repeated worker-cached switch.
+Include typography assets triggered by newly visible localized text, and
+require no new document request or warm-switch Long Task over 50 ms.
 
 ## Generation Safety Coverage
 

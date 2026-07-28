@@ -11,8 +11,9 @@ A release is needed after application, catalog, adapter, generated-index, depend
    `python3 scripts/verify.py --mode ci --full`.
 3. Review every supported path in `public/search-index/manifest.json`: statuses, input/output hashes, versions, counts, gzip/Brotli sizes, attribution, licenses, and known queries.
 4. Confirm all-language coverage, single- and multi-language search,
-   non-official sources, exact and fallback EN/JA Docs locale, partial failure,
-   support-state, mobile, escaping, and safe-link flows.
+   non-official sources, unified EN/JA behavior, explicit `locale:` overrides,
+   Japanese-to-English fallback, partial failure, support-state, mobile,
+   escaping, and safe-link flows.
 5. Run `npm run build && npm start` and confirm the manifest revalidates while content-addressed bundles are gzip/Brotli encoded and immutable.
 6. Deploy the application and its matching `public/search-index/` artifacts together.
 7. Smoke-test original-document links and response headers on the deployed site.

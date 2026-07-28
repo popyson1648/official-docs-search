@@ -52,14 +52,17 @@ Prefer native HTTP caching for content-addressed bundles:
   debounced suggestions and repeated queries.
 - In-page result filters that re-search selected cached bundles without a
   document request.
-- In-page Docs-locale changes instead of loading a new document.
+- In-page unified interface/documentation-language changes instead of loading a
+  new document, with an explicit query-level documentation-locale override
+  where needed.
 
 Defer IndexedDB and Cache API while they duplicate native caching and add quota, eviction, schema, invalidation, service-worker, privacy, and recovery complexity without an offline requirement.
 Revisit for offline search, failed warm-latency targets, or evidence that native caching is not retained.
 
 Record the mobile viewport, CPU and network throttling, first-switch and
 worker-cached switch targets, and Long Task threshold used by automated browser
-verification.
+verification. Include font requests caused by newly visible localized copy when
+typography is part of the product contract.
 Record whether the loading state reserves stable result space and whether its
 motion is CSS-only and suppressed for reduced-motion preferences.
 
