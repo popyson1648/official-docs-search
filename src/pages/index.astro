@@ -4,6 +4,7 @@ import { parseQuery } from "../core/query";
 import type { SourceMode } from "../core/query";
 import { mergeNewLanguageSourceDefaults } from "../core/search-controls";
 import { getKnownLanguageIds, loadCatalog, resolveSearchScope } from "../core/sources";
+import { getLanguageColor } from "../core/language-colors";
 
 export const prerender = false;
 
@@ -490,7 +491,9 @@ const suggestionScopes = catalog.languages.map((language) => ({
                     programmingLanguage: source.language,
                     programmingLanguageName:
                       catalog.languages.find((language) => language.id === source.language)?.name ??
-                      source.language
+                      source.language,
+                    programmingLanguageColor:
+                      getLanguageColor(source.language)
                   })))}
                 >
                   <div
@@ -534,9 +537,11 @@ const suggestionScopes = catalog.languages.map((language) => ({
                       {
                         Array.from({ length: 4 }, (_, index) => (
                           <li class="result-skeleton-card" data-skeleton-index={index}>
-                            <span class="result-skeleton-line result-skeleton-tags"></span>
+                            <span class="result-skeleton-heading">
+                              <span class="result-skeleton-line result-skeleton-title"></span>
+                              <span class="result-skeleton-line result-skeleton-tags"></span>
+                            </span>
                             <span class="result-skeleton-line result-skeleton-source"></span>
-                            <span class="result-skeleton-line result-skeleton-title"></span>
                             <span class="result-skeleton-line result-skeleton-detail"></span>
                           </li>
                         ))

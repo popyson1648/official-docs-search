@@ -1,8 +1,11 @@
+export type ResultSortOrder = "relevance" | "language-asc" | "language-desc";
+
 export interface ResultFilterSource {
   id: string;
   name: string;
   programmingLanguage: string;
   programmingLanguageName?: string;
+  programmingLanguageColor?: string;
 }
 
 export interface ResultSourceFilterSelection {

@@ -32,13 +32,15 @@
    non-interactive text with separately named controls, and define mobile
    control alignment.
 6. Derive exact language/site facets from all matches and re-search cached
-   indexes for the selected source subset.
+   indexes for the selected source subset. Document any result-order choices,
+   default, tie-breaker, and whether changing order causes an index fetch.
 7. Render original HTTPS links, actual locales, locale-fallback and failure
    notices, and explicit unsupported states; document whether source fallback
    is intentionally silent.
-8. Document duplicate-result identity, origin-link preservation, visual
-   hierarchy, incremental disclosure, source-level qualification ownership, and
-   any contextual long-page navigation control.
+8. Document duplicate-result identity, single- and multi-origin title/link
+   structure, language-tag metadata, visual hierarchy, incremental disclosure,
+   source-level qualification ownership, and any contextual long-page
+   navigation control.
 9. Document title qualification and loading-state ownership, including
    `aria-busy`, reduced-motion behavior, and the boundary between verified API
    ownership and prose context.

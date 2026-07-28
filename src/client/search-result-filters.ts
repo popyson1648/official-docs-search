@@ -1,12 +1,16 @@
-import type { ResultFilterSource } from "../core/result-filters";
+import type {
+  ResultFilterSource,
+  ResultSortOrder
+} from "../core/result-filters";
 import type { SearchFacet } from "../core/search";
 import { t } from "../core/i18n";
 
-export type ResultFilterFacet = "language" | "site";
+export type ResultFilterFacet = "language" | "site" | "order";
 
 export interface ResultFilterState {
   languageIds: Set<string>;
   sourceIds: Set<string>;
+  sortOrder: ResultSortOrder;
   activeFacet: ResultFilterFacet;
   open: boolean;
 }
@@ -14,6 +18,7 @@ export interface ResultFilterState {
 export interface ResultFilterChange {
   languageIds: ReadonlySet<string>;
   sourceIds: ReadonlySet<string>;
+  sortOrder: ResultSortOrder;
 }
 
 export interface ResultFilterControl {
@@ -55,9 +60,15 @@ export function initializeResultFilters(
       label: matchingSources.find((source) => source.id === facet.sourceId)?.name ?? facet.sourceName
     }))
   );
+  const orderChoices: FilterChoice[] = [
+    { id: "relevance", label: "sortRelevance" },
+    { id: "language-asc", label: "sortLanguageAscending" },
+    { id: "language-desc", label: "sortLanguageDescending" }
+  ];
   const availableFacets: ResultFilterFacet[] = [
     ...(languageChoices.length > 1 ? (["language"] as const) : []),
-    ...(siteChoices.length > 1 ? (["site"] as const) : [])
+    ...(siteChoices.length > 1 ? (["site"] as const) : []),
+    ...(languageChoices.length > 1 ? (["order"] as const) : [])
   ];
 
   mount.replaceChildren();
@@ -132,7 +143,7 @@ export function initializeResultFilters(
     const button = localizedButton(
       root,
       "result-filter-property",
-      facet === "language" ? "filterLanguage" : "filterSite"
+      facetMessageKey(facet)
     );
     button.dataset.resultFilterFacet = facet;
     propertyGroup.append(button);
@@ -149,16 +160,20 @@ export function initializeResultFilters(
 
   let listening = false;
   let destroyed = false;
+  let isBusy = false;
 
   const notifyChange = () => {
     void options.onChange({
       languageIds: new Set(options.state.languageIds),
-      sourceIds: new Set(options.state.sourceIds)
+      sourceIds: new Set(options.state.sourceIds),
+      sortOrder: options.state.sortOrder
     });
   };
 
   const hasFilters = () =>
-    options.state.languageIds.size > 0 || options.state.sourceIds.size > 0;
+    options.state.languageIds.size > 0 ||
+    options.state.sourceIds.size > 0 ||
+    options.state.sortOrder !== "relevance";
 
   const visibleInlineChildren = () =>
     [...inline.children].filter((element) => (element as HTMLElement).getClientRects().length > 0);
@@ -276,6 +291,13 @@ export function initializeResultFilters(
       {
         facet: "site" as const,
         choices: siteChoices.filter((choice) => options.state.sourceIds.has(choice.id))
+      },
+      {
+        facet: "order" as const,
+        choices:
+          options.state.sortOrder === "relevance"
+            ? []
+            : orderChoices.filter((choice) => choice.id === options.state.sortOrder)
       }
     ].filter(({ choices }) => choices.length > 0);
 
@@ -298,13 +320,22 @@ export function initializeResultFilters(
       appendLocalizedText(
         root,
         category,
-        t("en", facet === "language" ? "filterLanguage" : "filterSite"),
-        t("ja", facet === "language" ? "filterLanguage" : "filterSite")
+        t("en", facetMessageKey(facet)),
+        t("ja", facetMessageKey(facet))
       );
 
       const value = root.createElement("span");
       value.className = "result-filter-active-value";
-      value.textContent = choices.map((choice) => choice.label).join(", ");
+      if (facet === "order") {
+        appendLocalizedText(
+          root,
+          value,
+          choices.map((choice) => t("en", choice.label)).join(", "),
+          choices.map((choice) => t("ja", choice.label)).join(", ")
+        );
+      } else {
+        value.textContent = choices.map((choice) => choice.label).join(", ");
+      }
       label.append(category, value);
 
       const remove = root.createElement("button");
@@ -319,11 +350,11 @@ export function initializeResultFilters(
         remove,
         t("en", "removeFilter").replace(
           "{filter}",
-          t("en", facet === "language" ? "filterLanguage" : "filterSite")
+          t("en", facetMessageKey(facet))
         ),
         t("ja", "removeFilter").replace(
           "{filter}",
-          t("ja", facet === "language" ? "filterLanguage" : "filterSite")
+          t("ja", facetMessageKey(facet))
         ),
         true
       );
@@ -353,14 +384,23 @@ export function initializeResultFilters(
     appendLocalizedText(
       root,
       choiceLabel,
-      t("en", activeFacet === "language" ? "filterLanguage" : "filterSite"),
-      t("ja", activeFacet === "language" ? "filterLanguage" : "filterSite"),
+      t("en", facetMessageKey(activeFacet)),
+      t("ja", facetMessageKey(activeFacet)),
       true
     );
 
-    const choices = activeFacet === "language" ? languageChoices : siteChoices;
+    const choices =
+      activeFacet === "language"
+        ? languageChoices
+        : activeFacet === "site"
+          ? siteChoices
+          : orderChoices;
     const selectedIds =
-      activeFacet === "language" ? options.state.languageIds : options.state.sourceIds;
+      activeFacet === "language"
+        ? options.state.languageIds
+        : activeFacet === "site"
+          ? options.state.sourceIds
+          : new Set([options.state.sortOrder]);
     const choiceGroup = root.createElement("div");
     choiceGroup.className = "result-filter-choices";
     choiceGroup.setAttribute("role", "group");
@@ -374,7 +414,16 @@ export function initializeResultFilters(
       button.dataset.resultFilterValue = choice.id;
       button.classList.toggle("on", selectedIds.has(choice.id));
       button.setAttribute("aria-pressed", String(selectedIds.has(choice.id)));
-      button.textContent = choice.label;
+      if (activeFacet === "order") {
+        appendLocalizedText(
+          root,
+          button,
+          t("en", choice.label),
+          t("ja", choice.label)
+        );
+      } else {
+        button.textContent = choice.label;
+      }
       choiceGroup.append(button);
     }
     panel.append(choiceGroup);
@@ -383,13 +432,18 @@ export function initializeResultFilters(
   trigger.addEventListener("click", openPanel);
   back.addEventListener("click", () => closePanel(true));
   shell.addEventListener("click", (event) => {
+    if (isBusy) return;
     const target = event.target;
     if (!(target instanceof Element)) return;
 
     const facetButton = target.closest<HTMLButtonElement>("[data-result-filter-facet]");
     if (facetButton) {
       options.state.activeFacet =
-        facetButton.dataset.resultFilterFacet === "site" ? "site" : "language";
+        facetButton.dataset.resultFilterFacet === "site"
+          ? "site"
+          : facetButton.dataset.resultFilterFacet === "order"
+            ? "order"
+            : "language";
       renderFacet();
       morphControls(true);
       return;
@@ -399,6 +453,13 @@ export function initializeResultFilters(
     if (choice) {
       const value = choice.dataset.resultFilterValue;
       if (!value) return;
+      if (choice.dataset.resultFilterChoice === "order") {
+        options.state.sortOrder = parseSortOrder(value);
+        renderFacet();
+        renderApplied();
+        notifyChange();
+        return;
+      }
       const selectedIds =
         choice.dataset.resultFilterChoice === "site"
           ? options.state.sourceIds
@@ -414,6 +475,13 @@ export function initializeResultFilters(
 
     const remove = target.closest<HTMLButtonElement>("[data-result-filter-remove]");
     if (remove) {
+      if (remove.dataset.resultFilterRemove === "order") {
+        options.state.sortOrder = "relevance";
+        renderFacet();
+        renderApplied();
+        notifyChange();
+        return;
+      }
       const selectedIds =
         remove.dataset.resultFilterRemove === "site"
           ? options.state.sourceIds
@@ -428,6 +496,7 @@ export function initializeResultFilters(
     if (target.closest("[data-result-filter-clear]")) {
       options.state.languageIds.clear();
       options.state.sourceIds.clear();
+      options.state.sortOrder = "relevance";
       renderFacet();
       renderApplied();
       notifyChange();
@@ -456,6 +525,8 @@ export function initializeResultFilters(
   return {
     setBusy(busy: boolean) {
       shell.setAttribute("aria-busy", String(busy));
+      shell.setAttribute("aria-disabled", String(busy));
+      isBusy = busy;
     },
     destroy() {
       if (destroyed) return;
@@ -545,4 +616,15 @@ function uniqueChoices(choices: FilterChoice[]): FilterChoice[] {
     if (!byId.has(choice.id)) byId.set(choice.id, choice);
   }
   return [...byId.values()].sort((left, right) => left.label.localeCompare(right.label));
+}
+
+function facetMessageKey(facet: ResultFilterFacet): string {
+  if (facet === "language") return "filterLanguage";
+  if (facet === "site") return "filterSite";
+  return "filterOrder";
+}
+
+function parseSortOrder(value: string): ResultSortOrder {
+  if (value === "language-asc" || value === "language-desc") return value;
+  return "relevance";
 }

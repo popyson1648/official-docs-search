@@ -6,6 +6,7 @@ import {
   resolveSearchScope
 } from "../src/core/sources";
 import { normalizeLanguageId } from "../src/core/query";
+import { languageColors } from "../src/core/language-colors";
 
 const catalog = loadCatalog();
 const languages = catalog.languages;
@@ -36,6 +37,20 @@ describe("docs catalog integrity", () => {
   it("has unique language ids", () => {
     const ids = languages.map((language) => language.id);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("gives every supported language a GitHub Linguist color", () => {
+    expect(languages).toHaveLength(44);
+    expect(Object.keys(languageColors).sort()).toEqual(
+      languages.map((language) => language.id).sort()
+    );
+    for (const language of languages) {
+      expect(languageColors[language.id], `${language.id} color`).toMatch(
+        /^#[0-9a-f]{6}$/i
+      );
+    }
+    expect(languageColors.cpp).toBe("#f34b7d");
+    expect(languageColors.javascript).toBe("#f1e05a");
   });
 
   it("has globally unique source ids", () => {

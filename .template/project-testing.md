@@ -59,11 +59,11 @@ When browser tests replace worker-fetched responses, define how interception is
 made deterministic while retaining separate production-worker coverage.
 For multi-language forms, accept whitespace after commas, add defaults only for
 newly introduced languages, and preserve checked disabled non-official Sources.
-Fix standalone result classification/attribution/title/annotation order,
-user-facing language names, shared source-kind badge styling, typography
-hierarchy, removable input-chip target size and keyboard behavior, compact
-successful result counts, 24 CSS-pixel source-control targets, and visible
-keyboard focus for Docs-locale controls.
+Fix one title/tag/source-link structure across single- and multi-origin results,
+user-facing language names, language-color authority, shared source-kind
+styling, typography hierarchy, removable input-chip target size and keyboard
+behavior, compact successful result counts, 24 CSS-pixel source-control
+targets, and visible keyboard focus for Docs-locale controls.
 Conservatively group qualified reference symbols only across distinct origins,
 preserve every source link, keep ambiguous/proposal records separate, show 15
 groups initially, and test localized incremental disclosure without navigation.
@@ -78,7 +78,8 @@ wording, a persistent short `js promise all` example, one multi-token AND
 explanation in search help, and one compact fallback explanation with a
 semantic source list instead of repeated sentences.
 Require exact full-match language/site facets, OR-within and AND-across
-selection, cached in-page re-search, one removable applied pill per facet,
+selection, cached in-page re-search, any supported stable result ordering
+without unnecessary index fetches, one removable applied pill per facet,
 clear-all behavior, and current counts and notices. Match the approved
 reference interaction for overlay opening without result reflow, persistent
 panel state during property and choice changes, outside-pointer dismissal,

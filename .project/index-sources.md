@@ -8,6 +8,10 @@ Do not store or republish documentation bodies.
 records each input URL and hash, HTTP validators, retrieval time, output hash,
 version, attribution, license URL, cadence, known queries, record count, and
 compressed size.
+A separate static map pins the current GitHub Linguist display color for every
+catalog language without changing the search-index catalog hash.
+The result UI uses it only as a tag accent so light and dark palette values do
+not replace readable theme text.
 
 Fetch only reviewed public static indexes, tables of contents, sitemaps, and
 structured metadata.

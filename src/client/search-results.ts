@@ -2,11 +2,13 @@ import type { RankedSearchRecord } from "../core/search";
 import { getDocumentKindLabel, getSourceKindLabel, t } from "../core/i18n";
 import {
   groupSearchResults,
+  orderSearchResultGroups,
   type SearchResultGroup
 } from "../core/result-groups";
 import {
   resolveResultSourceFilters,
-  type ResultFilterSource
+  type ResultFilterSource,
+  type ResultSortOrder
 } from "../core/result-filters";
 import {
   runSearchRequest,
@@ -52,6 +54,7 @@ const RESULT_BATCH_SIZE = 15;
 
 interface PageRequestedSearchSource extends RequestedSearchSource, ResultFilterSource {
   programmingLanguageName?: string;
+  programmingLanguageColor?: string;
 }
 
 interface ResultFilterSession extends ResultFilterState {
@@ -162,8 +165,12 @@ export async function initializeSearchPage(
       sourceNotesMount,
       paginationMount,
       displayedResult,
-      requestedSources
+      requestedSources,
+      filterSession.sortOrder
     );
+    let activeResult = displayedResult;
+    let appliedLanguageIds = new Set(filterSession.languageIds);
+    let appliedSourceIds = new Set(filterSession.sourceIds);
     resultFilterControls.get(root)?.destroy();
     let filterControl: ResultFilterControl | undefined;
     filterControl = initializeResultFilters(root, filterMount, {
@@ -171,24 +178,36 @@ export async function initializeSearchPage(
       facets: baseResult.facets,
       state: filterSession,
       onChange: async (selection) => {
+        const sourceSelectionChanged =
+          !setsEqual(appliedLanguageIds, selection.languageIds) ||
+          !setsEqual(appliedSourceIds, selection.sourceIds);
         filterSession.languageIds = new Set(selection.languageIds);
         filterSession.sourceIds = new Set(selection.sourceIds);
+        filterSession.sortOrder = selection.sortOrder;
         const current = resolveResultSourceFilters(matchingSources, filterSession);
         filterSession.languageIds = current.languageIds;
         filterSession.sourceIds = current.sourceIds;
         const filterSequence = nextSearchSequence(root);
-        setStatus(status, "loading");
         filterControl?.setBusy(true);
         try {
-          const filteredResult =
-            current.sources.length === 0
-              ? emptyRuntimeResult()
-              : await executeSearch(
-                  searchRequest(query, results.dataset.docsLocale ?? docsLocale, current.sources),
-                  root,
-                  fetcher
-                );
+          let filteredResult = activeResult;
+          if (sourceSelectionChanged) {
+            setStatus(status, "loading");
+            filteredResult =
+              current.sources.length === 0
+                ? emptyRuntimeResult()
+                : await executeSearch(
+                    searchRequest(query, results.dataset.docsLocale ?? docsLocale, current.sources),
+                    root,
+                    fetcher
+                  );
+          }
           if (searchSequences.get(root) !== filterSequence) return;
+          if (sourceSelectionChanged) {
+            activeResult = filteredResult;
+            appliedLanguageIds = new Set(filterSession.languageIds);
+            appliedSourceIds = new Set(filterSession.sourceIds);
+          }
           renderRuntimeResult(
             root,
             status,
@@ -197,7 +216,8 @@ export async function initializeSearchPage(
             sourceNotesMount,
             paginationMount,
             filteredResult,
-            requestedSources
+            requestedSources,
+            filterSession.sortOrder
           );
           recordDuration(results, startedAt);
         } catch {
@@ -261,6 +281,7 @@ function getResultFilterSession(
     key,
     languageIds: new Set(),
     sourceIds: new Set(),
+    sortOrder: "relevance",
     activeFacet: "language",
     open: false
   };
@@ -303,7 +324,8 @@ function renderRuntimeResult(
   sourceNotesMount: HTMLElement,
   paginationMount: HTMLElement,
   result: SearchRuntimeResult,
-  requestedSources: PageRequestedSearchSource[]
+  requestedSources: PageRequestedSearchSource[],
+  sortOrder: ResultSortOrder
 ): SearchPageOutcome {
   const unsupportedSources = result.unavailableSources.map((source) => source.name);
   const fallbackSources = result.fallbackSources.map((source) => source.name);
@@ -322,12 +344,21 @@ function renderRuntimeResult(
       source.programmingLanguageName ?? source.programmingLanguage
     ])
   );
+  const languageColors = new Map(
+    requestedSources.flatMap((source) =>
+      source.programmingLanguageColor
+        ? [[source.programmingLanguage, source.programmingLanguageColor] as const]
+        : []
+    )
+  );
+  const orderedGroups = orderSearchResultGroups(groups, languageNames, sortOrder);
   renderResultGroups(
     root,
     list,
     paginationMount,
-    groups,
-    languageNames
+    orderedGroups,
+    languageNames,
+    languageColors
   );
   if (result.records.length === 0) {
     setStatus(status, "empty");
@@ -374,7 +405,8 @@ function recordDuration(element: HTMLElement, startedAt: number | undefined): vo
 function renderResultGroup(
   root: Document,
   group: SearchResultGroup,
-  languageName: string
+  languageName: string,
+  languageColor: string | undefined
 ): HTMLLIElement {
   const record = group.records[0];
   const item = root.createElement("li");
@@ -390,59 +422,18 @@ function renderResultGroup(
   ].join(" ");
   item.dataset.resultGroupSize = String(group.records.length);
 
-  const classification = root.createElement("div");
-  classification.className = "result-classification";
-  classification.append(
-    textPart(root, languageName, "result-classification-tag")
-  );
-  if (group.records.length > 1) {
-    const sourceCount = root.createElement("span");
-    sourceCount.className = "result-classification-tag";
-    appendLocalizedText(
-      root,
-      sourceCount,
-      t("en", "resultReferenceCount").replace(
-        "{count}",
-        String(group.records.length)
-      ),
-      t("ja", "resultReferenceCount").replace(
-        "{count}",
-        String(group.records.length)
-      )
-    );
-    classification.append(sourceCount);
-  } else {
-    classification.append(
-      textPart(root, record.docsLocale.toUpperCase(), "result-classification-tag"),
-      sourceKindPart(root, record.sourceKind)
-    );
-    if (record.documentKind && record.documentKind !== "reference") {
-      classification.append(documentKindPart(root, record.documentKind));
-    }
-  }
-
+  const titleRow = root.createElement("div");
+  titleRow.className = "result-title-row";
   const heading = root.createElement("h2");
-  if (group.records.length > 1) {
-    item.classList.add("result-item-grouped");
-    heading.textContent = group.title;
-    item.append(
-      classification,
-      heading,
-      renderGroupedSources(root, group.records)
-    );
-  } else {
-    const attribution = root.createElement("div");
-    attribution.className = "result-attribution";
-    attribution.append(
-      textPart(root, record.sourceName, "result-source-name"),
-      textPart(root, record.url, "result-url")
-    );
+  heading.textContent = group.title;
+  const languageTag = textPart(root, languageName, "result-language-tag");
+  if (languageColor) {
+    languageTag.style.setProperty("--language-color", languageColor);
+  }
+  titleRow.append(heading, languageTag);
 
-    const link = externalResultLink(root, record);
-    link.textContent = record.title;
-    heading.append(link);
-
-    item.append(classification, attribution, heading);
+  item.append(titleRow, renderGroupedSources(root, group.records));
+  if (group.records.length === 1) {
     const annotations = renderRecordAnnotations(root, record);
     if (annotations.childElementCount > 0) item.append(annotations);
   }
@@ -472,6 +463,9 @@ function renderGroupedSources(
       textPart(root, record.docsLocale.toUpperCase(), "result-classification-tag"),
       sourceKindPart(root, record.sourceKind)
     );
+    if (record.documentKind && record.documentKind !== "reference") {
+      metadata.append(documentKindPart(root, record.documentKind));
+    }
     if (record.section) {
       metadata.append(textPart(root, record.section, "result-group-source-section"));
     }
@@ -501,9 +495,6 @@ function renderRecordAnnotations(
 ): HTMLDivElement {
   const annotations = root.createElement("div");
   annotations.className = "result-annotations";
-  if (record.section) {
-    annotations.append(textPart(root, record.section, "result-section"));
-  }
   if (record.proposalStatus) {
     const status = root.createElement("span");
     status.className = "result-proposal-status";
@@ -603,13 +594,15 @@ function renderResultGroups(
   list: HTMLOListElement,
   paginationMount: HTMLElement,
   groups: SearchResultGroup[],
-  languageNames: ReadonlyMap<string, string>
+  languageNames: ReadonlyMap<string, string>,
+  languageColors: ReadonlyMap<string, string>
 ): void {
   const items = groups.map((group) =>
     renderResultGroup(
       root,
       group,
-      languageNames.get(group.programmingLanguage) ?? group.programmingLanguage
+      languageNames.get(group.programmingLanguage) ?? group.programmingLanguage,
+      languageColors.get(group.programmingLanguage)
     )
   );
   list.replaceChildren(...items.slice(0, RESULT_BATCH_SIZE));
@@ -908,8 +901,16 @@ function parseRequestedSources(value: string | undefined): PageRequestedSearchSo
       programmingLanguage: source.programmingLanguage,
       ...(typeof source.programmingLanguageName === "string"
         ? { programmingLanguageName: source.programmingLanguageName }
+        : {}),
+      ...(typeof source.programmingLanguageColor === "string" &&
+      /^#[0-9a-f]{6}$/i.test(source.programmingLanguageColor)
+        ? { programmingLanguageColor: source.programmingLanguageColor }
         : {})
     }));
+}
+
+function setsEqual<T>(left: ReadonlySet<T>, right: ReadonlySet<T>): boolean {
+  return left.size === right.size && [...left].every((value) => right.has(value));
 }
 
 async function executeSearch(

@@ -22,7 +22,10 @@
 - `src/core/search-runtime.ts`: fetches and validates manifest-selected bundles and isolates unavailable, failed, or malformed sources.
 - `src/core/result-filters.ts`: resolves language and source facet selections with OR-within and AND-across semantics.
 - `src/core/result-groups.ts`: conservatively groups equivalent qualified
-  reference symbols while preserving ranked origin links.
+  reference symbols and stably orders groups by catalog language name when
+  requested.
+- `src/core/language-colors.ts`: pins the GitHub Linguist display palette
+  separately from index-affecting source metadata.
 - `src/core/highlight.ts` and `src/core/search-controls.ts`: pure query-highlight and preference/selection helpers.
 - `src/client/search-controls.ts`: binds query, debounced accessible
   suggestions, IME handling, in-page locale, automatic fallback, source,
@@ -71,11 +74,15 @@
    controls with accessible names; mobile controls share a fixed right edge.
 6. The runtime derives exact language/site facets from all matches; applied
    filters re-search the cached indexes for the selected source subset.
+   Result order stays relevance-first by default and can switch in place to
+   catalog language name ascending or descending.
 7. While the worker is busy, the result region exposes `aria-busy`, a hidden
    status announcement, and a reduced-motion-safe result-card skeleton.
-8. The client groups only unambiguous duplicate reference symbols, renders each
-   origin as a compact subordinate link beneath one title, shows the first 15
-   groups, and discloses later batches without navigation. Repeated source
+8. The client groups only unambiguous duplicate reference symbols and renders
+   every single- or multi-origin result as a non-link title, an adjacent
+   Linguist-colored language tag, and compact subordinate source links.
+   It shows the first 15 groups and discloses later batches without navigation.
+   Repeated source
    qualifications appear once in a small borderless disclosure above results.
    A contextual Top control appears only after the search panel leaves view.
 9. The client renders original HTTPS links, qualified result titles, actual

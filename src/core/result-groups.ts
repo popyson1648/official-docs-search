@@ -1,4 +1,5 @@
 import type { RankedSearchRecord } from "./search";
+import type { ResultSortOrder } from "./result-filters";
 
 export interface SearchResultGroup {
   title: string;
@@ -37,6 +38,37 @@ export function groupSearchResults(
   }
 
   return groups;
+}
+
+/**
+ * Orders result groups by catalog language name without disturbing relevance
+ * order inside the same language.
+ */
+export function orderSearchResultGroups(
+  groups: readonly SearchResultGroup[],
+  languageNames: ReadonlyMap<string, string>,
+  order: ResultSortOrder
+): SearchResultGroup[] {
+  if (order === "relevance") return [...groups];
+
+  const direction = order === "language-desc" ? -1 : 1;
+  const collator = new Intl.Collator("en", {
+    numeric: true,
+    sensitivity: "base"
+  });
+  return groups
+    .map((group, relevanceIndex) => ({ group, relevanceIndex }))
+    .sort((left, right) => {
+      const leftName =
+        languageNames.get(left.group.programmingLanguage) ??
+        left.group.programmingLanguage;
+      const rightName =
+        languageNames.get(right.group.programmingLanguage) ??
+        right.group.programmingLanguage;
+      const languageOrder = collator.compare(leftName, rightName) * direction;
+      return languageOrder || left.relevanceIndex - right.relevanceIndex;
+    })
+    .map(({ group }) => group);
 }
 
 function referenceGroupKey(record: RankedSearchRecord): string | undefined {

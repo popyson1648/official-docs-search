@@ -7,6 +7,8 @@ Do not store or republish documentation bodies.
 Make the generated manifest the canonical per-source inventory for input and
 output hashes, validators, retrieval time, versions, attribution, licenses,
 cadence, known queries, counts, and sizes.
+Document any catalog-level visual metadata such as language colors, its
+authority, update policy, and accessible use in the interface.
 
 Fetch only reviewed static indexes, tables of contents, sitemaps, or structured
 metadata with an identifying user agent, bounded concurrency, timeouts, and

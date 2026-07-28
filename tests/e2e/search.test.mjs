@@ -465,7 +465,7 @@ test("[smoke] the visible JavaScript example performs a multi-token AND search",
       items.every((item) => {
         const searchable = [
           item.querySelector("h2")?.textContent,
-          item.querySelector(".result-section")?.textContent
+          item.querySelector(".result-group-source-section")?.textContent
         ]
           .join(" ")
           .toLocaleLowerCase();
@@ -480,7 +480,7 @@ test("[smoke] Sphinx section context renders as plain text instead of raw markup
   const page = await newPage();
   await gotoQuery(page, "python pathlib glob", "&docsLocale=ja&ui=ja");
   await waitForResults(page);
-  const section = await page.$eval(".result-section", (element) => ({
+  const section = await page.$eval(".result-group-source-section", (element) => ({
     text: element.textContent,
     html: element.innerHTML
   }));
@@ -579,7 +579,8 @@ test("[smoke] query and search-index strings render as text without executing ma
   await gotoQuery(page, queryPayload);
   await waitForResults(page);
   const rendered = await page.evaluate(() => {
-    const link = document.querySelector(".result-item h2 a");
+    const item = document.querySelector(".result-item");
+    const link = item?.querySelector(".result-group-source");
     return {
       executed: globalThis.__odsXss,
       injectedElements: [
@@ -593,12 +594,13 @@ test("[smoke] query and search-index strings render as text without executing ma
       ].filter((id) => document.getElementById(id)),
       queryValue: document.querySelector("[data-query-input]")?.value,
       highlightText: document.querySelector("[data-query-highlight]")?.textContent,
-      title: link?.textContent,
+      title: item?.querySelector("h2")?.textContent,
       href: link?.href,
-      classification: document.querySelector(".result-classification")?.textContent,
-      attribution: document.querySelector(".result-attribution")?.textContent,
-      visibleUrl: document.querySelector(".result-url")?.textContent,
-      section: document.querySelector(".result-section")?.textContent,
+      language: item?.querySelector(".result-language-tag")?.textContent,
+      source: item?.querySelector(".result-source-name")?.textContent,
+      metadata: item?.querySelector(".result-group-source-meta")?.textContent,
+      visibleDomain: item?.querySelector(".result-group-source-domain")?.textContent,
+      section: item?.querySelector(".result-group-source-section")?.textContent,
       qualification: document.querySelector(
         "[data-result-source-notes] li span"
       )?.textContent
@@ -610,12 +612,9 @@ test("[smoke] query and search-index strings render as text without executing ma
   assert.equal(rendered.queryValue, queryPayload);
   assert.equal(rendered.highlightText, queryPayload);
   assert.equal(rendered.title, titlePayload);
+  assert.equal(rendered.source, sourcePayload);
   assert.match(
-    rendered.attribution,
-    new RegExp(sourcePayload.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-  );
-  assert.match(
-    rendered.classification,
+    rendered.metadata,
     new RegExp(localePayload.toUpperCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
   );
   assert.equal(rendered.section, sectionPayload);
@@ -624,7 +623,9 @@ test("[smoke] query and search-index strings render as text without executing ma
     new RegExp(qualificationPayload.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
   );
   assert.equal(new URL(rendered.href).protocol, "https:");
-  assert.match(rendered.visibleUrl, /%22%3E%3Cimg/);
+  assert.match(rendered.href, /%22%3E%3Cimg/);
+  assert.equal(rendered.visibleDomain, "docs.python.org");
+  assert.equal(rendered.language, "Python");
   await page.close();
 });
 
@@ -684,7 +685,7 @@ test("[catalog] C++ exact, fuzzy, and Japanese community searches return complet
   const paper = await page.$eval(
     '.result-item[data-source-id="wg21-papers"]',
     (item) => ({
-      href: item.querySelector("h2 a")?.href,
+      href: item.querySelector(".result-group-source")?.href,
       documentKind: item.querySelector(".document-kind")?.textContent,
       status: item.querySelector(".result-proposal-status")?.textContent,
       warning: [...item.querySelectorAll(".result-qualification")]
@@ -782,7 +783,7 @@ test("[layout] duplicate reference symbols group by source and long results disc
           sort.getBoundingClientRect().bottom
         : undefined,
       languageLabel: sort
-        ?.querySelector(".result-classification-tag")
+        ?.querySelector(".result-language-tag")
         ?.textContent?.trim(),
       filterText: filter?.querySelector(".lang-ja")?.textContent?.trim(),
       filterWidth: filterRect?.width,
@@ -959,7 +960,7 @@ test("[smoke] Japanese interface labels use user-facing names", async () => {
   );
   assert.equal(
     await page.$eval(
-      ".result-classification-tag",
+      ".result-language-tag",
       (element) => element.textContent
     ),
     "C++"
@@ -1383,6 +1384,85 @@ test("[filters] result filters narrow a multi-language search by language and si
   assert.equal(
     await page.evaluate((timeOrigin) => performance.timeOrigin === timeOrigin, initialPageIdentity.timeOrigin),
     true
+  );
+  await page.close();
+});
+
+test("[filters] result order switches between relevance and language name without navigation", async () => {
+  const page = await newPage();
+  await page.goto(
+    `${app.baseUrl}/?q=${encodeURIComponent(
+      "rust, ts generic source:all"
+    )}&ui=ja&docsLocale=en`,
+    { waitUntil: "domcontentloaded" }
+  );
+  await waitForResults(page);
+  const identity = await page.evaluate(() => ({
+    url: location.href,
+    timeOrigin: performance.timeOrigin
+  }));
+
+  await page.click("[data-result-filter-open]");
+  await page.click('[data-result-filter-facet="order"]');
+  assert.deepEqual(
+    await page.$$eval(
+      '[data-result-filter-choice="order"] .lang-ja',
+      (labels) => labels.map((label) => label.textContent)
+    ),
+    ["関連度順", "言語名の昇順", "言語名の降順"]
+  );
+
+  const assertLanguageOrder = async (expectedDirection) => {
+    const languages = await page.$$eval(".result-item", (items) =>
+      items.map((item) => item.dataset.language)
+    );
+    const rank = { rust: 0, typescript: 1 };
+    for (let index = 1; index < languages.length; index += 1) {
+      const comparison = rank[languages[index - 1]] - rank[languages[index]];
+      assert.ok(
+        expectedDirection === "asc" ? comparison <= 0 : comparison >= 0,
+        `${languages.join(", ")} was not ${expectedDirection}`
+      );
+    }
+  };
+
+  await page.click(
+    '[data-result-filter-choice="order"][data-result-filter-value="language-asc"]'
+  );
+  await waitForResultFilter(page);
+  await assertLanguageOrder("asc");
+  assert.equal(
+    await page.$eval(
+      '[data-result-filter-active-facet="order"] .result-filter-active-value .lang-ja',
+      (element) => element.textContent
+    ),
+    "言語名の昇順"
+  );
+
+  await page.click(
+    '[data-result-filter-choice="order"][data-result-filter-value="language-desc"]'
+  );
+  await waitForResultFilter(page);
+  await assertLanguageOrder("desc");
+
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      url: location.href,
+      timeOrigin: performance.timeOrigin,
+      titleLinks: document.querySelectorAll(".result-item h2 a").length,
+      resultCount: document.querySelectorAll(".result-item").length,
+      sourceLists: document.querySelectorAll(".result-item .result-group-sources").length,
+      languageTags: document.querySelectorAll(
+        ".result-title-row > h2 + .result-language-tag"
+      ).length
+    })),
+    {
+      ...identity,
+      titleLinks: 0,
+      resultCount: await page.$$eval(".result-item", (items) => items.length),
+      sourceLists: await page.$$eval(".result-item", (items) => items.length),
+      languageTags: await page.$$eval(".result-item", (items) => items.length)
+    }
   );
   await page.close();
 });
@@ -2145,7 +2225,7 @@ test("[catalog] every admitted non-official source renders a qualified safe resu
       );
       const link =
         item?.querySelector(`[data-result-source-id="${expectedSourceId}"]`) ??
-        item?.querySelector("h2 a");
+        item?.querySelector(".result-group-source");
       const sourceOption = document
         .querySelector(`input[value="${expectedSourceId}"]`)
         ?.closest(".source-option");
@@ -2451,17 +2531,17 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
       const item = document.querySelector(
         '.result-item[data-source-id="typescript-deep-dive"]'
       );
-      const classification = item.querySelector(".result-classification");
-      const resultKind = classification.querySelector(".source-kind");
+      const titleRow = item.querySelector(".result-title-row");
+      const title = titleRow.querySelector("h2");
+      const languageTag = titleRow.querySelector(".result-language-tag");
+      const resultKind = item.querySelector(".result-group-source-meta .source-kind");
       const sourceKind = document
         .querySelector('input[value="typescript-deep-dive"]')
         .closest(".source-option")
         .querySelector(".source-kind");
-      const title = item.querySelector("h2 a");
-      const attribution = item.querySelector(".result-attribution");
+      const sourceLink = item.querySelector(".result-group-source");
       const sourceName = item.querySelector(".result-source-name");
-      const url = item.querySelector(".result-url");
-      const annotations = item.querySelector(".result-annotations");
+      const domain = item.querySelector(".result-group-source-domain");
       const qualification = document.querySelector(
         "[data-result-source-notes] li span"
       );
@@ -2488,18 +2568,25 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
       };
       return {
         childOrder: [...item.children].map((element) =>
-          element.tagName === "H2" ? "result-title" : element.className
+          element.className
         ),
-        classificationOrder: [...classification.children].map(
-          (element) => element.className
+        titleRowOrder: [...titleRow.children].map(
+          (element) => element.tagName === "H2" ? "result-title" : element.className
         ),
-        attributionOrder: [...attribution.children].map((element) => element.className),
-        annotationOrder: [...annotations.children].map((element) => element.className),
+        titleLinkCount: title.querySelectorAll("a").length,
+        sourceLinkCount: item.querySelectorAll(".result-group-source").length,
+        sourceLinkTarget: sourceLink.target,
+        sourceLinkRel: sourceLink.rel,
+        languageColor: getComputedStyle(languageTag)
+          .getPropertyValue("--language-color")
+          .trim(),
+        languageDotColor: getComputedStyle(languageTag, "::before").backgroundColor,
         resultKind: styles(resultKind),
         sourceKind: styles(sourceKind),
         title: styles(title),
+        languageTag: styles(languageTag),
         sourceName: styles(sourceName),
-        url: styles(url),
+        domain: styles(domain),
         qualification: styles(qualification),
         chip: styles(chip),
         chipRemove: styles(chipRemove),
@@ -2510,18 +2597,19 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
     });
 
     assert.deepEqual(layout.childOrder, [
-      "result-classification",
-      "result-attribution",
+      "result-title-row",
+      "result-group-sources"
+    ]);
+    assert.deepEqual(layout.titleRowOrder, [
       "result-title",
-      "result-annotations"
+      "result-language-tag"
     ]);
-    assert.deepEqual(layout.classificationOrder, [
-      "result-classification-tag",
-      "result-classification-tag",
-      "source-kind"
-    ]);
-    assert.deepEqual(layout.attributionOrder, ["result-source-name", "result-url"]);
-    assert.deepEqual(layout.annotationOrder, ["result-section"]);
+    assert.equal(layout.titleLinkCount, 0);
+    assert.equal(layout.sourceLinkCount, 1);
+    assert.equal(layout.sourceLinkTarget, "_blank");
+    assert.match(layout.sourceLinkRel, /noopener/);
+    assert.equal(layout.languageColor.toLowerCase(), "#3178c6");
+    assert.equal(layout.languageDotColor, "rgb(49, 120, 198)");
     assert.equal(layout.resultKind.backgroundColor, layout.sourceKind.backgroundColor);
     assert.equal(layout.resultKind.borderRadius, layout.sourceKind.borderRadius);
     assert.equal(layout.resultKind.borderColor, layout.sourceKind.borderColor);
@@ -2530,9 +2618,9 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
     assert.equal(layout.resultKind.minHeight, layout.sourceKind.minHeight);
     assert.ok(layout.title.fontSize >= layout.qualification.fontSize + 5);
     assert.ok(layout.title.fontSize > layout.sourceName.fontSize);
-    assert.ok(layout.sourceName.fontSize > layout.url.fontSize);
+    assert.ok(layout.sourceName.fontSize > layout.domain.fontSize);
     assert.notEqual(layout.title.color, layout.qualification.color);
-    assert.ok(Number.parseFloat(layout.url.borderLeftWidth) > 0);
+    assert.notEqual(layout.languageTag.backgroundColor, "rgba(0, 0, 0, 0)");
     assert.ok(layout.chip.height <= 30, `chip height was ${layout.chip.height}px at ${width}px`);
     assert.ok(Number.parseFloat(layout.chip.borderRadius) >= layout.chip.height / 2);
     assert.ok(layout.chipRemove.width >= 24 && layout.chipRemove.height >= 24);

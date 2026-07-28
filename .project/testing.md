@@ -89,10 +89,12 @@ The no-source path must not request the manifest.
 Multi-language form coverage accepts whitespace after commas, adds default
 Sources only for newly introduced languages, and preserves checked non-official
 Sources while their controls are disabled.
-Result-layout coverage fixes standalone classification/source-and-URL/title/
-annotation order, user-facing catalog language names, shared source-kind badge
-styling, title-to-annotation typography hierarchy, removable input-chip
-dimensions, keyboard removal, and compact successful result counts. Compact
+Result-layout coverage requires the same non-link title, adjacent colored
+language tag, and subordinate source-link structure for single- and
+multi-origin results. It also fixes user-facing catalog language names,
+Linguist color values, source-kind styling, title-to-metadata typography,
+removable input-chip dimensions, keyboard removal, and compact successful
+result counts. Compact
 source controls retain 24 CSS-pixel targets, and Docs-locale and chip-removal
 controls expose visible keyboard focus.
 Duplicate-result coverage conservatively groups only qualified reference
@@ -118,8 +120,9 @@ No generic Japanese-availability notice appears before searching.
 Result-specific fallback details and per-source availability labels remain.
 Result-filter coverage requires exact language and site facets from the full
 matching set, OR behavior within a facet, AND behavior across facets, cached
-in-page re-search, one removable applied pill per facet, clear-all behavior,
-and current result counts and notices. Interaction coverage fixes the Popyson
+in-page re-search, stable language-name ascending and descending order without
+an index refetch, one removable applied pill per facet, clear-all behavior, and
+current result counts and notices. Interaction coverage fixes the Popyson
 Blog reference behavior: overlay opening without result reflow, property
 switches and choices that keep the panel open, outside-pointer dismissal,
 Escape and Back focus restoration, active-trigger state, localized accessible

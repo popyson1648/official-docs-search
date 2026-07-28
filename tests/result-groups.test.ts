@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { groupSearchResults } from "../src/core/result-groups";
+import {
+  groupSearchResults,
+  orderSearchResultGroups
+} from "../src/core/result-groups";
 import type { RankedSearchRecord } from "../src/core/search";
 
 describe("groupSearchResults", () => {
@@ -55,7 +58,47 @@ describe("groupSearchResults", () => {
       "en"
     ]);
   });
+
+  it("orders by language name in either direction and preserves relevance ties", () => {
+    const groups = groupSearchResults([
+      recordForLanguage("Rust first", "rust"),
+      recordForLanguage("C++ first", "cpp"),
+      recordForLanguage("Rust second", "rust"),
+      recordForLanguage("JavaScript first", "javascript")
+    ]);
+    const languageNames = new Map([
+      ["rust", "Rust"],
+      ["cpp", "C++"],
+      ["javascript", "JavaScript"]
+    ]);
+
+    expect(
+      orderSearchResultGroups(groups, languageNames, "language-asc").map(
+        (group) => group.title
+      )
+    ).toEqual(["C++ first", "JavaScript first", "Rust first", "Rust second"]);
+    expect(
+      orderSearchResultGroups(groups, languageNames, "language-desc").map(
+        (group) => group.title
+      )
+    ).toEqual(["Rust first", "Rust second", "JavaScript first", "C++ first"]);
+    expect(
+      orderSearchResultGroups(groups, languageNames, "relevance").map(
+        (group) => group.title
+      )
+    ).toEqual(["Rust first", "C++ first", "Rust second", "JavaScript first"]);
+  });
 });
+
+function recordForLanguage(
+  title: string,
+  programmingLanguage: string
+): RankedSearchRecord {
+  return {
+    ...record(title, `${programmingLanguage}-docs`, "en"),
+    programmingLanguage
+  };
+}
 
 function record(
   title: string,
