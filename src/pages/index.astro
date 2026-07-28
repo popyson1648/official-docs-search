@@ -150,9 +150,13 @@ const suggestionScopes = catalog.languages.map((language) => ({
 
 
     <main class="page">
-      <section class="search-panel" aria-labelledby="search-heading">
+      <section
+        class="search-panel"
+        aria-labelledby="search-heading"
+        data-page-top-sentinel
+      >
         <div class="search-header">
-          <h1 id="search-heading">
+          <h1 id="search-heading" tabindex="-1" data-page-top-target>
             <span class="lang-en">{t("en", "queryLabel")}</span>
             <span class="lang-ja">{t("ja", "queryLabel")}</span>
           </h1>
@@ -553,6 +557,18 @@ const suggestionScopes = catalog.languages.map((language) => ({
         )
       }
     </main>
+
+    <button
+      type="button"
+      class="back-to-top"
+      data-back-to-top
+      data-label-en={t("en", "pageTop")}
+      data-label-ja={t("ja", "pageTop")}
+      aria-label={t(uiLanguage, "pageTop")}
+      hidden
+    >
+      <span aria-hidden="true">↑</span>
+    </button>
 
     <dialog
       class="help-dialog"

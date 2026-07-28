@@ -245,7 +245,11 @@ export function initializeSearchControls(
       root.cookie = preferenceCookie("ui", radio.value);
       if (uiHidden) uiHidden.value = radio.value;
       root.documentElement.lang = radio.value;
-      root.title = t(radio.value === "ja" ? "ja" : "en", "title");
+      const nextUiLanguage = radio.value === "ja" ? "ja" : "en";
+      root.title = t(nextUiLanguage, "title");
+      root
+        .querySelector<HTMLElement>("[data-back-to-top]")
+        ?.setAttribute("aria-label", t(nextUiLanguage, "pageTop"));
       uiRadios.forEach((candidate) => candidate.parentElement?.classList.remove("active"));
       if (radio.checked) radio.parentElement?.classList.add("active");
     });

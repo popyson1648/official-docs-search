@@ -423,6 +423,7 @@ function renderResultGroup(
 
   const heading = root.createElement("h2");
   if (group.records.length > 1) {
+    item.classList.add("result-item-grouped");
     heading.textContent = group.title;
     item.append(
       classification,
@@ -454,15 +455,6 @@ function renderGroupedSources(
 ): HTMLElement {
   const container = root.createElement("div");
   container.className = "result-group-sources";
-
-  const label = root.createElement("span");
-  label.className = "result-group-sources-label";
-  appendLocalizedText(
-    root,
-    label,
-    t("en", "resultSourcesLabel"),
-    t("ja", "resultSourcesLabel")
-  );
 
   const list = root.createElement("ul");
   for (const record of records) {
@@ -499,7 +491,7 @@ function renderGroupedSources(
     list.append(item);
   }
 
-  container.append(label, list);
+  container.append(list);
   return container;
 }
 

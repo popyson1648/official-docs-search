@@ -84,7 +84,13 @@ reference interaction for overlay opening without result reflow, persistent
 panel state during property and choice changes, outside-pointer dismissal,
 Escape and Back focus restoration, active-trigger state, localized
 accessibility, width-morph timings, mobile containment, coarse-pointer targets,
-and reduced-motion suppression. Require a visible 44 CSS-pixel filter trigger.
+and reduced-motion suppression. Define whether the filter trigger uses a visible
+label or compact icon-only shape, and retain a localized accessible name.
+Require grouped origins to remain subordinate to one dominant title, avoid
+nested card borders and repeated top-level dividers, and keep source
+qualifications in a smaller borderless disclosure.
+For long pages, verify any contextual Top control's threshold, fixed placement,
+focus destination, localization, target size, and reduced-motion behavior.
 Do not show a generic Japanese-availability notice before searching; retain
 result-specific fallback details and per-source availability labels.
 Require regression coverage for common-symbol completeness, conservative typo

@@ -720,6 +720,36 @@ test("[layout] duplicate reference symbols group by source and long results disc
     );
     const filter = document.querySelector("[data-result-filter-open]");
     const filterRect = filter?.getBoundingClientRect();
+    const heading = sort?.querySelector("h2");
+    const sourceNames = [
+      ...(sort?.querySelectorAll(".result-group-source .result-source-name") ?? [])
+    ];
+    const sourceLinks = [
+      ...(sort?.querySelectorAll("[data-result-source-id]") ?? [])
+    ];
+    const sourceNotesSummary = document.querySelector(
+      ".result-source-notes summary"
+    );
+    const sourcePickerSummary = document.querySelector(
+      ".source-details summary"
+    );
+    const style = (element) => {
+      if (!element) return undefined;
+      const computed = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return {
+        width: rect.width,
+        height: rect.height,
+        fontSize: Number.parseFloat(computed.fontSize),
+        fontWeight: Number.parseFloat(computed.fontWeight),
+        borderTopWidth: computed.borderTopWidth,
+        borderBottomWidth: computed.borderBottomWidth,
+        backgroundColor: computed.backgroundColor,
+        borderRadius: computed.borderRadius
+      };
+    };
+    const sortIndex = items.indexOf(sort);
+    const nextItem = sortIndex >= 0 ? items[sortIndex + 1] : undefined;
     return {
       itemCount: items.length,
       total: Number.parseInt(
@@ -736,13 +766,21 @@ test("[layout] duplicate reference symbols group by source and long results disc
       sourceIds: [
         ...(sort?.querySelectorAll("[data-result-source-id]") ?? [])
       ].map((link) => link.dataset.resultSourceId),
-      sourceLinks: [
-        ...(sort?.querySelectorAll("[data-result-source-id]") ?? [])
-      ].map((link) => ({
+      sourceLinks: sourceLinks.map((link) => ({
         href: link.href,
         target: link.target,
         rel: link.rel
       })),
+      sourceLinkStyles: sourceLinks.map(style),
+      headingStyle: style(heading),
+      sourceNameStyles: sourceNames.map(style),
+      groupStyle: style(sort),
+      sourceNotesStyle: style(sourceNotesSummary),
+      sourcePickerStyle: style(sourcePickerSummary),
+      groupGap: nextItem
+        ? nextItem.getBoundingClientRect().top -
+          sort.getBoundingClientRect().bottom
+        : undefined,
       languageLabel: sort
         ?.querySelector(".result-classification-tag")
         ?.textContent?.trim(),
@@ -770,8 +808,31 @@ test("[layout] duplicate reference symbols group by source and long results disc
   );
   assert.equal(initial.languageLabel, "C++");
   assert.equal(initial.filterText, "絞り込み");
-  assert.ok(initial.filterWidth >= 44);
-  assert.ok(initial.filterHeight >= 44);
+  assert.ok(initial.filterWidth >= 32 && initial.filterWidth <= 36);
+  assert.equal(initial.filterHeight, 32);
+  assert.ok(
+    initial.sourceLinkStyles.every(
+      (style) =>
+        style.borderTopWidth === "0px" &&
+        style.borderBottomWidth === "0px" &&
+        style.backgroundColor === "rgba(0, 0, 0, 0)" &&
+        style.borderRadius === "0px" &&
+        style.width < initial.groupStyle.width
+    )
+  );
+  assert.ok(
+    initial.sourceNameStyles.every(
+      (style) =>
+        initial.headingStyle.fontSize > style.fontSize &&
+        initial.headingStyle.fontWeight > style.fontWeight
+    )
+  );
+  assert.equal(initial.groupStyle.borderTopWidth, "0px");
+  assert.equal(initial.groupStyle.borderBottomWidth, "0px");
+  assert.ok(initial.groupGap >= 18);
+  assert.ok(initial.groupStyle.height < 180);
+  assert.ok(initial.sourceNotesStyle.height <= initial.sourcePickerStyle.height);
+  assert.equal(initial.sourceNotesStyle.borderTopWidth, "0px");
   assert.equal(initial.pageOverflows, false);
 
   const pageIdentity = await page.evaluate(() => ({
@@ -813,6 +874,66 @@ test("[layout] duplicate reference symbols group by source and long results disc
   await page.close();
 });
 
+test("[layout] the Top control appears after scrolling and returns focus to the heading", async () => {
+  const page = await newPage({ width: 390, height: 800 });
+  await page.emulateMediaFeatures([
+    { name: "prefers-reduced-motion", value: "reduce" }
+  ]);
+  await page.goto(
+    `${app.baseUrl}/?q=${encodeURIComponent(
+      "cpp sort source:all"
+    )}&docsLocale=ja&ui=ja`,
+    { waitUntil: "domcontentloaded" }
+  );
+  await waitForResults(page);
+
+  assert.equal(
+    await page.$eval("[data-back-to-top]", (button) => button.hidden),
+    true
+  );
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.waitForSelector("[data-back-to-top]:not([hidden])");
+
+  const visible = await page.$eval("[data-back-to-top]", (button) => {
+    const rect = button.getBoundingClientRect();
+    const style = getComputedStyle(button);
+    return {
+      label: button.getAttribute("aria-label"),
+      width: rect.width,
+      height: rect.height,
+      right: window.innerWidth - rect.right,
+      bottom: window.innerHeight - rect.bottom,
+      position: style.position,
+      animationName: style.animationName,
+      pageOverflows: document.documentElement.scrollWidth > window.innerWidth
+    };
+  });
+  assert.deepEqual(visible, {
+    label: "ページ上部へ",
+    width: 44,
+    height: 44,
+    right: 16,
+    bottom: 16,
+    position: "fixed",
+    animationName: "none",
+    pageOverflows: false
+  });
+
+  await page.click("[data-back-to-top]");
+  await page.waitForFunction(() => window.scrollY === 0);
+  await page.waitForFunction(
+    () => document.querySelector("[data-back-to-top]")?.hidden === true
+  );
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      focused: document.activeElement?.id,
+      hidden: document.querySelector("[data-back-to-top]")?.hidden
+    })),
+    { focused: "search-heading", hidden: true }
+  );
+  await page.close();
+});
+
 test("[smoke] Japanese interface labels use user-facing names", async () => {
   const page = await newPage();
   await page.goto(
@@ -847,6 +968,12 @@ test("[smoke] Japanese interface labels use user-facing names", async () => {
   await page.$eval('[data-ui-radio][value="en"]', (radio) => radio.click());
   await page.waitForFunction(() => document.documentElement.lang === "en");
   assert.equal(await page.title(), "Official Docs Search");
+  assert.equal(
+    await page.$eval("[data-back-to-top]", (button) =>
+      button.getAttribute("aria-label")
+    ),
+    "Top"
+  );
   await page.close();
 });
 

@@ -98,8 +98,11 @@ controls expose visible keyboard focus.
 Duplicate-result coverage conservatively groups only qualified reference
 symbols from distinct origins, preserves every safe source link, keeps
 ambiguous and proposal records separate, renders at most 15 groups initially,
-and discloses later groups in 15-item batches without navigation.
-Repeated source qualifications appear once in the source-level details section.
+and discloses later groups in 15-item batches without navigation. Grouped
+origins render as compact borderless links beneath a stronger title; top-level
+groups use whitespace instead of repeated dividers.
+Repeated source qualifications appear once in a borderless details section no
+taller than the main Sources summary.
 Locale-fallback details precede the successful result count.
 Loading coverage fixes four result-card skeletons, a vertically centered
 indicator, screen-reader-only loading text, `aria-busy` cleanup, and static
@@ -120,8 +123,11 @@ and current result counts and notices. Interaction coverage fixes the Popyson
 Blog reference behavior: overlay opening without result reflow, property
 switches and choices that keep the panel open, outside-pointer dismissal,
 Escape and Back focus restoration, active-trigger state, localized accessible
-names, a visible 44 CSS-pixel filter trigger, 260/180 ms width morphing, 375 px
-viewport containment, coarse-pointer targets, and reduced-motion suppression.
+names, the compact icon-only filter trigger, 260/180 ms width morphing, 375 px
+viewport containment, coarse-pointer choices, and reduced-motion suppression.
+Long-page coverage keeps a 44 CSS-pixel bottom-right Top control hidden near the
+header, shows it after scrolling, returns focus to the page heading, localizes
+its accessible name, and suppresses its motion when requested.
 The 18 admitted English teaching sources and cpprefjp must remain excluded from
 official-only searches, return a known result under `source:all`, and expose
 their English/Japanese qualification in the source picker and result metadata.

@@ -31,6 +31,8 @@
   and suggestions, rejects stale responses, and renders external strings with
   DOM text APIs and safe links.
 - `src/client/search-result-filters.ts`: renders compact accessible language/site filters and applied-filter pills.
+- `src/client/back-to-top.ts`: reveals the contextual Top control after the
+  search panel leaves view and returns focus to the page heading.
 - `src/client/search-page.ts`: small browser initialization entry point.
 - `src/client/search.worker.ts`: parses and searches selected indexes off the main thread.
 - `src/pages/index.astro`: server-rendered search form and result shell.
@@ -71,9 +73,11 @@
    filters re-search the cached indexes for the selected source subset.
 7. While the worker is busy, the result region exposes `aria-busy`, a hidden
    status announcement, and a reduced-motion-safe result-card skeleton.
-8. The client groups only unambiguous duplicate reference symbols, renders the
-   first 15 groups, and discloses later batches without navigation. Repeated
-   source qualifications appear once above the results.
+8. The client groups only unambiguous duplicate reference symbols, renders each
+   origin as a compact subordinate link beneath one title, shows the first 15
+   groups, and discloses later batches without navigation. Repeated source
+   qualifications appear once in a small borderless disclosure above results.
+   A contextual Top control appears only after the search panel leaves view.
 9. The client renders original HTTPS links, qualified result titles, actual
    content locales, document kinds, proposal state and warnings,
    locale-fallback notices before the count, partial failures, and explicit
