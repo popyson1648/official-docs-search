@@ -786,7 +786,7 @@ html:not([lang="ja"]) [data-search-form][data-docs-locale="ja"] .source-ja-unava
   height: 5px;
   border: 1px solid var(--surface);
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--text);
 }
 
 .result-filter-fields {
@@ -841,7 +841,7 @@ html:not([lang="ja"]) [data-search-form][data-docs-locale="ja"] .source-ja-unava
   left: 10px;
   height: 2px;
   border-radius: 999px;
-  background: var(--accent);
+  background: var(--text);
 }
 
 .result-filter-trigger[hidden],
@@ -858,11 +858,11 @@ html:not([lang="ja"]) [data-search-form][data-docs-locale="ja"] .source-ja-unava
   left: 0;
   width: min(440px, calc(100vw - 20px));
   max-height: min(60vh, 420px);
-  padding: 14px 20px;
+  padding: 14px;
   overflow-y: auto;
   overscroll-behavior: contain;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 18px;
   background: var(--surface);
   box-shadow: 0 12px 28px rgb(24 30 56 / 0.12);
   animation: result-filter-panel-in 160ms ease both;
@@ -873,24 +873,44 @@ html:not([lang="ja"]) [data-search-form][data-docs-locale="ja"] .source-ja-unava
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
+  max-width: 100%;
 }
 
 .result-filter-choice {
+  flex: 0 0 auto;
   min-height: 32px;
   padding: 5px 11px;
-  border-color: #9facfb;
+  border-color: var(--border);
   border-radius: 999px;
-  background: #fdfff7;
-  color: #3f4fc2;
+  background: var(--bg);
+  color: var(--text-2);
   font-size: 0.78rem;
   font-weight: 600;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .result-filter-choice.on {
-  border-color: #4960ff;
-  background: #4960ff;
-  color: #ffffff;
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.result-filter-choice.language {
+  --language-color: var(--muted);
+  --language-text-color: #ffffff;
+  border-color: var(--language-color);
+  background: var(--language-color);
+  color: var(--language-text-color);
+}
+
+.result-filter-choice.language.on {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
+}
+
+.result-filter-shell button:focus-visible {
+  outline-color: var(--text);
 }
 
 .result-filter-applied {
@@ -908,7 +928,7 @@ html:not([lang="ja"]) [data-search-form][data-docs-locale="ja"] .source-ja-unava
   max-width: min(100%, 520px);
   min-height: 30px;
   overflow: hidden;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--bg);
   color: var(--text-2);
@@ -973,7 +993,7 @@ html:not([lang="ja"]) [data-search-form][data-docs-locale="ja"] .source-ja-unava
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: var(--accent);
+  color: var(--text-2);
   font-size: 0.78rem;
   font-weight: 600;
   line-height: 1.2;
@@ -1000,6 +1020,14 @@ html:not([lang="ja"]) [data-search-form][data-docs-locale="ja"] .source-ja-unava
 
   .result-filter-panel {
     width: min(440px, calc(100vw - 32px));
+  }
+
+  .result-filter-choices {
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
   }
 }
 
@@ -1437,7 +1465,7 @@ html[lang="ja"] .lang-en {
   -webkit-appearance: none;
   width: 36px;
   height: 24px;
-  background: #7486a3;
+  background: var(--muted);
   border-radius: 12px;
   position: relative;
   cursor: pointer;
@@ -1459,7 +1487,7 @@ html[lang="ja"] .lang-en {
   box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 .pill-toggle:checked {
-  background: var(--accent);
+  background: var(--text);
 }
 .pill-toggle:checked::after {
   transform: translateX(12px);
@@ -1467,6 +1495,11 @@ html[lang="ja"] .lang-en {
 .pill-toggle:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.pill-toggle:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 2px;
 }
 
 .search-header {
@@ -1506,6 +1539,14 @@ html[lang="ja"] .lang-en {
   line-height: 1;
 }
 
+.language-fpill .fpill-label {
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  background: var(--language-color);
+  color: var(--language-text-color);
+}
+
 .fpill-x {
   cursor: pointer;
   color: var(--muted);
@@ -1525,6 +1566,10 @@ html[lang="ja"] .lang-en {
   font-size: 17px;
   font-weight: 500;
   line-height: 1;
+}
+
+.language-fpill .fpill-x {
+  background: var(--surface);
 }
 
 .fpill-x:focus-visible {

@@ -10,8 +10,10 @@ version, attribution, license URL, cadence, known queries, record count, and
 compressed size.
 A separate static map pins the current GitHub Linguist display color for every
 catalog language without changing the search-index catalog hash.
-The result UI uses the exact color as the tag background and derives whichever
-of black or white provides the higher text contrast.
+Result tags, Language filter choices, and query-chip language labels use the
+exact color as their background and select black at a perceived sRGB brightness
+of 150 or above, otherwise white.
+Generic controls and remove targets do not use language colors.
 
 Fetch only reviewed public static indexes, tables of contents, sitemaps, and
 structured metadata.

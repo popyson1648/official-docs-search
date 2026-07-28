@@ -4,6 +4,7 @@ import type {
 } from "../core/result-filters";
 import type { SearchFacet } from "../core/search";
 import { t } from "../core/i18n";
+import { getLanguageTagTextColor } from "../core/language-colors";
 
 export type ResultFilterFacet = "language" | "site" | "order";
 
@@ -36,6 +37,7 @@ interface ResultFilterOptions {
 interface FilterChoice {
   id: string;
   label: string;
+  color?: string;
 }
 
 const TOOLBAR_VIEWPORT_GUTTER = 20;
@@ -49,10 +51,18 @@ export function initializeResultFilters(
   const matchingSourceIds = new Set(options.facets.map((facet) => facet.sourceId));
   const matchingSources = options.sources.filter((source) => matchingSourceIds.has(source.id));
   const languageChoices = uniqueChoices(
-    matchingSources.map((source) => ({
-      id: source.programmingLanguage,
-      label: source.programmingLanguageName ?? source.programmingLanguage
-    }))
+    matchingSources.map((source) => {
+      const color =
+        typeof source.programmingLanguageColor === "string" &&
+        /^#[0-9a-f]{6}$/i.test(source.programmingLanguageColor)
+          ? source.programmingLanguageColor
+          : undefined;
+      return {
+        id: source.programmingLanguage,
+        label: source.programmingLanguageName ?? source.programmingLanguage,
+        ...(color ? { color } : {})
+      };
+    })
   );
   const siteChoices = uniqueChoices(
     options.facets.map((facet) => ({
@@ -381,6 +391,7 @@ export function initializeResultFilters(
     panel.replaceChildren(panelLabel);
     const choiceLabel = root.createElement("span");
     choiceLabel.id = `result-filter-choice-label-${activeFacet}`;
+    choiceLabel.className = "sr-only";
     appendLocalizedText(
       root,
       choiceLabel,
@@ -414,6 +425,14 @@ export function initializeResultFilters(
       button.dataset.resultFilterValue = choice.id;
       button.classList.toggle("on", selectedIds.has(choice.id));
       button.setAttribute("aria-pressed", String(selectedIds.has(choice.id)));
+      if (activeFacet === "language" && choice.color) {
+        button.classList.add("language");
+        button.style.setProperty("--language-color", choice.color);
+        button.style.setProperty(
+          "--language-text-color",
+          getLanguageTagTextColor(choice.color)
+        );
+      }
       if (activeFacet === "order") {
         appendLocalizedText(
           root,

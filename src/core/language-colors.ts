@@ -66,14 +66,11 @@ export function getLanguageTagTextColor(
   const channels = [1, 3, 5].map((offset) =>
     Number.parseInt(backgroundColor.slice(offset, offset + 2), 16)
   );
-  const [red, green, blue] = channels.map((channel) => {
-    const srgb = channel / 255;
-    return srgb <= 0.04045
-      ? srgb / 12.92
-      : ((srgb + 0.055) / 1.055) ** 2.4;
-  });
-  const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-  const blackContrast = (luminance + 0.05) / 0.05;
-  const whiteContrast = 1.05 / (luminance + 0.05);
-  return blackContrast >= whiteContrast ? "#000000" : "#ffffff";
+  const [red, green, blue] = channels;
+  // Use perceived sRGB brightness for the label's visual light/dark treatment.
+  // This deliberately does not mean “pick the larger WCAG contrast ratio”:
+  // saturated mid-tone brand colors such as C++ should retain white label text.
+  const perceivedBrightness =
+    (red * 299 + green * 587 + blue * 114) / 1000;
+  return perceivedBrightness >= 150 ? "#000000" : "#ffffff";
 }

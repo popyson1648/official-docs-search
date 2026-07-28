@@ -92,10 +92,11 @@ Sources while their controls are disabled.
 Result-layout coverage requires the same non-link title, adjacent colored
 language tag, and subordinate source-link structure for single- and
 multi-origin results. It also fixes user-facing catalog language names,
-exact solid Linguist tag backgrounds without a separate marker, maximum-
-contrast black/white tag text, source-kind styling, title-to-metadata
-typography, removable input-chip dimensions, keyboard removal, and compact
-successful result counts. Compact
+exact solid Linguist tag backgrounds without a separate marker,
+brightness-derived black/white tag text across the full palette, source-kind
+styling, title-to-metadata typography, removable input-chip dimensions,
+language-color ownership of only the query-chip label segment, neutral remove
+segments, keyboard removal, and compact successful result counts. Compact
 source controls retain 24 CSS-pixel targets, and Docs-locale and chip-removal
 controls expose visible keyboard focus.
 Duplicate-result coverage conservatively groups only qualified reference
@@ -129,8 +130,12 @@ switches and choices that keep the panel open, outside-pointer dismissal,
 Escape and Back focus restoration, active-trigger state, localized accessible
 names, the compact icon-only filter trigger, 260/180 ms width morphing, 375 px
 viewport containment, coarse-pointer choices, and reduced-motion suppression.
-The choice panel is fully pill-shaped; search inputs and suggestion surfaces
-remain rounded rectangles.
+The compact toolbar is pill-shaped, while the choice panel, search inputs, and
+suggestion surfaces remain rounded rectangles. Choice chips flow horizontally;
+at 375 px they stay in one horizontally scrollable row without creating page
+overflow. Language choices reuse result-tag colors; Site, Order, applied
+filters, clear actions, and focus treatment remain monochrome.
+Settings-toggle coverage fixes neutral checked, unchecked, and focused tracks.
 Long-page coverage keeps a 44 CSS-pixel bottom-right Top control hidden near the
 header, shows it after scrolling, returns focus to the page heading, localizes
 its accessible name, and suppresses its motion when requested.

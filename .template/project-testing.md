@@ -60,11 +60,12 @@ made deterministic while retaining separate production-worker coverage.
 For multi-language forms, accept whitespace after commas, add defaults only for
 newly introduced languages, and preserve checked disabled non-official Sources.
 Fix one title/tag/source-link structure across single- and multi-origin results,
-user-facing language names, exact language-color use, black/white contrast
-selection, marker ownership, shared source-kind styling, typography hierarchy,
-removable input-chip target size and keyboard behavior, compact successful
-result counts, 24 CSS-pixel source-control targets, and visible keyboard focus
-for Docs-locale controls.
+user-facing language names, exact language-color use, black/white foreground
+selection rules across the full palette, marker ownership, shared source-kind
+styling, typography hierarchy, language-only color ownership, split query-chip
+label/remove presentation, removable input-chip target size and keyboard
+behavior, compact successful result counts, 24 CSS-pixel source-control targets,
+and visible keyboard focus for Docs-locale controls.
 Conservatively group qualified reference symbols only across distinct origins,
 preserve every source link, keep ambiguous/proposal records separate, show 15
 groups initially, and test localized incremental disclosure without navigation.
@@ -87,8 +88,11 @@ panel state during property and choice changes, outside-pointer dismissal,
 Escape and Back focus restoration, active-trigger state, localized
 accessibility, width-morph timings, mobile containment, coarse-pointer targets,
 and reduced-motion suppression. Define whether the filter trigger uses a visible
-label or compact icon-only shape, retain a localized accessible name, and
-distinguish choice-panel geometry from text-search surface geometry.
+label or compact icon-only shape, retain a localized accessible name, keep the
+toolbar pill distinct from rounded-rectangle content popups, and test
+horizontal choice flow, narrow-viewport overflow, monochrome generic choices,
+and language-colored Language choices. Fix checked, unchecked, and focused
+settings-toggle colors to the site's neutral palette.
 Require grouped origins to remain subordinate to one dominant title, avoid
 nested card borders and repeated top-level dividers, and keep source
 qualifications in a smaller borderless disclosure.

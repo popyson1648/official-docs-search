@@ -20,8 +20,10 @@ Bash uses Linguist's Shell color, and Visual Basic uses its Visual Basic .NET
 color.
 The exact color fills the result language tag and its border without a separate
 marker.
-The tag text is black or white, whichever produces the higher WCAG contrast
-ratio against that color.
+The tag text is black or white according to one perceived sRGB brightness
+boundary: `(299R + 587G + 114B) / 1000`, with black at 150 or above.
+This keeps white text on saturated mid-tone brand colors such as C++ instead of
+changing them to black solely because it has the higher WCAG contrast ratio.
 
 Every result uses the same structure: a non-link title followed by its language
 tag, then one or more original-document links.
@@ -30,9 +32,15 @@ The structure does not change when a result has only one origin.
 Result ordering defaults to relevance and may be changed to catalog language
 name ascending or descending.
 The original relevance order remains the tie-breaker within a language.
-The floating Language, Site, and Order choice panel uses a fully pill-shaped
-container like the filter/sort panel in `popyson1648/popyson-io`.
-Search inputs and suggestion surfaces remain rounded rectangles.
+The compact Language, Site, and Order toolbar is pill-shaped.
+The separate choice panel uses an 18px rounded rectangle, matching the current
+filter popup in `popyson1648/popyson-io`, and presents choices as horizontal
+chips.
+Filter chrome, Site and Order choices, applied controls, and settings toggles
+use only the site's neutral white, gray, and near-black palette.
+Linguist colors are reserved for programming-language identity: result tags,
+Language filter choices, and the language-name segment of query chips.
+The query chip's remove segment remains neutral.
 
 ## Context
 
@@ -73,8 +81,11 @@ search-index generation and must not invalidate its integrity hash.
 The Linguist palette is complete, familiar from GitHub, deterministic when
 pinned, and does not require runtime network access.
 Using the exact color as the background preserves the familiar palette.
-Selecting the higher-contrast black or white foreground keeps every current
-palette entry at or above a 4.5:1 contrast ratio.
+Applying one perceived-brightness boundary keeps saturated brand labels
+visually consistent instead of treating a slightly higher calculated contrast
+as the sole color-design signal.
+Restricting those colors to language identity preserves their meaning and keeps
+generic controls consistent with the site's monochrome visual system.
 One title/source-link structure gives every result the same visual hierarchy
 and target behavior.
 Keeping relevance as the default avoids changing expected search quality while
@@ -86,10 +97,17 @@ still providing explicit language ordering.
   the static palette.
 - A deliberate Linguist palette refresh changes UI data and requires visual
   review in every supported site theme.
-- Every palette entry must keep at least 4.5:1 contrast with its derived black
-  or white tag text.
-- Filter choice panels use the pill shape; text-search surfaces retain a
-  rounded-rectangle shape.
+- Foreground selection is deterministic across the complete palette and must
+  be visually reviewed when Linguist colors change.
+- The compact filter toolbar uses the pill shape; filter choice panels and
+  text-search surfaces use rounded rectangles.
+- Filter choices flow horizontally; narrow viewports keep one horizontally
+  scrollable row instead of a one-item-per-row vertical list.
+- Generic filters and settings toggles remain monochrome.
+- A Language filter choice retains its language color when selected and uses a
+  neutral outline plus `aria-pressed` to communicate selection.
+- Query chips apply language color only to the label segment; their remove
+  target retains a neutral background and divider.
 - The result title is never an outbound link; the source row below is the
   link target even when only one source exists.
 - Language sorting changes only the rendered group order and does not refetch

@@ -1137,7 +1137,7 @@ test("[filters] result filters narrow a multi-language search by language and si
     expanded: "true",
     focusedBack: true,
     panelPosition: "absolute",
-    panelRadius: "999px",
+    panelRadius: "18px",
     searchRadius: "6px",
     transitionDuration: "0.26s",
     propertiesRole: "group",
@@ -1156,6 +1156,34 @@ test("[filters] result filters narrow a multi-language search by language and si
       )
     ),
     new Set(["Rust", "TypeScript"])
+  );
+  assert.deepEqual(
+    await page.$$eval(
+      '[data-result-filter-choice="language"]',
+      (buttons) =>
+        Object.fromEntries(
+          buttons.map((button) => {
+            const style = getComputedStyle(button);
+            return [
+              button.dataset.resultFilterValue,
+              {
+                backgroundColor: style.backgroundColor,
+                color: style.color
+              }
+            ];
+          })
+        )
+    ),
+    {
+      rust: {
+        backgroundColor: "rgb(222, 165, 132)",
+        color: "rgb(0, 0, 0)"
+      },
+      typescript: {
+        backgroundColor: "rgb(49, 120, 198)",
+        color: "rgb(255, 255, 255)"
+      }
+    }
   );
 
   await page.click('[data-result-filter-facet="site"]');
@@ -1182,6 +1210,33 @@ test("[filters] result filters narrow a multi-language search by language and si
       "TypeScript Documentation",
       "TypeScript Deep Dive"
     ])
+  );
+  assert.ok(
+    await page.$$eval(
+      '[data-result-filter-choice="site"]',
+      (buttons) =>
+        new Set(
+          buttons.map((button) =>
+            Math.round(button.getBoundingClientRect().top)
+          )
+        ).size < buttons.length
+    ),
+    "site choices should share horizontal rows instead of forming a vertical list"
+  );
+  assert.ok(
+    await page.$$eval(
+      '[data-result-filter-choice="site"]',
+      (buttons) =>
+        buttons.every((button) => {
+          const style = getComputedStyle(button);
+          return (
+            style.backgroundColor === "rgb(255, 255, 255)" &&
+            style.color === "rgb(69, 75, 83)" &&
+            style.borderColor === "rgb(227, 230, 233)"
+          );
+        })
+    ),
+    "site choices should use only neutral colors"
   );
 
   await page.keyboard.press("Escape");
@@ -1416,6 +1471,49 @@ test("[filters] result order switches between relevance and language name withou
     ),
     ["関連度順", "言語名の昇順", "言語名の降順"]
   );
+  assert.equal(
+    await page.$$eval(
+      '[data-result-filter-choice="order"]',
+      (buttons) =>
+        new Set(
+          buttons.map((button) =>
+            Math.round(button.getBoundingClientRect().top)
+          )
+        ).size
+    ),
+    1
+  );
+  assert.deepEqual(
+    await page.$$eval(
+      '[data-result-filter-choice="order"]',
+      (buttons) =>
+        buttons.map((button) => {
+          const style = getComputedStyle(button);
+          return {
+            value: button.dataset.resultFilterValue,
+            backgroundColor: style.backgroundColor,
+            color: style.color
+          };
+        })
+    ),
+    [
+      {
+        value: "relevance",
+        backgroundColor: "rgb(28, 31, 35)",
+        color: "rgb(255, 255, 255)"
+      },
+      {
+        value: "language-asc",
+        backgroundColor: "rgb(255, 255, 255)",
+        color: "rgb(69, 75, 83)"
+      },
+      {
+        value: "language-desc",
+        backgroundColor: "rgb(255, 255, 255)",
+        color: "rgb(69, 75, 83)"
+      }
+    ]
+  );
 
   const assertLanguageOrder = async (expectedDirection) => {
     const languages = await page.$$eval(".result-item", (items) =>
@@ -1515,6 +1613,9 @@ test("[filters] result filters match the reference overlay and responsive intera
       panelPosition: getComputedStyle(panel).position,
       panelRadius: getComputedStyle(panel).borderRadius,
       choicesWrap: getComputedStyle(choices).flexWrap,
+      choicesOverflowX: getComputedStyle(choices).overflowX,
+      choicesScrollWidth: choices.scrollWidth,
+      choicesClientWidth: choices.clientWidth,
       choiceRows: new Set(
         [...choices.querySelectorAll("button")].map((choice) =>
           Math.round(choice.getBoundingClientRect().top)
@@ -1523,6 +1624,7 @@ test("[filters] result filters match the reference overlay and responsive intera
       targets: visibleTargets.map((button) => {
         const rect = button.getBoundingClientRect();
         return {
+          isChoice: button.classList.contains("result-filter-choice"),
           width: rect.width,
           height: rect.height,
           left: rect.left,
@@ -1539,16 +1641,18 @@ test("[filters] result filters match the reference overlay and responsive intera
   assert.ok(layout.controlsRight <= layout.viewportWidth);
   assert.ok(layout.panelLeft >= 0 && layout.panelRight <= layout.viewportWidth);
   assert.equal(layout.panelPosition, "absolute");
-  assert.equal(layout.panelRadius, "999px");
-  assert.equal(layout.choicesWrap, "wrap");
-  assert.ok(layout.choiceRows > 1);
+  assert.equal(layout.panelRadius, "18px");
+  assert.equal(layout.choicesWrap, "nowrap");
+  assert.equal(layout.choicesOverflowX, "auto");
+  assert.equal(layout.choiceRows, 1);
+  assert.ok(layout.choicesScrollWidth > layout.choicesClientWidth);
   assert.ok(
     layout.targets.every(
       (target) =>
         target.width >= 24 &&
         target.height >= 24 &&
-        target.left >= 0 &&
-        target.right <= layout.viewportWidth
+        (target.isChoice ||
+          (target.left >= 0 && target.right <= layout.viewportWidth))
     ),
     JSON.stringify(layout.targets)
   );
@@ -2413,6 +2517,14 @@ test("[layout] contextual search help, centered header, and right-aligned settin
       const titleRect = document.querySelector(".source-title").getBoundingClientRect();
       const sourceLinkRect = document.querySelector(".source-link").getBoundingClientRect();
       const sourceToggleRect = document.querySelector("[data-source-option]").getBoundingClientRect();
+      const sourceToggleElement = document.querySelector("[data-source-toggle]");
+      const checkedToggleBackground = getComputedStyle(sourceToggleElement).backgroundColor;
+      const uncheckedToggle = sourceToggleElement.cloneNode();
+      uncheckedToggle.checked = false;
+      uncheckedToggle.style.transition = "none";
+      document.body.append(uncheckedToggle);
+      const uncheckedToggleBackground = getComputedStyle(uncheckedToggle).backgroundColor;
+      uncheckedToggle.remove();
       return {
         rightGap: Math.abs(header.right - actions.right),
         titleCenterGap: Math.abs(
@@ -2451,7 +2563,9 @@ test("[layout] contextual search help, centered header, and right-aligned settin
         summaryHeight: summaryRect.height,
         titleHeight: titleRect.height,
         sourceLinkHeight: sourceLinkRect.height,
-        sourceToggleHeight: sourceToggleRect.height
+        sourceToggleHeight: sourceToggleRect.height,
+        checkedToggleBackground,
+        uncheckedToggleBackground
       };
     });
     assert.ok(layout.rightGap <= 1, `header actions right gap was ${layout.rightGap}px at ${width}px`);
@@ -2490,6 +2604,8 @@ test("[layout] contextual search help, centered header, and right-aligned settin
     assert.ok(layout.titleHeight >= 24);
     assert.ok(layout.sourceLinkHeight >= 24);
     assert.ok(layout.sourceToggleHeight >= 24);
+    assert.equal(layout.checkedToggleBackground, "rgb(28, 31, 35)");
+    assert.equal(layout.uncheckedToggleBackground, "rgb(100, 107, 117)");
     const settingsBeforeTextClicks = await page.evaluate(() => ({
       source: document.querySelector("[data-source-toggle]").checked,
       automatic: document.querySelector("[data-auto-non-official-toggle]").checked
@@ -2553,6 +2669,7 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
         "[data-result-source-notes] li span"
       );
       const chip = document.querySelector(".fpill");
+      const chipLabel = document.querySelector(".fpill-label");
       const chipRemove = document.querySelector(".fpill-x");
       const status = document.querySelector('[data-search-status][data-state="success"]');
       const results = document.querySelector(".results");
@@ -2599,6 +2716,7 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
         domain: styles(domain),
         qualification: styles(qualification),
         chip: styles(chip),
+        chipLabel: styles(chipLabel),
         chipRemove: styles(chipRemove),
         status: styles(status),
         resultsWidth: results.getBoundingClientRect().width,
@@ -2619,10 +2737,10 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
     assert.equal(layout.sourceLinkTarget, "_blank");
     assert.match(layout.sourceLinkRel, /noopener/);
     assert.equal(layout.languageColor.toLowerCase(), "#3178c6");
-    assert.equal(layout.languageTextColor, "#000000");
+    assert.equal(layout.languageTextColor, "#ffffff");
     assert.equal(layout.languageMarkerContent, "none");
     assert.equal(layout.languageTag.backgroundColor, "rgb(49, 120, 198)");
-    assert.equal(layout.languageTag.color, "rgb(0, 0, 0)");
+    assert.equal(layout.languageTag.color, "rgb(255, 255, 255)");
     assert.equal(layout.resultKind.backgroundColor, layout.sourceKind.backgroundColor);
     assert.equal(layout.resultKind.borderRadius, layout.sourceKind.borderRadius);
     assert.equal(layout.resultKind.borderColor, layout.sourceKind.borderColor);
@@ -2636,6 +2754,11 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
     assert.notEqual(layout.languageTag.backgroundColor, "rgba(0, 0, 0, 0)");
     assert.ok(layout.chip.height <= 30, `chip height was ${layout.chip.height}px at ${width}px`);
     assert.ok(Number.parseFloat(layout.chip.borderRadius) >= layout.chip.height / 2);
+    assert.equal(layout.chipLabel.backgroundColor, "rgb(49, 120, 198)");
+    assert.equal(layout.chipLabel.color, "rgb(255, 255, 255)");
+    assert.equal(layout.chipRemove.backgroundColor, "rgb(245, 246, 247)");
+    assert.notEqual(layout.chipRemove.backgroundColor, layout.chipLabel.backgroundColor);
+    assert.equal(layout.chipRemove.borderLeftWidth, "1px");
     assert.ok(layout.chipRemove.width >= 24 && layout.chipRemove.height >= 24);
     assert.ok(layout.chipRemove.fontSize >= 16);
     assert.equal(layout.status.borderTopWidth, "0px");

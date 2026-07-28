@@ -8,8 +8,9 @@ Make the generated manifest the canonical per-source inventory for input and
 output hashes, validators, retrieval time, versions, attribution, licenses,
 cadence, known queries, counts, and sizes.
 Document any catalog-level visual metadata such as language colors, its
-authority, update policy, exact-versus-derived presentation, and accessible
-foreground contrast in the interface.
+authority, update policy, exact-versus-derived presentation, and foreground
+selection in the interface. Define which semantic language labels may own the
+color and keep generic controls neutral.
 
 Fetch only reviewed static indexes, tables of contents, sitemaps, or structured
 metadata with an identifying user agent, bounded concurrency, timeouts, and

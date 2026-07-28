@@ -5,21 +5,39 @@ import {
 } from "../src/core/language-colors";
 
 describe("language tag colors", () => {
-  it("chooses black for light colors and white for dark colors", () => {
-    expect(getLanguageTagTextColor(languageColors.cpp)).toBe("#000000");
-    expect(getLanguageTagTextColor(languageColors.javascript)).toBe("#000000");
+  it("uses white on dark brand colors and black on light brand colors", () => {
+    expect(getLanguageTagTextColor(languageColors.cpp)).toBe("#ffffff");
+    expect(getLanguageTagTextColor(languageColors.go)).toBe("#ffffff");
+    expect(getLanguageTagTextColor(languageColors.swift)).toBe("#ffffff");
+    expect(getLanguageTagTextColor(languageColors.html)).toBe("#ffffff");
+    expect(getLanguageTagTextColor(languageColors.typescript)).toBe("#ffffff");
     expect(getLanguageTagTextColor(languageColors.python)).toBe("#ffffff");
+    expect(getLanguageTagTextColor(languageColors.javascript)).toBe("#000000");
+    expect(getLanguageTagTextColor(languageColors.bash)).toBe("#000000");
+    expect(getLanguageTagTextColor(languageColors.nim)).toBe("#000000");
     expect(getLanguageTagTextColor(languageColors.webassembly)).toBe("#ffffff");
   });
 
-  it("keeps every pinned Linguist color legible with its selected text color", () => {
+  it("uses the same perceived-brightness boundary for every language", () => {
+    const blackTextLanguages = new Set([
+      "rust",
+      "javascript",
+      "kotlin",
+      "bash",
+      "zig",
+      "nim",
+      "elm",
+      "sql"
+    ]);
     for (const [languageId, background] of Object.entries(languageColors)) {
-      const foreground = getLanguageTagTextColor(background);
       expect(
-        contrastRatio(background, foreground),
-        `${languageId} ${background} on ${foreground}`
-      ).toBeGreaterThanOrEqual(4.5);
+        getLanguageTagTextColor(background),
+        `${languageId} ${background}`
+      ).toBe(blackTextLanguages.has(languageId) ? "#000000" : "#ffffff");
     }
+
+    expect(getLanguageTagTextColor("#959595")).toBe("#ffffff");
+    expect(getLanguageTagTextColor("#969696")).toBe("#000000");
   });
 
   it("rejects colors outside the pinned #RRGGBB format", () => {
@@ -31,24 +49,3 @@ describe("language tag colors", () => {
     );
   });
 });
-
-function contrastRatio(left: string, right: string): number {
-  const leftLuminance = relativeLuminance(left);
-  const rightLuminance = relativeLuminance(right);
-  const lighter = Math.max(leftLuminance, rightLuminance);
-  const darker = Math.min(leftLuminance, rightLuminance);
-  return (lighter + 0.05) / (darker + 0.05);
-}
-
-function relativeLuminance(color: string): number {
-  const channels = [1, 3, 5].map((offset) =>
-    Number.parseInt(color.slice(offset, offset + 2), 16)
-  );
-  const [red, green, blue] = channels.map((channel) => {
-    const srgb = channel / 255;
-    return srgb <= 0.04045
-      ? srgb / 12.92
-      : ((srgb + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-}

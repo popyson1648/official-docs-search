@@ -25,8 +25,8 @@
   reference symbols and stably orders groups by catalog language name when
   requested.
 - `src/core/language-colors.ts`: pins the GitHub Linguist display palette
-  separately from index-affecting source metadata and derives maximum-contrast
-  black or white tag text.
+  separately from index-affecting source metadata and derives black or white
+  tag text from perceived sRGB brightness.
 - `src/core/highlight.ts` and `src/core/search-controls.ts`: pure query-highlight and preference/selection helpers.
 - `src/client/search-controls.ts`: binds query, debounced accessible
   suggestions, IME handling, in-page locale, automatic fallback, source,
@@ -35,13 +35,15 @@
   and suggestions, rejects stale responses, and renders external strings with
   DOM text APIs and safe links.
 - `src/client/search-result-filters.ts`: renders compact accessible
-  language/site/order filters, a pill-shaped choice panel, and applied-filter
-  pills.
+  language/site/order filters, a pill toolbar, a rounded-rectangle horizontal
+  choice panel, language-colored Language choices, and monochrome generic and
+  applied-filter controls.
 - `src/client/back-to-top.ts`: reveals the contextual Top control after the
   search panel leaves view and returns focus to the page heading.
 - `src/client/search-page.ts`: small browser initialization entry point.
 - `src/client/search.worker.ts`: parses and searches selected indexes off the main thread.
-- `src/pages/index.astro`: server-rendered search form and result shell.
+- `src/pages/index.astro`: server-rendered search form with monochrome settings,
+  split-color query language chips, and the result shell.
 - `scripts/search-index.mjs`: shared DevDocs, Sphinx, Ecmarkup, Javadoc, and HTML normalization helpers.
 - `scripts/search-index/`: source-family job registries, parser modules, and job helpers.
 - `scripts/search-index/title-qualification.mjs`: preserves canonical qualified

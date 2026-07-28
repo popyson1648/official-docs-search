@@ -4,7 +4,10 @@ import { parseQuery } from "../core/query";
 import type { SourceMode } from "../core/query";
 import { mergeNewLanguageSourceDefaults } from "../core/search-controls";
 import { getKnownLanguageIds, loadCatalog, resolveSearchScope } from "../core/sources";
-import { getLanguageColor } from "../core/language-colors";
+import {
+  getLanguageColor,
+  getLanguageTagTextColor
+} from "../core/language-colors";
 
 export const prerender = false;
 
@@ -280,8 +283,19 @@ const suggestionScopes = catalog.languages.map((language) => ({
               <div class="active-tags" data-active-tags aria-label={t(uiLanguage, "activeTags")}>
                 {parsed.languages.map((lang) => {
                   const langName = catalog.languages.find((l) => l.id === lang)?.name || lang;
+                  const languageColor = getLanguageColor(lang);
+                  const languageTextColor = languageColor
+                    ? getLanguageTagTextColor(languageColor)
+                    : undefined;
                   return (
-                    <span class="fpill">
+                    <span
+                      class="fpill language-fpill"
+                      style={
+                        languageColor && languageTextColor
+                          ? `--language-color: ${languageColor}; --language-text-color: ${languageTextColor};`
+                          : undefined
+                      }
+                    >
                       <span class="fpill-label">{langName}</span>
                       <button type="button" class="fpill-x" data-remove-tag={lang}>
                         <span aria-hidden="true">×</span>
