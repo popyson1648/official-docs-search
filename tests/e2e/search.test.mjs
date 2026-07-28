@@ -162,7 +162,7 @@ test("[layout] result loading uses centered accessible wave skeletons", async ()
     await page.setRequestInterception(true);
     page.on("request", async (request) => {
       const pathname = new URL(request.url()).pathname;
-      if (pathname === "/search-index/manifest.json") {
+      if (pathname === "/search-index/runtime-manifest.json") {
         await new Promise((resolveDelay) => setTimeout(resolveDelay, 900));
         await request.respond({
           status: 200,
@@ -261,11 +261,31 @@ async function snapshot(page) {
   }));
 }
 
-async function clickAndWaitForNavigation(page, selector) {
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 20_000 }),
-    page.$eval(selector, (element) => element.click())
-  ]);
+async function clickAndWaitForClientNavigation(page, selector) {
+  const pageLoadCount = await armClientPageLoadCounter(page);
+  await page.$eval(selector, (element) => element.click());
+  await waitForClientPageLoad(page, pageLoadCount);
+}
+
+async function armClientPageLoadCounter(page) {
+  return await page.evaluate(() => {
+    if (!globalThis.__odsE2ePageLoadCounterInstalled) {
+      globalThis.__odsE2ePageLoadCount = 0;
+      document.addEventListener("astro:page-load", () => {
+        globalThis.__odsE2ePageLoadCount += 1;
+      });
+      globalThis.__odsE2ePageLoadCounterInstalled = true;
+    }
+    return globalThis.__odsE2ePageLoadCount;
+  });
+}
+
+async function waitForClientPageLoad(page, previousCount) {
+  await page.waitForFunction(
+    (count) => globalThis.__odsE2ePageLoadCount > count,
+    { timeout: 20_000 },
+    previousCount
+  );
 }
 
 before(async () => {
@@ -286,6 +306,32 @@ test("[smoke] initial page, help, validation, and language tags work", async () 
   const page = await newPage();
   await page.goto(app.baseUrl, { waitUntil: "domcontentloaded" });
   assert.equal(await page.$("[data-search-results]"), null);
+  const fontContract = await page.evaluate(async () => {
+    await document.fonts.ready;
+    return {
+      externalStylesheet: document.querySelector(
+        'link[href^="https://fonts.googleapis.com/css2"]'
+      )?.getAttribute("href"),
+      bodyFontFamily: getComputedStyle(document.body).fontFamily,
+      weights: [...document.fonts].reduce((result, face) => {
+        if (face.family === "Alexandria" || face.family === "LINE Seed JP") {
+          const weights = result[face.family] ?? [];
+          if (!weights.includes(face.weight)) weights.push(face.weight);
+          result[face.family] = weights.sort();
+        }
+        return result;
+      }, {})
+    };
+  });
+  assert.equal(fontContract.externalStylesheet, undefined);
+  assert.equal(
+    fontContract.bodyFontFamily,
+    'Alexandria, "LINE Seed JP", sans-serif'
+  );
+  assert.deepEqual(fontContract.weights, {
+    Alexandria: ["400", "500", "600", "700"],
+    "LINE Seed JP": ["400", "700"]
+  });
 
   await page.click("[data-help-open]");
   assert.equal(await page.$eval("[data-help-dialog]", (dialog) => dialog.open), true);
@@ -317,8 +363,30 @@ test("[smoke] initial page, help, validation, and language tags work", async () 
     return tags.top - input.bottom;
   });
   assert.ok(tagGap >= 10, `query-tag gap was ${tagGap}px`);
-  await clickAndWaitForNavigation(page, '[data-remove-tag="python"]');
+  await clickAndWaitForClientNavigation(page, '[data-remove-tag="python"]');
   assert.equal(new URL(page.url()).searchParams.get("q"), "rust iterator");
+  await page.close();
+});
+
+test("[smoke] the search form keeps its GET fallback without JavaScript", async () => {
+  const page = await newPage();
+  await page.setJavaScriptEnabled(false);
+  await page.goto(`${app.baseUrl}/?ui=en`, { waitUntil: "domcontentloaded" });
+  await page.type("[data-query-input]", "cpp sort");
+  const initialTimeOrigin = await page.evaluate(() => performance.timeOrigin);
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 20_000 }),
+    page.click('.search-group button[type="submit"]')
+  ]);
+  assert.equal(new URL(page.url()).searchParams.get("q"), "cpp sort");
+  assert.notEqual(
+    await page.evaluate(() => performance.timeOrigin),
+    initialTimeOrigin
+  );
+  assert.equal(
+    await page.$eval("[data-search-results]", (results) => results.dataset.query),
+    "sort"
+  );
   await page.close();
 });
 
@@ -559,7 +627,7 @@ test("[smoke] query and search-index strings render as text without executing ma
   await page.setRequestInterception(true);
   page.on("request", async (request) => {
     const pathname = new URL(request.url()).pathname;
-    if (pathname === "/search-index/manifest.json") {
+    if (pathname === "/search-index/runtime-manifest.json") {
       await request.respond({
         status: 200,
         contentType: "application/json",
@@ -1070,10 +1138,9 @@ test("[smoke] search suggestions use the indexed fuzzy search and support keyboa
     await page.$eval("[data-query-input]", (input) => input.getAttribute("aria-activedescendant")),
     "search-suggestion-0"
   );
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 20_000 }),
-    page.keyboard.press("Enter")
-  ]);
+  const pageLoadCount = await armClientPageLoadCounter(page);
+  await page.keyboard.press("Enter");
+  await waitForClientPageLoad(page, pageLoadCount);
   const selectedQuery = (new URL(page.url()).searchParams.get("q") ?? "").trim();
   assert.match(selectedQuery, /^cpp, rust /);
   assert.match(selectedQuery, / source:all$/);
@@ -1455,6 +1522,55 @@ test("[filters] result filters narrow a multi-language search by language and si
   await page.close();
 });
 
+test("[filters] client navigation tears down detached result-filter listeners", async () => {
+  const page = await newPage();
+  await gotoQuery(
+    page,
+    "rust, ts generic",
+    "&docsLocale=en&sourcePolicy=official"
+  );
+  await waitForResults(page);
+  await page.click("[data-result-filter-open]");
+  await page.evaluate(() => {
+    globalThis.__odsDetachedFilter = {
+      panel: document.querySelector(".result-filter-panel"),
+      trigger: document.querySelector("[data-result-filter-open]")
+    };
+  });
+
+  await page.$eval("[data-query-input]", (input) => {
+    input.value = "python";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await clickAndWaitForClientNavigation(
+    page,
+    '.search-group button[type="submit"]'
+  );
+  await page.waitForSelector(".notice.error");
+  assert.equal(await page.$("[data-search-results]"), null);
+
+  const detachedState = await page.evaluate(() => {
+    const event = new KeyboardEvent("keydown", {
+      key: "Escape",
+      bubbles: true,
+      cancelable: true
+    });
+    document.dispatchEvent(event);
+    const detached = globalThis.__odsDetachedFilter;
+    return {
+      defaultPrevented: event.defaultPrevented,
+      expanded: detached.trigger.getAttribute("aria-expanded"),
+      panelHidden: detached.panel.hidden
+    };
+  });
+  assert.deepEqual(detachedState, {
+    defaultPrevented: false,
+    expanded: "true",
+    panelHidden: false
+  });
+  await page.close();
+});
+
 test("[filters] result order switches between relevance and language name without navigation", async () => {
   const page = await newPage();
   await page.goto(
@@ -1726,7 +1842,7 @@ test("[filters] adding a spaced second language enables its default sources", as
     input.value = "rust, ts generic";
     input.dispatchEvent(new Event("input", { bubbles: true }));
   });
-  await clickAndWaitForNavigation(page, '.search-group button[type="submit"]');
+  await clickAndWaitForClientNavigation(page, '.search-group button[type="submit"]');
   await waitForResults(page);
 
   assert.deepEqual(
@@ -1776,7 +1892,7 @@ test("[filters] adding a spaced second language enables its default sources", as
   await page.$eval("details.source-details", (details) => {
     details.open = true;
   });
-  await clickAndWaitForNavigation(
+  await clickAndWaitForClientNavigation(
     page,
     '[data-source-policy-radio][value="all"]'
   );
@@ -1805,7 +1921,7 @@ test("[filters] adding a spaced second language enables its default sources", as
   const enabledSources = new Set((await snapshot(page)).sources);
   assert.ok(enabledSources.has("comprehensive-rust"));
   assert.ok(enabledSources.has("typescript-deep-dive"));
-  await clickAndWaitForNavigation(
+  await clickAndWaitForClientNavigation(
     page,
     '[data-source-policy-radio][value="fallback"]'
   );
@@ -1844,7 +1960,11 @@ test("[filters] adding a spaced second language enables its default sources", as
 
 test("[filters] enabling and disabling a non-official source changes the result list", async () => {
   const page = await newPage();
-  await gotoQuery(page, "javascript proxy", "&docsLocale=en");
+  await gotoQuery(
+    page,
+    "javascript proxy",
+    "&docsLocale=en&sourcePolicy=official"
+  );
   await waitForResults(page);
   assert.equal((await snapshot(page)).sources.includes("mdn-js"), false);
   assert.ok(
@@ -1853,21 +1973,21 @@ test("[filters] enabling and disabling a non-official source changes the result 
     )
   );
 
-  await clickAndWaitForNavigation(
+  await clickAndWaitForClientNavigation(
     page,
     '[data-source-policy-radio][value="all"]'
   );
   await waitForResults(page);
   assert.ok((await snapshot(page)).sources.includes("mdn-js"));
 
-  await clickAndWaitForNavigation(
+  await clickAndWaitForClientNavigation(
     page,
     '[data-source-policy-radio][value="fallback"]'
   );
   await waitForResults(page);
   assert.equal((await snapshot(page)).sources.includes("mdn-js"), false);
 
-  await clickAndWaitForNavigation(
+  await clickAndWaitForClientNavigation(
     page,
     '[data-source-policy-radio][value="all"]'
   );
@@ -1876,7 +1996,7 @@ test("[filters] enabling and disabling a non-official source changes the result 
 
   await page.$eval("details.source-details", (details) => { details.open = true; });
   await page.$eval('input[name="sourceId"][value="mdn-js"]', (input) => { input.checked = false; });
-  await clickAndWaitForNavigation(page, '.search-group button[type="submit"]');
+  await clickAndWaitForClientNavigation(page, '.search-group button[type="submit"]');
   await waitForResults(page);
   assert.equal((await snapshot(page)).sources.includes("mdn-js"), false);
   await page.close();
@@ -2467,7 +2587,7 @@ test("[catalog] empty and index-load failure states are explicit", async () => {
   let manifestRequests = 0;
   await noSourcesPage.setRequestInterception(true);
   noSourcesPage.on("request", async (request) => {
-    if (new URL(request.url()).pathname === "/search-index/manifest.json") {
+    if (new URL(request.url()).pathname === "/search-index/runtime-manifest.json") {
       manifestRequests += 1;
     }
     await request.continue();
@@ -2519,7 +2639,7 @@ test("[catalog] empty and index-load failure states are explicit", async () => {
   await disableSearchWorker(errorPage);
   await errorPage.setRequestInterception(true);
   errorPage.on("request", async (request) => {
-    if (new URL(request.url()).pathname === "/search-index/manifest.json") {
+    if (new URL(request.url()).pathname === "/search-index/runtime-manifest.json") {
       await request.respond({ status: 503, contentType: "application/json", body: "{}" });
     } else {
       await request.continue();
@@ -2926,10 +3046,9 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
       assert.equal(focusStyle.outlineStyle, "solid");
       assert.ok(focusStyle.outlineWidth >= 2);
       assert.ok(focusStyle.outlineOffset < 0);
-      await Promise.all([
-        page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 20_000 }),
-        page.keyboard.press("Enter")
-      ]);
+      const pageLoadCount = await armClientPageLoadCounter(page);
+      await page.keyboard.press("Enter");
+      await waitForClientPageLoad(page, pageLoadCount);
       assert.doesNotMatch(new URL(page.url()).searchParams.get("q"), /lang:typescript/);
     }
     await page.close();
@@ -3003,5 +3122,319 @@ test("[performance] documentation locale switch avoids navigation and meets cold
   assert.equal(performanceResult.timeOrigin, timeOrigin);
   assert.equal(performanceResult.marker, "preserved");
   assert.deepEqual(performanceResult.searchLongTasks, []);
+  await page.close();
+});
+
+test("[performance] Docs locale intent warms one request and the click reuses it", async () => {
+  const japaneseIndexPath = searchManifest.entries.find(
+    (entry) =>
+      entry.sourceId === "python-docs" &&
+      entry.docsLocale === "ja" &&
+      entry.status === "supported"
+  )?.path;
+  assert.ok(japaneseIndexPath);
+
+  const page = await newPage();
+  await page.setRequestInterception(true);
+  let japaneseIndexRequests = 0;
+  let releaseFirstRequest;
+  const firstRequestGate = new Promise((resolveGate) => {
+    releaseFirstRequest = resolveGate;
+  });
+  let observeFirstRequest;
+  const firstRequestObserved = new Promise((resolveRequest) => {
+    observeFirstRequest = resolveRequest;
+  });
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname !== japaneseIndexPath) {
+      void request.continue();
+      return;
+    }
+    japaneseIndexRequests += 1;
+    observeFirstRequest();
+    if (japaneseIndexRequests === 1) {
+      void firstRequestGate.then(() => request.continue());
+      return;
+    }
+    void request.continue();
+  });
+
+  await gotoQuery(
+    page,
+    "python list",
+    "&docsLocale=en&sourceSelection=explicit&sourceId=python-docs"
+  );
+  await waitForResults(page);
+  assert.equal(japaneseIndexRequests, 0);
+
+  await page.$eval('[data-docs-radio][value="ja"]', (radio) => {
+    radio.parentElement.dispatchEvent(new PointerEvent("pointerenter"));
+  });
+  await firstRequestObserved;
+  assert.equal(
+    await page.$eval("[data-search-status]", (status) => status.dataset.state),
+    "success"
+  );
+  assert.equal(
+    await page.$eval("[data-search-results]", (results) => results.dataset.docsLocale),
+    "en"
+  );
+
+  await page.$eval('[data-docs-radio][value="ja"]', (radio) => radio.click());
+  await page.waitForFunction(
+    () =>
+      document.querySelector("[data-search-results]")?.dataset.docsLocale === "ja" &&
+      document.querySelector("[data-search-status]")?.dataset.state === "loading"
+  );
+  releaseFirstRequest();
+  await page.waitForFunction(
+    () =>
+      document.querySelector("[data-search-results]")?.dataset.docsLocale === "ja" &&
+      document.querySelector("[data-search-status]")?.dataset.state === "success",
+    { timeout: 20_000 }
+  );
+  assert.equal(japaneseIndexRequests, 1);
+  assert.ok((await snapshot(page)).locales.every((locale) => locale === "ja"));
+  await page.close();
+});
+
+test("[performance] Docs locale intent respects reduced-data connections", async () => {
+  const japaneseIndexPath = searchManifest.entries.find(
+    (entry) =>
+      entry.sourceId === "python-docs" &&
+      entry.docsLocale === "ja" &&
+      entry.status === "supported"
+  )?.path;
+  assert.ok(japaneseIndexPath);
+
+  const page = await newPage();
+  let japaneseIndexRequests = 0;
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname === japaneseIndexPath) {
+      japaneseIndexRequests += 1;
+    }
+  });
+  await gotoQuery(
+    page,
+    "python list",
+    "&docsLocale=en&sourceSelection=explicit&sourceId=python-docs"
+  );
+  await waitForResults(page);
+  assert.equal(japaneseIndexRequests, 0);
+
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "connection", {
+      configurable: true,
+      value: { saveData: true, effectiveType: "4g" }
+    });
+    document.querySelector('[data-docs-radio][value="ja"]').focus();
+  });
+  await new Promise((resolveDelay) => setTimeout(resolveDelay, 200));
+  assert.equal(japaneseIndexRequests, 0);
+
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "connection", {
+      configurable: true,
+      value: { saveData: false, effectiveType: "2g" }
+    });
+    document.querySelector("[data-query-input]").focus();
+    document.querySelector('[data-docs-radio][value="ja"]').focus();
+  });
+  await new Promise((resolveDelay) => setTimeout(resolveDelay, 200));
+  assert.equal(japaneseIndexRequests, 0);
+  assert.equal(
+    await page.$eval("[data-search-status]", (status) => status.dataset.state),
+    "success"
+  );
+  await page.close();
+});
+
+test("[performance] a failed Docs intent stays silent and a click retries normally", async () => {
+  const japaneseIndexPath = searchManifest.entries.find(
+    (entry) =>
+      entry.sourceId === "python-docs" &&
+      entry.docsLocale === "ja" &&
+      entry.status === "supported"
+  )?.path;
+  assert.ok(japaneseIndexPath);
+
+  const page = await newPage();
+  await page.setRequestInterception(true);
+  let japaneseIndexRequests = 0;
+  let firstFailureObserved;
+  const firstFailure = new Promise((resolveFailure) => {
+    firstFailureObserved = resolveFailure;
+  });
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname !== japaneseIndexPath) {
+      void request.continue();
+      return;
+    }
+    japaneseIndexRequests += 1;
+    if (japaneseIndexRequests === 1) {
+      void request.respond({
+        status: 503,
+        contentType: "application/json",
+        body: "{}"
+      }).then(firstFailureObserved);
+      return;
+    }
+    void request.continue();
+  });
+
+  await gotoQuery(
+    page,
+    "python list",
+    "&docsLocale=en&sourceSelection=explicit&sourceId=python-docs"
+  );
+  await waitForResults(page);
+  await page.$eval('[data-docs-radio][value="ja"]', (radio) => {
+    radio.parentElement.dispatchEvent(new PointerEvent("pointerenter"));
+  });
+  await firstFailure;
+  await new Promise((resolveDelay) => setTimeout(resolveDelay, 100));
+  assert.equal(
+    await page.$eval("[data-search-status]", (status) => status.dataset.state),
+    "success"
+  );
+  assert.equal(
+    await page.$eval("[data-search-results]", (results) => results.dataset.docsLocale),
+    "en"
+  );
+
+  await page.$eval('[data-docs-radio][value="ja"]', (radio) => radio.click());
+  await page.waitForFunction(
+    () =>
+      document.querySelector("[data-search-results]")?.dataset.docsLocale === "ja" &&
+      document.querySelector("[data-search-status]")?.dataset.state === "success",
+    { timeout: 20_000 }
+  );
+  assert.equal(japaneseIndexRequests, 2);
+  assert.ok((await snapshot(page)).locales.every((locale) => locale === "ja"));
+  await page.close();
+});
+
+test("[performance] GET search and source policy changes preserve the document and cached indexes", async () => {
+  const page = await newPage();
+  const indexRequests = [];
+  let documentRequests = 0;
+  page.on("request", (request) => {
+    const pathname = new URL(request.url()).pathname;
+    if (pathname.startsWith("/search-index/")) indexRequests.push(pathname);
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+      documentRequests += 1;
+    }
+  });
+  await gotoQuery(
+    page,
+    "javascript proxy",
+    "&docsLocale=en&sourcePolicy=official"
+  );
+  await waitForResults(page);
+
+  const initialIdentity = await page.evaluate(() => {
+    globalThis.__odsPerformanceDocument = "preserved";
+    return {
+      timeOrigin: performance.timeOrigin,
+      historyLength: history.length,
+      fontFamily: getComputedStyle(document.body).fontFamily
+    };
+  });
+  await page.$eval("details.source-details", (details) => {
+    details.open = true;
+  });
+  await page.evaluate(() =>
+    window.scrollTo(0, document.documentElement.scrollHeight)
+  );
+  documentRequests = 0;
+  indexRequests.length = 0;
+
+  await clickAndWaitForClientNavigation(
+    page,
+    '[data-source-policy-radio][value="all"]'
+  );
+  await waitForResults(page);
+  const firstAllSnapshot = await snapshot(page);
+  const firstAllUrl = page.url();
+  const firstAllIndexRequestCount = indexRequests.length;
+  const preservedPolicyState = await page.evaluate(() => ({
+    marker: globalThis.__odsPerformanceDocument,
+    timeOrigin: performance.timeOrigin,
+    sourceDetailsOpen: document.querySelector("details.source-details")?.open,
+    focusedQuery: document.activeElement?.matches("[data-query-input]"),
+    scrollY: window.scrollY,
+    historyLength: history.length,
+    fontFamily: getComputedStyle(document.body).fontFamily
+  }));
+  assert.deepEqual(preservedPolicyState, {
+    marker: "preserved",
+    timeOrigin: initialIdentity.timeOrigin,
+    sourceDetailsOpen: true,
+    focusedQuery: true,
+    scrollY: 0,
+    historyLength: initialIdentity.historyLength + 1,
+    fontFamily: initialIdentity.fontFamily
+  });
+  assert.equal(documentRequests, 0);
+  assert.ok(firstAllIndexRequestCount > 0);
+
+  const comparisonPage = await newPage();
+  await comparisonPage.goto(firstAllUrl, { waitUntil: "domcontentloaded" });
+  await waitForResults(comparisonPage);
+  assert.deepEqual(firstAllSnapshot, await snapshot(comparisonPage));
+  await comparisonPage.close();
+
+  await clickAndWaitForClientNavigation(
+    page,
+    '[data-source-policy-radio][value="fallback"]'
+  );
+  await waitForResults(page);
+  await clickAndWaitForClientNavigation(
+    page,
+    '[data-source-policy-radio][value="all"]'
+  );
+  await waitForResults(page);
+  assert.equal(indexRequests.length, firstAllIndexRequestCount);
+
+  await page.$eval("[data-query-input]", (input) => {
+    input.value = "javascript reflect";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await clickAndWaitForClientNavigation(page, '.search-group button[type="submit"]');
+  await waitForResults(page);
+  const clientSearchSnapshot = await snapshot(page);
+  const clientSearchUrl = page.url();
+  assert.equal(new URL(clientSearchUrl).searchParams.get("q"), "javascript reflect");
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      marker: globalThis.__odsPerformanceDocument,
+      timeOrigin: performance.timeOrigin,
+      focusedQuery: document.activeElement?.matches("[data-query-input]"),
+      historyLength: history.length
+    })),
+    {
+      marker: "preserved",
+      timeOrigin: initialIdentity.timeOrigin,
+      focusedQuery: true,
+      historyLength: initialIdentity.historyLength + 4
+    }
+  );
+  assert.equal(documentRequests, 0);
+
+  const freshSearchPage = await newPage();
+  await freshSearchPage.goto(clientSearchUrl, { waitUntil: "domcontentloaded" });
+  await waitForResults(freshSearchPage);
+  assert.deepEqual(clientSearchSnapshot, await snapshot(freshSearchPage));
+  await freshSearchPage.close();
+
+  const pageLoadCount = await armClientPageLoadCounter(page);
+  await page.evaluate(() => history.back());
+  await waitForClientPageLoad(page, pageLoadCount);
+  await waitForResults(page);
+  assert.equal(new URL(page.url()).searchParams.get("q"), "javascript proxy");
+  assert.equal(
+    await page.evaluate(() => performance.timeOrigin),
+    initialIdentity.timeOrigin
+  );
   await page.close();
 });

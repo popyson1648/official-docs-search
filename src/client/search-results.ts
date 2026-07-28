@@ -62,10 +62,51 @@ interface ResultFilterSession extends ResultFilterState {
   key: string;
 }
 
+export async function warmSearchPage(
+  root: Document,
+  docsLocale: string,
+  fetcher: typeof fetch = fetch
+): Promise<void> {
+  const results = root.querySelector<HTMLElement>("[data-search-results]");
+  if (!results || results.dataset.noSources === "true") return;
+
+  const query = results.dataset.query?.trim() ?? "";
+  const requestedSources = parseRequestedSources(results.dataset.sources);
+  if (!query || requestedSources.length === 0) return;
+
+  const baseResult = await executeSearch(
+    searchRequest(query, docsLocale, requestedSources),
+    root,
+    fetcher
+  );
+  const filterSession = getResultFilterSession(root, query, requestedSources);
+  if (!hasSelectedResultFilters(filterSession)) return;
+
+  const matchingSourceIds = new Set(
+    baseResult.facets.map((facet) => facet.sourceId)
+  );
+  const matchingSources = requestedSources.filter((source) =>
+    matchingSourceIds.has(source.id)
+  );
+  const resolved = resolveResultSourceFilters(matchingSources, filterSession);
+  if (resolved.sources.length === 0) return;
+
+  await executeSearch(
+    searchRequest(query, docsLocale, resolved.sources),
+    root,
+    fetcher
+  );
+}
+
 export async function initializeSearchPage(
   root: Document = document,
-  fetcher: typeof fetch = fetch
+  fetcher: typeof fetch = fetch,
+  warmup?: Promise<void>
 ): Promise<SearchPageOutcome | undefined> {
+  const sequence = nextSearchSequence(root);
+  resultFilterControls.get(root)?.destroy();
+  resultFilterControls.delete(root);
+
   const results = root.querySelector<HTMLElement>("[data-search-results]");
   if (!results) return undefined;
 
@@ -89,7 +130,6 @@ export async function initializeSearchPage(
   ) {
     return undefined;
   }
-  const sequence = nextSearchSequence(root);
 
   const query = results.dataset.query?.trim() ?? "";
   const docsLocale = results.dataset.docsLocale ?? "";
@@ -132,6 +172,11 @@ export async function initializeSearchPage(
 
   setStatus(status, "loading");
   try {
+    try {
+      await warmup;
+    } catch {
+      // Intent prefetch failures stay silent. The normal request below retries.
+    }
     const baseResult = await executeSearch(
       searchRequest(query, docsLocale, requestedSources),
       root,
@@ -602,20 +647,23 @@ function renderResultGroups(
   languageNames: ReadonlyMap<string, string>,
   languageColors: ReadonlyMap<string, string>
 ): void {
-  const items = groups.map((group) =>
-    renderResultGroup(
-      root,
-      group,
-      languageNames.get(group.programmingLanguage) ?? group.programmingLanguage,
-      languageColors.get(group.programmingLanguage)
-    )
-  );
-  list.replaceChildren(...items.slice(0, RESULT_BATCH_SIZE));
+  const renderRange = (start: number, end: number) =>
+    groups.slice(start, end).map((group) =>
+      renderResultGroup(
+        root,
+        group,
+        languageNames.get(group.programmingLanguage) ??
+          group.programmingLanguage,
+        languageColors.get(group.programmingLanguage)
+      )
+    );
+  const initialCount = Math.min(RESULT_BATCH_SIZE, groups.length);
+  list.replaceChildren(...renderRange(0, initialCount));
   paginationMount.replaceChildren();
-  paginationMount.hidden = items.length <= RESULT_BATCH_SIZE;
-  if (items.length <= RESULT_BATCH_SIZE) return;
+  paginationMount.hidden = groups.length <= RESULT_BATCH_SIZE;
+  if (groups.length <= RESULT_BATCH_SIZE) return;
 
-  let visibleCount = RESULT_BATCH_SIZE;
+  let visibleCount = initialCount;
   const progress = root.createElement("span");
   progress.className = "sr-only";
   progress.setAttribute("role", "status");
@@ -623,8 +671,8 @@ function renderResultGroups(
   appendLocalizedText(
     root,
     progress,
-    resultProgressMessage("en", visibleCount, items.length),
-    resultProgressMessage("ja", visibleCount, items.length)
+    resultProgressMessage("en", visibleCount, groups.length),
+    resultProgressMessage("ja", visibleCount, groups.length)
   );
 
   const button = root.createElement("button");
@@ -635,7 +683,7 @@ function renderResultGroups(
   const updateButton = () => {
     const nextCount = Math.min(
       RESULT_BATCH_SIZE,
-      items.length - visibleCount
+      groups.length - visibleCount
     );
     appendLocalizedText(
       root,
@@ -650,23 +698,24 @@ function renderResultGroups(
     const firstNewIndex = visibleCount;
     visibleCount = Math.min(
       visibleCount + RESULT_BATCH_SIZE,
-      items.length
+      groups.length
     );
-    list.append(...items.slice(firstNewIndex, visibleCount));
+    const nextItems = renderRange(firstNewIndex, visibleCount);
+    list.append(...nextItems);
     appendLocalizedText(
       root,
       progress,
-      resultProgressMessage("en", visibleCount, items.length),
-      resultProgressMessage("ja", visibleCount, items.length)
+      resultProgressMessage("en", visibleCount, groups.length),
+      resultProgressMessage("ja", visibleCount, groups.length)
     );
-    if (visibleCount < items.length) {
+    if (visibleCount < groups.length) {
       updateButton();
       return;
     }
 
     button.hidden = true;
     if (event.detail === 0) {
-      items[firstNewIndex]
+      nextItems[0]
         ?.querySelector<HTMLElement>("a, button, [tabindex]")
         ?.focus();
     }

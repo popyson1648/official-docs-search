@@ -15,7 +15,11 @@ import {
 } from "./search-results";
 
 export interface SearchControlCallbacks {
-  onDocsLocaleChange?(docsLocale: string): void | Promise<void>;
+  onDocsLocaleIntent?(docsLocale: string): void | Promise<void>;
+  onDocsLocaleChange?(
+    docsLocale: string,
+    warmup?: Promise<void>
+  ): void | Promise<void>;
 }
 
 interface SuggestionScope {
@@ -51,6 +55,7 @@ export function initializeSearchControls(
   let activeSuggestion = -1;
   let composing = false;
   let renderedSuggestions: SearchSuggestion[] = [];
+  const docsLocaleWarmups = new Map<string, Promise<void>>();
 
   restoreSourceDetailsState(root, sourceDetails);
 
@@ -314,14 +319,43 @@ export function initializeSearchControls(
   });
 
   docsRadios.forEach((radio) => {
+    const warmDocsLocale = () => {
+      if (
+        radio.checked ||
+        !callbacks.onDocsLocaleIntent ||
+        !allowsIntentPrefetch(root.defaultView)
+      ) {
+        return;
+      }
+      const effectiveLocale = form?.dataset.queryLocale || radio.value;
+      if (
+        effectiveLocale === (results?.dataset.docsLocale ?? "") ||
+        docsLocaleWarmups.has(effectiveLocale)
+      ) {
+        return;
+      }
+      const pending = Promise.resolve().then(() =>
+        callbacks.onDocsLocaleIntent?.(effectiveLocale)
+      );
+      docsLocaleWarmups.set(effectiveLocale, pending);
+      void pending.catch(() => {
+        if (docsLocaleWarmups.get(effectiveLocale) === pending) {
+          docsLocaleWarmups.delete(effectiveLocale);
+        }
+      });
+    };
+    radio.parentElement?.addEventListener("pointerenter", warmDocsLocale);
+    radio.addEventListener("focus", warmDocsLocale);
     radio.addEventListener("change", () => {
       root.cookie = preferenceCookie("docsLocale", radio.value);
       updateDocsLocaleUrl(root, radio.value);
       const effectiveLocale = form?.dataset.queryLocale || radio.value;
+      const warmup = docsLocaleWarmups.get(effectiveLocale);
+      docsLocaleWarmups.delete(effectiveLocale);
       if (form) form.dataset.docsLocale = effectiveLocale;
       if (results) results.dataset.docsLocale = effectiveLocale;
       updateDocsRadioState(docsRadios, effectiveLocale);
-      void callbacks.onDocsLocaleChange?.(effectiveLocale);
+      void callbacks.onDocsLocaleChange?.(effectiveLocale, warmup);
     });
   });
 
@@ -431,4 +465,21 @@ function updateDocsRadioState(
     radio.checked = active;
     radio.parentElement?.classList.toggle("active", active);
   });
+}
+
+function allowsIntentPrefetch(view: Window | null): boolean {
+  if (!view) return false;
+  const connection = (
+    view.navigator as Navigator & {
+      connection?: {
+        saveData?: boolean;
+        effectiveType?: string;
+      };
+    }
+  ).connection;
+  return (
+    connection?.saveData !== true &&
+    connection?.effectiveType !== "slow-2g" &&
+    connection?.effectiveType !== "2g"
+  );
 }

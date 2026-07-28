@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { request } from "node:http";
 import net from "node:net";
 import { resolve } from "node:path";
@@ -10,6 +10,10 @@ import { brotliDecompressSync, gunzipSync } from "node:zlib";
 
 const root = resolve(import.meta.dirname, "../..");
 const manifestFile = resolve(root, "dist/client/search-index/manifest.json");
+const runtimeManifestFile = resolve(
+  root,
+  "dist/client/search-index/runtime-manifest.json"
+);
 let app;
 let baseUrl;
 let manifest;
@@ -53,31 +57,104 @@ test("serves the production SSR build with its bundled catalog", async () => {
   assert.doesNotMatch(app.logs.join(""), /ENOENT|docs-sources\.toml/);
 });
 
-test("serves the manifest compressed with stable revalidation headers", async () => {
-  const source = await readFile(manifestFile);
-  const response = await rawRequest("/search-index/manifest.json", {
-    "Accept-Encoding": "br"
-  });
+test("negotiates compression for HTML, CSS, and JavaScript", async () => {
+  const assets = [
+    { path: "/", readSource: () => rawRequest("/") },
+    {
+      path: await builtAssetPath(".css"),
+      readSource: async (pathname) => ({
+        body: await readFile(resolve(root, `dist/client${pathname}`))
+      })
+    },
+    {
+      path: await builtAssetPath(".js"),
+      readSource: async (pathname) => ({
+        body: await readFile(resolve(root, `dist/client${pathname}`))
+      })
+    }
+  ];
 
-  assert.equal(response.statusCode, 200);
-  assert.equal(response.headers["content-encoding"], "br");
-  assert.match(response.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
-  assert.match(response.headers["cache-control"] || "", /\bno-cache\b/);
-  assert.equal(response.headers.etag, contentEtag(source));
-  assert.deepEqual(brotliDecompressSync(response.body), source);
+  for (const asset of assets) {
+    const source = await asset.readSource(asset.path);
+    for (const encoding of ["br", "gzip"]) {
+      const response = await rawRequest(asset.path, {
+        "Accept-Encoding": encoding
+      });
 
-  const conditional = await rawRequest("/search-index/manifest.json", {
-    "Accept-Encoding": "br",
-    "If-None-Match": response.headers.etag
-  });
-  assert.equal(conditional.statusCode, 304);
-  assert.equal(conditional.body.byteLength, 0);
+      assert.equal(response.statusCode, 200, asset.path);
+      assert.equal(response.headers["content-encoding"], encoding, asset.path);
+      assert.match(
+        response.headers.vary || "",
+        /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i,
+        asset.path
+      );
+      const decoded =
+        encoding === "br"
+          ? brotliDecompressSync(response.body)
+          : gunzipSync(response.body);
+      assert.deepEqual(decoded, source.body, asset.path);
+    }
+  }
+});
+
+test("precompresses every built search-index JSON without changing its bytes", async () => {
+  const files = await findJsonFiles(resolve(root, "dist/client/search-index"));
+  assert.ok(files.length > 0);
+
+  for (const file of files) {
+    const [source, brotli, gzip] = await Promise.all([
+      readFile(file),
+      readFile(`${file}.br`),
+      readFile(`${file}.gz`)
+    ]);
+    assert.deepEqual(brotliDecompressSync(brotli), source, file);
+    assert.deepEqual(gunzipSync(gzip), source, file);
+  }
+});
+
+test("serves both manifests from sidecars with stable revalidation headers", async () => {
+  const manifests = [
+    {
+      path: "/search-index/manifest.json",
+      file: manifestFile
+    },
+    {
+      path: "/search-index/runtime-manifest.json",
+      file: runtimeManifestFile
+    }
+  ];
+
+  for (const item of manifests) {
+    const source = await readFile(item.file);
+    const sidecar = await readFile(`${item.file}.br`);
+    const response = await rawRequest(item.path, {
+      "Accept-Encoding": "br"
+    });
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(response.headers["content-encoding"], "br");
+    assert.match(response.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
+    assert.match(response.headers["cache-control"] || "", /\bno-cache\b/);
+    assert.equal(response.headers.etag, contentEtag(source));
+    assert.deepEqual(response.body, sidecar);
+    assert.deepEqual(brotliDecompressSync(response.body), source);
+
+    const conditional = await rawRequest(item.path, {
+      "Accept-Encoding": "br",
+      "If-None-Match": response.headers.etag
+    });
+    assert.equal(conditional.statusCode, 304);
+    assert.equal(conditional.body.byteLength, 0);
+    assert.match(conditional.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
+  }
 });
 
 test("negotiates Brotli and gzip for a manifest-listed bundle", async () => {
   const entry = largestManifestEntry();
   const file = resolve(root, `dist/client${entry.path}`);
   const source = await readFile(file);
+  const brotliSidecar = await readFile(`${file}.br`);
+  const gzipSidecar = await readFile(`${file}.gz`);
   const expectedEtag = contentEtag(source);
 
   const brotli = await rawRequest(entry.path, { "Accept-Encoding": "br" });
@@ -85,19 +162,63 @@ test("negotiates Brotli and gzip for a manifest-listed bundle", async () => {
   assert.equal(brotli.headers["content-encoding"], "br");
   assert.equal(brotli.headers.etag, expectedEtag);
   assert.match(brotli.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
+  assert.deepEqual(brotli.body, brotliSidecar);
   assert.deepEqual(brotliDecompressSync(brotli.body), source);
 
   const gzip = await rawRequest(entry.path, { "Accept-Encoding": "gzip" });
   assert.equal(gzip.statusCode, 200);
   assert.equal(gzip.headers["content-encoding"], "gzip");
   assert.equal(gzip.headers.etag, expectedEtag);
+  assert.deepEqual(gzip.body, gzipSidecar);
   assert.deepEqual(gunzipSync(gzip.body), source);
+
+  const preferredGzip = await rawRequest(entry.path, {
+    "Accept-Encoding": "br;q=0.5, gzip;q=1"
+  });
+  assert.equal(preferredGzip.headers["content-encoding"], "gzip");
+  assert.deepEqual(preferredGzip.body, gzipSidecar);
+
+  const preferredIdentity = await rawRequest(entry.path, {
+    "Accept-Encoding": "br;q=0.5, identity;q=1"
+  });
+  assert.equal(preferredIdentity.headers["content-encoding"], undefined);
+  assert.deepEqual(preferredIdentity.body, source);
 
   const identity = await rawRequest(entry.path, { "Accept-Encoding": "identity" });
   assert.equal(identity.statusCode, 200);
   assert.equal(identity.headers["content-encoding"], undefined);
   assert.equal(identity.headers.etag, expectedEtag);
   assert.deepEqual(identity.body, source);
+});
+
+test("preserves search-asset headers for HEAD and conditional requests", async () => {
+  const entry = largestManifestEntry();
+  const file = resolve(root, `dist/client${entry.path}`);
+  const sidecar = await readFile(`${file}.br`);
+  const expectedEtag = contentEtag(await readFile(file));
+  const head = await rawRequest(
+    entry.path,
+    { "Accept-Encoding": "br" },
+    "HEAD"
+  );
+
+  assert.equal(head.statusCode, 200);
+  assert.equal(head.body.byteLength, 0);
+  assert.equal(head.headers["content-encoding"], "br");
+  assert.equal(Number(head.headers["content-length"]), sidecar.byteLength);
+  assert.equal(head.headers.etag, expectedEtag);
+  assert.match(head.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
+  assert.match(head.headers["cache-control"] || "", /\bimmutable\b/);
+
+  const conditional = await rawRequest(entry.path, {
+    "Accept-Encoding": "br",
+    "If-None-Match": expectedEtag
+  });
+  assert.equal(conditional.statusCode, 304);
+  assert.equal(conditional.body.byteLength, 0);
+  assert.equal(conditional.headers.etag, expectedEtag);
+  assert.match(conditional.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
+  assert.match(conditional.headers["cache-control"] || "", /\bimmutable\b/);
 });
 
 test("only gives immutable caching to content-hashed bundles", async () => {
@@ -120,6 +241,7 @@ test("only gives immutable caching to content-hashed bundles", async () => {
   });
   assert.equal(conditional.statusCode, 304);
   assert.equal(conditional.body.byteLength, 0);
+  assert.match(conditional.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
 });
 
 test("does not apply index cache headers to missing paths", async () => {
@@ -135,6 +257,27 @@ function largestManifestEntry() {
   return manifest.entries
     .filter((entry) => entry.status === "supported")
     .sort((left, right) => right.recordCount - left.recordCount)[0];
+}
+
+async function builtAssetPath(extension) {
+  const assetDirectory = resolve(root, "dist/client/_astro");
+  const names = await readdir(assetDirectory);
+  const name = names.find((candidate) => candidate.endsWith(extension));
+  assert.ok(name, `Expected a built ${extension} asset`);
+  return `/_astro/${name}`;
+}
+
+async function findJsonFiles(directory) {
+  const files = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const entryPath = resolve(directory, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await findJsonFiles(entryPath)));
+    } else if (entry.isFile() && entry.name.endsWith(".json")) {
+      files.push(entryPath);
+    }
+  }
+  return files.sort();
 }
 
 async function waitForServer() {
@@ -165,13 +308,14 @@ async function availablePort() {
   });
 }
 
-async function rawRequest(pathname, headers = {}) {
+async function rawRequest(pathname, headers = {}, method = "GET") {
   const url = new URL(pathname, baseUrl);
   return await new Promise((resolveResponse, reject) => {
     const pending = request(
       url,
       {
-        headers
+        headers,
+        method
       },
       (response) => {
         const chunks = [];

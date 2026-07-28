@@ -5,6 +5,15 @@ export interface GeneratedManifest {
   entries: Array<Record<string, unknown>>;
 }
 
+export const RUNTIME_SEARCH_MANIFEST_FILENAME: string;
+export function buildRuntimeSearchManifest(
+  manifest: {
+    schemaVersion: number;
+    generatorVersion: string;
+    catalogSha256: string;
+    entries: object[];
+  }
+): GeneratedManifest;
 export function buildSearchIndexArtifacts(options: Record<string, unknown>): Promise<{
   files: Map<string, string>;
   manifest: GeneratedManifest;

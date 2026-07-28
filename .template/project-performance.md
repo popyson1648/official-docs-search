@@ -2,11 +2,18 @@
 
 ## Current Snapshot
 
-Record the manifest date, supported bundle and record counts, raw bytes, generator gzip/Brotli sizes, production gzip/Brotli sizes, and compressed manifest size.
+Record the manifest date, supported bundle and record counts, raw bytes,
+generator gzip/Brotli sizes, production-sidecar sizes, and compressed runtime
+and full manifest sizes.
 State that selected bundles, not the complete catalog, are normally fetched.
 Keep generator regression sizes separate from production transfer sizes.
 Record per-bundle, default selected-set, and largest representative selected-set
 budgets with their current measurements.
+
+Record five-run mobile and desktop Lighthouse medians and ranges, constrained
+interaction medians, transfer, TBT, CLS, and whether field data was available.
+For font-delivery experiments, record the exact family/weight contract, the
+A/B result, and font-loaded visual and geometry equivalence.
 
 ## 10,000 DAU Transfer Model
 
@@ -19,8 +26,10 @@ Use 30 days and decimal provider GB unless the hosting contract specifies otherw
 
 Publish both:
 
-- A cold upper bound: all supported selected bundles plus the manifest on all 300,000 user-days.
-- An ideal warm bound: the same 10,000 browsers load once, unchanged manifest requests return bodyless `304`, and no bundle changes.
+- A cold upper bound: all supported selected bundles plus the runtime manifest
+  on all 300,000 user-days.
+- An ideal warm bound: the same 10,000 browsers load once, unchanged runtime
+  manifest requests return bodyless `304`, and no bundle changes.
 
 Include clearly labeled illustrative costs at one or more provider-neutral
 per-GB rates.
@@ -35,8 +44,8 @@ Account for updates only on changed content-addressed bundles selected by each c
 Prefer native HTTP caching for content-addressed bundles:
 
 - One-year immutable caching for hashed bundles.
-- Revalidation plus content-derived `ETag` for the manifest.
-- gzip/Brotli negotiation with `Vary: Accept-Encoding`.
+- Revalidation plus content-derived `ETag` for both manifests.
+- Maximum-compression gzip/Brotli sidecars with `Vary: Accept-Encoding`.
 - One page-lifetime worker for JSON parsing and compact-tuple search off the
   main thread, with manifest and loaded-bundle reuse.
 - Cached normalized searchable fields and bounded recent result reuse for

@@ -534,12 +534,13 @@ export function initializeResultFilters(
     panel.hidden = false;
     startListening();
   }
-  pinControlsWidth();
 
   let fontsLive = true;
-  void root.fonts?.ready.then(() => {
-    if (fontsLive && !destroyed) pinControlsWidth();
-  });
+  if (root.fonts && root.fonts.status !== "loaded") {
+    void root.fonts.ready.then(() => {
+      if (fontsLive && !destroyed) pinControlsWidth();
+    });
+  }
 
   return {
     setBusy(busy: boolean) {

@@ -4,7 +4,11 @@
 
 - `npm test` runs Vitest unit tests for query parsing, source selection, client controls, highlighting, adapters, deterministic publication, compact bundles, ranking, runtime loading, and language diversification.
 - `npm run test:integration` verifies all committed supported indexes, catalog/manifest agreement, minimum counts, content hashes, allowed original URLs, per-bundle and selected-set size budgets, every known query, and combined-language results.
-- `npm run test:server` builds and verifies production SSR, Brotli/gzip negotiation, body integrity, `ETag`, conditional `304`, `Vary`, and cache policies.
+- `npm run test:server` builds and verifies production SSR, Brotli/gzip
+  negotiation and body integrity for HTML, CSS, JavaScript, and search JSON,
+  verifies that search responses use the precompressed build sidecars, and
+  checks search-asset `HEAD`, `ETag`, conditional `304`, `Vary`, and cache
+  policies.
 - `npm run test:e2e` builds and drives Chromium against the production server and real committed indexes.
 - `npm run test:e2e:filters`, `npm run test:e2e:catalog`,
   `npm run test:e2e:layout`, and `npm run test:e2e:performance` run bounded
@@ -48,7 +52,12 @@ Both live commands are non-mutating.
 - Runtime loading or ranking: update `tests/search-runtime.test.ts`, `tests/search.test.ts`, and integration coverage.
 - Client controls or rendering: update focused client tests and the applicable
   tagged scenarios in `tests/e2e/search.test.mjs`.
-- Production compression or caching: update and run `tests/integration/production-server.test.mjs`.
+- Production compression or caching: update and run
+  `tests/integration/production-server.test.mjs`, including decompressed-body
+  equality for every changed response type and encoded-byte equality for
+  precompressed sidecars.
+- Font delivery: verify the Alexandria and LINE Seed JP family/weight contract,
+  then compare font-loaded screenshots, geometry, and ordered results.
 - Catalog adapter or upstream-data changes: run the source-scoped update
   intentionally, review the diff, then run `npm run test:live:affected`.
 - Build or verification changes: run

@@ -6,6 +6,7 @@
 - `src/client/`: browser controllers, result rendering, and the search worker.
 - `src/core/`: framework-independent query, catalog, support-state, runtime, and ranking logic.
 - `src/data/`: TOML catalog of official, conventional, and community documentation sources.
+- `src/font-faces.css`: reviewed generated face declarations bundled by Astro.
 - `src/pages/`: Astro routes.
 - `scripts/`: index adapters, reproducible publication, live verification, and production serving.
 - `public/search-index/`: committed compact search bundles and manifest.
@@ -60,14 +61,21 @@
   live-link checks.
 - `scripts/verify.py`: selects repository verification phases from changed
   paths with conservative fallback.
-- `scripts/serve-production.mjs`: serves Astro middleware with the search-asset compression and cache contract.
+- `scripts/precompress-production-assets.mjs`: creates maximum-compression
+  search-index sidecars inside the production build output.
+- `scripts/update-font-stylesheet.mjs`: validates and refreshes the committed
+  font-face stylesheet without changing the family or weight contract.
+- `scripts/serve-production.mjs`: serves Astro middleware with whole-response
+  text compression, precompressed search-index delivery, and the search-asset
+  cache contract.
 
 ## Runtime Data Flow
 
 1. Astro resolves the initial query, catalog scope, locale, and selected sources.
-2. If at least one source is selected, the client requests the complete status
-   manifest and keeps it in the page-lifetime worker; the no-source state makes
-   no index request.
+2. If at least one source is selected, the client requests the lightweight
+   runtime status manifest and keeps it in the page-lifetime worker; the
+   complete provenance manifest stays available for generation and server
+   verification. The no-source state makes no index request.
 3. The runtime prefers an exact locale and visibly falls back from Japanese to
    the source's English bundle when no Japanese index exists.
 4. The worker fetches and caches matching supported bundles, keeps successful

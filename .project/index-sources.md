@@ -8,6 +8,12 @@ Do not store or republish documentation bodies.
 records each input URL and hash, HTTP validators, retrieval time, output hash,
 version, attribution, license URL, cadence, known queries, record count, and
 compressed size.
+`public/search-index/runtime-manifest.json` is a deterministic client-only
+projection of that complete manifest. It keeps only source identity, ranking
+and display metadata, locale/support state, bundle path/count, and visible
+qualifications. The generator publishes both manifests together; maintenance,
+live verification, provenance, and license review continue to use the complete
+manifest.
 A separate static map pins the current GitHub Linguist display color for every
 catalog language without changing the search-index catalog hash.
 Result tags, Language filter choices, and query-chip language labels use the

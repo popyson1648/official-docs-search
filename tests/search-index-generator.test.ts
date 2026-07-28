@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
+  buildRuntimeSearchManifest,
   buildSearchIndexArtifacts,
   publishSearchIndexArtifacts
 } from "../scripts/search-index-generator.mjs";
@@ -83,6 +84,60 @@ describe("search index generation", () => {
     );
 
     expect([...second.files]).toEqual([...first.files]);
+  });
+
+  it("projects only runtime search fields while preserving manifest identity and order", async () => {
+    const generated = await build(fixtureJob(), new Date("2026-07-23T00:00:00Z"));
+    const runtimeManifest = buildRuntimeSearchManifest(generated.manifest);
+    const publishedRuntimeManifest = JSON.parse(
+      generated.files.get("runtime-manifest.json") ?? ""
+    );
+
+    expect(publishedRuntimeManifest).toEqual(runtimeManifest);
+    expect(runtimeManifest).toMatchObject({
+      schemaVersion: generated.manifest.schemaVersion,
+      generatorVersion: generated.manifest.generatorVersion,
+      catalogSha256: generated.manifest.catalogSha256
+    });
+    expect(
+      runtimeManifest.entries.map((entry) => [
+        entry.sourceId,
+        entry.docsLocale
+      ])
+    ).toEqual(
+      generated.manifest.entries.map((entry) => [
+        entry.sourceId,
+        entry.docsLocale
+      ])
+    );
+    expect(runtimeManifest.entries[0]).toEqual({
+      sourceId: "example-docs",
+      sourceName: "Example Documentation",
+      sourceKind: "official",
+      documentKind: "reference",
+      programmingLanguage: "example",
+      docsLocale: "en",
+      status: "supported",
+      path: expect.stringMatching(/^\/search-index\/example-docs\.en\.[a-f0-9]{16}\.json$/),
+      recordCount: 1
+    });
+    expect(runtimeManifest.entries[1]).toEqual({
+      sourceId: "example-docs",
+      sourceName: "Example Documentation",
+      sourceKind: "official",
+      documentKind: "reference",
+      programmingLanguage: "example",
+      docsLocale: "ja",
+      status: "planned",
+      reason: "Fixture adapter is English-only."
+    });
+    for (const entry of runtimeManifest.entries) {
+      expect(entry).not.toHaveProperty("inputs");
+      expect(entry).not.toHaveProperty("outputSha256");
+      expect(entry).not.toHaveProperty("knownQueries");
+      expect(entry).not.toHaveProperty("attribution");
+      expect(entry).not.toHaveProperty("licenseUrl");
+    }
   });
 
   it("sorts parallel input provenance independently of response completion order", async () => {
@@ -293,6 +348,28 @@ indexes = [{ locale = "en", status = "supported" }]
       mode: "check"
     });
     expect(snapshot(outputDirectory)).toEqual(before);
+  });
+
+  it("detects a stale runtime manifest in check mode", async () => {
+    const outputDirectory = temporaryDirectory();
+    const generated = await build(fixtureJob(), new Date("2026-07-23T00:00:00Z"));
+    publishSearchIndexArtifacts({
+      files: generated.files,
+      outputDirectory,
+      mode: "update"
+    });
+    writeFileSync(
+      join(outputDirectory, "runtime-manifest.json"),
+      '{"stale":true}\n'
+    );
+
+    expect(() =>
+      publishSearchIndexArtifacts({
+        files: generated.files,
+        outputDirectory,
+        mode: "check"
+      })
+    ).toThrow(/changed runtime-manifest\.json/);
   });
 
   it("rejects corrupt upstream data", async () => {

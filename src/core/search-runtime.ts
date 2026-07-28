@@ -2,6 +2,7 @@ import {
   isSupportedSearchIndexEntry,
   searchStoredIndexesWithFacets,
   validateStoredSearchIndex,
+  validateStoredSearchIndexIdentity,
   type RankedSearchRecord,
   type SearchFacet,
   type SearchIndexManifest,
@@ -10,6 +11,8 @@ import {
   type SupportedSearchIndexManifestEntry,
   type StoredSearchIndexBundle
 } from "./search";
+
+const fullyValidatedBundles = new WeakSet<StoredSearchIndexBundle>();
 
 export interface RequestedSearchSource {
   id: string;
@@ -52,7 +55,7 @@ export async function runSearchRequest(
   bundleCache = new Map<string, Promise<StoredSearchIndexBundle>>(),
   manifestCache = new Map<string, Promise<SearchIndexManifest>>()
 ): Promise<SearchRuntimeResult> {
-  const manifestPath = "/search-index/manifest.json";
+  const manifestPath = "/search-index/runtime-manifest.json";
   let pendingManifest = manifestCache.get(manifestPath);
   if (!pendingManifest) {
     pendingManifest = fetchJson<SearchIndexManifest>(fetcher, manifestPath);
@@ -100,13 +103,23 @@ export async function runSearchRequest(
     entries.map(async (entry) => {
       let pending = bundleCache.get(entry.path);
       if (!pending) {
-        pending = fetchJson<StoredSearchIndexBundle>(fetcher, entry.path);
+        pending = fetchJson<StoredSearchIndexBundle>(fetcher, entry.path).then(
+          (bundle) => {
+            validateStoredSearchIndex({ entry, bundle });
+            fullyValidatedBundles.add(bundle);
+            return bundle;
+          }
+        );
         bundleCache.set(entry.path, pending);
       }
       try {
         const bundle = await pending;
         const index = { entry, bundle };
-        validateStoredSearchIndex(index);
+        validateStoredSearchIndexIdentity(index);
+        if (!fullyValidatedBundles.has(bundle)) {
+          validateStoredSearchIndex(index);
+          fullyValidatedBundles.add(bundle);
+        }
         indexes.push(index);
       } catch (error) {
         bundleCache.delete(entry.path);

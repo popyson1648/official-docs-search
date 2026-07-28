@@ -4,7 +4,9 @@
 
 - `npm test` verifies query, catalog, client controls, highlighting, adapters, deterministic publication, compact bundles, runtime loading, ranking, and diversification.
 - `npm run test:integration` verifies all supported indexes, catalog/manifest agreement, counts, hashes, URL scope, per-bundle and selected-set budgets, every known query, and multi-language results.
-- `npm run test:server` verifies production SSR, gzip/Brotli, validators, conditional responses, and cache policies.
+- `npm run test:server` verifies production SSR, gzip/Brotli sidecar delivery,
+  decompressed body integrity, `HEAD`, validators, conditional responses, and
+  cache policies.
 - `npm run test:e2e` drives Chromium against the production server and real committed bundles.
 - Concern-specific E2E commands verify filters, catalog coverage,
   layout/accessibility, and performance against one existing build.
@@ -29,7 +31,10 @@ explicit all-source live check.
 
 - Update focused unit tests for parser, source-resolution, runtime, and client changes.
 - Update generator tests, integration thresholds, and intentional artifacts for adapter changes.
-- Update server-contract tests for compression or caching changes.
+- Update server-contract tests for compression or caching changes, including
+  sidecar-byte and decompressed-body equality.
+- For typography-preserving performance changes, require family/weight contract
+  checks plus font-loaded screenshot and geometry comparison.
 - Update browser flows for user-facing behavior changes.
 - Run affected live verification after reviewing an intentional source-scoped
   upstream-data refresh.

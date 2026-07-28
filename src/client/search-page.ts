@@ -1,13 +1,31 @@
 import { initializeBackToTop } from "./back-to-top";
 import { initializeSearchControls } from "./search-controls";
-import { initializeSearchPage } from "./search-results";
+import { initializeSearchPage, warmSearchPage } from "./search-results";
 
 export async function initializeClientSearchPage(root: Document = document): Promise<void> {
   initializeBackToTop(root);
   initializeSearchControls(root, {
-    onDocsLocaleChange: async () => {
-      await initializeSearchPage(root);
+    onDocsLocaleIntent: async (docsLocale) => {
+      await warmSearchPage(root, docsLocale);
+    },
+    onDocsLocaleChange: async (_docsLocale, warmup) => {
+      await initializeSearchPage(root, fetch, warmup);
     }
   });
+  focusSearchInput(root);
   await initializeSearchPage(root);
+}
+
+function focusSearchInput(root: Document): void {
+  const input = root.querySelector<HTMLInputElement>("[data-query-input][autofocus]");
+  const activeElement = root.activeElement;
+  if (
+    !input ||
+    (activeElement !== root.body &&
+      activeElement !== root.documentElement &&
+      activeElement !== null)
+  ) {
+    return;
+  }
+  input.focus();
 }

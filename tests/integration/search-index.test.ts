@@ -2,15 +2,25 @@ import { createHash } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  buildRuntimeSearchManifest
+} from "../../scripts/search-index-generator.mjs";
+import {
   expandSearchIndexBundle,
   isSupportedSearchIndexEntry,
   searchRecords,
   type SearchIndexManifest,
   type StoredSearchIndexBundle
 } from "../../src/core/search";
-import { isAllowedResultUrl, loadCatalog } from "../../src/core/sources";
+import { runSearchRequest } from "../../src/core/search-runtime";
+import {
+  isAllowedResultUrl,
+  loadCatalog
+} from "../../src/core/sources";
 
 const manifest = readJson<SearchIndexManifest>("public/search-index/manifest.json");
+const runtimeManifest = readJson<SearchIndexManifest>(
+  "public/search-index/runtime-manifest.json"
+);
 const supportedEntries = manifest.entries.filter(isSupportedSearchIndexEntry);
 const bundles = new Map(
   supportedEntries.map((entry) => [entry.path, readJson<StoredSearchIndexBundle>(`public${entry.path}`)])
@@ -36,6 +46,10 @@ function records(sourceId: string, docsLocale: string) {
 }
 
 describe("generated search indexes", () => {
+  it("keeps the committed runtime manifest synchronized with the complete manifest", () => {
+    expect(runtimeManifest).toEqual(buildRuntimeSearchManifest(manifest));
+  });
+
   it("keeps the approved language and locale coverage matrix", () => {
     expect(supportedEntries).toHaveLength(90);
     expect(
@@ -96,11 +110,104 @@ describe("generated search indexes", () => {
     }));
     expect(projected).toEqual(declared);
 
-    const expectedFiles = new Set(["manifest.json", ...supportedEntries.map((entry) => entry.path.slice(14))]);
+    const expectedFiles = new Set([
+      "manifest.json",
+      "runtime-manifest.json",
+      ...supportedEntries.map((entry) => entry.path.slice(14))
+    ]);
     expect(new Set(readdirSync("public/search-index").filter((name) => name.endsWith(".json")))).toEqual(
       expectedFiles
     );
   });
+
+  it(
+    "keeps the runtime projection search-equivalent for every known query",
+    { timeout: 120_000 },
+    async () => {
+      const completeCaches = runtimeCaches();
+      const projectedCaches = runtimeCaches();
+
+      for (const entry of supportedEntries) {
+        for (const query of entry.knownQueries ?? []) {
+          const language = catalog.languages.find(
+            (candidate) => candidate.id === entry.programmingLanguage
+          );
+          expect(language, entry.programmingLanguage).toBeDefined();
+          const sources = language!.sources.map(({ id, name }) => ({ id, name }));
+          const request = {
+            query,
+            docsLocale: entry.docsLocale,
+            sources,
+            limit: 60
+          };
+
+          const complete = await runSearchRequest(
+            request,
+            manifestFetcher(manifest),
+            completeCaches.bundles,
+            completeCaches.manifests
+          );
+          const projected = await runSearchRequest(
+            request,
+            manifestFetcher(runtimeManifest),
+            projectedCaches.bundles,
+            projectedCaches.manifests
+          );
+          expect(
+            projected,
+            `${entry.sourceId}/${entry.docsLocale}: ${query}`
+          ).toEqual(complete);
+        }
+      }
+    }
+  );
+
+  it(
+    "keeps C++ exact, fuzzy, locale, and source-policy results identical",
+    { timeout: 30_000 },
+    async () => {
+      const cpp = catalog.languages.find((language) => language.id === "cpp");
+      expect(cpp).toBeDefined();
+      const completeCaches = runtimeCaches();
+      const projectedCaches = runtimeCaches();
+      const sourceSets = {
+        official: cpp!.sources.filter((source) => source.kind === "official"),
+        fallback: cpp!.autoNonOfficialFallback
+          ? cpp!.sources
+          : cpp!.sources.filter((source) => source.kind === "official"),
+        all: cpp!.sources
+      };
+
+      for (const query of ["sort", "srot", "P2300R10"]) {
+        for (const docsLocale of ["", "en", "ja"]) {
+          for (const [policy, selectedSources] of Object.entries(sourceSets)) {
+            const request = {
+              query,
+              docsLocale,
+              sources: selectedSources.map(({ id, name }) => ({ id, name })),
+              limit: 60
+            };
+            const complete = await runSearchRequest(
+              request,
+              manifestFetcher(manifest),
+              completeCaches.bundles,
+              completeCaches.manifests
+            );
+            const projected = await runSearchRequest(
+              request,
+              manifestFetcher(runtimeManifest),
+              projectedCaches.bundles,
+              projectedCaches.manifests
+            );
+            expect(
+              projected,
+              `${query}/${docsLocale || "all-locales"}/${policy}`
+            ).toEqual(complete);
+          }
+        }
+      }
+    }
+  );
 
   it("contains production-sized bundles for every initial adapter", () => {
     const counts = Object.fromEntries(
@@ -294,4 +401,24 @@ describe("generated search indexes", () => {
 
 function readJson<T>(path: string): T {
   return JSON.parse(readFileSync(path, "utf8")) as T;
+}
+
+function runtimeCaches() {
+  return {
+    bundles: new Map(),
+    manifests: new Map()
+  };
+}
+
+function manifestFetcher(selectedManifest: SearchIndexManifest): typeof fetch {
+  return async (input) => {
+    const path = String(input);
+    if (path === "/search-index/runtime-manifest.json") {
+      return new Response(JSON.stringify(selectedManifest), { status: 200 });
+    }
+    const bundle = bundles.get(path);
+    return bundle
+      ? new Response(JSON.stringify(bundle), { status: 200 })
+      : new Response("not found", { status: 404 });
+  };
 }

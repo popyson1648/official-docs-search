@@ -1,5 +1,9 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import type {
+  StoredSearchIndexBundle,
+  StoredSearchRecord
+} from "../src/core/search";
 import { runSearchRequest } from "../src/core/search-runtime";
 
 describe("search runtime", () => {
@@ -21,7 +25,7 @@ describe("search runtime", () => {
   it("uses explicit support states and searches compact bundles", async () => {
     const responses = new Map<string, unknown>([
       [
-        "/search-index/manifest.json",
+        "/search-index/runtime-manifest.json",
         {
           schemaVersion: 2,
           generatorVersion: "2",
@@ -103,7 +107,7 @@ describe("search runtime", () => {
   it("propagates facets from matches outside the result limit", async () => {
     const responses = new Map<string, unknown>([
       [
-        "/search-index/manifest.json",
+        "/search-index/runtime-manifest.json",
         {
           schemaVersion: 2,
           generatorVersion: "2",
@@ -164,7 +168,7 @@ describe("search runtime", () => {
       ]
     };
     const responses = new Map<string, unknown>([
-      ["/search-index/manifest.json", manifest],
+      ["/search-index/runtime-manifest.json", manifest],
       ["/python.ja.json", bundle("python-docs", "ja", "https://docs.python.org/ja/", "リスト")],
       ["/python.en.json", bundle("python-docs", "en", "https://docs.python.org/en/", "List")],
       ["/rust.en.json", bundle("rust-docs", "en", "https://doc.rust-lang.org/", "Iterator")]
@@ -201,7 +205,7 @@ describe("search runtime", () => {
   it("keeps successful results when one bundle fails and retries failed cache entries", async () => {
     const responses = new Map<string, unknown>([
       [
-        "/search-index/manifest.json",
+        "/search-index/runtime-manifest.json",
         {
           schemaVersion: 2,
           generatorVersion: "2",
@@ -218,7 +222,7 @@ describe("search runtime", () => {
     let manifestAttempts = 0;
     let pythonAttempts = 0;
     const fetcher = async (path: string | URL | Request) => {
-      if (String(path) === "/search-index/manifest.json") manifestAttempts += 1;
+      if (String(path) === "/search-index/runtime-manifest.json") manifestAttempts += 1;
       if (String(path) === "/python.en.json") pythonAttempts += 1;
       if (String(path) === "/rust.en.json") {
         rustAttempts += 1;
@@ -255,10 +259,61 @@ describe("search runtime", () => {
     expect(rustAttempts).toBe(2);
   });
 
+  it("fully validates each cached parsed bundle only once", async () => {
+    const manifest = {
+      schemaVersion: 2,
+      generatorVersion: "2",
+      catalogSha256: "fixture",
+      entries: [
+        supportedEntry("python-docs", "python", "en", "/python.en.json")
+      ]
+    };
+    let recordIterations = 0;
+    const records = new Proxy<StoredSearchRecord[]>(
+      [["Iterator", "iterator.html"]],
+      {
+        get(target, property, receiver) {
+          if (property === Symbol.iterator) recordIterations += 1;
+          return Reflect.get(target, property, receiver);
+        }
+      }
+    );
+    const cachedBundle: StoredSearchIndexBundle = {
+      schemaVersion: 2,
+      sourceId: "python-docs",
+      docsLocale: "en",
+      urlPrefix: "https://docs.python.org/",
+      records
+    };
+    const fetcher = fixtureFetcher(
+      new Map([["/search-index/runtime-manifest.json", manifest]])
+    );
+    const bundleCache = new Map([
+      ["/python.en.json", Promise.resolve(cachedBundle)]
+    ]);
+    const manifestCache = new Map();
+    const sources = [{ id: "python-docs", name: "Python Documentation" }];
+
+    await runSearchRequest(
+      { query: "zzz", docsLocale: "en", sources },
+      fetcher,
+      bundleCache,
+      manifestCache
+    );
+    await runSearchRequest(
+      { query: "yyy", docsLocale: "en", sources },
+      fetcher,
+      bundleCache,
+      manifestCache
+    );
+
+    expect(recordIterations).toBe(1);
+  });
+
   it("isolates a malformed bundle without discarding valid bundle results", async () => {
     const responses = new Map<string, unknown>([
       [
-        "/search-index/manifest.json",
+        "/search-index/runtime-manifest.json",
         {
           schemaVersion: 2,
           generatorVersion: "2",

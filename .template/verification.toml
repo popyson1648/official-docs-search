@@ -76,6 +76,7 @@ run_in_ci = true
 paths = [
   "src/**",
   "public/**",
+  "scripts/precompress-production-assets.mjs",
   "astro.config.mjs",
   "tsconfig.json",
   "package.json",
@@ -93,6 +94,8 @@ paths = [
   "src/core/**",
   "src/client/search-controls.ts",
   "src/client/search-result-filters.ts",
+  "src/font-faces.css",
+  "scripts/update-font-stylesheet.mjs",
   "scripts/generate-search-index.mjs",
   "scripts/search-index.mjs",
   "scripts/search-index-generator.mjs",
@@ -192,7 +195,8 @@ run_in_ci = true
 requires = ["build"]
 covered_by = ["test_e2e"]
 paths = [
-  "public/styles.css",
+  "src/font-faces.css",
+  "src/styles.css",
 ]
 
 [phases.test_e2e_performance]
@@ -205,6 +209,16 @@ run_in_ci = true
 requires = ["build"]
 covered_by = ["test_e2e"]
 paths = [
+  "src/client/back-to-top.ts",
+  "src/client/search-controls.ts",
+  "src/client/search-page.ts",
+  "src/client/search-results.ts",
+  "src/client/search.worker.ts",
+  "src/core/search-runtime.ts",
+  "src/pages/**",
+  "src/font-faces.css",
+  "src/styles.css",
+  "scripts/serve-production.mjs",
   "tests/e2e/performance/**",
 ]
 
@@ -246,6 +260,7 @@ paths = [
   "public/search-index/**",
   "src/pages/**",
   "src/data/docs-sources.toml",
+  "scripts/precompress-production-assets.mjs",
   "scripts/serve-production.mjs",
   "tests/integration/**/*.mjs",
   "astro.config.mjs",

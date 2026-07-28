@@ -196,7 +196,7 @@ class ChangeSelectionTests(unittest.TestCase):
         build = phase("build", "src/**")
         full = phase("e2e", "src/app.ts")
         full["requires"] = ["build"]
-        subset = phase("e2e_layout", "public/styles.css")
+        subset = phase("e2e_layout", "src/styles.css")
         subset["requires"] = ["build"]
         subset["covered_by"] = ["e2e"]
 

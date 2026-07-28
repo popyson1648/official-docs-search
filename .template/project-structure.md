@@ -16,12 +16,16 @@
 ## Important Modules
 
 - Document query parsing, catalog/support resolution, compact-tuple ranking, runtime fetching, pure client helpers, browser controllers, the worker, source adapters, deterministic publication, live verification, and production serving.
+- Document production-sidecar generation separately from runtime serving.
+- List committed generated font declarations and their validated refresh script
+  when typography is part of the product contract.
 
 ## Runtime Data Flow
 
 1. Resolve the initial query, catalog scope, locale, and selected sources on the
    server.
-2. Fetch and retain the complete status manifest in a page-lifetime worker.
+2. Fetch and retain a lightweight runtime status manifest in a page-lifetime
+   worker while keeping the complete provenance manifest canonical.
 3. Prefer an exact content locale and visibly fall back from Japanese to English
    only when the source has no Japanese index.
 4. Fetch, cache, validate, and search matching supported bundles in the worker,

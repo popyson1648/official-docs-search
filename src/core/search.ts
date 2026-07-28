@@ -111,20 +111,8 @@ export function isSupportedSearchIndexEntry(
 }
 
 export function validateStoredSearchIndex(index: StoredSearchIndex): void {
+  validateStoredSearchIndexIdentity(index);
   const { bundle, entry } = index;
-  if (
-    !bundle ||
-    bundle.schemaVersion !== 2 ||
-    bundle.sourceId !== entry.sourceId ||
-    bundle.docsLocale !== entry.docsLocale ||
-    typeof bundle.urlPrefix !== "string" ||
-    !Array.isArray(bundle.records)
-  ) {
-    throw new Error(`Invalid search bundle structure: ${entry.path}`);
-  }
-  if (bundle.records.length !== entry.recordCount) {
-    throw new Error(`Search bundle count does not match its manifest entry: ${entry.path}`);
-  }
   for (const record of bundle.records) {
     if (
       !Array.isArray(record) ||
@@ -139,6 +127,23 @@ export function validateStoredSearchIndex(index: StoredSearchIndex): void {
       throw new Error(`Invalid search record in ${entry.path}`);
     }
     safeBundleUrl(bundle.urlPrefix, record[1], entry.path);
+  }
+}
+
+export function validateStoredSearchIndexIdentity(index: StoredSearchIndex): void {
+  const { bundle, entry } = index;
+  if (
+    !bundle ||
+    bundle.schemaVersion !== 2 ||
+    bundle.sourceId !== entry.sourceId ||
+    bundle.docsLocale !== entry.docsLocale ||
+    typeof bundle.urlPrefix !== "string" ||
+    !Array.isArray(bundle.records)
+  ) {
+    throw new Error(`Invalid search bundle structure: ${entry.path}`);
+  }
+  if (bundle.records.length !== entry.recordCount) {
+    throw new Error(`Search bundle count does not match its manifest entry: ${entry.path}`);
   }
 }
 

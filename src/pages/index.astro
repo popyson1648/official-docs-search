@@ -13,6 +13,9 @@ import {
   getLanguageColor,
   getLanguageTagTextColor
 } from "../core/language-colors";
+import { ClientRouter } from "astro:transitions";
+import "../font-faces.css";
+import "../styles.css";
 
 export const prerender = false;
 
@@ -148,16 +151,14 @@ const suggestionScopes = catalog.languages.map((language) => ({
 }));
 ---
 
-<html lang={uiLanguage}>
+<html lang={uiLanguage} transition:name="root" transition:animate="none">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{t(uiLanguage, "title")}</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=LINE+Seed+JP:wght@400;700&display=swap" rel="stylesheet">
+    <ClientRouter fallback="swap" />
   </head>
   <body>
 
@@ -651,7 +652,9 @@ const suggestionScopes = catalog.languages.map((language) => ({
     <script>
       import { initializeClientSearchPage } from "../client/search-page";
 
-      void initializeClientSearchPage();
+      document.addEventListener("astro:page-load", () => {
+        void initializeClientSearchPage();
+      });
     </script>
   </body>
 </html>

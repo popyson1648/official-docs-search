@@ -16,8 +16,23 @@ import { parse } from "smol-toml";
 
 export const SEARCH_INDEX_SCHEMA_VERSION = 2;
 export const SEARCH_INDEX_GENERATOR_VERSION = "2";
+export const RUNTIME_SEARCH_MANIFEST_FILENAME = "runtime-manifest.json";
 
 const SUPPORT_STATUSES = new Set(["supported", "planned", "blocked", "disabled"]);
+const RUNTIME_MANIFEST_ENTRY_FIELDS = [
+  "sourceId",
+  "sourceName",
+  "sourceKind",
+  "documentKind",
+  "programmingLanguage",
+  "docsLocale",
+  "status",
+  "reason",
+  "path",
+  "recordCount",
+  "qualification",
+  "qualificationJa"
+];
 
 export async function buildSearchIndexArtifacts({
   catalogSource,
@@ -216,8 +231,37 @@ export async function buildSearchIndexArtifacts({
     catalogSha256: sha256(catalogSource),
     entries: manifestEntries
   };
+  files.set(
+    RUNTIME_SEARCH_MANIFEST_FILENAME,
+    `${JSON.stringify(buildRuntimeSearchManifest(manifest), null, 2)}\n`
+  );
   files.set("manifest.json", `${JSON.stringify(manifest, null, 2)}\n`);
   return { files, manifest };
+}
+
+export function buildRuntimeSearchManifest(manifest) {
+  if (
+    !manifest ||
+    !Number.isInteger(manifest.schemaVersion) ||
+    typeof manifest.generatorVersion !== "string" ||
+    typeof manifest.catalogSha256 !== "string" ||
+    !Array.isArray(manifest.entries)
+  ) {
+    throw new Error("Cannot project an invalid search-index manifest.");
+  }
+
+  return {
+    schemaVersion: manifest.schemaVersion,
+    generatorVersion: manifest.generatorVersion,
+    catalogSha256: manifest.catalogSha256,
+    entries: manifest.entries.map((entry) =>
+      Object.fromEntries(
+        RUNTIME_MANIFEST_ENTRY_FIELDS.flatMap((field) =>
+          entry[field] === undefined ? [] : [[field, entry[field]]]
+        )
+      )
+    )
+  };
 }
 
 function reusePreviousArtifact({

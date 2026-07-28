@@ -14,10 +14,23 @@ Run `npm install`.
 - Start the local server with `npm run dev`.
 - Build the Astro Node application with `npm run build`.
 - Start the production build with `npm start`.
+- Refresh the reviewed font-face stylesheet with `npm run update:font-css`.
 - Use `npm run preview` only for Astro preview; it does not exercise the custom production delivery contract.
 
 The build does not call a paid search API and needs no public search-provider key.
 The browser fetches only supported bundles matching the selected sources and Docs locale.
+
+## Font Delivery
+
+`src/font-faces.css` is the committed Google Fonts CSS response for Alexandria
+400/500/600/700 and LINE Seed JP 400/700. Astro bundles and fingerprints those
+face declarations with the application stylesheet. The WOFF2 files remain on
+`fonts.gstatic.com`, which is preconnected from the document head.
+
+Run `npm run update:font-css` only for an intentional font refresh. The updater
+requires the exact families, weights, `font-display: swap`, WOFF2 format, and
+Google font origin before replacing the committed file. Review the generated
+CSS and rerun visual verification.
 
 ## Generated Search Data
 
@@ -69,9 +82,18 @@ It never merges an index update.
 ## Production Delivery
 
 `npm run build && npm start` runs the Astro middleware build through `scripts/serve-production.mjs`.
-For manifest-listed search JSON, the server negotiates gzip level 6 or Brotli quality 5, sets a content-derived weak `ETag`, and sends `Vary: Accept-Encoding`.
+The server negotiates gzip level 6 or Brotli quality 5 for compressible HTML,
+CSS, JavaScript, JSON, and other text responses.
+After Astro builds, `scripts/precompress-production-assets.mjs` writes Brotli
+quality 11 and gzip level 9 sidecars next to every search-index JSON file in
+`dist/client`; these build artifacts are never committed.
+The server prefers the matching sidecar and falls back to dynamic compression
+when it is unavailable.
+Search manifests and bundles additionally use content-derived weak `ETag`
+validators and send `Vary: Accept-Encoding`.
 Content-addressed bundles use `Cache-Control: public, max-age=31536000, immutable`.
-`manifest.json` uses `Cache-Control: no-cache, must-revalidate`.
+`manifest.json` and `runtime-manifest.json` use
+`Cache-Control: no-cache, must-revalidate`.
 Missing or unhashed files never receive the immutable policy.
 The server derives bundle validators from manifest output hashes instead of
 reading every bundle during startup.
