@@ -1118,10 +1118,13 @@ test("[filters] result filters narrow a multi-language search by language and si
     const filterTrigger = document.querySelector("[data-result-filter-open]");
     const back = document.querySelector("[data-result-filter-close]");
     const properties = document.querySelector(".result-filter-properties");
+    const searchInput = document.querySelector("[data-query-input]");
     return {
       expanded: filterTrigger?.getAttribute("aria-expanded"),
       focusedBack: document.activeElement === back,
       panelPosition: panel ? getComputedStyle(panel).position : "",
+      panelRadius: panel ? getComputedStyle(panel).borderRadius : "",
+      searchRadius: searchInput ? getComputedStyle(searchInput).borderRadius : "",
       transitionDuration: controls ? getComputedStyle(controls).transitionDuration : "",
       propertiesRole: properties?.getAttribute("role"),
       activeFacetPressed: document
@@ -1134,6 +1137,8 @@ test("[filters] result filters narrow a multi-language search by language and si
     expanded: "true",
     focusedBack: true,
     panelPosition: "absolute",
+    panelRadius: "999px",
+    searchRadius: "6px",
     transitionDuration: "0.26s",
     propertiesRole: "group",
     activeFacetPressed: "true",
@@ -1508,6 +1513,7 @@ test("[filters] result filters match the reference overlay and responsive intera
       panelLeft: panelRect.left,
       panelRight: panelRect.right,
       panelPosition: getComputedStyle(panel).position,
+      panelRadius: getComputedStyle(panel).borderRadius,
       choicesWrap: getComputedStyle(choices).flexWrap,
       choiceRows: new Set(
         [...choices.querySelectorAll("button")].map((choice) =>
@@ -1533,6 +1539,7 @@ test("[filters] result filters match the reference overlay and responsive intera
   assert.ok(layout.controlsRight <= layout.viewportWidth);
   assert.ok(layout.panelLeft >= 0 && layout.panelRight <= layout.viewportWidth);
   assert.equal(layout.panelPosition, "absolute");
+  assert.equal(layout.panelRadius, "999px");
   assert.equal(layout.choicesWrap, "wrap");
   assert.ok(layout.choiceRows > 1);
   assert.ok(
@@ -2580,7 +2587,10 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
         languageColor: getComputedStyle(languageTag)
           .getPropertyValue("--language-color")
           .trim(),
-        languageDotColor: getComputedStyle(languageTag, "::before").backgroundColor,
+        languageTextColor: getComputedStyle(languageTag)
+          .getPropertyValue("--language-text-color")
+          .trim(),
+        languageMarkerContent: getComputedStyle(languageTag, "::before").content,
         resultKind: styles(resultKind),
         sourceKind: styles(sourceKind),
         title: styles(title),
@@ -2609,7 +2619,10 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
     assert.equal(layout.sourceLinkTarget, "_blank");
     assert.match(layout.sourceLinkRel, /noopener/);
     assert.equal(layout.languageColor.toLowerCase(), "#3178c6");
-    assert.equal(layout.languageDotColor, "rgb(49, 120, 198)");
+    assert.equal(layout.languageTextColor, "#000000");
+    assert.equal(layout.languageMarkerContent, "none");
+    assert.equal(layout.languageTag.backgroundColor, "rgb(49, 120, 198)");
+    assert.equal(layout.languageTag.color, "rgb(0, 0, 0)");
     assert.equal(layout.resultKind.backgroundColor, layout.sourceKind.backgroundColor);
     assert.equal(layout.resultKind.borderRadius, layout.sourceKind.borderRadius);
     assert.equal(layout.resultKind.borderColor, layout.sourceKind.borderColor);

@@ -25,7 +25,8 @@
   reference symbols and stably orders groups by catalog language name when
   requested.
 - `src/core/language-colors.ts`: pins the GitHub Linguist display palette
-  separately from index-affecting source metadata.
+  separately from index-affecting source metadata and derives maximum-contrast
+  black or white tag text.
 - `src/core/highlight.ts` and `src/core/search-controls.ts`: pure query-highlight and preference/selection helpers.
 - `src/client/search-controls.ts`: binds query, debounced accessible
   suggestions, IME handling, in-page locale, automatic fallback, source,
@@ -33,7 +34,9 @@
 - `src/client/search-results.ts`: reuses the page-lifetime worker for results
   and suggestions, rejects stale responses, and renders external strings with
   DOM text APIs and safe links.
-- `src/client/search-result-filters.ts`: renders compact accessible language/site filters and applied-filter pills.
+- `src/client/search-result-filters.ts`: renders compact accessible
+  language/site/order filters, a pill-shaped choice panel, and applied-filter
+  pills.
 - `src/client/back-to-top.ts`: reveals the contextual Top control after the
   search panel leaves view and returns focus to the page heading.
 - `src/client/search-page.ts`: small browser initialization entry point.

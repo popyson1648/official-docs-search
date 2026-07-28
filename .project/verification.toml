@@ -23,6 +23,7 @@ safe_added_paths = [
   ".project/**/*.md",
   ".template/**/*.md",
   "public/search-index/**",
+  "tests/*.test.ts",
 ]
 fallback_base_refs = [
   "origin/dev",

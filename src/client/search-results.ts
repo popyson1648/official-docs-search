@@ -1,4 +1,5 @@
 import type { RankedSearchRecord } from "../core/search";
+import { getLanguageTagTextColor } from "../core/language-colors";
 import { getDocumentKindLabel, getSourceKindLabel, t } from "../core/i18n";
 import {
   groupSearchResults,
@@ -429,6 +430,10 @@ function renderResultGroup(
   const languageTag = textPart(root, languageName, "result-language-tag");
   if (languageColor) {
     languageTag.style.setProperty("--language-color", languageColor);
+    languageTag.style.setProperty(
+      "--language-text-color",
+      getLanguageTagTextColor(languageColor)
+    );
   }
   titleRow.append(heading, languageTag);
 
