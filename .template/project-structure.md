@@ -36,7 +36,9 @@
 7. Render original HTTPS links, actual locales, locale-fallback and failure
    notices, and explicit unsupported states; document whether source fallback
    is intentionally silent.
-8. Document title qualification and loading-state ownership, including
+8. Document duplicate-result identity, origin-link preservation, incremental
+   disclosure, and source-level qualification ownership.
+9. Document title qualification and loading-state ownership, including
    `aria-busy`, reduced-motion behavior, and the boundary between verified API
    ownership and prose context.
 

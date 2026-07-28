@@ -1,4 +1,5 @@
 import { buildHighlightSpans } from "../core/highlight";
+import { t } from "../core/i18n";
 import { parseQuery, tokenize } from "../core/query";
 import {
   preferenceCookie,
@@ -244,6 +245,7 @@ export function initializeSearchControls(
       root.cookie = preferenceCookie("ui", radio.value);
       if (uiHidden) uiHidden.value = radio.value;
       root.documentElement.lang = radio.value;
+      root.title = t(radio.value === "ja" ? "ja" : "en", "title");
       uiRadios.forEach((candidate) => candidate.parentElement?.classList.remove("active"));
       if (radio.checked) radio.parentElement?.classList.add("active");
     });
@@ -300,17 +302,11 @@ export function initializeSearchControls(
       if (form) form.dataset.docsLocale = effectiveLocale;
       if (results) results.dataset.docsLocale = effectiveLocale;
       updateDocsRadioState(docsRadios, effectiveLocale);
-      updateLocaleNotice(root, effectiveLocale);
       void callbacks.onDocsLocaleChange?.(effectiveLocale);
     });
   });
 
   const results = root.querySelector<HTMLElement>("[data-search-results]");
-  form?.querySelectorAll<HTMLInputElement>("[data-source-option]").forEach((option) => {
-    option.addEventListener("change", () => {
-      updateLocaleNotice(root, form.dataset.docsLocale ?? "");
-    });
-  });
 
   helpOpen?.addEventListener("click", () => dialog?.showModal());
   dialog?.addEventListener("click", (event) => {
@@ -330,7 +326,6 @@ export function initializeSearchControls(
   });
 
   renderHighlight();
-  updateLocaleNotice(root, form?.dataset.docsLocale ?? "");
 }
 
 function parseKnownLanguages(value: string | undefined): Set<string> {
@@ -376,19 +371,4 @@ function updateDocsRadioState(
     radio.checked = active;
     radio.parentElement?.classList.toggle("active", active);
   });
-}
-
-function updateLocaleNotice(root: Document, docsLocale: string): void {
-  const notice = root.querySelector<HTMLElement>("[data-locale-notice]");
-  if (!notice) return;
-  const hasActiveQuery = notice.dataset.hasQuery === "true";
-  const hasUnsupportedSelection =
-    docsLocale === "ja" &&
-    [...root.querySelectorAll<HTMLInputElement>("[data-source-option]")].some(
-      (option) =>
-        option.checked &&
-        !option.disabled &&
-        option.dataset.supportsJa !== "true"
-    );
-  notice.hidden = hasActiveQuery || !hasUnsupportedSelection;
 }

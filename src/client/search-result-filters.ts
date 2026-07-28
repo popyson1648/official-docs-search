@@ -85,7 +85,13 @@ export function initializeResultFilters(
   const inline = root.createElement("div");
   inline.className = "result-filter-inline";
 
-  const trigger = iconButton(root, "result-filter-trigger", "filterResults", "filter");
+  const trigger = iconButton(
+    root,
+    "result-filter-trigger",
+    "filterResults",
+    "filter",
+    false
+  );
   trigger.dataset.resultFilterOpen = "";
   trigger.setAttribute("aria-expanded", String(options.state.open));
   trigger.setAttribute("aria-controls", "result-filter-panel");
@@ -484,7 +490,8 @@ function iconButton(
   root: Document,
   className: string,
   messageKey: string,
-  icon: "filter" | "back"
+  icon: "filter" | "back",
+  screenReaderOnly = true
 ): HTMLButtonElement {
   const button = root.createElement("button");
   button.type = "button";
@@ -492,7 +499,13 @@ function iconButton(
   const graphic = svgIcon(root, icon);
   graphic.setAttribute("aria-hidden", "true");
   button.append(graphic);
-  appendLocalizedText(root, button, t("en", messageKey), t("ja", messageKey), true);
+  appendLocalizedText(
+    root,
+    button,
+    t("en", messageKey),
+    t("ja", messageKey),
+    screenReaderOnly
+  );
   return button;
 }
 

@@ -202,7 +202,10 @@ const suggestionScopes = catalog.languages.map((language) => ({
           }
           <div class="query-row">
             <div class="search-group">
-              <label class="sr-only" for="q">{t(uiLanguage, "queryLabel")}</label>
+              <label class="sr-only" for="q">
+                <span class="lang-en">{t("en", "queryInputLabel")}</span>
+                <span class="lang-ja">{t("ja", "queryInputLabel")}</span>
+              </label>
               <div
                 class="query-stack"
                 data-query-stack
@@ -275,7 +278,17 @@ const suggestionScopes = catalog.languages.map((language) => ({
                   return (
                     <span class="fpill">
                       <span class="fpill-label">{langName}</span>
-                      <button type="button" class="fpill-x" data-remove-tag={lang} aria-label={`Remove ${langName}`}>×</button>
+                      <button type="button" class="fpill-x" data-remove-tag={lang}>
+                        <span aria-hidden="true">×</span>
+                        <span class="sr-only">
+                          <span class="lang-en">
+                            {t("en", "removeLanguage").replace("{language}", langName)}
+                          </span>
+                          <span class="lang-ja">
+                            {t("ja", "removeLanguage").replace("{language}", langName)}
+                          </span>
+                        </span>
+                      </button>
                     </span>
                   );
                 })}
@@ -455,19 +468,6 @@ const suggestionScopes = catalog.languages.map((language) => ({
         )
       }
 
-      <div
-        class="locale-notice muted"
-        data-locale-notice
-        data-has-query={String(hasQuery)}
-        aria-live="polite"
-        hidden={hasQuery || scope.localeNotices.length === 0}
-      >
-        <small>
-          <span class="lang-en">Note: {t("en", "localeUnavailable")}</span>
-          <span class="lang-ja">※ {t("ja", "localeUnavailable")}</span>
-        </small>
-      </div>
-
       {
         hasQuery && (
           <section class="results" aria-label={t(uiLanguage, "resultsTitle")}>
@@ -543,7 +543,9 @@ const suggestionScopes = catalog.languages.map((language) => ({
                     </span>
                   </div>
                   <div data-result-filters hidden></div>
+                  <div data-result-source-notes hidden></div>
                   <ol class="result-list" data-result-list></ol>
+                  <div data-result-pagination></div>
                 </div>
               )
             }

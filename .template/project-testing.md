@@ -59,10 +59,15 @@ When browser tests replace worker-fetched responses, define how interception is
 made deterministic while retaining separate production-worker coverage.
 For multi-language forms, accept whitespace after commas, add defaults only for
 newly introduced languages, and preserve checked disabled non-official Sources.
-Fix the result classification/attribution/title/annotation order, shared
-source-kind badge styling, typography hierarchy, removable input-chip target
-size and keyboard behavior, compact successful result counts, 24 CSS-pixel
-source-control targets, and visible keyboard focus for Docs-locale controls.
+Fix standalone result classification/attribution/title/annotation order,
+user-facing language names, shared source-kind badge styling, typography
+hierarchy, removable input-chip target size and keyboard behavior, compact
+successful result counts, 24 CSS-pixel source-control targets, and visible
+keyboard focus for Docs-locale controls.
+Conservatively group qualified reference symbols only across distinct origins,
+preserve every source link, keep ambiguous/proposal records separate, show 15
+groups initially, and test localized incremental disclosure without navigation.
+Show repeated source qualifications once in a source-level details section.
 Require locale-fallback details before the count and test result-card loading
 skeletons, vertically centered progress, `aria-busy`, hidden assistive loading
 text, cleanup after completion, and reduced-motion suppression.
@@ -79,9 +84,9 @@ reference interaction for overlay opening without result reflow, persistent
 panel state during property and choice changes, outside-pointer dismissal,
 Escape and Back focus restoration, active-trigger state, localized
 accessibility, width-morph timings, mobile containment, coarse-pointer targets,
-and reduced-motion suppression.
-Show the generic Japanese-availability notice before searching, but hide it
-when result-specific fallback details are available.
+and reduced-motion suppression. Require a visible 44 CSS-pixel filter trigger.
+Do not show a generic Japanese-availability notice before searching; retain
+result-specific fallback details and per-source availability labels.
 Require regression coverage for common-symbol completeness, conservative typo
 recovery, exact-first reference-over-proposal ranking, official proposal
 identifiers, silent per-language automatic fallback and explicit overrides, bounded

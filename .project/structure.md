@@ -21,6 +21,8 @@
   lifecycle states, and diversifies languages.
 - `src/core/search-runtime.ts`: fetches and validates manifest-selected bundles and isolates unavailable, failed, or malformed sources.
 - `src/core/result-filters.ts`: resolves language and source facet selections with OR-within and AND-across semantics.
+- `src/core/result-groups.ts`: conservatively groups equivalent qualified
+  reference symbols while preserving ranked origin links.
 - `src/core/highlight.ts` and `src/core/search-controls.ts`: pure query-highlight and preference/selection helpers.
 - `src/client/search-controls.ts`: binds query, debounced accessible
   suggestions, IME handling, in-page locale, automatic fallback, source,
@@ -69,7 +71,10 @@
    filters re-search the cached indexes for the selected source subset.
 7. While the worker is busy, the result region exposes `aria-busy`, a hidden
    status announcement, and a reduced-motion-safe result-card skeleton.
-8. The client renders original HTTPS links, qualified result titles, actual
+8. The client groups only unambiguous duplicate reference symbols, renders the
+   first 15 groups, and discloses later batches without navigation. Repeated
+   source qualifications appear once above the results.
+9. The client renders original HTTPS links, qualified result titles, actual
    content locales, document kinds, proposal state and warnings,
    locale-fallback notices before the count, partial failures, and explicit
    unsupported states. Automatic non-official fallback does not render a

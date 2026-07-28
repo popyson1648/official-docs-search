@@ -1,6 +1,10 @@
 import type { RankedSearchRecord } from "../core/search";
 import { getDocumentKindLabel, getSourceKindLabel, t } from "../core/i18n";
 import {
+  groupSearchResults,
+  type SearchResultGroup
+} from "../core/result-groups";
+import {
   resolveResultSourceFilters,
   type ResultFilterSource
 } from "../core/result-filters";
@@ -44,6 +48,7 @@ const resultFilterControls = new WeakMap<Document, ResultFilterControl>();
 const pendingWorkerRequests = new Map<number, PendingWorkerRequest>();
 let sharedSearchWorker: Worker | undefined;
 let nextWorkerRequestId = 0;
+const RESULT_BATCH_SIZE = 15;
 
 interface PageRequestedSearchSource extends RequestedSearchSource, ResultFilterSource {
   programmingLanguageName?: string;
@@ -64,7 +69,22 @@ export async function initializeSearchPage(
   const list = results.querySelector<HTMLOListElement>("[data-result-list]");
   const coverage = results.querySelector<HTMLElement>("[data-index-coverage]");
   const filterMount = results.querySelector<HTMLElement>("[data-result-filters]");
-  if (!status || !list || !coverage || !filterMount) return undefined;
+  const sourceNotesMount = results.querySelector<HTMLElement>(
+    "[data-result-source-notes]"
+  );
+  const paginationMount = results.querySelector<HTMLElement>(
+    "[data-result-pagination]"
+  );
+  if (
+    !status ||
+    !list ||
+    !coverage ||
+    !filterMount ||
+    !sourceNotesMount ||
+    !paginationMount
+  ) {
+    return undefined;
+  }
   const sequence = nextSearchSequence(root);
 
   const query = results.dataset.query?.trim() ?? "";
@@ -77,6 +97,10 @@ export async function initializeSearchPage(
     filterMount.replaceChildren();
     filterMount.hidden = true;
     list.replaceChildren();
+    sourceNotesMount.replaceChildren();
+    sourceNotesMount.hidden = true;
+    paginationMount.replaceChildren();
+    paginationMount.hidden = true;
     coverage.replaceChildren();
     coverage.hidden = true;
     status.dataset.emptyReason = "no-sources";
@@ -130,7 +154,16 @@ export async function initializeSearchPage(
       if (searchSequences.get(root) !== sequence) return undefined;
     }
 
-    const outcome = renderRuntimeResult(root, status, list, coverage, displayedResult);
+    const outcome = renderRuntimeResult(
+      root,
+      status,
+      list,
+      coverage,
+      sourceNotesMount,
+      paginationMount,
+      displayedResult,
+      requestedSources
+    );
     resultFilterControls.get(root)?.destroy();
     let filterControl: ResultFilterControl | undefined;
     filterControl = initializeResultFilters(root, filterMount, {
@@ -156,11 +189,26 @@ export async function initializeSearchPage(
                   fetcher
                 );
           if (searchSequences.get(root) !== filterSequence) return;
-          renderRuntimeResult(root, status, list, coverage, filteredResult);
+          renderRuntimeResult(
+            root,
+            status,
+            list,
+            coverage,
+            sourceNotesMount,
+            paginationMount,
+            filteredResult,
+            requestedSources
+          );
           recordDuration(results, startedAt);
         } catch {
           if (searchSequences.get(root) !== filterSequence) return;
-          renderSearchError(status, list, coverage);
+          renderSearchError(
+            status,
+            list,
+            coverage,
+            sourceNotesMount,
+            paginationMount
+          );
           recordDuration(results, startedAt);
         } finally {
           if (searchSequences.get(root) === filterSequence) filterControl?.setBusy(false);
@@ -177,7 +225,13 @@ export async function initializeSearchPage(
     resultFilterControls.delete(root);
     filterMount.replaceChildren();
     filterMount.hidden = true;
-    renderSearchError(status, list, coverage);
+    renderSearchError(
+      status,
+      list,
+      coverage,
+      sourceNotesMount,
+      paginationMount
+    );
     recordDuration(results, startedAt);
     return {
       state: "error",
@@ -246,7 +300,10 @@ function renderRuntimeResult(
   status: HTMLElement,
   list: HTMLOListElement,
   coverage: HTMLElement,
-  result: SearchRuntimeResult
+  sourceNotesMount: HTMLElement,
+  paginationMount: HTMLElement,
+  result: SearchRuntimeResult,
+  requestedSources: PageRequestedSearchSource[]
 ): SearchPageOutcome {
   const unsupportedSources = result.unavailableSources.map((source) => source.name);
   const fallbackSources = result.fallbackSources.map((source) => source.name);
@@ -257,7 +314,21 @@ function renderRuntimeResult(
     result.fallbackSources,
     result.failedSources
   );
-  list.replaceChildren(...result.records.map((record) => renderResult(root, record)));
+  renderSourceNotes(root, sourceNotesMount, result.records);
+  const groups = groupSearchResults(result.records);
+  const languageNames = new Map(
+    requestedSources.map((source) => [
+      source.programmingLanguage,
+      source.programmingLanguageName ?? source.programmingLanguage
+    ])
+  );
+  renderResultGroups(
+    root,
+    list,
+    paginationMount,
+    groups,
+    languageNames
+  );
   if (result.records.length === 0) {
     setStatus(status, "empty");
     return {
@@ -268,10 +339,10 @@ function renderRuntimeResult(
       failedSources
     };
   }
-  setStatus(status, "success", result.records.length);
+  setStatus(status, "success", groups.length);
   return {
     state: "success",
-    count: result.records.length,
+    count: groups.length,
     unsupportedSources,
     fallbackSources,
     failedSources
@@ -281,10 +352,16 @@ function renderRuntimeResult(
 function renderSearchError(
   status: HTMLElement,
   list: HTMLOListElement,
-  coverage: HTMLElement
+  coverage: HTMLElement,
+  sourceNotesMount: HTMLElement,
+  paginationMount: HTMLElement
 ): void {
   list.replaceChildren();
   coverage.hidden = true;
+  sourceNotesMount.replaceChildren();
+  sourceNotesMount.hidden = true;
+  paginationMount.replaceChildren();
+  paginationMount.hidden = true;
   setStatus(status, "error");
 }
 
@@ -294,47 +371,146 @@ function recordDuration(element: HTMLElement, startedAt: number | undefined): vo
   }
 }
 
-function renderResult(root: Document, record: RankedSearchRecord): HTMLLIElement {
+function renderResultGroup(
+  root: Document,
+  group: SearchResultGroup,
+  languageName: string
+): HTMLLIElement {
+  const record = group.records[0];
   const item = root.createElement("li");
   item.className = "result-item";
   item.dataset.language = record.programmingLanguage;
   item.dataset.sourceId = record.sourceId;
+  item.dataset.sourceIds = [
+    ...new Set(group.records.map((candidate) => candidate.sourceId))
+  ].join(" ");
   item.dataset.docsLocale = record.docsLocale;
+  item.dataset.docsLocales = [
+    ...new Set(group.records.map((candidate) => candidate.docsLocale))
+  ].join(" ");
+  item.dataset.resultGroupSize = String(group.records.length);
 
   const classification = root.createElement("div");
   classification.className = "result-classification";
   classification.append(
-    textPart(root, record.programmingLanguage, "result-classification-tag"),
-    textPart(root, record.docsLocale.toUpperCase(), "result-classification-tag"),
-    sourceKindPart(root, record.sourceKind)
+    textPart(root, languageName, "result-classification-tag")
   );
-  if (record.documentKind && record.documentKind !== "reference") {
-    classification.append(documentKindPart(root, record.documentKind));
+  if (group.records.length > 1) {
+    const sourceCount = root.createElement("span");
+    sourceCount.className = "result-classification-tag";
+    appendLocalizedText(
+      root,
+      sourceCount,
+      t("en", "resultReferenceCount").replace(
+        "{count}",
+        String(group.records.length)
+      ),
+      t("ja", "resultReferenceCount").replace(
+        "{count}",
+        String(group.records.length)
+      )
+    );
+    classification.append(sourceCount);
+  } else {
+    classification.append(
+      textPart(root, record.docsLocale.toUpperCase(), "result-classification-tag"),
+      sourceKindPart(root, record.sourceKind)
+    );
+    if (record.documentKind && record.documentKind !== "reference") {
+      classification.append(documentKindPart(root, record.documentKind));
+    }
   }
 
-  const attribution = root.createElement("div");
-  attribution.className = "result-attribution";
-  attribution.append(
-    textPart(root, record.sourceName, "result-source-name"),
-    textPart(root, record.url, "result-url")
+  const heading = root.createElement("h2");
+  if (group.records.length > 1) {
+    heading.textContent = group.title;
+    item.append(
+      classification,
+      heading,
+      renderGroupedSources(root, group.records)
+    );
+  } else {
+    const attribution = root.createElement("div");
+    attribution.className = "result-attribution";
+    attribution.append(
+      textPart(root, record.sourceName, "result-source-name"),
+      textPart(root, record.url, "result-url")
+    );
+
+    const link = externalResultLink(root, record);
+    link.textContent = record.title;
+    heading.append(link);
+
+    item.append(classification, attribution, heading);
+    const annotations = renderRecordAnnotations(root, record);
+    if (annotations.childElementCount > 0) item.append(annotations);
+  }
+  return item;
+}
+
+function renderGroupedSources(
+  root: Document,
+  records: RankedSearchRecord[]
+): HTMLElement {
+  const container = root.createElement("div");
+  container.className = "result-group-sources";
+
+  const label = root.createElement("span");
+  label.className = "result-group-sources-label";
+  appendLocalizedText(
+    root,
+    label,
+    t("en", "resultSourcesLabel"),
+    t("ja", "resultSourcesLabel")
   );
 
+  const list = root.createElement("ul");
+  for (const record of records) {
+    const item = root.createElement("li");
+    const link = externalResultLink(root, record);
+    link.className = "result-group-source";
+    link.dataset.resultSourceId = record.sourceId;
+
+    const copy = root.createElement("span");
+    copy.className = "result-group-source-copy";
+    const name = textPart(root, record.sourceName, "result-source-name");
+    const metadata = root.createElement("span");
+    metadata.className = "result-group-source-meta";
+    metadata.append(
+      textPart(root, record.docsLocale.toUpperCase(), "result-classification-tag"),
+      sourceKindPart(root, record.sourceKind)
+    );
+    if (record.section) {
+      metadata.append(textPart(root, record.section, "result-group-source-section"));
+    }
+    copy.append(name, metadata);
+
+    const domain = textPart(
+      root,
+      new URL(record.url).hostname,
+      "result-group-source-domain"
+    );
+    const external = root.createElement("span");
+    external.className = "external-link-mark";
+    external.setAttribute("aria-hidden", "true");
+    external.textContent = "↗";
+    link.append(copy, domain, external);
+    item.append(link);
+    list.append(item);
+  }
+
+  container.append(label, list);
+  return container;
+}
+
+function renderRecordAnnotations(
+  root: Document,
+  record: RankedSearchRecord
+): HTMLDivElement {
   const annotations = root.createElement("div");
   annotations.className = "result-annotations";
   if (record.section) {
     annotations.append(textPart(root, record.section, "result-section"));
-  }
-  if (record.qualification) {
-    const qualification = root.createElement("span");
-    qualification.className = "result-qualification";
-    const japaneseQualification = record.qualificationJa ?? record.qualification;
-    appendLocalizedText(
-      root,
-      qualification,
-      `${t("en", "qualificationLabel")} ${record.qualification}`,
-      `${t("ja", "qualificationLabel")}${japaneseQualification}`
-    );
-    annotations.append(qualification);
   }
   if (record.proposalStatus) {
     const status = root.createElement("span");
@@ -361,18 +537,163 @@ function renderResult(root: Document, record: RankedSearchRecord): HTMLLIElement
     );
     annotations.append(warning);
   }
+  return annotations;
+}
 
-  const heading = root.createElement("h2");
+function externalResultLink(
+  root: Document,
+  record: RankedSearchRecord
+): HTMLAnchorElement {
   const link = root.createElement("a");
   link.href = record.url;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  link.textContent = record.title;
-  heading.append(link);
+  return link;
+}
 
-  item.append(classification, attribution, heading);
-  if (annotations.childElementCount > 0) item.append(annotations);
-  return item;
+function renderSourceNotes(
+  root: Document,
+  mount: HTMLElement,
+  records: RankedSearchRecord[]
+): void {
+  const notes = new Map<
+    string,
+    Pick<
+      RankedSearchRecord,
+      "sourceName" | "qualification" | "qualificationJa"
+    >
+  >();
+  for (const record of records) {
+    if (!record.qualification || notes.has(record.sourceId)) continue;
+    notes.set(record.sourceId, {
+      sourceName: record.sourceName,
+      qualification: record.qualification,
+      qualificationJa: record.qualificationJa
+    });
+  }
+
+  mount.replaceChildren();
+  mount.hidden = notes.size === 0;
+  if (notes.size === 0) return;
+
+  const details = root.createElement("details");
+  details.className = "result-source-notes";
+  const summary = root.createElement("summary");
+  appendLocalizedText(
+    root,
+    summary,
+    t("en", "aboutSources"),
+    t("ja", "aboutSources")
+  );
+  const list = root.createElement("ul");
+  for (const note of notes.values()) {
+    const item = root.createElement("li");
+    const name = root.createElement("strong");
+    name.textContent = note.sourceName;
+    const qualification = root.createElement("span");
+    appendLocalizedText(
+      root,
+      qualification,
+      `${t("en", "qualificationLabel")} ${note.qualification}`,
+      `${t("ja", "qualificationLabel")}${
+        note.qualificationJa ?? note.qualification
+      }`
+    );
+    item.append(name, qualification);
+    list.append(item);
+  }
+  details.append(summary, list);
+  mount.append(details);
+}
+
+function renderResultGroups(
+  root: Document,
+  list: HTMLOListElement,
+  paginationMount: HTMLElement,
+  groups: SearchResultGroup[],
+  languageNames: ReadonlyMap<string, string>
+): void {
+  const items = groups.map((group) =>
+    renderResultGroup(
+      root,
+      group,
+      languageNames.get(group.programmingLanguage) ?? group.programmingLanguage
+    )
+  );
+  list.replaceChildren(...items.slice(0, RESULT_BATCH_SIZE));
+  paginationMount.replaceChildren();
+  paginationMount.hidden = items.length <= RESULT_BATCH_SIZE;
+  if (items.length <= RESULT_BATCH_SIZE) return;
+
+  let visibleCount = RESULT_BATCH_SIZE;
+  const progress = root.createElement("span");
+  progress.className = "sr-only";
+  progress.setAttribute("role", "status");
+  progress.setAttribute("aria-live", "polite");
+  appendLocalizedText(
+    root,
+    progress,
+    resultProgressMessage("en", visibleCount, items.length),
+    resultProgressMessage("ja", visibleCount, items.length)
+  );
+
+  const button = root.createElement("button");
+  button.type = "button";
+  button.className = "result-load-more";
+  button.dataset.resultLoadMore = "";
+
+  const updateButton = () => {
+    const nextCount = Math.min(
+      RESULT_BATCH_SIZE,
+      items.length - visibleCount
+    );
+    appendLocalizedText(
+      root,
+      button,
+      t("en", "loadMore").replace("{count}", String(nextCount)),
+      t("ja", "loadMore").replace("{count}", String(nextCount))
+    );
+  };
+  updateButton();
+
+  button.addEventListener("click", (event) => {
+    const firstNewIndex = visibleCount;
+    visibleCount = Math.min(
+      visibleCount + RESULT_BATCH_SIZE,
+      items.length
+    );
+    list.append(...items.slice(firstNewIndex, visibleCount));
+    appendLocalizedText(
+      root,
+      progress,
+      resultProgressMessage("en", visibleCount, items.length),
+      resultProgressMessage("ja", visibleCount, items.length)
+    );
+    if (visibleCount < items.length) {
+      updateButton();
+      return;
+    }
+
+    button.hidden = true;
+    if (event.detail === 0) {
+      items[firstNewIndex]
+        ?.querySelector<HTMLElement>("a, button, [tabindex]")
+        ?.focus();
+    }
+  });
+
+  paginationMount.append(progress, button);
+}
+
+function resultProgressMessage(
+  language: "en" | "ja",
+  visible: number,
+  total: number
+): string {
+  const key = visible === total ? "allResultsShown" : "loadMoreProgress";
+  return t(language, key)
+    .replace("{visible}", String(visible))
+    .replace("{total}", String(total));
 }
 
 function isNonCurrentProposalStatus(status: string | undefined): boolean {

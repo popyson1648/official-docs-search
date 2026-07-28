@@ -108,7 +108,7 @@ async function gotoQuery(page, query, extras = "") {
 
 async function waitForResults(page) {
   await page.waitForSelector('[data-search-status][data-state="success"]', { timeout: 20_000 });
-  await page.waitForSelector(".result-item h2 a", { timeout: 20_000 });
+  await page.waitForSelector(".result-item a[href]", { timeout: 20_000 });
 }
 
 async function waitForResultFilter(page) {
@@ -247,9 +247,13 @@ async function snapshot(page) {
   return await page.evaluate(() => ({
     state: document.querySelector("[data-search-status]")?.dataset.state,
     languages: [...document.querySelectorAll(".result-item")].map((item) => item.dataset.language),
-    sources: [...document.querySelectorAll(".result-item")].map((item) => item.dataset.sourceId),
-    locales: [...document.querySelectorAll(".result-item")].map((item) => item.dataset.docsLocale),
-    links: [...document.querySelectorAll(".result-item h2 a")].map((link) => ({
+    sources: [...document.querySelectorAll(".result-item")].flatMap((item) =>
+      (item.dataset.sourceIds ?? item.dataset.sourceId ?? "").split(" ").filter(Boolean)
+    ),
+    locales: [...document.querySelectorAll(".result-item")].flatMap((item) =>
+      (item.dataset.docsLocales ?? item.dataset.docsLocale ?? "").split(" ").filter(Boolean)
+    ),
+    links: [...document.querySelectorAll(".result-item a[href]")].map((link) => ({
       href: link.href,
       target: link.target,
       rel: link.rel
@@ -595,7 +599,9 @@ test("[smoke] query and search-index strings render as text without executing ma
       attribution: document.querySelector(".result-attribution")?.textContent,
       visibleUrl: document.querySelector(".result-url")?.textContent,
       section: document.querySelector(".result-section")?.textContent,
-      qualification: document.querySelector(".result-qualification")?.textContent
+      qualification: document.querySelector(
+        "[data-result-source-notes] li span"
+      )?.textContent
     };
   });
 
@@ -663,10 +669,10 @@ test("[catalog] C++ exact, fuzzy, and Japanese community searches return complet
     japanese.links.some((link) => new URL(link.href).hostname === "cpprefjp.github.io")
   );
   const cpprefjpSortTitles = await page.$$eval(
-    '.result-item[data-source-id="cpprefjp"] h2 a',
-    (links) =>
-      links
-        .map((link) => link.textContent?.trim() ?? "")
+    '.result-item[data-source-ids~="cpprefjp"] h2',
+    (headings) =>
+      headings
+        .map((heading) => heading.textContent?.trim() ?? "")
         .filter((title) => title.includes("sort"))
   );
   assert.ok(cpprefjpSortTitles.includes("std::sort"));
@@ -683,14 +689,164 @@ test("[catalog] C++ exact, fuzzy, and Japanese community searches return complet
       status: item.querySelector(".result-proposal-status")?.textContent,
       warning: [...item.querySelectorAll(".result-qualification")]
         .map((part) => part.textContent)
-        .join(" ")
+        .join(" "),
+      sourceNote: document.querySelector(
+        "[data-result-source-notes] li .lang-en"
+      )?.textContent
     })
   );
   assert.match(paper.href ?? "", /\/p2300r10\.(?:html|pdf)$/i);
   assert.match(paper.documentKind ?? "", /Proposal/);
   assert.match(paper.status ?? "", /Status: Adopted/);
-  assert.match(paper.warning ?? "", /Committee papers can be drafts/);
+  assert.match(paper.sourceNote ?? "", /Committee papers can be drafts/);
   assert.doesNotMatch(paper.warning ?? "", /may not describe current adopted behavior/);
+  await page.close();
+});
+
+test("[layout] duplicate reference symbols group by source and long results disclose 15 at a time", async () => {
+  const page = await newPage({ width: 390, height: 844 });
+  await page.goto(
+    `${app.baseUrl}/?q=${encodeURIComponent(
+      "cpp sort source:all"
+    )}&docsLocale=ja&ui=ja`,
+    { waitUntil: "domcontentloaded" }
+  );
+  await waitForResults(page);
+
+  const initial = await page.evaluate(() => {
+    const items = [...document.querySelectorAll(".result-item")];
+    const sort = items.find(
+      (item) => item.querySelector("h2")?.textContent?.trim() === "std::sort"
+    );
+    const filter = document.querySelector("[data-result-filter-open]");
+    const filterRect = filter?.getBoundingClientRect();
+    return {
+      itemCount: items.length,
+      total: Number.parseInt(
+        document.querySelector(
+          "[data-search-status] .lang-ja"
+        )?.textContent ?? "",
+        10
+      ),
+      loadMoreText: document
+        .querySelector("[data-result-load-more] .lang-ja")
+        ?.textContent?.trim(),
+      groupSize: Number(sort?.dataset.resultGroupSize),
+      groupHeadingLinks: sort?.querySelectorAll("h2 a").length,
+      sourceIds: [
+        ...(sort?.querySelectorAll("[data-result-source-id]") ?? [])
+      ].map((link) => link.dataset.resultSourceId),
+      sourceLinks: [
+        ...(sort?.querySelectorAll("[data-result-source-id]") ?? [])
+      ].map((link) => ({
+        href: link.href,
+        target: link.target,
+        rel: link.rel
+      })),
+      languageLabel: sort
+        ?.querySelector(".result-classification-tag")
+        ?.textContent?.trim(),
+      filterText: filter?.querySelector(".lang-ja")?.textContent?.trim(),
+      filterWidth: filterRect?.width,
+      filterHeight: filterRect?.height,
+      pageOverflows: document.documentElement.scrollWidth > window.innerWidth
+    };
+  });
+
+  assert.equal(initial.itemCount, 15);
+  assert.ok(initial.total > initial.itemCount);
+  assert.match(initial.loadMoreText ?? "", /^さらに\d+件表示$/);
+  assert.ok(initial.groupSize >= 2);
+  assert.equal(initial.groupHeadingLinks, 0);
+  assert.ok(initial.sourceIds.includes("cpprefjp"));
+  assert.ok(initial.sourceIds.includes("cppreference-cpp"));
+  assert.ok(
+    initial.sourceLinks.every(
+      (link) =>
+        new URL(link.href).protocol === "https:" &&
+        link.target === "_blank" &&
+        link.rel.includes("noopener")
+    )
+  );
+  assert.equal(initial.languageLabel, "C++");
+  assert.equal(initial.filterText, "絞り込み");
+  assert.ok(initial.filterWidth >= 44);
+  assert.ok(initial.filterHeight >= 44);
+  assert.equal(initial.pageOverflows, false);
+
+  const pageIdentity = await page.evaluate(() => ({
+    href: location.href,
+    timeOrigin: performance.timeOrigin
+  }));
+  await page.click("[data-result-load-more]");
+  assert.equal(
+    await page.$$eval(".result-item", (items) => items.length),
+    Math.min(30, initial.total)
+  );
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      href: location.href,
+      timeOrigin: performance.timeOrigin
+    })),
+    pageIdentity
+  );
+
+  while (
+    await page.$eval(
+      "[data-result-load-more]",
+      (button) => !button.hidden
+    )
+  ) {
+    await page.click("[data-result-load-more]");
+  }
+  assert.equal(
+    await page.$$eval(".result-item", (items) => items.length),
+    initial.total
+  );
+  assert.equal(
+    await page.$eval(
+      "[data-result-pagination] [role='status'] .lang-ja",
+      (element) => element.textContent
+    ),
+    `全${initial.total}件を表示しました`
+  );
+  await page.close();
+});
+
+test("[smoke] Japanese interface labels use user-facing names", async () => {
+  const page = await newPage();
+  await page.goto(
+    `${app.baseUrl}/?q=${encodeURIComponent(
+      "cpp sort"
+    )}&docsLocale=ja&ui=ja`,
+    { waitUntil: "domcontentloaded" }
+  );
+  await waitForResults(page);
+
+  assert.equal(await page.title(), "ドキュメント検索");
+  assert.equal(
+    await page.$eval(".source-details summary .lang-ja", (element) => element.textContent),
+    "ソース"
+  );
+  assert.equal(
+    await page.$eval('label[for="q"] .lang-ja', (element) => element.textContent),
+    "検索語"
+  );
+  assert.match(
+    await page.$eval("[data-remove-tag] .lang-ja", (element) => element.textContent),
+    /C\+\+を検索条件から削除/
+  );
+  assert.equal(
+    await page.$eval(
+      ".result-classification-tag",
+      (element) => element.textContent
+    ),
+    "C++"
+  );
+
+  await page.$eval('[data-ui-radio][value="en"]', (radio) => radio.click());
+  await page.waitForFunction(() => document.documentElement.lang === "en");
+  assert.equal(await page.title(), "Official Docs Search");
   await page.close();
 });
 
@@ -1445,12 +1601,7 @@ test("[catalog] fallback notices group one compact explanation with a semantic s
   await page.goto(`${app.baseUrl}/?ui=ja&docsLocale=ja`, {
     waitUntil: "domcontentloaded"
   });
-  const preSearchNotice = await page.$eval("[data-locale-notice]", (element) => ({
-    hidden: element.hidden,
-    text: element.querySelector(".lang-ja")?.textContent?.trim()
-  }));
-  assert.equal(preSearchNotice.hidden, false);
-  assert.equal(preSearchNotice.text, "※ 一部のソースは日本語に未対応です。");
+  assert.equal(await page.$("[data-locale-notice]"), null);
 
   await page.goto(
     `${app.baseUrl}/?q=${encodeURIComponent(
@@ -1516,10 +1667,7 @@ test("[catalog] fallback notices group one compact explanation with a semantic s
   assert.ok(notice.fontSize <= 12);
   assert.equal(notice.backgroundColor, "rgba(0, 0, 0, 0)");
   assert.deepEqual(notice.borderWidths, ["0px", "0px", "0px", "0px"]);
-  assert.equal(
-    await page.$eval("[data-locale-notice]", (element) => element.hidden),
-    true
-  );
+  assert.equal(await page.$("[data-locale-notice]"), null);
   await page.close();
 });
 
@@ -1638,7 +1786,9 @@ test(
             [...document.querySelectorAll(".result-item")].some(
               (item) =>
                 item.dataset.language === language &&
-                item.dataset.sourceId === sourceId
+                (item.dataset.sourceIds ?? item.dataset.sourceId ?? "")
+                  .split(" ")
+                  .includes(sourceId)
             ),
           { timeout: 20_000 },
           { language: entry.programmingLanguage, sourceId: entry.sourceId }
@@ -1648,7 +1798,7 @@ test(
           state: document.querySelector("[data-search-status]")?.getAttribute("data-state"),
           status: document.querySelector("[data-search-status]")?.textContent,
           sources: [...document.querySelectorAll(".result-item")].map(
-            (item) => item.getAttribute("data-source-id")
+            (item) => item.getAttribute("data-source-ids")
           ),
           coverage: document.querySelector("[data-index-coverage]")?.textContent
         }));
@@ -1745,7 +1895,10 @@ test("[catalog] qualified editions are visibly labeled in results", async () => 
   );
   await waitForResults(page);
   assert.match(
-    await page.$eval(".result-qualification", (element) => element.textContent),
+    await page.$eval(
+      "[data-result-source-notes]",
+      (element) => element.textContent
+    ),
     /Machine-translated MySQL 8\.0/
   );
   await page.close();
@@ -1767,9 +1920,11 @@ test("[catalog] trusted non-official caveats are localized in the source picker 
     const source = document
       .querySelector('input[value="typescript-deep-dive"]')
       ?.closest(".source-option");
-    const result = document.querySelector(
-      '.result-item[data-source-id="typescript-deep-dive"]'
-    );
+    const result = document.querySelector("[data-result-source-notes]");
+    const resultDetails = result?.querySelector("details");
+    if (resultDetails) {
+      resultDetails.open = true;
+    }
     const visibleText = (root, selector) => {
       const element = root?.querySelector(selector);
       return element && element.getClientRects().length > 0
@@ -1781,8 +1936,8 @@ test("[catalog] trusted non-official caveats are localized in the source picker 
     return {
       sourceEn: visibleText(source, ".source-qualification .lang-en"),
       sourceJa: visibleText(source, ".source-qualification .lang-ja"),
-      resultEn: visibleText(result, ".result-qualification .lang-en"),
-      resultJa: visibleText(result, ".result-qualification .lang-ja"),
+      resultEn: visibleText(result, "li .lang-en"),
+      resultJa: visibleText(result, "li .lang-ja"),
       unavailableEn: visibleText(source, ".source-ja-unavailable .lang-en"),
       unavailableJa: visibleText(source, ".source-ja-unavailable .lang-ja"),
       metadataOrder: [...(meta?.children ?? [])].map((element) => element.className),
@@ -1821,12 +1976,7 @@ test("[catalog] trusted non-official caveats are localized in the source picker 
   caveats = await readVisibleCaveats();
   assert.equal(caveats.unavailableEn, "No Japanese version");
   assert.equal(caveats.unavailableJa, undefined);
-  const englishLocaleNotice = await page.$eval("[data-locale-notice]", (notice) => ({
-    hidden: notice.hidden,
-    text: notice.querySelector(".lang-en")?.textContent.trim()
-  }));
-  assert.equal(englishLocaleNotice.hidden, true);
-  assert.equal(englishLocaleNotice.text, "Note: Some sources don't support Japanese.");
+  assert.equal(await page.$("[data-locale-notice]"), null);
 
   await page.$eval('[data-ui-radio][value="ja"]', (radio) => radio.click());
   await page.waitForFunction(() => document.documentElement.lang === "ja");
@@ -1837,12 +1987,7 @@ test("[catalog] trusted non-official caveats are localized in the source picker 
   assert.match(caveats.resultJa ?? "", /^補足：/);
   assert.equal(caveats.unavailableEn, undefined);
   assert.equal(caveats.unavailableJa, "日本語未対応");
-  const japaneseLocaleNotice = await page.$eval("[data-locale-notice]", (notice) => ({
-    hidden: notice.hidden,
-    text: notice.querySelector(".lang-ja")?.textContent.trim()
-  }));
-  assert.equal(japaneseLocaleNotice.hidden, true);
-  assert.equal(japaneseLocaleNotice.text, "※ 一部のソースは日本語に未対応です。");
+  assert.equal(await page.$("[data-locale-notice]"), null);
   await page.close();
 });
 
@@ -1865,10 +2010,15 @@ test("[catalog] every admitted non-official source renders a qualified safe resu
     );
     await waitForResults(page);
     const rendered = await page.evaluate((expectedSourceId) => {
-      const item = document.querySelector(
-        `.result-item[data-source-id="${expectedSourceId}"]`
+      const item = [...document.querySelectorAll(".result-item")].find(
+        (candidate) =>
+          (candidate.dataset.sourceIds ?? candidate.dataset.sourceId ?? "")
+            .split(" ")
+            .includes(expectedSourceId)
       );
-      const link = item?.querySelector("h2 a");
+      const link =
+        item?.querySelector(`[data-result-source-id="${expectedSourceId}"]`) ??
+        item?.querySelector("h2 a");
       const sourceOption = document
         .querySelector(`input[value="${expectedSourceId}"]`)
         ?.closest(".source-option");
@@ -1878,7 +2028,8 @@ test("[catalog] every admitted non-official source renders a qualified safe resu
         target: link?.target,
         rel: link?.rel,
         resultQualification:
-          item?.querySelector(".result-qualification .lang-en")?.textContent,
+          document.querySelector("[data-result-source-notes] li .lang-en")
+            ?.textContent,
         sourceQualification:
           sourceOption?.querySelector(".source-qualification .lang-en")?.textContent,
         fallback: document.querySelector("[data-index-coverage] .lang-en")?.textContent
@@ -2022,7 +2173,7 @@ test("[layout] contextual search help, centered header, and right-aligned settin
     });
     assert.equal(
       await page.$eval(".source-details summary .lang-ja", (element) => element.textContent),
-      "Sources"
+      "ソース"
     );
     const layout = await page.evaluate(() => {
       const header = document.querySelector(".search-header").getBoundingClientRect();
@@ -2184,7 +2335,9 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
       const sourceName = item.querySelector(".result-source-name");
       const url = item.querySelector(".result-url");
       const annotations = item.querySelector(".result-annotations");
-      const qualification = item.querySelector(".result-qualification");
+      const qualification = document.querySelector(
+        "[data-result-source-notes] li span"
+      );
       const chip = document.querySelector(".fpill");
       const chipRemove = document.querySelector(".fpill-x");
       const status = document.querySelector('[data-search-status][data-state="success"]');
@@ -2241,10 +2394,7 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
       "source-kind"
     ]);
     assert.deepEqual(layout.attributionOrder, ["result-source-name", "result-url"]);
-    assert.deepEqual(layout.annotationOrder, [
-      "result-section",
-      "result-qualification"
-    ]);
+    assert.deepEqual(layout.annotationOrder, ["result-section"]);
     assert.equal(layout.resultKind.backgroundColor, layout.sourceKind.backgroundColor);
     assert.equal(layout.resultKind.borderRadius, layout.sourceKind.borderRadius);
     assert.equal(layout.resultKind.borderColor, layout.sourceKind.borderColor);
