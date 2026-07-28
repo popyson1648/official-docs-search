@@ -978,41 +978,48 @@ test("[smoke] Japanese interface labels use user-facing names", async () => {
   await page.close();
 });
 
-test("[catalog] automatic non-official fallback is silent, configurable, and overridden by source syntax", async () => {
+test("[catalog] the three-state source policy is silent, configurable, and overridden by source syntax", async () => {
   const page = await newPage();
 
   await gotoQuery(page, "cpp sort", "&docsLocale=en");
   await waitForResults(page);
   const automatic = await page.evaluate(() => ({
     notice: document.querySelector("[data-auto-fallback-notice]"),
-    setting: document.querySelector("[data-auto-non-official-toggle]")?.checked,
+    policy: document.querySelector("[data-source-policy-radio]:checked")?.value,
     cpprefjp: {
       checked: document.querySelector('[data-source-option][value="cpprefjp"]')?.checked,
       disabled: document.querySelector('[data-source-option][value="cpprefjp"]')?.disabled
     }
   }));
   assert.equal(automatic.notice, null);
-  assert.equal(automatic.setting, true);
+  assert.equal(automatic.policy, "fallback");
   assert.deepEqual(automatic.cpprefjp, { checked: true, disabled: false });
 
   await gotoQuery(page, "cpp sort source:official", "&docsLocale=en");
   await waitForResults(page);
   assert.equal(await page.$("[data-auto-fallback-notice]"), null);
+  assert.deepEqual(
+    await page.$eval('[data-source-option][value="cpprefjp"]', (input) => ({
+      checked: input.checked,
+      disabled: input.disabled
+    })),
+    { checked: false, disabled: true }
+  );
   assert.equal(
-    await page.$eval('[data-source-option][value="cpprefjp"]', (input) => input.disabled),
-    true
+    await page.$eval("[data-source-policy-radio]:checked", (input) => input.value),
+    "official"
   );
   assert.ok((await snapshot(page)).sources.every((source) => source === "wg21-papers"));
 
   await page.goto(
-    `${app.baseUrl}/?q=${encodeURIComponent("cpp sort")}&ui=en&docsLocale=en&autoNonOfficialSetting=explicit`,
+    `${app.baseUrl}/?q=${encodeURIComponent("cpp sort")}&ui=en&docsLocale=en&sourcePolicy=official`,
     { waitUntil: "domcontentloaded" }
   );
   await waitForResults(page);
   assert.equal(await page.$("[data-auto-fallback-notice]"), null);
   assert.equal(
-    await page.$eval("[data-auto-non-official-toggle]", (input) => input.checked),
-    false
+    await page.$eval("[data-source-policy-radio]:checked", (input) => input.value),
+    "official"
   );
   assert.equal(
     await page.$eval('[data-source-option][value="cpprefjp"]', (input) => input.disabled),
@@ -1707,7 +1714,7 @@ test("[filters] adding a spaced second language enables its default sources", as
   );
   assert.deepEqual(sourceState, {
     "rust-docs": { checked: true, disabled: false },
-    "comprehensive-rust": { checked: true, disabled: true }
+    "comprehensive-rust": { checked: false, disabled: true }
   });
   assert.ok(
     await page.$(
@@ -1761,13 +1768,23 @@ test("[filters] adding a spaced second language enables its default sources", as
   );
   assert.deepEqual(sourceState, {
     "rust-docs": { checked: true, disabled: false },
-    "comprehensive-rust": { checked: true, disabled: true },
+    "comprehensive-rust": { checked: false, disabled: true },
     "typescript-docs": { checked: true, disabled: false },
-    "typescript-deep-dive": { checked: true, disabled: true }
+    "typescript-deep-dive": { checked: false, disabled: true }
   });
 
-  await clickAndWaitForNavigation(page, "[data-source-toggle]");
+  await page.$eval("details.source-details", (details) => {
+    details.open = true;
+  });
+  await clickAndWaitForNavigation(
+    page,
+    '[data-source-policy-radio][value="all"]'
+  );
   await waitForResults(page);
+  assert.equal(
+    await page.$eval("details.source-details", (details) => details.open),
+    true
+  );
   sourceState = await page.evaluate(() =>
     Object.fromEntries(
       ["comprehensive-rust", "typescript-deep-dive"].map((sourceId) => {
@@ -1788,8 +1805,34 @@ test("[filters] adding a spaced second language enables its default sources", as
   const enabledSources = new Set((await snapshot(page)).sources);
   assert.ok(enabledSources.has("comprehensive-rust"));
   assert.ok(enabledSources.has("typescript-deep-dive"));
-  await clickAndWaitForNavigation(page, "[data-source-toggle]");
+  await clickAndWaitForNavigation(
+    page,
+    '[data-source-policy-radio][value="fallback"]'
+  );
   await waitForResults(page);
+  assert.equal(
+    await page.$eval("details.source-details", (details) => details.open),
+    true
+  );
+  assert.deepEqual(
+    await page.evaluate(() =>
+      Object.fromEntries(
+        ["comprehensive-rust", "typescript-deep-dive"].map((sourceId) => {
+          const option = document.querySelector(
+            `input[data-source-option][value="${sourceId}"]`
+          );
+          return [
+            sourceId,
+            { checked: option.checked, disabled: option.disabled }
+          ];
+        })
+      )
+    ),
+    {
+      "comprehensive-rust": { checked: false, disabled: true },
+      "typescript-deep-dive": { checked: false, disabled: true }
+    }
+  );
   assert.equal(
     (await snapshot(page)).sources.some((sourceId) =>
       ["comprehensive-rust", "typescript-deep-dive"].includes(sourceId)
@@ -1810,15 +1853,24 @@ test("[filters] enabling and disabling a non-official source changes the result 
     )
   );
 
-  await clickAndWaitForNavigation(page, "[data-source-toggle]");
+  await clickAndWaitForNavigation(
+    page,
+    '[data-source-policy-radio][value="all"]'
+  );
   await waitForResults(page);
   assert.ok((await snapshot(page)).sources.includes("mdn-js"));
 
-  await clickAndWaitForNavigation(page, "[data-source-toggle]");
+  await clickAndWaitForNavigation(
+    page,
+    '[data-source-policy-radio][value="fallback"]'
+  );
   await waitForResults(page);
   assert.equal((await snapshot(page)).sources.includes("mdn-js"), false);
 
-  await clickAndWaitForNavigation(page, "[data-source-toggle]");
+  await clickAndWaitForNavigation(
+    page,
+    '[data-source-policy-radio][value="all"]'
+  );
   await waitForResults(page);
   assert.ok((await snapshot(page)).sources.includes("mdn-js"));
 
@@ -2251,6 +2303,19 @@ test("[catalog] trusted non-official caveats are localized in the source picker 
     };
     const meta = source?.querySelector(".source-meta");
     const sourceLink = source?.querySelector(".source-link");
+    const sourceTitle = source?.querySelector(".source-title");
+    const sourceKind = source?.querySelector(".source-kind");
+    const unavailable = source?.querySelector(".source-ja-unavailable");
+    const rectTop = (element) => element?.getBoundingClientRect().top;
+    const computedColors = (element) => {
+      if (!element) return undefined;
+      const style = getComputedStyle(element);
+      return {
+        background: style.backgroundColor,
+        border: style.borderColor,
+        color: style.color
+      };
+    };
     return {
       sourceEn: visibleText(source, ".source-qualification .lang-en"),
       sourceJa: visibleText(source, ".source-qualification .lang-ja"),
@@ -2259,6 +2324,13 @@ test("[catalog] trusted non-official caveats are localized in the source picker 
       unavailableEn: visibleText(source, ".source-ja-unavailable .lang-en"),
       unavailableJa: visibleText(source, ".source-ja-unavailable .lang-ja"),
       metadataOrder: [...(meta?.children ?? [])].map((element) => element.className),
+      inlineMetadata: {
+        titleTop: rectTop(sourceTitle),
+        kindTop: rectTop(sourceKind),
+        linkTop: rectTop(sourceLink)
+      },
+      kindColors: computedColors(sourceKind),
+      unavailableColors: computedColors(unavailable),
       link: sourceLink
         ? {
             href: sourceLink.href,
@@ -2281,6 +2353,8 @@ test("[catalog] trusted non-official caveats are localized in the source picker 
     "source-link",
     "source-ja-unavailable"
   ]);
+  assert.ok(Math.abs(caveats.inlineMetadata.titleTop - caveats.inlineMetadata.kindTop) <= 4);
+  assert.ok(Math.abs(caveats.inlineMetadata.titleTop - caveats.inlineMetadata.linkTop) <= 4);
   assert.equal(new URL(caveats.link.href).hostname, "basarat.gitbook.io");
   assert.equal(caveats.link.target, "_blank");
   assert.match(caveats.link.rel, /noopener/);
@@ -2294,6 +2368,7 @@ test("[catalog] trusted non-official caveats are localized in the source picker 
   caveats = await readVisibleCaveats();
   assert.equal(caveats.unavailableEn, "No Japanese version");
   assert.equal(caveats.unavailableJa, undefined);
+  assert.deepEqual(caveats.unavailableColors, caveats.kindColors);
   assert.equal(await page.$("[data-locale-notice]"), null);
 
   await page.$eval('[data-ui-radio][value="ja"]', (radio) => radio.click());
@@ -2476,10 +2551,11 @@ test("[layout] results stay visible at desktop and mobile widths", async () => {
 test("[layout] contextual search help, centered header, and right-aligned settings stay predictable", async () => {
   for (const width of [1280, 641, 390, 375, 320]) {
     const page = await newPage({ width, height: 900 });
-    await gotoQuery(
-      page,
-      "lang:typescript strictNullChecks source:all",
-      "&docsLocale=ja&ui=ja"
+    await page.goto(
+      `${app.baseUrl}/?q=${encodeURIComponent(
+        "lang:typescript strictNullChecks source:all"
+      )}&docsLocale=ja&ui=ja`,
+      { waitUntil: "domcontentloaded" }
     );
     await waitForResults(page);
     const pageIdentity = await page.evaluate(() => ({
@@ -2503,12 +2579,31 @@ test("[layout] contextual search help, centered header, and right-aligned settin
       const search = document.querySelector(".search-submit").getBoundingClientRect();
       const language = document.querySelector(".lang-switch").getBoundingClientRect();
       const controls = document.querySelector(".controls-row").getBoundingClientRect();
-      const sourceToggle = document.querySelector("[data-source-toggle]").getBoundingClientRect();
-      const automaticToggle = document
-        .querySelector("[data-auto-non-official-toggle]")
+      const sourcePolicyToggle = document
+        .querySelector(".source-policy-toggle")
+        .getBoundingClientRect();
+      const sourcePolicySetting = document
+        .querySelector(".source-policy-setting")
+        .getBoundingClientRect();
+      const sourcePolicyLabel = document
+        .querySelector("#source-policy-label")
         .getBoundingClientRect();
       const docsLabel = document.querySelector("#docs-locale-label").getBoundingClientRect();
-      const docsToggle = document.querySelector(".seg-toggle").getBoundingClientRect();
+      const docsToggle = document
+        .querySelector(".docs-setting-row .seg-toggle")
+        .getBoundingClientRect();
+      const docsSetting = document
+        .querySelector(".docs-setting-row")
+        .getBoundingClientRect();
+      const sourcePolicyLabelStyle = getComputedStyle(
+        document.querySelector("#source-policy-label")
+      );
+      const docsLabelStyle = getComputedStyle(
+        document.querySelector("#docs-locale-label")
+      );
+      const sourcePolicyChoiceRects = [
+        ...document.querySelectorAll(".source-policy-toggle .seg-btn")
+      ].map((choice) => choice.getBoundingClientRect());
       const summaryStyle = getComputedStyle(document.querySelector(".source-details summary"));
       const titleStyle = getComputedStyle(document.querySelector(".source-title"));
       const optionStyle = getComputedStyle(document.querySelector(".source-option"));
@@ -2517,13 +2612,13 @@ test("[layout] contextual search help, centered header, and right-aligned settin
       const titleRect = document.querySelector(".source-title").getBoundingClientRect();
       const sourceLinkRect = document.querySelector(".source-link").getBoundingClientRect();
       const sourceToggleRect = document.querySelector("[data-source-option]").getBoundingClientRect();
-      const sourceToggleElement = document.querySelector("[data-source-toggle]");
-      const checkedToggleBackground = getComputedStyle(sourceToggleElement).backgroundColor;
+      const sourceOptionElement = document.querySelector("[data-source-option]");
+      const checkedToggleBackground = getComputedStyle(sourceOptionElement).backgroundColor;
       const headerStyle = getComputedStyle(document.querySelector(".search-header"));
       const languageHighlightStyle = getComputedStyle(
         document.querySelector(".query-highlight .flag-token")
       );
-      const uncheckedToggle = sourceToggleElement.cloneNode();
+      const uncheckedToggle = sourceOptionElement.cloneNode();
       uncheckedToggle.checked = false;
       uncheckedToggle.style.transition = "none";
       document.body.append(uncheckedToggle);
@@ -2534,7 +2629,7 @@ test("[layout] contextual search help, centered header, and right-aligned settin
         titleCenterGap: Math.abs(
           title.left + title.width / 2 - (header.left + header.width / 2)
         ),
-        titleAboveActions: title.bottom <= actions.top,
+        languageAboveTitle: actions.bottom <= title.top,
         languageRightGap: Math.abs(header.right - language.right),
         actionTags: [...document.querySelector(".header-actions").children].map(
           (element) => element.tagName
@@ -2546,18 +2641,50 @@ test("[layout] contextual search help, centered header, and right-aligned settin
         helpWidth: help.width,
         helpHeight: help.height,
         pageOverflows: document.documentElement.scrollWidth > window.innerWidth,
-        sourceToggleRightGap: Math.abs(controls.right - sourceToggle.right),
-        automaticToggleRightGap: Math.abs(controls.right - automaticToggle.right),
+        controlsWidth: controls.width,
+        sourcePolicyRightGap: Math.abs(controls.right - sourcePolicyToggle.right),
+        sourcePolicyWidth: sourcePolicyToggle.width,
+        docsAboveSourcePolicy: docsSetting.bottom <= sourcePolicySetting.top,
+        sourcePolicyLabelBesideToggle:
+          sourcePolicyLabel.right <= sourcePolicyToggle.left &&
+          Math.abs(
+            sourcePolicyLabel.top +
+              sourcePolicyLabel.height / 2 -
+              (sourcePolicyToggle.top + sourcePolicyToggle.height / 2)
+          ) <= 1,
+        sourcePolicyLabels: [
+          ...document.querySelectorAll(".source-policy-toggle .seg-btn")
+        ].map((label) => label.innerText.trim()),
+        sourcePolicyChoiceWidths: sourcePolicyChoiceRects.map(
+          (choice) => choice.width
+        ),
+        sourcePolicyChoicesOverlap: sourcePolicyChoiceRects.some(
+          (choice, index) =>
+            index > 0 && sourcePolicyChoiceRects[index - 1].right > choice.left
+        ),
+        sourcePolicyLabelStyle: {
+          color: sourcePolicyLabelStyle.color,
+          fontSize: sourcePolicyLabelStyle.fontSize,
+          fontWeight: sourcePolicyLabelStyle.fontWeight
+        },
+        docsLabelStyle: {
+          color: docsLabelStyle.color,
+          fontSize: docsLabelStyle.fontSize,
+          fontWeight: docsLabelStyle.fontWeight
+        },
+        selectedSourcePolicy: document.querySelector(
+          "[data-source-policy-radio]:checked"
+        )?.value,
         docsToggleRightGap: Math.abs(controls.right - docsToggle.right),
         docsLabelGap: docsToggle.left - docsLabel.right,
-        sourceToggleLabelledBy: document
-          .querySelector("[data-source-toggle]")
+        sourcePolicyLabelledBy: document
+          .querySelector(".source-policy-toggle")
           .getAttribute("aria-labelledby"),
-        automaticToggleLabelledBy: document
-          .querySelector("[data-auto-non-official-toggle]")
-          .getAttribute("aria-labelledby"),
-        automaticLabelText: document
-          .querySelector("#auto-non-official-label .lang-ja")
+        sourcePolicyLabelText: document
+          .querySelector("#source-policy-label .lang-ja")
+          .textContent,
+        docsLabelText: document
+          .querySelector("#docs-locale-label .lang-ja")
           .textContent,
         summaryFont: Number.parseFloat(summaryStyle.fontSize),
         titleFont: Number.parseFloat(titleStyle.fontSize),
@@ -2587,16 +2714,30 @@ test("[layout] contextual search help, centered header, and right-aligned settin
     assert.ok(layout.helpWidth >= 44);
     assert.ok(layout.helpHeight >= 44);
     assert.equal(layout.pageOverflows, false);
-    assert.equal(layout.sourceToggleLabelledBy, "include-trusted-label");
-    assert.equal(layout.automaticToggleLabelledBy, "auto-non-official-label");
-    assert.equal(
-      layout.automaticLabelText,
-      "ウェブで読める公式リファレンスがない場合、非公式リファレンスを使う"
-    );
+    assert.equal(layout.sourcePolicyLabelledBy, "source-policy-label");
+    assert.equal(layout.sourcePolicyLabelText, "非公式ソース");
+    assert.equal(layout.docsLabelText, "Docs");
+    assert.deepEqual(layout.sourcePolicyLabels, [
+      "含めない",
+      "公式がない時だけ",
+      "含める"
+    ]);
+    assert.equal(layout.sourcePolicyChoicesOverlap, false);
+    assert.deepEqual(layout.sourcePolicyLabelStyle, layout.docsLabelStyle);
+    assert.equal(layout.selectedSourcePolicy, "all");
     if (width <= 760) {
-      assert.equal(layout.titleAboveActions, true);
-      assert.ok(layout.sourceToggleRightGap <= 1);
-      assert.ok(layout.automaticToggleRightGap <= 1);
+      assert.equal(layout.languageAboveTitle, true);
+      assert.ok(layout.sourcePolicyRightGap <= 1);
+      assert.ok(
+        layout.sourcePolicyWidth < layout.controlsWidth,
+        `source policy width was ${layout.sourcePolicyWidth}px at ${width}px`
+      );
+      assert.equal(layout.docsAboveSourcePolicy, true);
+      assert.equal(layout.sourcePolicyLabelBesideToggle, true);
+      assert.ok(
+        layout.sourcePolicyChoiceWidths[0] <= 56,
+        `exclude choice width was ${layout.sourcePolicyChoiceWidths[0]}px at ${width}px`
+      );
       assert.ok(layout.docsToggleRightGap <= 1);
       assert.ok(layout.languageRightGap <= 1);
       assert.ok(layout.docsLabelGap >= 0 && layout.docsLabelGap <= 8);
@@ -2615,15 +2756,12 @@ test("[layout] contextual search help, centered header, and right-aligned settin
     assert.equal(layout.headerBorderBottomWidth, "0px");
     assert.equal(layout.languageHighlightBackground, "rgb(249, 248, 51)");
     const settingsBeforeTextClicks = await page.evaluate(() => ({
-      source: document.querySelector("[data-source-toggle]").checked,
-      automatic: document.querySelector("[data-auto-non-official-toggle]").checked
+      policy: document.querySelector("[data-source-policy-radio]:checked").value
     }));
-    await page.click("#include-trusted-label");
-    await page.click("#auto-non-official-label");
+    await page.click("#source-policy-label");
     assert.deepEqual(
       await page.evaluate(() => ({
-        source: document.querySelector("[data-source-toggle]").checked,
-        automatic: document.querySelector("[data-auto-non-official-toggle]").checked,
+        policy: document.querySelector("[data-source-policy-radio]:checked").value,
         href: location.href,
         timeOrigin: performance.timeOrigin
       })),

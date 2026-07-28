@@ -60,17 +60,20 @@ Both live commands are non-mutating.
 
 E2E coverage includes at least one real result for every catalog language,
 all 18 supported Japanese indexes, all language-level JA-to-EN fallbacks,
-single- and multi-language results, non-official source enable/disable with
-selection preservation, exact and fallback Docs locales, UI locale independence,
-HTTP and malformed-bundle partial failure, visible edition qualifications,
-explicit support states, empty/error states, escaping,
+single- and multi-language results, the three-state non-official-source policy
+with selection preservation, exact and fallback Docs locales, UI locale
+independence, HTTP and malformed-bundle partial failure, visible edition
+qualifications, explicit support states, empty/error states, escaping,
 safe new-tab links, per-source Japanese-availability labels, compact source
 metadata order, a single-column source picker, right-aligned header actions, and
 desktop/mobile visibility.
 Header-layout coverage keeps the title geometrically centered and EN/JA aligned
-to the right independently of translation width.
-Mobile setting coverage fixes the two switches and Docs-locale control to one
-right edge, keeps setting descriptions non-interactive, and verifies accessible
+to the right independently of translation width; on mobile the global EN/JA
+control precedes the page title.
+Mobile setting coverage places the right-aligned Docs-locale control before a
+compact, right-aligned, always-visible three-state source policy, keeps each
+punctuation-free label beside its control and both rows within the content
+width, keeps setting descriptions non-interactive, and verifies accessible
 control names independently of translated text length.
 Search-help coverage places a 44 CSS-pixel, labelled dialog trigger after the
 visible Search submit button, shows its localized tooltip on hover and keyboard
@@ -87,8 +90,9 @@ ranking, silent automatic-fallback settings/override behavior, bounded
 keyboard suggestions, and one shared no-source/no-result status component.
 The no-source path must not request the manifest.
 Multi-language form coverage accepts whitespace after commas, adds default
-Sources only for newly introduced languages, and preserves checked non-official
-Sources while their controls are disabled.
+Sources only for newly introduced languages, renders policy-disabled
+non-official Sources unchecked, restores their preserved choices, and keeps an
+open Sources disclosure open across policy navigation.
 Result-layout coverage requires the same non-link title, adjacent colored
 language tag, and subordinate source-link structure for single- and
 multi-origin results. It also fixes user-facing catalog language names,

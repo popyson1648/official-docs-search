@@ -1,7 +1,8 @@
 import { normalizeLanguageId } from "./query";
 import type { SourceKind } from "./sources";
 
-export type Preference = "ui" | "docsLocale" | "sourceMode" | "autoNonOfficial";
+export type Preference = "ui" | "docsLocale" | "sourcePolicy";
+export type SourcePolicy = "official" | "fallback" | "all";
 
 export interface SourceOptionState {
   id: string;
@@ -25,8 +26,7 @@ export interface SourceDefaultsLanguage {
 const COOKIE_NAMES: Record<Preference, string> = {
   ui: "ods_ui",
   docsLocale: "ods_docs_locale",
-  sourceMode: "ods_source",
-  autoNonOfficial: "ods_auto_non_official"
+  sourcePolicy: "ods_source_policy"
 };
 
 export function preferenceCookie(preference: Preference, value: string): string {
@@ -35,27 +35,40 @@ export function preferenceCookie(preference: Preference, value: string): string 
 
 export function resolveSourceOptionState(
   options: SourceOptionState[],
-  includeNonOfficial: boolean
+  policy: SourcePolicy,
+  preservedIds: ReadonlySet<string> = new Set()
 ): { options: ResolvedSourceOptionState[]; preservedIds: string[] } {
+  const selected = (option: SourceOptionState) =>
+    option.checked || preservedIds.has(option.id);
+  const allowed = (option: SourceOptionState) =>
+    option.kind === "official" ||
+    policy === "all" ||
+    (policy === "fallback" && option.automaticFallbackAllowed === true);
   return {
-    options: options.map((option) => ({
-      ...option,
-      disabled:
-        !includeNonOfficial &&
-        option.kind !== "official" &&
-        option.automaticFallbackAllowed !== true
-    })),
-    preservedIds: includeNonOfficial
-      ? []
-      : options
-          .filter(
-            (option) =>
-              option.kind !== "official" &&
-              option.checked &&
-              option.automaticFallbackAllowed !== true
-          )
-          .map((option) => option.id)
+    options: options.map((option) => {
+      const disabled = !allowed(option);
+      return {
+        ...option,
+        checked: !disabled && selected(option),
+        disabled
+      };
+    }),
+    preservedIds: options
+      .filter((option) => !allowed(option) && selected(option))
+      .map((option) => option.id)
   };
+}
+
+export function sourcePolicyFromLegacyPreferences(
+  sourceMode: string | undefined,
+  autoNonOfficial: string | undefined
+): SourcePolicy {
+  if (sourceMode === "all") return "all";
+  return autoNonOfficial === "off" ? "official" : "fallback";
+}
+
+export function isSourcePolicy(value: string | undefined | null): value is SourcePolicy {
+  return value === "official" || value === "fallback" || value === "all";
 }
 
 export function mergeNewLanguageSourceDefaults(

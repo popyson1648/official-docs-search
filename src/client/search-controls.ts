@@ -2,9 +2,11 @@ import { buildHighlightSpans } from "../core/highlight";
 import { t } from "../core/i18n";
 import { parseQuery, tokenize } from "../core/query";
 import {
+  isSourcePolicy,
   preferenceCookie,
   removeLanguageFromQuery,
-  resolveSourceOptionState
+  resolveSourceOptionState,
+  type SourcePolicy
 } from "../core/search-controls";
 import type { SourceKind } from "../core/sources";
 import {
@@ -31,10 +33,9 @@ export function initializeSearchControls(
   const highlight = root.querySelector<HTMLElement>("[data-query-highlight]");
   const form = root.querySelector<HTMLFormElement>("[data-search-form]");
   const uiHidden = root.querySelector<HTMLInputElement>("[data-ui-hidden]");
-  const sourceToggle = root.querySelector<HTMLInputElement>("[data-source-toggle]");
-  const autoNonOfficialToggle = root.querySelector<HTMLInputElement>(
-    "[data-auto-non-official-toggle]"
-  );
+  const sourcePolicyRadios =
+    root.querySelectorAll<HTMLInputElement>("[data-source-policy-radio]");
+  const sourceDetails = root.querySelector<HTMLDetailsElement>(".source-details");
   const uiRadios = root.querySelectorAll<HTMLInputElement>("[data-ui-radio]");
   const docsRadios = root.querySelectorAll<HTMLInputElement>("[data-docs-radio]");
   const dialog = root.querySelector<HTMLDialogElement>("[data-help-dialog]");
@@ -50,6 +51,8 @@ export function initializeSearchControls(
   let activeSuggestion = -1;
   let composing = false;
   let renderedSuggestions: SearchSuggestion[] = [];
+
+  restoreSourceDetailsState(root, sourceDetails);
 
   const renderHighlight = () => {
     if (!input || !highlight) return;
@@ -126,10 +129,11 @@ export function initializeSearchControls(
         parsed.languages.length > 0
           ? parsed.languages
           : suggestionScopes.slice(0, 4).map((scope) => scope.id);
+      const selectedPolicy = currentSourcePolicy(sourcePolicyRadios);
       const mode =
-        parsed.sourceMode ?? (sourceToggle?.checked ? "all" : "official");
+        parsed.sourceMode ?? (selectedPolicy === "all" ? "all" : "official");
       const automaticFallback =
-        parsed.sourceMode === undefined && autoNonOfficialToggle?.checked === true;
+        parsed.sourceMode === undefined && selectedPolicy === "fallback";
       const sources = requestedLanguageIds.flatMap((languageId) => {
         const scope = suggestionScopes.find(
           (candidate) =>
@@ -255,47 +259,58 @@ export function initializeSearchControls(
     });
   });
 
-  sourceToggle?.addEventListener("change", () => {
-    sourceToggle.parentElement?.classList.toggle("active", sourceToggle.checked);
-    const optionElements = [
-      ...(form?.querySelectorAll<HTMLInputElement>("[data-source-option]") ?? [])
-    ];
-    const state = resolveSourceOptionState(
-      optionElements.map((option) => ({
-        id: option.value,
-        kind: sourceKind(option.dataset.sourceKind),
-        checked: option.checked,
-        automaticFallbackAllowed:
-          option.dataset.autoFallbackAllowed === "true"
-      })),
-      sourceToggle.checked
-    );
-    form?.querySelectorAll("[data-preserved-source]").forEach((element) => element.remove());
-    for (const [index, option] of optionElements.entries()) {
-      option.disabled = state.options[index].disabled;
-      option.closest(".source-option")?.classList.toggle(
-        "disabled",
-        state.options[index].disabled
+  sourcePolicyRadios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      if (!radio.checked || !isSourcePolicy(radio.value)) return;
+      sourcePolicyRadios.forEach((candidate) => {
+        candidate.parentElement?.classList.toggle(
+          "active",
+          candidate === radio
+        );
+      });
+      const optionElements = [
+        ...(form?.querySelectorAll<HTMLInputElement>("[data-source-option]") ?? [])
+      ];
+      const preservedIds = new Set(
+        [
+          ...(form?.querySelectorAll<HTMLInputElement>("[data-preserved-source]") ??
+            [])
+        ].map((element) => element.value)
       );
-    }
-    for (const sourceId of state.preservedIds) {
-      const preserved = root.createElement("input");
-      preserved.type = "hidden";
-      preserved.name = "sourceId";
-      preserved.value = sourceId;
-      preserved.dataset.preservedSource = "";
-      form?.append(preserved);
-    }
-    root.cookie = preferenceCookie("sourceMode", sourceToggle.checked ? "all" : "official");
-    form?.requestSubmit();
-  });
-
-  autoNonOfficialToggle?.addEventListener("change", () => {
-    root.cookie = preferenceCookie(
-      "autoNonOfficial",
-      autoNonOfficialToggle.checked ? "on" : "off"
-    );
-    form?.requestSubmit();
+      const state = resolveSourceOptionState(
+        optionElements.map((option) => ({
+          id: option.value,
+          kind: sourceKind(option.dataset.sourceKind),
+          checked: option.checked,
+          automaticFallbackAllowed:
+            option.dataset.autoFallbackAllowed === "true"
+        })),
+        radio.value,
+        preservedIds
+      );
+      form
+        ?.querySelectorAll("[data-preserved-source]")
+        .forEach((element) => element.remove());
+      for (const [index, option] of optionElements.entries()) {
+        option.checked = state.options[index].checked;
+        option.disabled = state.options[index].disabled;
+        option.closest(".source-option")?.classList.toggle(
+          "disabled",
+          state.options[index].disabled
+        );
+      }
+      for (const sourceId of state.preservedIds) {
+        const preserved = root.createElement("input");
+        preserved.type = "hidden";
+        preserved.name = "sourceId";
+        preserved.value = sourceId;
+        preserved.dataset.preservedSource = "";
+        form?.append(preserved);
+      }
+      root.cookie = preferenceCookie("sourcePolicy", radio.value);
+      preserveSourceDetailsState(root, sourceDetails);
+      form?.requestSubmit();
+    });
   });
 
   docsRadios.forEach((radio) => {
@@ -355,6 +370,47 @@ function parseSuggestionScopes(value: string | undefined): SuggestionScope[] {
 function sourceKind(value: string | undefined): SourceKind {
   if (value === "conventional" || value === "community") return value;
   return "official";
+}
+
+function currentSourcePolicy(
+  radios: NodeListOf<HTMLInputElement>
+): SourcePolicy {
+  const selected = [...radios].find((radio) => radio.checked)?.value;
+  return isSourcePolicy(selected) ? selected : "fallback";
+}
+
+const SOURCE_DETAILS_STATE_KEY = "ods_source_details_open";
+
+function preserveSourceDetailsState(
+  root: Document,
+  details: HTMLDetailsElement | null
+): void {
+  if (!details) return;
+  try {
+    root.defaultView?.sessionStorage.setItem(
+      SOURCE_DETAILS_STATE_KEY,
+      String(details.open)
+    );
+  } catch {
+    // Search still works when storage is unavailable.
+  }
+}
+
+function restoreSourceDetailsState(
+  root: Document,
+  details: HTMLDetailsElement | null
+): void {
+  if (!details) return;
+  try {
+    const storage = root.defaultView?.sessionStorage;
+    const stored = storage?.getItem(SOURCE_DETAILS_STATE_KEY);
+    storage?.removeItem(SOURCE_DETAILS_STATE_KEY);
+    if (stored !== null && stored !== undefined) {
+      details.open = stored === "true";
+    }
+  } catch {
+    // The server-rendered closed state remains usable without storage.
+  }
 }
 
 function updateDocsLocaleUrl(root: Document, docsLocale: string): void {

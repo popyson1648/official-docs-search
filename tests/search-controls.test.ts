@@ -3,22 +3,22 @@ import {
   mergeNewLanguageSourceDefaults,
   preferenceCookie,
   removeLanguageFromQuery,
-  resolveSourceOptionState
+  resolveSourceOptionState,
+  sourcePolicyFromLegacyPreferences
 } from "../src/core/search-controls";
 
 describe("search controls", () => {
-  it("builds persistent UI, Docs locale, and source-mode cookies", () => {
+  it("builds persistent UI, Docs locale, and source-policy cookies", () => {
     expect(preferenceCookie("ui", "ja")).toBe(
       "ods_ui=ja; path=/; max-age=31536000; SameSite=Lax"
     );
     expect(preferenceCookie("docsLocale", "ja-JP")).toContain("ods_docs_locale=ja-JP");
-    expect(preferenceCookie("sourceMode", "all")).toContain("ods_source=all");
-    expect(preferenceCookie("autoNonOfficial", "off")).toContain(
-      "ods_auto_non_official=off"
+    expect(preferenceCookie("sourcePolicy", "fallback")).toContain(
+      "ods_source_policy=fallback"
     );
   });
 
-  it("keeps reviewed automatic fallback sources interactive", () => {
+  it("keeps reviewed automatic fallback sources selected and interactive", () => {
     const state = resolveSourceOptionState(
       [
         {
@@ -28,27 +28,50 @@ describe("search controls", () => {
           automaticFallbackAllowed: true
         }
       ],
-      false
+      "fallback"
     );
-    expect(state.options[0].disabled).toBe(false);
+    expect(state.options[0]).toMatchObject({ checked: true, disabled: false });
     expect(state.preservedIds).toEqual([]);
   });
 
-  it("preserves checked non-official sources while their controls are disabled", () => {
+  it("unchecks unavailable non-official sources while preserving their selection", () => {
     const state = resolveSourceOptionState(
       [
         { id: "official", kind: "official", checked: true },
         { id: "mdn", kind: "conventional", checked: true },
         { id: "community", kind: "community", checked: false }
       ],
-      false
+      "official"
     );
     expect(state.preservedIds).toEqual(["mdn"]);
-    expect(state.options.map(({ id, disabled }) => [id, disabled])).toEqual([
-      ["official", false],
-      ["mdn", true],
-      ["community", true]
+    expect(state.options.map(({ id, checked, disabled }) => [id, checked, disabled])).toEqual([
+      ["official", true, false],
+      ["mdn", false, true],
+      ["community", false, true]
     ]);
+  });
+
+  it("restores preserved choices when a policy allows them again", () => {
+    const state = resolveSourceOptionState(
+      [
+        { id: "official", kind: "official", checked: true },
+        { id: "mdn", kind: "conventional", checked: false }
+      ],
+      "all",
+      new Set(["mdn"])
+    );
+    expect(state.options.map(({ id, checked, disabled }) => [id, checked, disabled])).toEqual([
+      ["official", true, false],
+      ["mdn", true, false]
+    ]);
+    expect(state.preservedIds).toEqual([]);
+  });
+
+  it("migrates the two legacy preferences into one source policy", () => {
+    expect(sourcePolicyFromLegacyPreferences("all", "off")).toBe("all");
+    expect(sourcePolicyFromLegacyPreferences("official", "off")).toBe("official");
+    expect(sourcePolicyFromLegacyPreferences("official", "on")).toBe("fallback");
+    expect(sourcePolicyFromLegacyPreferences(undefined, undefined)).toBe("fallback");
   });
 
   it("adds defaults only for newly introduced languages", () => {

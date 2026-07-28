@@ -2,7 +2,12 @@
 import { getDocumentKindLabel, getSourceKindLabel, getUiLanguage, t } from "../core/i18n";
 import { parseQuery } from "../core/query";
 import type { SourceMode } from "../core/query";
-import { mergeNewLanguageSourceDefaults } from "../core/search-controls";
+import {
+  isSourcePolicy,
+  mergeNewLanguageSourceDefaults,
+  resolveSourceOptionState,
+  sourcePolicyFromLegacyPreferences
+} from "../core/search-controls";
 import { getKnownLanguageIds, loadCatalog, resolveSearchScope } from "../core/sources";
 import {
   getLanguageColor,
@@ -15,24 +20,23 @@ const catalog = loadCatalog();
 const params = Astro.url.searchParams;
 const q = params.get("q") ?? "";
 const uiLanguage = getUiLanguage(params.get("ui") ?? Astro.cookies.get("ods_ui")?.value);
+const cookieSourcePolicy = Astro.cookies.get("ods_source_policy")?.value;
 const cookieSourceMode = Astro.cookies.get("ods_source")?.value;
 const cookieAutoNonOfficial = Astro.cookies.get("ods_auto_non_official")?.value;
-const formSourceMode = params.get("sourceMode");
-const defaultSourceMode: SourceMode =
-  formSourceMode === "all" || cookieSourceMode === "all" ? "all" : "official";
-const docsLocale = params.get("docsLocale") || Astro.cookies.get("ods_docs_locale")?.value || undefined;
-const hasExplicitAutoNonOfficialSetting =
-  params.get("autoNonOfficialSetting") === "explicit";
-const autoIncludeNonOfficialWhenNoOfficial = hasExplicitAutoNonOfficialSetting
-  ? params.get("autoNonOfficial") === "on"
-  : cookieAutoNonOfficial !== "off";
-if (hasExplicitAutoNonOfficialSetting) {
-  Astro.cookies.set(
-    "ods_auto_non_official",
-    autoIncludeNonOfficialWhenNoOfficial ? "on" : "off",
-    { path: "/", maxAge: 31_536_000, sameSite: "lax" }
-  );
+const formSourcePolicy = params.get("sourcePolicy");
+const selectedSourcePolicy = isSourcePolicy(formSourcePolicy)
+  ? formSourcePolicy
+  : isSourcePolicy(cookieSourcePolicy)
+    ? cookieSourcePolicy
+    : sourcePolicyFromLegacyPreferences(cookieSourceMode, cookieAutoNonOfficial);
+if (isSourcePolicy(formSourcePolicy)) {
+  Astro.cookies.set("ods_source_policy", formSourcePolicy, {
+    path: "/",
+    maxAge: 31_536_000,
+    sameSite: "lax"
+  });
 }
+const docsLocale = params.get("docsLocale") || Astro.cookies.get("ods_docs_locale")?.value || undefined;
 const selectedSourceIds = new Set(params.getAll("sourceId"));
 const hasExplicitSourceSelection = params.get("sourceSelection") === "explicit";
 const submittedSourceLanguageIds = new Set(params.getAll("sourceScopeLanguage"));
@@ -41,7 +45,16 @@ const knownLanguages = getKnownLanguageIds(catalog);
 const parsed = parseQuery(q, {
   knownLanguages
 });
-const sourceMode = parsed.sourceMode ?? defaultSourceMode;
+const effectiveSourcePolicy =
+  parsed.sourceMode === "all"
+    ? "all"
+    : parsed.sourceMode === "official"
+      ? "official"
+      : selectedSourcePolicy;
+const sourceMode: SourceMode =
+  effectiveSourcePolicy === "all" ? "all" : "official";
+const autoIncludeNonOfficialWhenNoOfficial =
+  effectiveSourcePolicy === "fallback";
 const locale = parsed.locale ?? docsLocale;
 const requestedLanguageScope = resolveSearchScope(catalog, {
   languages: parsed.languages,
@@ -69,8 +82,7 @@ const scope = resolveSearchScope(catalog, {
   locale,
   sourceMode,
   enabledSourceIds: selectedIds,
-  autoIncludeNonOfficialWhenNoOfficial:
-    parsed.sourceMode === undefined && autoIncludeNonOfficialWhenNoOfficial
+  autoIncludeNonOfficialWhenNoOfficial
 });
 const trustedScope = resolveSearchScope(catalog, {
   languages: parsed.languages,
@@ -81,24 +93,21 @@ const trustedScope = resolveSearchScope(catalog, {
 const hasQuery = q.trim().length > 0;
 const sourceLanguages =
   hasQuery && parsed.languages.length > 0 ? trustedScope.languages : catalog.languages;
-const preservedDisabledSourceIds =
-  sourceMode === "all"
-    ? []
-    : sourceLanguages
-        .flatMap((language) => language.sources)
-        .filter(
-          (source) =>
-            source.kind !== "official" &&
-            !(
-              parsed.sourceMode === undefined &&
-              autoIncludeNonOfficialWhenNoOfficial &&
-              catalog.languages.find((language) =>
-                language.sources.some((candidate) => candidate.id === source.id)
-              )?.autoNonOfficialFallback
-            ) &&
-            selectedIds.has(source.id)
-        )
-        .map((source) => source.id);
+const initialSourceOptionState = resolveSourceOptionState(
+  sourceLanguages.flatMap((language) =>
+    language.sources.map((source) => ({
+      id: source.id,
+      kind: source.kind,
+      checked: selectedIds.has(source.id),
+      automaticFallbackAllowed: language.autoNonOfficialFallback
+    }))
+  ),
+  effectiveSourcePolicy
+);
+const sourceOptionStateById = new Map(
+  initialSourceOptionState.options.map((option) => [option.id, option])
+);
+const preservedDisabledSourceIds = initialSourceOptionState.preservedIds;
 const searchSyntaxRows = [
   {
     syntax: "<language> <search words>",
@@ -188,7 +197,6 @@ const suggestionScopes = catalog.languages.map((language) => ({
         >
           <input type="hidden" name="ui" value={uiLanguage} data-ui-hidden />
           <input type="hidden" name="sourceSelection" value="explicit" />
-          <input type="hidden" name="autoNonOfficialSetting" value="explicit" />
           {
             sourceLanguages.map((language) => (
               <input
@@ -321,43 +329,56 @@ const suggestionScopes = catalog.languages.map((language) => ({
           </p>
 
           <div class="controls-row">
-            <div class="filters setting-row">
-              <span class="setting-label" id="include-trusted-label">
-                <span class="lang-en">{t("en", "includeTrusted")}</span>
-                <span class="lang-ja">{t("ja", "includeTrusted")}</span>
+            <div class="filters setting-row source-policy-setting">
+              <span class="filter-label" id="source-policy-label">
+                <span class="lang-en">{t("en", "sourcePolicyLabel")}</span>
+                <span class="lang-ja">{t("ja", "sourcePolicyLabel")}</span>
               </span>
-              <input
-                type="checkbox"
-                name="sourceMode"
-                value="all"
-                class="pill-toggle"
-                checked={sourceMode === "all"}
-                aria-labelledby="include-trusted-label"
-                data-source-toggle
-              />
-            </div>
-
-            <div class="filters setting-row">
-              <span class="setting-label" id="auto-non-official-label">
-                <span class="lang-en">{t("en", "autoNonOfficial")}</span>
-                <span class="lang-ja">{t("ja", "autoNonOfficial")}</span>
-              </span>
-              <input
-                id="auto-non-official"
-                type="checkbox"
-                name="autoNonOfficial"
-                value="on"
-                class="pill-toggle"
-                checked={autoIncludeNonOfficialWhenNoOfficial}
-                aria-labelledby="auto-non-official-label"
-                data-auto-non-official-toggle
-              />
+              <fieldset class="seg-toggle source-policy-toggle" aria-labelledby="source-policy-label">
+                <legend class="sr-only">{t(uiLanguage, "sourcePolicyLabel")}</legend>
+                <label class:list={["seg-btn", { active: effectiveSourcePolicy === "official" }]}>
+                  <input
+                    type="radio"
+                    name="sourcePolicy"
+                    value="official"
+                    class="sr-only"
+                    checked={effectiveSourcePolicy === "official"}
+                    data-source-policy-radio
+                  />
+                  <span class="lang-en">{t("en", "sourcePolicyOfficial")}</span>
+                  <span class="lang-ja">{t("ja", "sourcePolicyOfficial")}</span>
+                </label>
+                <label class:list={["seg-btn", { active: effectiveSourcePolicy === "fallback" }]}>
+                  <input
+                    type="radio"
+                    name="sourcePolicy"
+                    value="fallback"
+                    class="sr-only"
+                    checked={effectiveSourcePolicy === "fallback"}
+                    data-source-policy-radio
+                  />
+                  <span class="lang-en">{t("en", "sourcePolicyFallback")}</span>
+                  <span class="lang-ja">{t("ja", "sourcePolicyFallback")}</span>
+                </label>
+                <label class:list={["seg-btn", { active: effectiveSourcePolicy === "all" }]}>
+                  <input
+                    type="radio"
+                    name="sourcePolicy"
+                    value="all"
+                    class="sr-only"
+                    checked={effectiveSourcePolicy === "all"}
+                    data-source-policy-radio
+                  />
+                  <span class="lang-en">{t("en", "sourcePolicyAll")}</span>
+                  <span class="lang-ja">{t("ja", "sourcePolicyAll")}</span>
+                </label>
+              </fieldset>
             </div>
 
             <div class="filters docs-setting-row">
               <span class="filter-label" id="docs-locale-label">
-                <span class="lang-en">{t("en", "docsLocale")}:</span>
-                <span class="lang-ja">{t("ja", "docsLocale")}:</span>
+                <span class="lang-en">{t("en", "docsLocale")}</span>
+                <span class="lang-ja">{t("ja", "docsLocale")}</span>
               </span>
               <fieldset class="seg-toggle" aria-labelledby="docs-locale-label">
                 <legend class="sr-only">{t(uiLanguage, "docsLocale")}</legend>
@@ -391,15 +412,8 @@ const suggestionScopes = catalog.languages.map((language) => ({
                     <div class="source-grid">
                       {
                         language.sources.map((source) => {
-                          const isOfficial = source.kind === "official";
-                          const automaticFallbackAllowed =
-                            parsed.sourceMode === undefined &&
-                            autoIncludeNonOfficialWhenNoOfficial &&
-                            language.autoNonOfficialFallback;
-                          const disabled =
-                            !isOfficial &&
-                            sourceMode !== "all" &&
-                            !automaticFallbackAllowed;
+                          const state = sourceOptionStateById.get(source.id);
+                          const disabled = state?.disabled ?? false;
                           return (
                             <div class:list={["source-option", { disabled }]}>
                               <input
@@ -407,12 +421,12 @@ const suggestionScopes = catalog.languages.map((language) => ({
                                 type="checkbox"
                                 name="sourceId"
                                 value={source.id}
-                                checked={selectedIds.has(source.id)}
+                                checked={state?.checked ?? false}
                                 disabled={disabled}
                                 class="pill-toggle"
                                 data-source-option
                                 data-source-kind={source.kind}
-                                data-auto-fallback-allowed={String(automaticFallbackAllowed)}
+                                data-auto-fallback-allowed={String(language.autoNonOfficialFallback)}
                                 data-supports-ja={String(source.siteLocales.includes("ja"))}
                               />
                               <div class="source-copy">

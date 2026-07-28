@@ -93,8 +93,9 @@
 9. The client renders original HTTPS links, qualified result titles, actual
    content locales, document kinds, proposal state and warnings,
    locale-fallback notices before the count, partial failures, and explicit
-   unsupported states. Automatic non-official fallback does not render a
-   notice.
+   unsupported states. The visible source-policy control selects official-only,
+   per-language fallback, or all-source behavior; automatic fallback does not
+   render a notice.
 
 ## Change Rules
 
