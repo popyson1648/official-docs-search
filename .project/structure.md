@@ -58,6 +58,8 @@
   legal notices that remain outside the product sitemap.
 - `src/components/SiteFooter.astro` and `src/layouts/LegalLayout.astro`:
   compact legal/report navigation and the theme-aware legal-page shell.
+- `src/middleware.ts`: declares the per-visitor cache policy on rendered HTML
+  documents without touching static assets or discovery routes.
 - `src/pages/robots.txt.ts` and `src/pages/sitemap.xml.ts`: expose the
   production sitemap and the root page's EN/JA representations without adding
   separate product-entry pages.

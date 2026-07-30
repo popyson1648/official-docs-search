@@ -225,7 +225,21 @@ test("serves self-hosted fonts and immutable application assets", async () => {
   assert.match(asset.headers["cache-control"] || "", /\bimmutable\b/);
 });
 
-test("caches content-addressed index bundles without freezing their manifest", async () => {
+test("declares a cache policy for documents, bundles, and manifests", async () => {
+  for (const document of ["/?ui=en", "/terms?ui=ja", "/privacy?ui=en"]) {
+    const response = await rawRequest(document);
+    assert.equal(response.statusCode, 200, document);
+    assert.equal(
+      response.headers["cache-control"],
+      "private, no-cache",
+      document
+    );
+    assert.match(response.headers.vary || "", /\bCookie\b/i, document);
+  }
+
+  const robots = await rawRequest("/robots.txt");
+  assert.equal(robots.headers["cache-control"], undefined);
+
   const runtimeManifest = await rawRequest("/search-index/runtime-manifest.json");
   assert.equal(runtimeManifest.statusCode, 200);
   assert.doesNotMatch(runtimeManifest.headers["cache-control"] || "", /\bimmutable\b/);
