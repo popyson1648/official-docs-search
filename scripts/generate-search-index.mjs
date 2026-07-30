@@ -37,6 +37,10 @@ import { fetchDocumentationUrl } from "./search-index/http-fetch.mjs";
 import { qualifySearchRecordTitles } from "./search-index/title-qualification.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
+/* Identify the indexer and a reachable contact so upstream operators can see
+   who is fetching their published indexes and how to reach the operator. */
+const INDEXER_USER_AGENT =
+  "langref-search-indexer/0.3 (+https://langref-search.popyson.com/)";
 const outputDirectory = resolve(root, "public/search-index");
 const catalogSource = readFileSync(resolve(root, "src/data/docs-sources.toml"), "utf8");
 
@@ -541,7 +545,7 @@ async function fetchWithRetry(url) {
     try {
       const isGcc = new URL(url).hostname === "gcc.gnu.org";
       const response = await fetchDocumentationUrl(url, {
-        headers: { "User-Agent": "official-docs-search-indexer/0.2" },
+        headers: { "User-Agent": INDEXER_USER_AGENT },
         ...(!isGcc ? { signal: AbortSignal.timeout(30_000) } : {})
       });
       if (response.ok || attempt === 3) return response;

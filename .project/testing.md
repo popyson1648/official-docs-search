@@ -10,7 +10,9 @@
   immutable static-asset policies, including immutable index bundles alongside a
   revalidated runtime manifest.
 - `npm run test:e2e` builds and drives Chromium against the Workers preview and
-  real committed indexes.
+  real committed indexes. It also records every browser request during a visit
+  and a search and requires them all to stay first-party, matching the Privacy
+  Policy's statement that no third-party tag or SDK is embedded.
 - `npm run test:e2e:filters`, `npm run test:e2e:catalog`,
   `npm run test:e2e:layout`, and `npm run test:e2e:performance` run bounded
   browser concerns against an existing build.

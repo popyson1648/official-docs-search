@@ -647,6 +647,27 @@ test("[theme] appearance menu is accessible, persistent, and follows the system"
   await page.close();
 });
 
+test("[smoke] a visit and a search stay first-party, as the Privacy Policy states", async () => {
+  const page = await newPage();
+  const foreign = new Set();
+  const origin = new URL(app.baseUrl).origin;
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.protocol !== "http:" && url.protocol !== "https:") return;
+    if (url.origin !== origin) foreign.add(`${request.resourceType()} ${url.href}`);
+  });
+
+  await page.goto(`${app.baseUrl}/?ui=en`, { waitUntil: "networkidle2" });
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+  });
+  await gotoQuery(page, "python list");
+  await waitForResults(page);
+
+  assert.deepEqual([...foreign], []);
+  await page.close();
+});
+
 test("[smoke] the search form keeps its GET fallback without JavaScript", async () => {
   const page = await newPage();
   await page.setJavaScriptEnabled(false);

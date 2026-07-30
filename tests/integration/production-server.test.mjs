@@ -178,6 +178,21 @@ test("links the footer and renders both legal languages", async () => {
   assert.match(englishPrivacy, /no later than 24 months/);
   assert.match(englishPrivacy, /Shunsuke Setoguchi/);
   assert.match(englishPrivacy, />@popyson1648<\/a>/);
+  assert.match(englishPrivacy, /Automatic Transmission to Third Parties/);
+  assert.match(
+    englishPrivacy,
+    /embeds no analytics, advertising, measurement, error-tracking, or other third-party tags or SDKs/
+  );
+
+  const englishTerms = (await rawRequest("/terms?ui=en")).body.toString("utf8");
+  assert.match(
+    englishTerms,
+    /Document bodies are never copied, stored, or redistributed/
+  );
+  const japanesePrivacy = (
+    await rawRequest("/privacy?ui=ja")
+  ).body.toString("utf8");
+  assert.match(japanesePrivacy, /<h3>第三者への自動送信<\/h3>/);
 
   const japaneseTerms = (
     await rawRequest("/terms?ui=ja")
@@ -185,6 +200,7 @@ test("links the footer and renders both legal languages", async () => {
   assert.match(japaneseTerms, /<html[^>]+lang="ja"/);
   assert.match(japaneseTerms, /<h1>利用規約<\/h1>/);
   assert.match(japaneseTerms, /Shunsuke Setoguchi/);
+  assert.match(japaneseTerms, /文書本文は複製、保存または再配信しません。/);
 });
 
 test("serves self-hosted fonts and immutable application assets", async () => {
