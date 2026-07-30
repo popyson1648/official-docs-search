@@ -7,6 +7,10 @@ import {
   parseJavadocSearchIndex,
   parseSphinxSearchIndex
 } from "../scripts/search-index.mjs";
+import {
+  documentationUrl,
+  restoreRustdocPathCase
+} from "../scripts/search-index/job-helpers.mjs";
 
 const base = {
   sourceId: "example-docs",
@@ -30,6 +34,42 @@ describe("search index adapters", () => {
 
     expect(records).toHaveLength(1);
     expect(records[0]).toMatchObject({ title: "Iterator", url: "https://example.test/iterator.html" });
+  });
+
+  it("restores case-sensitive rustdoc item routes that DevDocs lowercases", () => {
+    const records = normalizeDevdocsEntries(
+      {
+        entries: [
+          { name: "std::net::TcpListener", path: "std/net/struct.tcplistener", type: "std::net" },
+          {
+            name: "std::iter::Iterator::eq",
+            path: "std/iter/trait.iterator#method.eq",
+            type: "std::iter"
+          },
+          { name: "std::primitive::u32", path: "std/primitive.u32", type: "Primitives" },
+          { name: "01.01. Installation", path: "book/ch01-01-installation", type: "Guide" }
+        ]
+      },
+      {
+        ...base,
+        buildUrl: (path: string) => documentationUrl("https://doc.rust-lang.test/", path),
+        resolvePath: restoreRustdocPathCase
+      }
+    );
+
+    expect(records.map(({ url }) => url)).toEqual([
+      "https://doc.rust-lang.test/std/net/struct.TcpListener.html",
+      "https://doc.rust-lang.test/std/iter/trait.Iterator.html#method.eq",
+      "https://doc.rust-lang.test/std/primitive.u32.html",
+      "https://doc.rust-lang.test/book/ch01-01-installation.html"
+    ]);
+  });
+
+  it("keeps rustdoc paths unchanged when the entry name cannot confirm the case", () => {
+    expect(restoreRustdocPathCase("std/net/struct.tcplistener", { name: "" })).toBe(
+      "std/net/struct.tcplistener"
+    );
+    expect(restoreRustdocPathCase("book/foreword", { name: "Foreword" })).toBe("book/foreword");
   });
 
   it("parses the JSON payload in the official Sphinx wrapper and normalizes entries", () => {

@@ -509,6 +509,7 @@ function renderGroupedSources(
     const copy = root.createElement("span");
     copy.className = "result-group-source-copy";
     const name = textPart(root, record.sourceName, "result-source-name");
+    name.append(externalLinkIcon(root));
     const metadata = root.createElement("span");
     metadata.className = "result-group-source-meta";
     metadata.append(
@@ -528,17 +529,26 @@ function renderGroupedSources(
       new URL(record.url).hostname,
       "result-group-source-domain"
     );
-    const external = root.createElement("span");
-    external.className = "external-link-mark";
-    external.setAttribute("aria-hidden", "true");
-    external.textContent = "↗";
-    link.append(copy, domain, external);
+    link.append(copy, domain);
     item.append(link);
     list.append(item);
   }
 
   container.append(list);
   return container;
+}
+
+function externalLinkIcon(root: Document): SVGSVGElement {
+  const namespace = "http://www.w3.org/2000/svg";
+  const icon = root.createElementNS(namespace, "svg");
+  icon.classList.add("external-link-mark");
+  icon.setAttribute("viewBox", "0 0 16 16");
+  icon.setAttribute("aria-hidden", "true");
+  icon.setAttribute("focusable", "false");
+  const path = root.createElementNS(namespace, "path");
+  path.setAttribute("d", "M6 4h6v6M12 4 4 12");
+  icon.append(path);
+  return icon;
 }
 
 function renderRecordAnnotations(

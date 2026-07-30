@@ -2,7 +2,7 @@
 
 ## What This Project Is
 
-Official Docs Search is an Astro 7 server-rendered application for searching trusted programming-language documentation.
+LangRef Search is an Astro 7 server-rendered application for searching trusted programming-language documentation.
 It provides supported search coverage for all 44 catalog languages through
 compact source-and-locale indexes and searches selected bundles in a browser Web Worker.
 The production domain is `official-docs-search.popyson.com`.

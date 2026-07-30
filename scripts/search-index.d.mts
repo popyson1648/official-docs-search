@@ -9,6 +9,7 @@ export interface IndexOptions {
   section?: string;
   baseUrl?: string;
   buildUrl: (path: string, fragment?: string | null) => string;
+  resolvePath?: (path: string, entry: Record<string, unknown>) => string;
 }
 
 export function normalizeDevdocsEntries(index: Record<string, unknown>, options: IndexOptions): SearchRecord[];

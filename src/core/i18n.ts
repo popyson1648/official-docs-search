@@ -4,18 +4,27 @@ type Messages = Record<string, string>;
 
 const messages: Record<UiLanguage, Messages> = {
   en: {
-    title: "Official Docs Search",
+    siteName: "LangRef Search",
+    title: "LangRef Search — Official Programming Documentation Search",
+    description:
+      "Search official programming language documentation, specifications, standards, proposals, and trusted references from one fast interface.",
+    socialImageAlt: "LangRef Search",
     search: "Search",
-    queryLabel: "Search documentation",
+    queryLabel: "LangRef Search",
     queryInputLabel: "Search terms",
     sourcePolicyLabel: "Non-official sources",
     sourcePolicyOfficial: "Don't include",
     sourcePolicyFallback: "Only if unavailable",
     sourcePolicyAll: "Include",
     sources: "Sources",
+    includeProposalSources: "Include proposal documents",
     help: "Search syntax",
     close: "Close",
     uiLanguage: "Language",
+    theme: "Theme",
+    themeDark: "Dark theme",
+    themeLight: "Light theme",
+    themeSystem: "System",
     activeTags: "Query modifiers",
     removeLanguage: "Remove {language} from the query",
     resultsTitle: "Search results",
@@ -68,18 +77,27 @@ const messages: Record<UiLanguage, Messages> = {
     proposalWarning: "This proposal may not describe current adopted behavior."
   },
   ja: {
-    title: "ドキュメント検索",
+    siteName: "LangRef Search",
+    title: "LangRef Search — プログラミング公式ドキュメント検索",
+    description:
+      "プログラミング言語の公式ドキュメント、仕様、標準、提案文書、信頼できるリファレンスを、ひとつの画面から横断検索できます。",
+    socialImageAlt: "LangRef Search",
     search: "検索",
-    queryLabel: "ドキュメント検索",
+    queryLabel: "LangRef Search",
     queryInputLabel: "検索語",
     sourcePolicyLabel: "非公式ソース",
     sourcePolicyOfficial: "含めない",
     sourcePolicyFallback: "公式がない時だけ",
     sourcePolicyAll: "含める",
     sources: "ソース",
+    includeProposalSources: "提案文書を含める",
     help: "検索方法",
     close: "閉じる",
     uiLanguage: "言語",
+    theme: "テーマ",
+    themeDark: "ダークテーマ",
+    themeLight: "ライトテーマ",
+    themeSystem: "システム",
     activeTags: "検索条件",
     removeLanguage: "{language}を検索条件から削除",
     resultsTitle: "検索結果",
@@ -134,6 +152,50 @@ const messages: Record<UiLanguage, Messages> = {
 
 export function getUiLanguage(value: string | undefined | null): UiLanguage {
   return value === "ja" ? "ja" : "en";
+}
+
+export function getPreferredUiLanguage(
+  acceptLanguage: string | undefined | null
+): UiLanguage | undefined {
+  if (!acceptLanguage) {
+    return undefined;
+  }
+
+  return acceptLanguage
+    .split(",")
+    .map((entry, order) => {
+      const [range = "", ...parameters] = entry.trim().toLowerCase().split(";");
+      const qualityParameter = parameters.find((parameter) =>
+        parameter.trim().startsWith("q=")
+      );
+      const parsedQuality = qualityParameter
+        ? Number.parseFloat(qualityParameter.trim().slice(2))
+        : 1;
+      const quality =
+        Number.isFinite(parsedQuality) && parsedQuality >= 0 && parsedQuality <= 1
+          ? parsedQuality
+          : 0;
+      const primaryLanguage = range.split("-")[0];
+      const language =
+        primaryLanguage === "en" || primaryLanguage === "ja"
+          ? primaryLanguage
+          : undefined;
+
+      return { language, quality, order };
+    })
+    .filter(
+      (
+        candidate
+      ): candidate is {
+        language: UiLanguage;
+        quality: number;
+        order: number;
+      } => candidate.language !== undefined && candidate.quality > 0
+    )
+    .sort(
+      (left, right) =>
+        right.quality - left.quality || left.order - right.order
+    )[0]?.language;
 }
 
 export function t(language: UiLanguage, key: string): string {

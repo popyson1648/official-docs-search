@@ -4,6 +4,7 @@ import {
   preferenceCookie,
   removeLanguageFromQuery,
   resolveDocumentationLocale,
+  resolveSourceGroupToggleState,
   resolveSourceOptionState,
   sourcePolicyFromLegacyPreferences
 } from "../src/core/search-controls";
@@ -72,6 +73,31 @@ describe("search controls", () => {
       ["mdn", true, false]
     ]);
     expect(state.preservedIds).toEqual([]);
+  });
+
+  it("turns a source-group toggle on when any enabled source is selected", () => {
+    expect(
+      resolveSourceGroupToggleState([
+        { checked: true },
+        { checked: true },
+        { checked: false, disabled: true }
+      ])
+    ).toEqual({ checked: true, disabled: false });
+    expect(
+      resolveSourceGroupToggleState([
+        { checked: false },
+        { checked: false }
+      ])
+    ).toEqual({ checked: false, disabled: false });
+    expect(
+      resolveSourceGroupToggleState([
+        { checked: true },
+        { checked: false }
+      ])
+    ).toEqual({ checked: true, disabled: false });
+    expect(
+      resolveSourceGroupToggleState([{ checked: true, disabled: true }])
+    ).toEqual({ checked: false, disabled: true });
   });
 
   it("migrates the two legacy preferences into one source policy", () => {

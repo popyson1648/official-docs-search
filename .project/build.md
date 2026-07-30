@@ -48,6 +48,11 @@ Each supported bundle contains compact title, URL-suffix, and optional-section t
 Its filename includes the first 16 hexadecimal characters of the output SHA-256.
 The manifest records the complete output hash, input URLs and hashes, HTTP validators, retrieval time, adapter and upstream versions, record and compressed sizes, attribution, license URL, cadence, known queries, and visible English/Japanese qualifications where needed.
 
+Pick known queries that reach a record whose URL exercises the source's URL
+construction, not one whose path is a plain lowercase slug. Live verification
+prefers an exact normalized title and then falls back to the first token match,
+so a query that stops at a generic page cannot detect a broken URL rule.
+
 Use these commands:
 
 - `npm run update:search-index`: fetch, validate, and replace committed artifacts.
@@ -84,6 +89,11 @@ It never merges an index update.
 ## Production Delivery
 
 `npm run build && npm start` runs the Astro middleware build through `scripts/serve-production.mjs`.
+The production origin is set in `astro.config.mjs` so canonical, `hreflang`,
+Open Graph, robots, and sitemap URLs are absolute and consistent.
+The clean top page and its `?ui=en` and `?ui=ja` representations are
+discoverable; query, source, and filter state remain crawlable but
+`noindex,follow`.
 The server negotiates gzip level 6 or Brotli quality 5 for compressible HTML,
 CSS, JavaScript, JSON, and other text responses.
 After Astro builds, `scripts/precompress-production-assets.mjs` writes Brotli

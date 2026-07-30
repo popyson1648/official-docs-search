@@ -54,11 +54,14 @@ async function verifyEntry(entry, { fetcher, bundleReader }) {
   const bundle = bundleReader(entry);
   const query = entry.knownQueries?.[0];
   if (!query) throw new Error("No known query.");
-  const queryTokens = normalize(query).split(/\s+/).filter(Boolean);
-  const record = bundle.records.find(([title, , section = ""]) => {
-    const haystack = normalize(`${title} ${section}`);
-    return queryTokens.every((token) => haystack.includes(token));
-  });
+  const normalizedQuery = normalize(query);
+  const queryTokens = normalizedQuery.split(/\s+/).filter(Boolean);
+  const record =
+    bundle.records.find(([title]) => normalize(title) === normalizedQuery) ??
+    bundle.records.find(([title, , section = ""]) => {
+      const haystack = normalize(`${title} ${section}`);
+      return queryTokens.every((token) => haystack.includes(token));
+    });
   if (!record) throw new Error(`No known result for ${query}.`);
 
   const url = new URL(`${bundle.urlPrefix}${record[1]}`);

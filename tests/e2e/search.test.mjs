@@ -332,6 +332,65 @@ test("[smoke] initial page, help, validation, and language tags work", async () 
   });
   assert.equal(fontContract.externalStylesheet, undefined);
   assert.equal(
+    await page.$eval('meta[name="theme-color"]', (meta) => meta.content),
+    "#825CFF"
+  );
+  assert.deepEqual(
+    await page.evaluate(() => {
+      const logo = document.querySelector(".site-logo");
+      const searchButtonStyle = getComputedStyle(
+        document.querySelector(".search-submit")
+      );
+      return {
+        title: document.title,
+        description: document.querySelector('meta[name="description"]')?.content,
+        canonical: document.querySelector('link[rel="canonical"]')?.href,
+        alternateLanguages: Object.fromEntries(
+          [...document.querySelectorAll('link[rel="alternate"][hreflang]')].map(
+            (link) => [link.hreflang, link.href]
+          )
+        ),
+        favicon: document.querySelector('link[rel="icon"]')?.getAttribute("href"),
+        logo: {
+          alt: logo?.getAttribute("alt"),
+          width: logo?.getAttribute("width"),
+          height: logo?.getAttribute("height"),
+          complete: logo?.complete,
+          naturalWidth: logo?.naturalWidth,
+          naturalHeight: logo?.naturalHeight
+        },
+        searchButton: {
+          backgroundColor: searchButtonStyle.backgroundColor,
+          color: searchButtonStyle.color
+        }
+      };
+    }),
+    {
+      title: "LangRef Search — Official Programming Documentation Search",
+      description:
+        "Search official programming language documentation, specifications, standards, proposals, and trusted references from one fast interface.",
+      canonical: "https://official-docs-search.popyson.com/",
+      alternateLanguages: {
+        en: "https://official-docs-search.popyson.com/?ui=en",
+        ja: "https://official-docs-search.popyson.com/?ui=ja",
+        "x-default": "https://official-docs-search.popyson.com/"
+      },
+      favicon: "/favicon.png",
+      logo: {
+        alt: "LangRef Search",
+        width: "720",
+        height: "137",
+        complete: true,
+        naturalWidth: 720,
+        naturalHeight: 137
+      },
+      searchButton: {
+        backgroundColor: "rgb(130, 92, 255)",
+        color: "rgb(255, 255, 255)"
+      }
+    }
+  );
+  assert.equal(
     fontContract.bodyFontFamily,
     'Alexandria, "LINE Seed JP", sans-serif'
   );
@@ -375,6 +434,184 @@ test("[smoke] initial page, help, validation, and language tags work", async () 
   await page.close();
 });
 
+test("[theme] appearance menu is accessible, persistent, and follows the system", async () => {
+  const page = await newPage({ width: 375, height: 800 });
+  await page.emulateMediaFeatures([
+    { name: "prefers-color-scheme", value: "light" }
+  ]);
+  await page.goto(`${app.baseUrl}/?ui=ja`, { waitUntil: "domcontentloaded" });
+  await page.waitForSelector('[data-theme-menu-button][data-theme-menu-ready="true"]');
+
+  assert.deepEqual(
+    await page.evaluate(() => {
+      const button = document.querySelector("[data-theme-menu-button]");
+      const actions = document.querySelector(".header-actions");
+      const buttonRect = button.getBoundingClientRect();
+      return {
+        setting: document.documentElement.dataset.themeSetting,
+        colorScheme: getComputedStyle(document.documentElement).colorScheme,
+        background: getComputedStyle(document.body).backgroundColor,
+        label: button.getAttribute("aria-label"),
+        expanded: button.getAttribute("aria-expanded"),
+        firstActionIsTheme:
+          actions.firstElementChild === button.closest("[data-theme-menu-shell]"),
+        inViewport:
+          buttonRect.left >= 0 && buttonRect.right <= window.innerWidth,
+        order: [...document.querySelectorAll("[data-theme-option]")].map(
+          (option) => option.dataset.themeOption
+        ),
+        icons: [...document.querySelectorAll("[data-theme-option-icon]")].map(
+          (icon) => ({
+            theme: icon.dataset.themeOptionIcon,
+            tag: icon.tagName,
+            viewBox: icon.getAttribute("viewBox")
+          })
+        )
+      };
+    }),
+    {
+      setting: "system",
+      colorScheme: "light dark",
+      background: "rgb(255, 255, 255)",
+      label: "テーマ",
+      expanded: "false",
+      firstActionIsTheme: true,
+      inViewport: true,
+      order: ["dark", "light", "system"],
+      icons: [
+        { theme: "dark", tag: "svg", viewBox: "0 0 24 24" },
+        { theme: "light", tag: "svg", viewBox: "0 0 24 24" },
+        { theme: "system", tag: "svg", viewBox: "0 0 24 24" }
+      ]
+    }
+  );
+
+  await page.focus("[data-theme-menu-button]");
+  await page.keyboard.press("ArrowDown");
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      expanded: document
+        .querySelector("[data-theme-menu-button]")
+        .getAttribute("aria-expanded"),
+      focused: document.activeElement?.dataset.themeOption,
+      checked: [...document.querySelectorAll("[data-theme-option]")].map(
+        (option) => option.getAttribute("aria-checked")
+      )
+    })),
+    {
+      expanded: "true",
+      focused: "dark",
+      checked: ["false", "false", "true"]
+    }
+  );
+  await page.keyboard.press("ArrowDown");
+  assert.equal(
+    await page.evaluate(() => document.activeElement?.dataset.themeOption),
+    "light"
+  );
+  await page.keyboard.press("Home");
+  await page.keyboard.press("Enter");
+
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      setting: document.documentElement.dataset.themeSetting,
+      background: getComputedStyle(document.body).backgroundColor,
+      resultText: getComputedStyle(document.documentElement)
+        .getPropertyValue("--result-text")
+        .trim(),
+      searchBackground: getComputedStyle(
+        document.querySelector(".search-submit")
+      ).backgroundColor,
+      expanded: document
+        .querySelector("[data-theme-menu-button]")
+        .getAttribute("aria-expanded"),
+      focusRestored:
+        document.activeElement ===
+        document.querySelector("[data-theme-menu-button]"),
+      themeColor: [...document.querySelectorAll('meta[name="theme-color"]')].find(
+        (meta) => matchMedia(meta.media).matches
+      )?.content,
+      colorScheme: document.querySelector('meta[name="color-scheme"]').content
+    })),
+    {
+      setting: "dark",
+      background: "rgb(16, 13, 24)",
+      resultText: "#f7f5ff",
+      searchBackground: "rgb(121, 81, 239)",
+      expanded: "false",
+      focusRestored: true,
+      themeColor: "#100D18",
+      colorScheme: "only dark"
+    }
+  );
+  assert.match(
+    (await page.cookies()).map((cookie) => `${cookie.name}=${cookie.value}`).join("; "),
+    /(?:^|; )ods_theme=dark(?:;|$)/
+  );
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+  assert.equal(
+    await page.evaluate(() => document.documentElement.dataset.themeSetting),
+    "dark"
+  );
+  await page.click("[data-theme-menu-button]");
+  await page.focus('[data-theme-option="system"]');
+  await page.keyboard.press(" ");
+  await page.emulateMediaFeatures([
+    { name: "prefers-color-scheme", value: "dark" }
+  ]);
+  await page.waitForFunction(
+    () =>
+      getComputedStyle(document.body).backgroundColor === "rgb(16, 13, 24)" &&
+      [...document.querySelectorAll('meta[name="theme-color"]')].find((meta) =>
+        matchMedia(meta.media).matches
+      )?.content === "#100D18"
+  );
+  assert.equal(
+    await page.evaluate(
+      () =>
+        [...document.querySelectorAll('meta[name="theme-color"]')].find((meta) =>
+          matchMedia(meta.media).matches
+        )?.content
+    ),
+    "#100D18"
+  );
+  await page.emulateMediaFeatures([
+    { name: "prefers-color-scheme", value: "light" }
+  ]);
+  await page.waitForFunction(
+    () =>
+      getComputedStyle(document.body).backgroundColor === "rgb(255, 255, 255)" &&
+      [...document.querySelectorAll('meta[name="theme-color"]')].find((meta) =>
+        matchMedia(meta.media).matches
+      )?.content === "#825CFF"
+  );
+  assert.equal(
+    await page.evaluate(
+      () =>
+        [...document.querySelectorAll('meta[name="theme-color"]')].find((meta) =>
+          matchMedia(meta.media).matches
+        )?.content
+    ),
+    "#825CFF"
+  );
+
+  await page.click("[data-theme-menu-button]");
+  await page.keyboard.press("End");
+  await page.keyboard.press("Escape");
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      hidden: document.querySelector("[data-theme-menu]").hidden,
+      focusRestored:
+        document.activeElement ===
+        document.querySelector("[data-theme-menu-button]"),
+      overflow: document.documentElement.scrollWidth > window.innerWidth
+    })),
+    { hidden: true, focusRestored: true, overflow: false }
+  );
+  await page.close();
+});
+
 test("[smoke] the search form keeps its GET fallback without JavaScript", async () => {
   const page = await newPage();
   await page.setJavaScriptEnabled(false);
@@ -413,6 +650,14 @@ test("[smoke] search guidance uses concrete unboxed examples and accurate aliase
     await page.$eval("[data-query-input]", (element) => element.hasAttribute("placeholder")),
     false
   );
+  // Keeps the virtual keyboard enter key in the standard key colour instead of
+  // the platform action tint.
+  assert.equal(
+    await page.$eval("[data-query-input]", (element) =>
+      element.getAttribute("enterkeyhint")
+    ),
+    "enter"
+  );
   assert.deepEqual(
     await page.$eval("[data-help-open]", (button) => ({
       controls: button.getAttribute("aria-controls"),
@@ -446,7 +691,7 @@ test("[smoke] search guidance uses concrete unboxed examples and accurate aliase
       borderColor: style.borderColor
     };
   });
-  assert.equal(inputFocus.outlineColor, "rgb(91, 139, 224)");
+  assert.equal(inputFocus.outlineColor, "rgb(138, 125, 219)");
   assert.equal(inputFocus.outlineWidth, 2);
   assert.notEqual(inputFocus.borderColor, "rgb(0, 0, 0)");
   await page.click("[data-help-open]");
@@ -1018,7 +1263,10 @@ test("[smoke] Japanese interface labels use user-facing names", async () => {
   );
   await waitForResults(page);
 
-  assert.equal(await page.title(), "ドキュメント検索");
+  assert.equal(
+    await page.title(),
+    "LangRef Search — プログラミング公式ドキュメント検索"
+  );
   assert.equal(
     await page.$eval(".source-details summary .lang-ja", (element) => element.textContent),
     "ソース"
@@ -1041,7 +1289,10 @@ test("[smoke] Japanese interface labels use user-facing names", async () => {
 
   await page.$eval('[data-ui-radio][value="en"]', (radio) => radio.click());
   await page.waitForFunction(() => document.documentElement.lang === "en");
-  assert.equal(await page.title(), "Official Docs Search");
+  assert.equal(
+    await page.title(),
+    "LangRef Search — Official Programming Documentation Search"
+  );
   assert.equal(
     await page.$eval("[data-back-to-top]", (button) =>
       button.getAttribute("aria-label")
@@ -1310,8 +1561,8 @@ test("[filters] result filters narrow a multi-language search by language and si
           const style = getComputedStyle(button);
           return (
             style.backgroundColor === "rgb(255, 255, 255)" &&
-            style.color === "rgb(69, 75, 83)" &&
-            style.borderColor === "rgb(227, 230, 233)"
+            style.color === "rgb(73, 70, 103)" &&
+            style.borderColor === "rgb(228, 227, 246)"
           );
         })
     ),
@@ -1627,18 +1878,18 @@ test("[filters] result order switches between relevance and language name withou
     [
       {
         value: "relevance",
-        backgroundColor: "rgb(28, 31, 35)",
-        color: "rgb(255, 255, 255)"
+        backgroundColor: "rgb(130, 92, 255)",
+        color: "rgb(18, 0, 46)"
       },
       {
         value: "language-asc",
         backgroundColor: "rgb(255, 255, 255)",
-        color: "rgb(69, 75, 83)"
+        color: "rgb(73, 70, 103)"
       },
       {
         value: "language-desc",
         backgroundColor: "rgb(255, 255, 255)",
-        color: "rgb(69, 75, 83)"
+        color: "rgb(73, 70, 103)"
       }
     ]
   );
@@ -2004,6 +2255,112 @@ test("[filters] enabling and disabling a non-official source changes the result 
   await clickAndWaitForClientNavigation(page, '.search-group button[type="submit"]');
   await waitForResults(page);
   assert.equal((await snapshot(page)).sources.includes("mdn-js"), false);
+  await page.close();
+});
+
+test("[filters] proposal sources can be selected as a group or individually", async () => {
+  const page = await newPage({ width: 375, height: 900 });
+  await gotoQuery(
+    page,
+    "python,javascript,cpp,java proposal",
+    "&sourcePolicy=official"
+  );
+  await waitForResults(page);
+  await page.$eval("details.source-details", (details) => {
+    details.open = true;
+  });
+
+  const proposalSourceIds = [
+    "python-peps",
+    "tc39-proposals",
+    "wg21-papers",
+    "openjdk-jeps"
+  ];
+  const sourceGroupState = () =>
+    page.evaluate((sourceIds) => {
+      const toggle = document.querySelector("[data-proposal-source-toggle]");
+      const options = sourceIds.map((sourceId) =>
+        document.querySelector(
+          `[data-source-option][value="${sourceId}"]`
+        )
+      );
+      const rect = toggle?.getBoundingClientRect();
+      return {
+        checked: toggle?.checked,
+        disabled: toggle?.disabled,
+        indeterminate: toggle?.indeterminate,
+        label: toggle?.closest("label")?.innerText.trim(),
+        options: options.map((option) => option?.checked),
+        targetHeight: rect?.height,
+        inViewport:
+          rect !== undefined &&
+          rect.left >= 0 &&
+          rect.right <= window.innerWidth
+      };
+    }, proposalSourceIds);
+
+  assert.deepEqual(await sourceGroupState(), {
+    checked: true,
+    disabled: false,
+    indeterminate: false,
+    label: "Include proposal documents",
+    options: [true, true, true, true],
+    targetHeight: 24,
+    inViewport: true
+  });
+
+  await page.click("[data-proposal-source-toggle]");
+  assert.deepEqual(await sourceGroupState(), {
+    checked: false,
+    disabled: false,
+    indeterminate: false,
+    label: "Include proposal documents",
+    options: [false, false, false, false],
+    targetHeight: 24,
+    inViewport: true
+  });
+
+  await page.click('[data-source-option][value="python-peps"]');
+  assert.deepEqual(await sourceGroupState(), {
+    checked: true,
+    disabled: false,
+    indeterminate: false,
+    label: "Include proposal documents",
+    options: [true, false, false, false],
+    targetHeight: 24,
+    inViewport: true
+  });
+
+  await page.click("[data-proposal-source-toggle]");
+  assert.deepEqual(await sourceGroupState(), {
+    checked: false,
+    disabled: false,
+    indeterminate: false,
+    label: "Include proposal documents",
+    options: [false, false, false, false],
+    targetHeight: 24,
+    inViewport: true
+  });
+
+  await page.click("[data-proposal-source-toggle]");
+  assert.deepEqual(await sourceGroupState(), {
+    checked: true,
+    disabled: false,
+    indeterminate: false,
+    label: "Include proposal documents",
+    options: [true, true, true, true],
+    targetHeight: 24,
+    inViewport: true
+  });
+
+  await clickAndWaitForClientNavigation(page, '.search-group button[type="submit"]');
+  await waitForResults(page);
+  const submittedSourceIds = new Set(
+    new URL(page.url()).searchParams.getAll("sourceId")
+  );
+  assert.ok(
+    proposalSourceIds.every((sourceId) => submittedSourceIds.has(sourceId))
+  );
   await page.close();
 });
 
@@ -3064,7 +3421,7 @@ test("[layout] contextual search help, centered header, and right-aligned settin
       layout.titleCenterGap <= 1,
       `title center gap was ${layout.titleCenterGap}px at ${width}px`
     );
-    assert.deepEqual(layout.actionTags, ["FIELDSET"]);
+    assert.deepEqual(layout.actionTags, ["DIV", "FIELDSET"]);
     assert.equal(layout.queryBeforeSearch, true);
     assert.equal(layout.searchBeforeHelp, true);
     assert.ok(layout.helpRightGap <= 1, `help right gap was ${layout.helpRightGap}px at ${width}px`);
@@ -3081,7 +3438,7 @@ test("[layout] contextual search help, centered header, and right-aligned settin
     ]);
     assert.equal(layout.sourcePolicyChoicesOverlap, false);
     assert.deepEqual(layout.sourcePolicyLabelStyle, {
-      color: "rgb(100, 107, 117)",
+      color: "rgb(105, 103, 131)",
       fontSize: "14px",
       fontWeight: "600"
     });
@@ -3112,10 +3469,10 @@ test("[layout] contextual search help, centered header, and right-aligned settin
     assert.ok(layout.titleHeight >= 24);
     assert.ok(layout.sourceLinkHeight >= 24);
     assert.ok(layout.sourceToggleHeight >= 24);
-    assert.equal(layout.checkedToggleBackground, "rgb(28, 31, 35)");
-    assert.equal(layout.uncheckedToggleBackground, "rgb(100, 107, 117)");
+    assert.equal(layout.checkedToggleBackground, "rgb(130, 92, 255)");
+    assert.equal(layout.uncheckedToggleBackground, "rgb(105, 103, 131)");
     assert.equal(layout.headerBorderBottomWidth, "0px");
-    assert.equal(layout.languageHighlightBackground, "rgb(249, 248, 51)");
+    assert.equal(layout.languageHighlightBackground, "rgb(237, 236, 255)");
     const settingsBeforeTextClicks = await page.evaluate(() => ({
       policy: document.querySelector("[data-source-policy-radio]:checked").value
     }));
@@ -3206,6 +3563,7 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
         .closest(".source-option")
         .querySelector(".source-kind");
       const sourceLink = item.querySelector(".result-group-source");
+      const externalIcon = sourceLink.querySelector(".external-link-mark");
       const sourceName = item.querySelector(".result-source-name");
       const domain = item.querySelector(".result-group-source-domain");
       const qualification = document.querySelector(
@@ -3244,6 +3602,12 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
         sourceLinkCount: item.querySelectorAll(".result-group-source").length,
         sourceLinkTarget: sourceLink.target,
         sourceLinkRel: sourceLink.rel,
+        externalIcon: {
+          tagName: externalIcon.tagName,
+          text: externalIcon.textContent,
+          path: externalIcon.querySelector("path")?.getAttribute("d"),
+          parentClass: externalIcon.parentElement.className
+        },
         languageColor: getComputedStyle(languageTag)
           .getPropertyValue("--language-color")
           .trim(),
@@ -3279,6 +3643,12 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
     assert.equal(layout.sourceLinkCount, 1);
     assert.equal(layout.sourceLinkTarget, "_blank");
     assert.match(layout.sourceLinkRel, /noopener/);
+    assert.deepEqual(layout.externalIcon, {
+      tagName: "svg",
+      text: "",
+      path: "M6 4h6v6M12 4 4 12",
+      parentClass: "result-source-name"
+    });
     assert.equal(layout.languageColor.toLowerCase(), "#3178c6");
     assert.equal(layout.languageTextColor, "#ffffff");
     assert.equal(layout.languageMarkerContent, "none");
@@ -3291,6 +3661,7 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
     assert.equal(layout.resultKind.padding, layout.sourceKind.padding);
     assert.equal(layout.resultKind.minHeight, layout.sourceKind.minHeight);
     assert.ok(layout.title.fontSize >= layout.qualification.fontSize + 5);
+    assert.equal(layout.title.color, "rgb(28, 31, 35)");
     assert.ok(layout.title.fontSize > layout.sourceName.fontSize);
     assert.ok(layout.sourceName.fontSize > layout.domain.fontSize);
     assert.notEqual(layout.title.color, layout.qualification.color);
@@ -3299,7 +3670,7 @@ test("[layout] result hierarchy, shared badges, input chips, and count stay visu
     assert.ok(Number.parseFloat(layout.chip.borderRadius) >= layout.chip.height / 2);
     assert.equal(layout.chipLabel.backgroundColor, "rgb(49, 120, 198)");
     assert.equal(layout.chipLabel.color, "rgb(255, 255, 255)");
-    assert.equal(layout.chipRemove.backgroundColor, "rgb(245, 246, 247)");
+    assert.equal(layout.chipRemove.backgroundColor, "rgb(241, 239, 255)");
     assert.notEqual(layout.chipRemove.backgroundColor, layout.chipLabel.backgroundColor);
     assert.equal(layout.chipRemove.borderLeftWidth, "1px");
     assert.ok(layout.chipRemove.width >= 24 && layout.chipRemove.height >= 24);

@@ -1,9 +1,11 @@
 import { initializeBackToTop } from "./back-to-top";
 import { initializeSearchControls } from "./search-controls";
 import { initializeSearchPage, warmSearchPage } from "./search-results";
+import { initializeThemeMenu } from "./theme-menu";
 
 export async function initializeClientSearchPage(root: Document = document): Promise<void> {
   initializeBackToTop(root);
+  initializeThemeMenu(root);
   initializeSearchControls(root, {
     onLanguageIntent: async (docsLocale) => {
       await warmSearchPage(root, docsLocale);

@@ -851,7 +851,7 @@ kind = "official"
 name = "D Language Documentation"
 url = "https://dlang.org/"
 domains = ["dlang.org"]
-path_prefixes = ["/spec/", "/phobos/"]
+path_prefixes = ["/spec/", "/phobos/", "/library/"]
 default_enabled = true
 site_locales = ["en"]
 indexes = [{ locale = "en", status = "supported" }]

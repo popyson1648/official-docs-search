@@ -66,6 +66,27 @@ describe("remaining group D adapters", () => {
     ]);
   });
 
+  it("excludes Kotlin's production-inaccessible test fixture", async () => {
+    const job = remainingGroupDJobs.find(
+      (candidate: { sourceId: string; docsLocale: string }) =>
+        candidate.sourceId === "kotlin-docs" && candidate.docsLocale === "en"
+    ) as Record<string, any>;
+    const records = await job.load({
+      fetchText: async () =>
+        "<urlset>" +
+        "<url><loc>https://kotlinlang.org/docs/coroutines-guide.html</loc></url>" +
+        "<url><loc>https://kotlinlang.org/docs/test-page.html</loc></url>" +
+        "</urlset>"
+    });
+
+    expect(records).toEqual([
+      {
+        title: "Coroutines Guide",
+        url: "https://kotlinlang.org/docs/coroutines-guide.html"
+      }
+    ]);
+  });
+
   it("normalizes Dartdoc and Elm package structured indexes", () => {
     expect(
       normalizeDartdocIndex(

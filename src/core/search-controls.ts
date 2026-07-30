@@ -17,6 +17,16 @@ export interface ResolvedSourceOptionState extends SourceOptionState {
   disabled: boolean;
 }
 
+export interface SourceGroupOptionState {
+  checked: boolean;
+  disabled?: boolean;
+}
+
+export interface SourceGroupToggleState {
+  checked: boolean;
+  disabled: boolean;
+}
+
 export interface SourceDefaultsLanguage {
   id: string;
   sources: Array<{
@@ -66,6 +76,17 @@ export function resolveSourceOptionState(
     preservedIds: options
       .filter((option) => !allowed(option) && selected(option))
       .map((option) => option.id)
+  };
+}
+
+export function resolveSourceGroupToggleState(
+  options: readonly SourceGroupOptionState[]
+): SourceGroupToggleState {
+  const enabled = options.filter((option) => option.disabled !== true);
+  const selectedCount = enabled.filter((option) => option.checked).length;
+  return {
+    checked: selectedCount > 0,
+    disabled: enabled.length === 0
   };
 }
 

@@ -150,9 +150,10 @@ export const englishGroupAJobs = [
     urlPrefix:
       "https://docs.groovy-lang.org/docs/groovy-5.0.7/html/documentation/",
     minimumRecords: 1_000,
-    knownQueries: ["closures", "metaprogramming"],
+    knownQueries: ["type checking extensions", "closures"],
     attribution: "Apache Groovy documentation © The Apache Software Foundation; Apache-2.0.",
-    licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0"
+    licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0",
+    resolveUrl: canonicalizeGroovyDocumentationUrl
   }),
   {
     sourceId: "julia-docs",
@@ -324,31 +325,47 @@ export const englishGroupAJobs = [
     minimumRecords: 600,
     maximumRecordDropRatio: 0.2,
     maximumSizeChangeRatio: 0.5,
-    knownQueries: ["templates", "algorithm"],
+    knownQueries: ["debugprint", "algorithm"],
     attribution: "D documentation © D Language Foundation and contributors; BSL-1.0.",
     licenseUrl: "https://github.com/dlang/dlang.org/blob/master/LICENSE.txt",
     updateFrequency: "weekly",
     load: async ({ fetchText }) => {
-      const inputs = [
-        "https://dlang.org/spec/spec.html",
-        "https://dlang.org/phobos/index.html"
-      ];
-      const records = [];
-      for (const inputUrl of inputs) {
-        records.push(
-          ...linkRecords(
-            extractHtmlLinks(await fetchText(inputUrl)),
-            inputUrl,
-            inputUrl.startsWith("https://dlang.org/spec/")
-              ? "https://dlang.org/spec/"
-              : "https://dlang.org/phobos/"
-          )
-        );
-      }
-      return uniqueRecords(records);
+      const specUrl = "https://dlang.org/spec/spec.html";
+      const phobosUrl = "https://dlang.org/phobos/index.html";
+      const libraryUrl = "https://dlang.org/library/index.html";
+      const specRecords = linkRecords(
+        extractHtmlLinks(await fetchText(specUrl)),
+        specUrl,
+        "https://dlang.org/spec/"
+      );
+      const phobosRecords = linkRecords(
+        extractHtmlLinks(await fetchText(phobosUrl)),
+        phobosUrl,
+        "https://dlang.org/phobos/"
+      ).filter(
+        ({ url }) => !url.startsWith("https://dlang.org/phobos/dmd_backend_")
+      );
+      const backendRecords = linkRecords(
+        extractHtmlLinks(await fetchText(libraryUrl)),
+        libraryUrl,
+        "https://dlang.org/library/dmd/backend/"
+      );
+      return uniqueRecords([
+        ...specRecords,
+        ...phobosRecords,
+        ...backendRecords
+      ]);
     }
   }
 ];
+
+export function canonicalizeGroovyDocumentationUrl(url) {
+  const legacyUrl =
+    "https://docs.groovy-lang.org/docs/groovy-5.0.7/html/documentation/type-checking-extensions.html";
+  return url === legacyUrl
+    ? "https://docs.groovy-lang.org/docs/groovy-5.0.7/html/documentation/core-semantics.html#_type_checking_extensions"
+    : url;
+}
 
 function htmlLinksJob(options) {
   return {
@@ -365,12 +382,21 @@ function htmlLinksJob(options) {
     attribution: options.attribution,
     licenseUrl: options.licenseUrl,
     updateFrequency: "weekly",
-    load: async ({ fetchText }) =>
-      linkRecords(
+    load: async ({ fetchText }) => {
+      const records = linkRecords(
         extractHtmlLinks(await fetchText(options.inputUrl)),
         options.linkBaseUrl ?? options.inputUrl,
         options.urlPrefix
-      )
+      );
+      return options.resolveUrl
+        ? uniqueRecords(
+            records.map((record) => ({
+              ...record,
+              url: options.resolveUrl(record.url)
+            }))
+          )
+        : records;
+    }
   };
 }
 

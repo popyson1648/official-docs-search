@@ -8,7 +8,9 @@
   negotiation and body integrity for HTML, CSS, JavaScript, and search JSON,
   verifies that search responses use the precompressed build sidecars, and
   checks search-asset `HEAD`, `ETag`, conditional `304`, `Vary`, and cache
-  policies.
+  policies. It also verifies EN/JA metadata precedence, search-state `noindex`,
+  robots, sitemap, PNG brand-asset delivery, and server-rendered theme
+  persistence metadata.
 - `npm run test:e2e` builds and drives Chromium against the production server and real committed indexes.
 - `npm run test:e2e:filters`, `npm run test:e2e:catalog`,
   `npm run test:e2e:layout`, and `npm run test:e2e:performance` run bounded
@@ -70,7 +72,8 @@ Both live commands are non-mutating.
 E2E coverage includes at least one real result for every catalog language,
 all 18 supported Japanese indexes, all language-level JA-to-EN fallbacks,
 single- and multi-language results, the three-state non-official-source policy
-with selection preservation, unified UI/documentation language behavior,
+with selection preservation, the proposal-source group toggle's selected,
+cleared, and partial-selection states, unified UI/documentation language behavior,
 explicit `locale:` overrides, legacy Docs-state migration, HTTP and
 malformed-bundle partial failure, visible edition qualifications, explicit
 support states, empty/error states, escaping, safe new-tab links, per-source
@@ -106,10 +109,20 @@ multi-origin results. It also fixes user-facing catalog language names,
 exact solid Linguist tag backgrounds without a separate marker,
 brightness-derived black/white tag text across the full palette, source-kind
 styling, title-to-metadata typography, removable input-chip dimensions,
-language-color ownership of only the query-chip label segment, neutral remove
-segments, keyboard removal, and compact successful result counts. Compact
+language-color ownership of only the query-chip label segment, theme-tinted
+remove segments, keyboard removal, and compact successful result counts. Compact
 source controls retain 24 CSS-pixel targets, and unified-language and
 chip-removal controls expose visible keyboard focus.
+Theme coverage fixes `#825CFF` as the light browser and interface accent,
+preserves the previous light palette levels' perceptual lightness, uses stronger
+light-purple surfaces and accent-colored enabled controls, and keeps light
+result titles black. Dark coverage verifies the reviewed purple-black semantic
+palette, WCAG text and control contrast, server-rendered cookie state, live
+System preference changes, persisted explicit overrides, localized
+`menuitemradio` state, arrow/Home/End/Escape behavior, focus restoration, and
+mobile containment. It also checks optimized brand-image dimensions and byte
+budgets and requires SVG external-link marks without text or emoji glyphs at
+desktop and mobile widths.
 Duplicate-result coverage conservatively groups only qualified reference
 symbols from distinct origins, preserves every safe source link, keeps
 ambiguous and proposal records separate, renders at most 15 groups initially,
@@ -144,9 +157,10 @@ viewport containment, coarse-pointer choices, and reduced-motion suppression.
 The compact toolbar is pill-shaped, while the choice panel, search inputs, and
 suggestion surfaces remain rounded rectangles. Choice chips flow horizontally;
 at 375 px they stay in one horizontally scrollable row without creating page
-overflow. Language choices reuse result-tag colors; Site, Order, applied
-filters, clear actions, and focus treatment remain monochrome.
-Settings-toggle coverage fixes neutral checked, unchecked, and focused tracks.
+overflow. Language choices reuse result-tag colors; selected Site and Order
+choices, applied filters, and focus treatment use the theme accent.
+Settings-toggle coverage fixes accent-colored checked and focused tracks while
+keeping unchecked tracks muted.
 Long-page coverage keeps a 44 CSS-pixel bottom-right Top control hidden near the
 header, shows it after scrolling, returns focus to the page heading, localizes
 its accessible name, and suppresses its motion when requested.

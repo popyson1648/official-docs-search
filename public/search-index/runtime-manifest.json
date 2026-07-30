@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatorVersion": "2",
-  "catalogSha256": "9b48026079b49351528294e76eae3d165a29948038d3b5e9cfb7dce840dc508f",
+  "catalogSha256": "e2b7e19eeaedf48af0e384bf9dfcdc91026da10810fe93c30e463bdac54137d7",
   "entries": [
     {
       "sourceId": "python-docs",
@@ -22,8 +22,8 @@
       "programmingLanguage": "python",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/python-docs.ja.27abe2475e88b5b7.json",
-      "recordCount": 6543
+      "path": "/search-index/python-docs.ja.ffd88c8c1db435b3.json",
+      "recordCount": 6547
     },
     {
       "sourceId": "python-peps",
@@ -33,7 +33,7 @@
       "programmingLanguage": "python",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/python-peps.en.44ec700b72e48ab2.json",
+      "path": "/search-index/python-peps.en.09e2bd9b9b839325.json",
       "recordCount": 732,
       "qualification": "PEPs include drafts, rejected, withdrawn, deferred, and superseded proposals; status is shown on every result.",
       "qualificationJa": "PEPには草案・却下・撤回・保留・置換済みの提案が含まれます。各結果に状態を表示します。"
@@ -46,7 +46,7 @@
       "programmingLanguage": "rust",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/rust-docs.en.21aa9405a98f1ebf.json",
+      "path": "/search-index/rust-docs.en.56c55b645c4cad61.json",
       "recordCount": 37210
     },
     {
@@ -211,8 +211,8 @@
       "programmingLanguage": "cpp",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/cppreference-cpp.en.533af38b88c213b4.json",
-      "recordCount": 6324
+      "path": "/search-index/cppreference-cpp.en.00b9f421e6c12e85.json",
+      "recordCount": 6328
     },
     {
       "sourceId": "cppreference-cpp",
@@ -317,7 +317,7 @@
       "programmingLanguage": "java",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/openjdk-jeps.en.070073c183de52ad.json",
+      "path": "/search-index/openjdk-jeps.en.37ee60463f3e15d2.json",
       "recordCount": 505,
       "qualification": "JEP status is shown explicitly; drafts and candidates are not delivered JDK features.",
       "qualificationJa": "JEPの状態を明示します。DraftやCandidateは、提供済みのJDK機能ではありません。"
@@ -376,8 +376,8 @@
       "programmingLanguage": "ruby",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/ruby-docs.ja.88a25a8775e46b81.json",
-      "recordCount": 11917
+      "path": "/search-index/ruby-docs.ja.40b2eee8a84944b1.json",
+      "recordCount": 11963
     },
     {
       "sourceId": "swift-docs",
@@ -398,8 +398,8 @@
       "programmingLanguage": "kotlin",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/kotlin-docs.en.6ed24013d10831bc.json",
-      "recordCount": 361
+      "path": "/search-index/kotlin-docs.en.59d146c4ee4ebf54.json",
+      "recordCount": 360
     },
     {
       "sourceId": "scala-docs",
@@ -488,7 +488,7 @@
       "programmingLanguage": "erlang",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/erlang-docs.en.3737c53c93bf693f.json",
+      "path": "/search-index/erlang-docs.en.5ebb13f8f44edd75.json",
       "recordCount": 577
     },
     {
@@ -544,7 +544,7 @@
       "programmingLanguage": "perl",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/perl-docs.en.46aeccf23a4dfa65.json",
+      "path": "/search-index/perl-docs.en.ceb30668dbfbe987.json",
       "recordCount": 1495
     },
     {
@@ -614,7 +614,7 @@
       "programmingLanguage": "groovy",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/groovy-docs.en.cb3ea63eb4a04d2d.json",
+      "path": "/search-index/groovy-docs.en.21b7533cfe0627b7.json",
       "recordCount": 1133
     },
     {
@@ -782,7 +782,7 @@
       "programmingLanguage": "d",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/d-docs.en.7f2403bcc11be378.json",
+      "path": "/search-index/d-docs.en.6af50568ee50a22f.json",
       "recordCount": 624
     },
     {
@@ -877,8 +877,8 @@
       "programmingLanguage": "elm",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/elm-packages.en.6210da9cc0741dfd.json",
-      "recordCount": 3008
+      "path": "/search-index/elm-packages.en.34afcb9ced9c5c0d.json",
+      "recordCount": 3011
     },
     {
       "sourceId": "racket-docs",
@@ -888,8 +888,8 @@
       "programmingLanguage": "racket",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/racket-docs.en.bf35a6a5be20afad.json",
-      "recordCount": 1300
+      "path": "/search-index/racket-docs.en.fee65e5ddd96b81a.json",
+      "recordCount": 1302
     },
     {
       "sourceId": "cl-hyperspec",
@@ -1098,8 +1098,8 @@
       "programmingLanguage": "css",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/css-mdn.ja.b79db301d0feaf46.json",
-      "recordCount": 1189
+      "path": "/search-index/css-mdn.ja.a14d3ef26d5c0303.json",
+      "recordCount": 1190
     },
     {
       "sourceId": "webdev-css",

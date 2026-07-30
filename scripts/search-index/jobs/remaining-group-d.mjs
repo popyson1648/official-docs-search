@@ -13,6 +13,8 @@ import {
 } from "../../search-index.mjs";
 
 const jobs = [];
+const KOTLIN_INTERNAL_TEST_PAGE =
+  "https://kotlinlang.org/docs/test-page.html";
 
 jobs.push({
   sourceId: "swift-docs",
@@ -52,7 +54,9 @@ jobs.push({
   load: async ({ fetchText }) =>
     normalizeSitemap(await fetchText("https://kotlinlang.org/docs/sitemap.xml"), {
       fallbackTitle: "Kotlin Documentation",
-      acceptUrl: (url) => url.startsWith("https://kotlinlang.org/docs/")
+      acceptUrl: (url) =>
+        url.startsWith("https://kotlinlang.org/docs/") &&
+        url !== KOTLIN_INTERNAL_TEST_PAGE
     })
 });
 

@@ -8,7 +8,10 @@ import {
   normalizeSitemap,
   titleFromUrl
 } from "../scripts/search-index/english-group-a-parsers.mjs";
-import { englishGroupAJobs } from "../scripts/search-index/jobs/english-group-a.mjs";
+import {
+  canonicalizeGroovyDocumentationUrl,
+  englishGroupAJobs
+} from "../scripts/search-index/jobs/english-group-a.mjs";
 
 describe("English group A search-index jobs", () => {
   it("exports one English job for every assigned source", () => {
@@ -162,6 +165,92 @@ describe("English group A search-index jobs", () => {
     expect(records.map(({ title, url }) => [title, url])).toEqual([
       ["HTTP::Tiny", "https://perldoc.example.test/HTTP::Tiny"],
       ["map", "https://perldoc.example.test/perlfunc#map"]
+    ]);
+  });
+
+  it("restores single-segment Perl module case that DevDocs lowercases", () => {
+    const records = normalizePerlDevdocs(
+      {
+        entries: [
+          { name: "FileCache", path: "filecache", type: "Standard Modules" },
+          { name: "AnyDBM_File", path: "anydbm_file", type: "Standard Modules" },
+          { name: "autodie", path: "autodie", type: "Pragmas" },
+          { name: "perlre", path: "perlre", type: "Reference Manual" }
+        ]
+      },
+      fixtureOptions({ baseUrl: "https://perldoc.example.test/" })
+    );
+
+    expect(records.map(({ url }) => url)).toEqual([
+      "https://perldoc.example.test/FileCache",
+      "https://perldoc.example.test/AnyDBM_File",
+      "https://perldoc.example.test/autodie",
+      "https://perldoc.example.test/perlre"
+    ]);
+  });
+
+  it("canonicalizes Groovy's removed type-checking extension page", async () => {
+    const job = englishGroupAJobs.find(
+      (candidate) => candidate.sourceId === "groovy-docs"
+    ) as Record<string, any>;
+    const records = await job.load({
+      fetchText: async () =>
+        '<a href="type-checking-extensions.html">type checking extensions</a>' +
+        '<a href="core-semantics.html">Core semantics</a>'
+    });
+
+    expect(records).toEqual([
+      {
+        title: "type checking extensions",
+        url: "https://docs.groovy-lang.org/docs/groovy-5.0.7/html/documentation/core-semantics.html#_type_checking_extensions"
+      },
+      {
+        title: "Core semantics",
+        url: "https://docs.groovy-lang.org/docs/groovy-5.0.7/html/documentation/core-semantics.html"
+      }
+    ]);
+    expect(
+      canonicalizeGroovyDocumentationUrl(
+        "https://docs.groovy-lang.org/docs/groovy-5.0.7/html/documentation/closures.html"
+      )
+    ).toBe(
+      "https://docs.groovy-lang.org/docs/groovy-5.0.7/html/documentation/closures.html"
+    );
+  });
+
+  it("replaces broken D backend links with official library-index routes", async () => {
+    const job = englishGroupAJobs.find(
+      (candidate) => candidate.sourceId === "d-docs"
+    ) as Record<string, any>;
+    const inputs: string[] = [];
+    const records = await job.load({
+      fetchText: async (url: string) => {
+        inputs.push(url);
+        if (url.includes("/spec/")) {
+          return '<a href="template.html">Templates</a>';
+        }
+        if (url.includes("/phobos/")) {
+          return (
+            '<a href="std_algorithm.html">algorithm</a>' +
+            '<a href="dmd_backend_debugprint.html">debugprint</a>'
+          );
+        }
+        return '<a href="./dmd/backend/debugprint.html">debugprint</a>';
+      }
+    });
+
+    expect(inputs).toEqual([
+      "https://dlang.org/spec/spec.html",
+      "https://dlang.org/phobos/index.html",
+      "https://dlang.org/library/index.html"
+    ]);
+    expect(records).toEqual([
+      { title: "Templates", url: "https://dlang.org/spec/template.html" },
+      { title: "algorithm", url: "https://dlang.org/phobos/std_algorithm.html" },
+      {
+        title: "debugprint",
+        url: "https://dlang.org/library/dmd/backend/debugprint.html"
+      }
     ]);
   });
 

@@ -5,6 +5,7 @@ import {
   isSourcePolicy,
   preferenceCookie,
   removeLanguageFromQuery,
+  resolveSourceGroupToggleState,
   resolveSourceOptionState,
   type SourcePolicy
 } from "../core/search-controls";
@@ -40,6 +41,9 @@ export function initializeSearchControls(
   const sourcePolicyRadios =
     root.querySelectorAll<HTMLInputElement>("[data-source-policy-radio]");
   const sourceDetails = root.querySelector<HTMLDetailsElement>(".source-details");
+  const proposalSourceToggle = root.querySelector<HTMLInputElement>(
+    "[data-proposal-source-toggle]"
+  );
   const uiRadios = root.querySelectorAll<HTMLInputElement>("[data-ui-radio]");
   const results = root.querySelector<HTMLElement>("[data-search-results]");
   const dialog = root.querySelector<HTMLDialogElement>("[data-help-dialog]");
@@ -56,9 +60,31 @@ export function initializeSearchControls(
   let composing = false;
   let renderedSuggestions: SearchSuggestion[] = [];
   const languageWarmups = new Map<string, Promise<void>>();
+  const proposalSourceOptions = () => [
+    ...(form?.querySelectorAll<HTMLInputElement>(
+      '[data-source-option][data-document-kind="proposal"]'
+    ) ?? [])
+  ];
+  const syncProposalSourceToggle = () => {
+    if (!proposalSourceToggle) return;
+    const state = resolveSourceGroupToggleState(proposalSourceOptions());
+    proposalSourceToggle.checked = state.checked;
+    proposalSourceToggle.disabled = state.disabled;
+  };
 
   restoreSourceDetailsState(root, sourceDetails);
   migrateLegacyLanguageUrl(root);
+  syncProposalSourceToggle();
+
+  proposalSourceToggle?.addEventListener("change", () => {
+    for (const option of proposalSourceOptions()) {
+      if (!option.disabled) option.checked = proposalSourceToggle.checked;
+    }
+    syncProposalSourceToggle();
+  });
+  for (const option of proposalSourceOptions()) {
+    option.addEventListener("change", syncProposalSourceToggle);
+  }
 
   const renderHighlight = () => {
     if (!input || !highlight) return;
@@ -355,6 +381,7 @@ export function initializeSearchControls(
           state.options[index].disabled
         );
       }
+      syncProposalSourceToggle();
       for (const sourceId of state.preservedIds) {
         const preserved = root.createElement("input");
         preserved.type = "hidden";

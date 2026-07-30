@@ -112,4 +112,44 @@ describe("live result verification selection", () => {
     ]);
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
+
+  it("prefers an exact known-query title over an earlier partial match", async () => {
+    const fetcher = vi.fn(async () => new Response("ok"));
+    const results = await verifyLiveEntries(
+      [
+        {
+          sourceId: "groovy-docs",
+          docsLocale: "en",
+          status: "supported",
+          updateFrequency: "weekly",
+          path: "/search-index/groovy.json",
+          knownQueries: ["type checking extensions"]
+        }
+      ],
+      {
+        fetcher,
+        bundleReader: () => ({
+          urlPrefix: "https://docs.example.test/",
+          records: [
+            [
+              "1.6.7. Type checking extensions",
+              "index.html#_type_checking_extensions"
+            ],
+            [
+              "type checking extensions",
+              "core-semantics.html#_type_checking_extensions"
+            ]
+          ]
+        })
+      }
+    );
+
+    expect(results).toEqual([
+      {
+        message:
+          "groovy-docs/en: 200 https://docs.example.test/core-semantics.html#_type_checking_extensions"
+      }
+    ]);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
 });

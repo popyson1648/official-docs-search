@@ -57,6 +57,159 @@ test("serves the production SSR build with its bundled catalog", async () => {
   assert.doesNotMatch(app.logs.join(""), /ENOENT|docs-sources\.toml/);
 });
 
+test("serves localized home metadata without indexing search-state URLs", async () => {
+  const english = await rawRequest("/?ui=en", {
+    "Accept-Language": "ja-JP,ja;q=0.9"
+  });
+  const englishHtml = english.body.toString("utf8");
+
+  assert.match(englishHtml, /<html[^>]+lang="en"/);
+  assert.match(
+    englishHtml,
+    /<title>LangRef Search — Official Programming Documentation Search<\/title>/
+  );
+  assert.match(
+    englishHtml,
+    /<link rel="canonical" href="https:\/\/official-docs-search\.popyson\.com\/\?ui=en">/
+  );
+  assert.match(
+    englishHtml,
+    /<link rel="alternate" hreflang="ja" href="https:\/\/official-docs-search\.popyson\.com\/\?ui=ja">/
+  );
+  assert.match(
+    englishHtml,
+    /<link rel="alternate" hreflang="x-default" href="https:\/\/official-docs-search\.popyson\.com\/">/
+  );
+  assert.match(englishHtml, /<meta name="robots" content="index,follow,max-image-preview:large">/);
+  assert.match(englishHtml, /<meta property="og:site_name" content="LangRef Search">/);
+  assert.match(
+    englishHtml,
+    /<meta property="og:image" content="https:\/\/official-docs-search\.popyson\.com\/ogp\.png">/
+  );
+  const structuredDataSource = englishHtml.match(
+    /<script type="application\/ld\+json">([\s\S]*?)<\/script>/
+  )?.[1];
+  assert.ok(structuredDataSource);
+  assert.deepEqual(JSON.parse(structuredDataSource), {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "LangRef Search",
+    url: "https://official-docs-search.popyson.com/",
+    inLanguage: ["en", "ja"]
+  });
+  assert.match(english.headers.vary || "", /\bAccept-Language\b/i);
+  assert.match(english.headers.vary || "", /\bCookie\b/i);
+
+  const japanese = await rawRequest("/?ui=ja", {
+    "Accept-Language": "en-US,en;q=0.9"
+  });
+  const japaneseHtml = japanese.body.toString("utf8");
+  assert.match(japaneseHtml, /<html[^>]+lang="ja"/);
+  assert.match(
+    japaneseHtml,
+    /<title>LangRef Search — プログラミング公式ドキュメント検索<\/title>/
+  );
+  assert.match(japaneseHtml, /<meta property="og:locale" content="ja_JP">/);
+
+  const search = await rawRequest("/?q=python+list&ui=en");
+  assert.match(
+    search.body.toString("utf8"),
+    /<meta name="robots" content="noindex,follow">/
+  );
+  assert.match(
+    search.body.toString("utf8"),
+    /<link rel="canonical" href="https:\/\/official-docs-search\.popyson\.com\/\?ui=en">/
+  );
+});
+
+test("uses Accept-Language only when URL and saved preferences are absent", async () => {
+  const japanese = await rawRequest("/", {
+    "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.8"
+  });
+  assert.match(japanese.body.toString("utf8"), /<html[^>]+lang="ja"/);
+
+  const savedEnglish = await rawRequest("/", {
+    "Accept-Language": "ja-JP,ja;q=0.9",
+    Cookie: "ods_ui=en"
+  });
+  assert.match(savedEnglish.body.toString("utf8"), /<html[^>]+lang="en"/);
+
+  const explicitEnglish = await rawRequest("/?ui=en", {
+    "Accept-Language": "ja-JP,ja;q=0.9",
+    Cookie: "ods_ui=ja"
+  });
+  assert.match(explicitEnglish.body.toString("utf8"), /<html[^>]+lang="en"/);
+});
+
+test("renders saved theme settings before the first paint", async () => {
+  const systemHtml = (await rawRequest("/")).body.toString("utf8");
+  assert.match(systemHtml, /<html[^>]+data-theme-setting="system"/);
+  assert.match(
+    systemHtml,
+    /<meta name="color-scheme" content="light dark">/
+  );
+  assert.match(
+    systemHtml,
+    /<meta name="theme-color" content="#825CFF" media="\(prefers-color-scheme: light\)" data-theme-color="light">/
+  );
+
+  const darkHtml = (
+    await rawRequest("/", { Cookie: "ods_theme=dark" })
+  ).body.toString("utf8");
+  assert.match(darkHtml, /<html[^>]+data-theme-setting="dark"/);
+  assert.match(darkHtml, /<meta name="color-scheme" content="only dark">/);
+  assert.match(
+    darkHtml,
+    /<meta name="theme-color" content="#100D18" media="all" data-theme-color="dark">/
+  );
+
+  const lightHtml = (
+    await rawRequest("/", { Cookie: "ods_theme=light" })
+  ).body.toString("utf8");
+  assert.match(lightHtml, /<html[^>]+data-theme-setting="light"/);
+  assert.match(lightHtml, /<meta name="color-scheme" content="only light">/);
+
+  const invalidHtml = (
+    await rawRequest("/", { Cookie: "ods_theme=auto" })
+  ).body.toString("utf8");
+  assert.match(invalidHtml, /<html[^>]+data-theme-setting="system"/);
+});
+
+test("publishes robots, sitemap, and optimized brand assets", async () => {
+  const robots = await rawRequest("/robots.txt");
+  assert.equal(robots.statusCode, 200);
+  assert.match(robots.headers["content-type"] || "", /^text\/plain\b/);
+  assert.match(robots.body.toString("utf8"), /^User-agent: \*\nAllow: \//);
+  assert.match(
+    robots.body.toString("utf8"),
+    /Sitemap: https:\/\/official-docs-search\.popyson\.com\/sitemap\.xml/
+  );
+
+  const sitemap = await rawRequest("/sitemap.xml");
+  const sitemapXml = sitemap.body.toString("utf8");
+  assert.equal(sitemap.statusCode, 200);
+  assert.match(sitemap.headers["content-type"] || "", /^application\/xml\b/);
+  assert.match(sitemapXml, /<loc>https:\/\/official-docs-search\.popyson\.com\/<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/official-docs-search\.popyson\.com\/\?ui=en<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/official-docs-search\.popyson\.com\/\?ui=ja<\/loc>/);
+
+  for (const asset of [
+    "/logo.png",
+    "/ogp.png",
+    "/favicon.png",
+    "/apple-touch-icon.png"
+  ]) {
+    const response = await rawRequest(asset);
+    assert.equal(response.statusCode, 200, asset);
+    assert.match(response.headers["content-type"] || "", /^image\/png\b/, asset);
+    assert.deepEqual(
+      response.body.subarray(0, 8),
+      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+      asset
+    );
+  }
+});
+
 test("negotiates compression for HTML, CSS, and JavaScript", async () => {
   const assets = [
     { path: "/", readSource: () => rawRequest("/") },

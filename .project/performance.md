@@ -39,6 +39,25 @@ The one mobile outlier was an external font-binary response; the other four
 runs scored 100 with 1,128–1,206 ms LCP. TBT was 0 ms and CLS was 0.00043 in
 all five runs.
 
+Brand delivery adds one 17,096-byte PNG request to the visible page.
+The 1,921×1,080 source logo is trimmed and resized to 720×137, declared with
+fixed dimensions, and loaded at high priority without lazy loading.
+The social image is 1,200×675 and 30,856 bytes but is not requested during a
+normal page visit.
+The 192×192 favicon and 180×180 touch icon are 9,485 and 8,600 bytes.
+A 2026-07-30 production-build reload trace at 375×900 with no artificial
+throttling measured 110 ms LCP and 0.00 CLS.
+The corresponding mobile Lighthouse audit scored 100 for accessibility, best
+practices, and SEO with no failed audit.
+
+The 2026-07-30 Light/Dark production audit after adding the appearance menu
+kept Performance, Best Practices, and SEO at 100 in both modes. Dark
+Accessibility scored 100; Light scored 96 only because the intentionally white
+Search label on exact `#825CFF` has the documented 4.26:1 contrast. Both runs
+measured 1.3 s LCP. Their 0.035 CLS was attributed to the existing external
+Alexandria web-font swap, not the theme controller. The selector adds no image,
+font, or search-index request; its icons and palette are CSS and inline SVG.
+
 The reviewed Google Fonts declarations are bundled locally while the exact
 Alexandria and LINE Seed JP WOFF2 files remain on `fonts.gstatic.com`.
 In a same-build A/B, local declarations reduced mobile LCP from a 1,958 ms

@@ -109,10 +109,11 @@ export function normalizePerlDevdocs(index, options) {
       const path = String(entry.path ?? "");
       if (!title || !path) return [];
       const [pathname, fragment] = path.split("#", 2);
+      // DevDocs lowercases every index path, but perldoc.perl.org serves
+      // case-sensitive module pages. The entry name keeps the upstream case,
+      // so it replaces the path whenever the two differ only by case.
       const documentName =
-        entry.type === "Standard Modules" && pathname.includes("::")
-          ? title
-          : pathname;
+        pathname.toLowerCase() === title.toLowerCase() ? title : pathname;
       const url = new URL(`./${documentName}`, options.baseUrl);
       if (fragment) url.hash = fragment;
       return [

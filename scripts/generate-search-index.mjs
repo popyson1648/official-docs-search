@@ -18,7 +18,8 @@ import {
 import {
   devdocsJob,
   documentationUrl,
-  linkRecords
+  linkRecords,
+  restoreRustdocPathCase
 } from "./search-index/job-helpers.mjs";
 import { multilingualGroupBJobs } from "./search-index/jobs/multilingual-group-b.mjs";
 import { microsoftGroupCJobs } from "./search-index/jobs/microsoft-group-c.mjs";
@@ -97,8 +98,9 @@ const rawSearchIndexJobs = [
     upstreamVersion: "Rust latest via DevDocs",
     urlPrefix: "https://doc.rust-lang.org/",
     buildUrl: (path) => documentationUrl("https://doc.rust-lang.org/", path),
+    resolvePath: restoreRustdocPathCase,
     minimumRecords: 30_000,
-    knownQueries: ["iterator", "option"],
+    knownQueries: ["TcpListener", "IntoIterator"],
     attribution: "Rust documentation © The Rust Project Developers; Apache-2.0 or MIT.",
     licenseUrl: "https://www.rust-lang.org/policies/licenses"
   }),

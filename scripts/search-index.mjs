@@ -1,10 +1,11 @@
 import { parse, parseFragment } from "parse5";
 
 export function normalizeDevdocsEntries(index, options) {
+  const resolvePath = options.resolvePath ?? ((path) => path);
   return uniqueRecords(
     (index.entries ?? []).map((entry) => ({
       title: String(entry.name ?? "").trim(),
-      url: options.buildUrl(String(entry.path ?? "")),
+      url: options.buildUrl(resolvePath(String(entry.path ?? ""), entry)),
       programmingLanguage: options.programmingLanguage,
       docsLocale: options.docsLocale,
       sourceId: options.sourceId,

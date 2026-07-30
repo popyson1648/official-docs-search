@@ -22,11 +22,36 @@ export function devdocsJob(options) {
         docsLocale: options.docsLocale ?? "en",
         sourceKind: options.sourceKind,
         sourceName: options.sourceName,
-        buildUrl: options.buildUrl
+        buildUrl: options.buildUrl,
+        resolvePath: options.resolvePath
       });
       return options.acceptRecord ? records.filter(options.acceptRecord) : records;
     }
   };
+}
+
+const RUSTDOC_ITEM_SEGMENT = /^([a-z]+)\.(.+)$/;
+
+/**
+ * DevDocs lowercases every index path, but doc.rust-lang.org serves
+ * case-sensitive `<kind>.<Item>.html` pages. The DevDocs entry name keeps the
+ * upstream case, so the final path segment is restored from it. Module
+ * segments and `method`/`tymethod` fragments stay snake_case upstream and are
+ * left untouched.
+ */
+export function restoreRustdocPathCase(path, entry) {
+  const [pathname, fragment] = String(path).split("#", 2);
+  const segments = pathname.split("/");
+  const match = RUSTDOC_ITEM_SEGMENT.exec(segments[segments.length - 1]);
+  if (!match) return path;
+  const [, kind, item] = match;
+  const named = String(entry?.name ?? "")
+    .split("::")
+    .reverse()
+    .find((segment) => segment.toLowerCase() === item);
+  if (!named || named === item) return path;
+  segments[segments.length - 1] = `${kind}.${named}`;
+  return `${segments.join("/")}${fragment ? `#${fragment}` : ""}`;
 }
 
 export function documentationUrl(baseUrl, path) {
