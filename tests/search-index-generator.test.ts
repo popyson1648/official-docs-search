@@ -1,4 +1,11 @@
-import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  writeFileSync
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -118,7 +125,7 @@ describe("search index generation", () => {
       programmingLanguage: "example",
       docsLocale: "en",
       status: "supported",
-      path: expect.stringMatching(/^\/search-index\/example-docs\.en\.[a-f0-9]{16}\.json$/),
+      path: expect.stringMatching(/^\/search-index\/bundles\/example-docs\.en\.[a-f0-9]{16}\.json$/),
       recordCount: 1
     });
     expect(runtimeManifest.entries[1]).toEqual({
@@ -689,8 +696,10 @@ function temporaryDirectory() {
 
 function snapshot(directory: string) {
   return Object.fromEntries(
-    readdirSync(directory)
+    readdirSync(directory, { recursive: true })
+      .map((entry) => String(entry))
+      .filter((name) => statSync(join(directory, name)).isFile())
       .sort()
-      .map((filename) => [filename, readFileSync(join(directory, filename), "utf8")])
+      .map((name) => [name, readFileSync(join(directory, name), "utf8")])
   );
 }

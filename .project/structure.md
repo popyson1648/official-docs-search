@@ -12,7 +12,8 @@
 - `src/components/` and `src/layouts/`: shared footer and legal-page shell.
 - `scripts/`: index adapters, reproducible publication, live verification, and
   generated font maintenance.
-- `public/search-index/`: committed compact search bundles and manifest.
+- `public/search-index/`: committed manifests, with content-addressed
+  bundles under `public/search-index/bundles/`.
 - `public/fonts/google/`: pinned WOFF2 subsets and upstream OFL license files.
 - `tests/`: unit, integration, Workers-preview, and real-browser tests.
 - `.plans/` and `.decisions/`: approved task plans and architecture history.
@@ -60,9 +61,10 @@
 - `src/pages/robots.txt.ts` and `src/pages/sitemap.xml.ts`: expose the
   production sitemap and the root page's EN/JA representations without adding
   separate product-entry pages.
-- `public/logo.png`, `public/ogp.png`, `public/favicon.png`, and
-  `public/apple-touch-icon.png`: right-sized brand assets with fixed intrinsic
-  dimensions.
+- `public/icon.png` and `public/logo_svg.svg`: the header lockup's square
+  mark and single-color wordmark.
+- `public/ogp.png`, `public/favicon.png`, and `public/apple-touch-icon.png`:
+  right-sized brand assets with fixed intrinsic dimensions.
 - `scripts/search-index.mjs`: shared DevDocs, Sphinx, Ecmarkup, Javadoc, and HTML normalization helpers.
 - `scripts/search-index/`: source-family job registries, parser modules, and job helpers.
 - `scripts/search-index/title-qualification.mjs`: preserves canonical qualified
@@ -135,8 +137,8 @@
    the prior perceptual-lightness hierarchy; primary light-theme result text
    remains near-black. Dark mode uses the same purple identity with
    low-luminance purple surfaces and near-white result text.
-   The visible heading uses the optimized LangRef Search logo with fixed
-   dimensions. Search and enabled toggle controls use the theme accent.
+   The visible heading uses the LangRef Search lockup: a square mark and a
+   wordmark declared with fixed dimensions on one flex row. Search and enabled toggle controls use the theme accent.
 10. The client renders original HTTPS links, qualified result titles, actual
    content locales, document kinds, proposal state and warnings,
    locale-fallback notices before the count, partial failures, and explicit

@@ -12,14 +12,14 @@ Only Shunsuke Setoguchi may access responses.
 > 機密情報、要配慮個人情報、第三者の個人情報は入力しないでください。報告内容は
 > 調査のため、不要な個人情報を削除したうえで、Claude、ChatGPT、Claude Code、
 > Codex、Antigravityで解析する場合があります。詳しくは
-> https://official-docs-search.popyson.com/privacy?ui=ja を確認してください。
+> https://langref-search.popyson.com/privacy?ui=ja を確認してください。
 >
 > Use this form to report a problem with LangRef Search. Do not submit
 > passwords, API keys, non-public code, confidential information, sensitive
 > personal data, or another person's personal data. For investigation, report
 > content may be analyzed with Claude, ChatGPT, Claude Code, Codex, or
 > Antigravity after unnecessary personal data is removed. See
-> https://official-docs-search.popyson.com/privacy?ui=en.
+> https://langref-search.popyson.com/privacy?ui=en.
 
 ## Fields
 

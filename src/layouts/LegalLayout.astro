@@ -15,7 +15,7 @@ interface Props {
 const { uiLanguage, title, description, pathname } = Astro.props;
 const themeSetting = getThemeSetting(Astro.cookies.get("ods_theme")?.value);
 const productionOrigin =
-  Astro.site ?? new URL("https://official-docs-search.popyson.com");
+  Astro.site ?? new URL("https://langref-search.popyson.com");
 const localizedUrl = (language: UiLanguage) => {
   const url = new URL(pathname, productionOrigin);
   url.searchParams.set("ui", language);
@@ -74,13 +74,24 @@ const canonicalUrl = localizedUrl(uiLanguage);
           href={`/?ui=${uiLanguage}`}
           aria-label={uiLanguage === "ja" ? "LangRef Searchのトップへ" : "LangRef Search home"}
         >
-          <img
-            src="/logo.png"
-            width="720"
-            height="137"
-            alt="LangRef Search"
-            decoding="async"
-          />
+          <span class="site-logo">
+            <img
+              class="site-logo-mark"
+              src="/icon.png"
+              width="192"
+              height="192"
+              alt=""
+              decoding="async"
+            />
+            <img
+              class="site-logo-wordmark"
+              src="/logo_svg.svg"
+              width="1788"
+              height="210"
+              alt="LangRef Search"
+              decoding="async"
+            />
+          </span>
         </a>
         <nav
           class="legal-language-nav"

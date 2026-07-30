@@ -225,7 +225,7 @@ const clientSearchCatalog = catalog.languages.map((language) => ({
   }))
 }));
 const productionOrigin =
-  Astro.site ?? new URL("https://official-docs-search.popyson.com");
+  Astro.site ?? new URL("https://langref-search.popyson.com");
 const rootUrl = new URL("/", productionOrigin);
 const localizedHomeUrl = (language: "en" | "ja") => {
   const url = new URL("/", productionOrigin);
@@ -309,7 +309,8 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
     <meta name="twitter:description" content={t(uiLanguage, "description")} />
     <meta name="twitter:image" content={socialImageUrl} />
     <meta name="twitter:image:alt" content={t(uiLanguage, "socialImageAlt")} />
-    <link rel="preload" href="/logo.png" as="image" type="image/png" />
+    <link rel="preload" href="/icon.png" as="image" type="image/png" />
+    <link rel="preload" href="/logo_svg.svg" as="image" type="image/svg+xml" />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <script type="application/ld+json">
@@ -317,7 +318,7 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "LangRef Search",
-        "url": "https://official-docs-search.popyson.com/",
+        "url": "https://langref-search.popyson.com/",
         "inLanguage": ["en", "ja"]
       }
     </script>
@@ -334,15 +335,26 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
       >
         <div class="search-header">
           <h1 id="search-heading" tabindex="-1" data-page-top-target>
-            <img
-              class="site-logo"
-              src="/logo.png"
-              width="720"
-              height="137"
-              alt={t(uiLanguage, "queryLabel")}
-              decoding="async"
-              fetchpriority="high"
-            />
+            <span class="site-logo">
+              <img
+                class="site-logo-mark"
+                src="/icon.png"
+                width="192"
+                height="192"
+                alt=""
+                decoding="async"
+                fetchpriority="high"
+              />
+              <img
+                class="site-logo-wordmark"
+                src="/logo_svg.svg"
+                width="1788"
+                height="210"
+                alt={t(uiLanguage, "queryLabel")}
+                decoding="async"
+                fetchpriority="high"
+              />
+            </span>
           </h1>
           <div class="header-actions">
             <div class="theme-menu-shell" data-theme-menu-shell>

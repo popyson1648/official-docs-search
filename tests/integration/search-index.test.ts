@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
+import { sep } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   buildRuntimeSearchManifest
@@ -113,11 +114,17 @@ describe("generated search indexes", () => {
     const expectedFiles = new Set([
       "manifest.json",
       "runtime-manifest.json",
-      ...supportedEntries.map((entry) => entry.path.slice(14))
+      ...supportedEntries.map((entry) => entry.path.slice("/search-index/".length))
     ]);
-    expect(new Set(readdirSync("public/search-index").filter((name) => name.endsWith(".json")))).toEqual(
-      expectedFiles
+    const publishedFiles = new Set(
+      readdirSync("public/search-index", { recursive: true })
+        .map((entry) => String(entry).split(sep).join("/"))
+        .filter((name) => name.endsWith(".json"))
     );
+    expect(publishedFiles).toEqual(expectedFiles);
+    for (const entry of supportedEntries) {
+      expect(entry.path.startsWith("/search-index/bundles/")).toBe(true);
+    }
   });
 
   it(

@@ -105,11 +105,14 @@ discoverable; query, source, and filter state remain crawlable but
 Cloudflare serves matching static files before invoking the Worker and performs
 production transport compression at the edge. Astro emits an immutable
 one-year policy for content-hashed `/_astro/` files, and `public/_headers`
-applies the same policy to the pinned WOFF2 files. Missing files do not receive
-that policy.
+applies the same policy to the pinned WOFF2 files and to the content-addressed
+bundles under `/search-index/bundles/`. Both manifests stay revalidated so a
+new deployment is picked up immediately. Missing files do not receive that
+policy.
 
 `wrangler.jsonc` pins the current compatible runtime date, the production custom
-domain, Node compatibility, and disabled persistent observability. The
+domain, Node compatibility, disabled persistent observability, and the adapter's
+unused `SESSION` KV namespace so deployments never provision new resources. The
 application does not add analytics. Run `npm run check:worker` before release;
 do not run `wrangler deploy` unless the deployment is explicitly authorized.
 

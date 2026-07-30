@@ -7,7 +7,8 @@
 - `npm run test:server` builds and verifies the workerd production preview,
   SSR metadata, language and theme precedence, legal pages, footer links,
   noindex behavior, robots, sitemap, brand assets, local font delivery, and
-  immutable static-asset policies.
+  immutable static-asset policies, including immutable index bundles alongside a
+  revalidated runtime manifest.
 - `npm run test:e2e` builds and drives Chromium against the Workers preview and
   real committed indexes.
 - `npm run test:e2e:filters`, `npm run test:e2e:catalog`,
@@ -117,9 +118,9 @@ result titles black. Dark coverage verifies the reviewed purple-black semantic
 palette, WCAG text and control contrast, server-rendered cookie state, live
 System preference changes, persisted explicit overrides, localized
 `menuitemradio` state, arrow/Home/End/Escape behavior, focus restoration, and
-mobile containment. It also checks optimized brand-image dimensions and byte
-budgets and requires SVG external-link marks without text or emoji glyphs at
-desktop and mobile widths.
+mobile containment. It also checks the header lockup's rendered geometry,
+brand-asset dimensions and byte budgets, and requires SVG external-link marks
+without text or emoji glyphs at desktop and mobile widths.
 Duplicate-result coverage conservatively groups only qualified reference
 symbols from distinct origins, preserves every safe source link, keeps
 ambiguous and proposal records separate, renders at most 15 groups initially,

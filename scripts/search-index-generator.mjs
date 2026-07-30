@@ -10,13 +10,17 @@ import {
   statSync,
   writeFileSync
 } from "node:fs";
-import { basename, dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve, sep } from "node:path";
 import { brotliCompressSync, constants, gzipSync } from "node:zlib";
 import { parse } from "smol-toml";
 
 export const SEARCH_INDEX_SCHEMA_VERSION = 2;
 export const SEARCH_INDEX_GENERATOR_VERSION = "2";
 export const RUNTIME_SEARCH_MANIFEST_FILENAME = "runtime-manifest.json";
+/* Content-addressed bundles live in their own directory so the deployment can
+   serve them as immutable while both manifests stay revalidated. */
+export const SEARCH_INDEX_BUNDLE_DIRECTORY = "bundles";
+const SEARCH_INDEX_BUNDLE_PATH_PREFIX = `/search-index/${SEARCH_INDEX_BUNDLE_DIRECTORY}/`;
 
 const SUPPORT_STATUSES = new Set(["supported", "planned", "blocked", "disabled"]);
 const RUNTIME_MANIFEST_ENTRY_FIELDS = [
@@ -178,7 +182,7 @@ export async function buildSearchIndexArtifacts({
     const bundleBytes = `${JSON.stringify(bundle)}\n`;
     const outputSha256 = sha256(bundleBytes);
     const filename = `${source.id}.${support.locale}.${outputSha256.slice(0, 16)}.json`;
-    const path = `/search-index/${filename}`;
+    const path = `${SEARCH_INDEX_BUNDLE_PATH_PREFIX}${filename}`;
     const gzipBytes = gzipSync(bundleBytes, { level: 9 }).byteLength;
     const brotliBytes = brotliCompressSync(bundleBytes, {
       params: { [constants.BROTLI_PARAM_QUALITY]: 11 }
@@ -192,7 +196,7 @@ export async function buildSearchIndexArtifacts({
         : now().toISOString();
 
     return {
-      filename,
+      filename: bundleArtifactName(filename),
       bundleBytes,
       manifestEntry: {
         ...baseEntry,
@@ -299,10 +303,10 @@ function reusePreviousArtifact({
   }
 
   const filename = basename(previous.path);
-  if (previous.path !== `/search-index/${filename}`) {
+  if (previous.path !== `${SEARCH_INDEX_BUNDLE_PATH_PREFIX}${filename}`) {
     throw new Error(`Cannot reuse ${key}; invalid previous artifact path.`);
   }
-  const bundleBytes = readPreviousArtifact(filename);
+  const bundleBytes = readPreviousArtifact(bundleArtifactName(filename));
   if (typeof bundleBytes !== "string") {
     throw new Error(`Cannot reuse ${key}; previous artifact is unavailable.`);
   }
@@ -345,10 +349,14 @@ function reusePreviousArtifact({
     throw new Error(`Cannot reuse ${key}; previous artifact metadata does not match.`);
   }
   return {
-    filename,
+    filename: bundleArtifactName(filename),
     bundleBytes,
     manifestEntry: previous
   };
+}
+
+function bundleArtifactName(filename) {
+  return `${SEARCH_INDEX_BUNDLE_DIRECTORY}/${filename}`;
 }
 
 function combinedInputSha256(inputs) {
@@ -371,7 +379,9 @@ export function publishSearchIndexArtifacts({ files, outputDirectory, mode }) {
 
   try {
     for (const [filename, contents] of files) {
-      writeFileSync(join(stage, filename), contents);
+      const stagedPath = join(stage, filename);
+      mkdirSync(dirname(stagedPath), { recursive: true });
+      writeFileSync(stagedPath, contents);
     }
 
     if (mode === "check") {
@@ -384,16 +394,15 @@ export function publishSearchIndexArtifacts({ files, outputDirectory, mode }) {
 
     mkdirSync(outputDirectory, { recursive: true });
     for (const filename of [...files.keys()].filter((name) => name !== "manifest.json")) {
-      renameSync(join(stage, filename), join(outputDirectory, filename));
+      const target = join(outputDirectory, filename);
+      mkdirSync(dirname(target), { recursive: true });
+      renameSync(join(stage, filename), target);
     }
     renameSync(join(stage, "manifest.json"), join(outputDirectory, "manifest.json"));
 
     const expected = new Set(files.keys());
-    for (const filename of readdirSync(outputDirectory)) {
-      const path = join(outputDirectory, filename);
-      if (statSync(path).isFile() && filename.endsWith(".json") && !expected.has(filename)) {
-        rmSync(path);
-      }
+    for (const filename of listArtifactNames(outputDirectory)) {
+      if (!expected.has(filename)) rmSync(join(outputDirectory, filename));
     }
   } finally {
     rmSync(stage, { recursive: true, force: true });
@@ -478,12 +487,22 @@ function compareArtifacts(files, outputDirectory) {
       }
     }
   }
-  if (existsSync(outputDirectory)) {
-    for (const filename of readdirSync(outputDirectory)) {
-      if (filename.endsWith(".json") && !expectedNames.has(filename)) differences.push(`obsolete ${filename}`);
-    }
+  for (const filename of listArtifactNames(outputDirectory)) {
+    if (!expectedNames.has(filename)) differences.push(`obsolete ${filename}`);
   }
   return differences;
+}
+
+/* Published artifact names are directory-relative and always use forward
+   slashes so they can be compared with manifest paths on every platform. */
+function listArtifactNames(outputDirectory) {
+  if (!existsSync(outputDirectory)) return [];
+  return readdirSync(outputDirectory, { recursive: true })
+    .map((entry) => entry.split(sep).join("/"))
+    .filter(
+      (name) =>
+        name.endsWith(".json") && statSync(join(outputDirectory, name)).isFile()
+    );
 }
 
 function describeManifestDifference(existingSource, expectedSource) {

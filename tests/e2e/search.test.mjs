@@ -348,6 +348,9 @@ test("[smoke] initial page, help, validation, and language tags work", async () 
   assert.deepEqual(
     await page.evaluate(() => {
       const logo = document.querySelector(".site-logo");
+      const mark = logo?.querySelector(".site-logo-mark");
+      const wordmark = logo?.querySelector(".site-logo-wordmark");
+      const round = (value) => Math.round(value);
       const searchButtonStyle = getComputedStyle(
         document.querySelector(".search-submit")
       );
@@ -362,12 +365,23 @@ test("[smoke] initial page, help, validation, and language tags work", async () 
         ),
         favicon: document.querySelector('link[rel="icon"]')?.getAttribute("href"),
         logo: {
-          alt: logo?.getAttribute("alt"),
-          width: logo?.getAttribute("width"),
-          height: logo?.getAttribute("height"),
-          complete: logo?.complete,
-          naturalWidth: logo?.naturalWidth,
-          naturalHeight: logo?.naturalHeight
+          lockupWidth: round(logo?.getBoundingClientRect().width),
+          lockupHeight: round(logo?.getBoundingClientRect().height),
+          mark: {
+            src: mark?.getAttribute("src"),
+            alt: mark?.getAttribute("alt"),
+            complete: mark?.complete,
+            naturalWidth: mark?.naturalWidth,
+            renderedWidth: round(mark?.getBoundingClientRect().width),
+            renderedHeight: round(mark?.getBoundingClientRect().height)
+          },
+          wordmark: {
+            src: wordmark?.getAttribute("src"),
+            alt: wordmark?.getAttribute("alt"),
+            complete: wordmark?.complete,
+            renderedWidth: round(wordmark?.getBoundingClientRect().width),
+            renderedHeight: round(wordmark?.getBoundingClientRect().height)
+          }
         },
         searchButton: {
           backgroundColor: searchButtonStyle.backgroundColor,
@@ -379,20 +393,31 @@ test("[smoke] initial page, help, validation, and language tags work", async () 
       title: "LangRef Search — Official Programming Documentation Search",
       description:
         "Search official programming language documentation, specifications, standards, proposals, and trusted references from one fast interface.",
-      canonical: "https://official-docs-search.popyson.com/",
+      canonical: "https://langref-search.popyson.com/",
       alternateLanguages: {
-        en: "https://official-docs-search.popyson.com/?ui=en",
-        ja: "https://official-docs-search.popyson.com/?ui=ja",
-        "x-default": "https://official-docs-search.popyson.com/"
+        en: "https://langref-search.popyson.com/?ui=en",
+        ja: "https://langref-search.popyson.com/?ui=ja",
+        "x-default": "https://langref-search.popyson.com/"
       },
       favicon: "/favicon.png",
       logo: {
-        alt: "LangRef Search",
-        width: "720",
-        height: "137",
-        complete: true,
-        naturalWidth: 720,
-        naturalHeight: 137
+        lockupWidth: 360,
+        lockupHeight: 69,
+        mark: {
+          src: "/icon.png",
+          alt: "",
+          complete: true,
+          naturalWidth: 192,
+          renderedWidth: 69,
+          renderedHeight: 69
+        },
+        wordmark: {
+          src: "/logo_svg.svg",
+          alt: "LangRef Search",
+          complete: true,
+          renderedWidth: 286,
+          renderedHeight: 34
+        }
       },
       searchButton: {
         backgroundColor: "rgb(130, 92, 255)",
@@ -2782,7 +2807,7 @@ test("[catalog] a failed bundle is reported without discarding successful result
   await page.setRequestInterception(true);
   page.on("request", async (request) => {
     const pathname = new URL(request.url()).pathname;
-    if (/^\/search-index\/rust-docs\.en\.[^.]+\.json$/.test(pathname)) {
+    if (/^\/search-index\/bundles\/rust-docs\.en\.[^.]+\.json$/.test(pathname)) {
       await request.respond({ status: 503, contentType: "application/json", body: "{}" });
     } else {
       await request.continue();

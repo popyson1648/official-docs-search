@@ -6,7 +6,8 @@ const stylesheet = readFileSync(
   "utf8"
 );
 const publicAssets = {
-  logo: new URL("../public/logo.png", import.meta.url),
+  icon: new URL("../public/icon.png", import.meta.url),
+  wordmark: new URL("../public/logo_svg.svg", import.meta.url),
   ogp: new URL("../public/ogp.png", import.meta.url),
   favicon: new URL("../public/favicon.png", import.meta.url),
   appleTouchIcon: new URL("../public/apple-touch-icon.png", import.meta.url)
@@ -70,15 +71,21 @@ describe("theme colors", () => {
     expect(contrastRatio(dark.border, dark.surface)).toBeGreaterThanOrEqual(3);
   });
 
-  it("uses right-sized PNG brand assets", () => {
-    expect(pngDimensions(publicAssets.logo)).toEqual([720, 137]);
+  it("uses right-sized brand assets", () => {
+    expect(pngDimensions(publicAssets.icon)).toEqual([192, 192]);
     expect(pngDimensions(publicAssets.ogp)).toEqual([1200, 675]);
     expect(pngDimensions(publicAssets.favicon)).toEqual([192, 192]);
     expect(pngDimensions(publicAssets.appleTouchIcon)).toEqual([180, 180]);
-    expect(statSync(publicAssets.logo).size).toBeLessThan(25_000);
+    expect(statSync(publicAssets.icon).size).toBeLessThan(10_000);
     expect(statSync(publicAssets.ogp).size).toBeLessThan(40_000);
     expect(statSync(publicAssets.favicon).size).toBeLessThan(15_000);
     expect(statSync(publicAssets.appleTouchIcon).size).toBeLessThan(15_000);
+
+    const wordmark = readFileSync(publicAssets.wordmark, "utf8");
+    expect(wordmark).toMatch(/^<svg [^>]*viewBox="65\.88 435\.1 1788\.24 209\.8"/);
+    expect(wordmark).toContain('fill="#825cff"');
+    expect(wordmark).not.toMatch(/<text|font-family/);
+    expect(statSync(publicAssets.wordmark).size).toBeLessThan(15_000);
   });
 });
 

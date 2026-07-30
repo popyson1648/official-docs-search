@@ -40,9 +40,10 @@ The one mobile outlier was an external font-binary response; the other four
 runs scored 100 with 1,128–1,206 ms LCP. TBT was 0 ms and CLS was 0.00043 in
 all five runs.
 
-Brand delivery adds one 17,096-byte PNG request to the visible page.
-The 1,921×1,080 source logo is trimmed and resized to 720×137, declared with
-fixed dimensions, and loaded at high priority without lazy loading.
+Brand delivery adds a 5,447-byte 192×192 PNG mark and an 11,164-byte wordmark
+SVG to the visible page, both declared with fixed dimensions and preloaded at
+high priority without lazy loading. The lockup renders 360×69 on the search
+page and 240×46 on the legal pages.
 The social image is 1,200×675 and 30,856 bytes but is not requested during a
 normal page visit.
 The 192×192 favicon and 180×180 touch icon are 9,485 and 8,600 bytes.

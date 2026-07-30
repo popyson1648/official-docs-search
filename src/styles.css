@@ -1719,10 +1719,8 @@ html[lang="ja"] .lang-en {
   line-height: 0;
 }
 
-.legal-home-link img {
-  display: block;
-  width: 100%;
-  height: auto;
+.legal-home-link .site-logo {
+  line-height: 0;
 }
 
 .legal-language-nav {
@@ -1939,11 +1937,27 @@ html[lang="ja"] .lang-en {
   text-align: center;
 }
 
+/* The lockup keeps the retired single-image proportions: a square mark on
+   19.03% of the width, a 1.39% gap, and the wordmark on the remaining 79.58%. */
 .site-logo {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   max-width: 100%;
+}
+
+.site-logo-mark {
+  flex: 0 0 19.03%;
+  width: 19.03%;
   height: auto;
+}
+
+.site-logo-wordmark {
+  flex: 0 0 79.58%;
+  width: 79.58%;
+  height: auto;
+  margin-left: 1.39%;
 }
 
 .fpill {

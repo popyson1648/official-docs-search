@@ -6,9 +6,18 @@
   "observability": {
     "enabled": false
   },
+  // The Cloudflare adapter always injects a KV session driver, so the binding
+  // is pinned here to keep deployments from provisioning new namespaces.
+  // The app never calls Astro.session, so this namespace stays empty.
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "da2f8c396f144018bd3cd2f6a381f292"
+    }
+  ],
   "routes": [
     {
-      "pattern": "official-docs-search.popyson.com",
+      "pattern": "langref-search.popyson.com",
       "custom_domain": true
     }
   ]

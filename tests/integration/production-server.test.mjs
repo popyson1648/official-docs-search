@@ -68,11 +68,11 @@ test("serves localized home metadata without indexing search-state URLs", async 
   );
   assert.match(
     englishHtml,
-    /<link rel="canonical" href="https:\/\/official-docs-search\.popyson\.com\/\?ui=en">/
+    /<link rel="canonical" href="https:\/\/langref-search\.popyson\.com\/\?ui=en">/
   );
   assert.match(
     englishHtml,
-    /<link rel="alternate" hreflang="ja" href="https:\/\/official-docs-search\.popyson\.com\/\?ui=ja">/
+    /<link rel="alternate" hreflang="ja" href="https:\/\/langref-search\.popyson\.com\/\?ui=ja">/
   );
   assert.match(
     englishHtml,
@@ -81,7 +81,7 @@ test("serves localized home metadata without indexing search-state URLs", async 
   assert.match(englishHtml, /<meta property="og:site_name" content="LangRef Search">/);
   assert.match(
     englishHtml,
-    /<meta property="og:image" content="https:\/\/official-docs-search\.popyson\.com\/ogp\.png">/
+    /<meta property="og:image" content="https:\/\/langref-search\.popyson\.com\/ogp\.png">/
   );
   assert.doesNotMatch(englishHtml, /fonts\.gstatic\.com/);
   assert.match(english.headers.vary || "", /\bAccept-Language\b/i);
@@ -132,16 +132,16 @@ test("renders saved theme settings before the first paint", async () => {
 test("publishes robots, sitemap, and optimized brand assets", async () => {
   const robots = await rawRequest("/robots.txt");
   assert.equal(robots.statusCode, 200);
-  assert.match(robots.body.toString("utf8"), /Sitemap: https:\/\/official-docs-search\.popyson\.com\/sitemap\.xml/);
+  assert.match(robots.body.toString("utf8"), /Sitemap: https:\/\/langref-search\.popyson\.com\/sitemap\.xml/);
 
   const sitemap = await rawRequest("/sitemap.xml");
   const sitemapXml = sitemap.body.toString("utf8");
   assert.equal(sitemap.statusCode, 200);
-  assert.match(sitemapXml, /<loc>https:\/\/official-docs-search\.popyson\.com\/<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/langref-search\.popyson\.com\/<\/loc>/);
   assert.doesNotMatch(sitemapXml, /\/(?:terms|privacy)/);
 
   for (const asset of [
-    "/logo.png",
+    "/icon.png",
     "/ogp.png",
     "/favicon.png",
     "/apple-touch-icon.png"
@@ -150,6 +150,11 @@ test("publishes robots, sitemap, and optimized brand assets", async () => {
     assert.equal(response.statusCode, 200, asset);
     assert.match(response.headers["content-type"] || "", /^image\/png\b/, asset);
   }
+
+  const wordmark = await rawRequest("/logo_svg.svg");
+  assert.equal(wordmark.statusCode, 200);
+  assert.match(wordmark.headers["content-type"] || "", /^image\/svg\+xml\b/);
+  assert.match(wordmark.body.toString("utf8"), /^<svg [^>]*viewBox="/);
 });
 
 test("links the footer and renders both legal languages", async () => {
@@ -201,6 +206,25 @@ test("serves self-hosted fonts and immutable application assets", async () => {
   const asset = await rawRequest(assetPath);
   assert.equal(asset.statusCode, 200);
   assert.match(asset.headers["cache-control"] || "", /\bimmutable\b/);
+});
+
+test("caches content-addressed index bundles without freezing their manifest", async () => {
+  const runtimeManifest = await rawRequest("/search-index/runtime-manifest.json");
+  assert.equal(runtimeManifest.statusCode, 200);
+  assert.doesNotMatch(runtimeManifest.headers["cache-control"] || "", /\bimmutable\b/);
+
+  const supported = JSON.parse(runtimeManifest.body.toString("utf8")).entries.filter(
+    (entry) => typeof entry.path === "string"
+  );
+  assert.ok(supported.length > 0);
+  for (const entry of supported) {
+    assert.match(entry.path, /^\/search-index\/bundles\//);
+  }
+
+  const bundle = await rawRequest(supported[0].path);
+  assert.equal(bundle.statusCode, 200);
+  assert.match(bundle.headers["cache-control"] || "", /\bmax-age=31536000\b/);
+  assert.match(bundle.headers["cache-control"] || "", /\bimmutable\b/);
 });
 
 test("does not apply immutable headers to missing static paths", async () => {
