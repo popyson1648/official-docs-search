@@ -22,6 +22,17 @@ A release is needed after application, catalog, adapter, generated-index, depend
    application and matching `public/search-index/` artifacts together.
 8. Smoke-test original-document links, legal links, report-form access, and
    response headers on the deployed site.
+9. Confirm the deployed HTML carries no third-party script, which the Privacy
+   Policy states. Cloudflare injects its Web Analytics beacon at the edge when
+   automatic setup is enabled for the zone, and that injection is invisible to
+   the repository and to the local preview:
+
+   ```sh
+   curl -s -H 'Accept: text/html' https://langrefsearch.com/ | grep -c cloudflareinsights
+   ```
+
+   The count must be `0`. If it is not, disable Web Analytics for the zone
+   before relying on the Privacy Policy's first-party statement.
 
 The scheduled weekly and monthly index updates open a draft pull request;
 review it and never merge automatically.
