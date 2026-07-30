@@ -29,7 +29,7 @@ reviewed navigation links.
 The manifest records that canonicalizer; web.dev course pages use
 `webdev-course-links-v1`.
 Use the project user agent
-`langref-search-indexer/0.3 (+https://langref-search.popyson.com/)`, which names
+`langref-search-indexer/0.4 (+https://langrefsearch.com/)`, which names
 the service and a contact URL, plus bounded concurrency, a 30-second timeout with
 bounded retry, and no discovery crawling or upstream search endpoints.
 GNU GCC requests are serialized with the published 60-second crawl delay.

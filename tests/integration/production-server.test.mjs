@@ -68,11 +68,11 @@ test("serves localized home metadata without indexing search-state URLs", async 
   );
   assert.match(
     englishHtml,
-    /<link rel="canonical" href="https:\/\/langref-search\.popyson\.com\/\?ui=en">/
+    /<link rel="canonical" href="https:\/\/langrefsearch\.com\/\?ui=en">/
   );
   assert.match(
     englishHtml,
-    /<link rel="alternate" hreflang="ja" href="https:\/\/langref-search\.popyson\.com\/\?ui=ja">/
+    /<link rel="alternate" hreflang="ja" href="https:\/\/langrefsearch\.com\/\?ui=ja">/
   );
   assert.match(
     englishHtml,
@@ -81,7 +81,7 @@ test("serves localized home metadata without indexing search-state URLs", async 
   assert.match(englishHtml, /<meta property="og:site_name" content="LangRef Search">/);
   assert.match(
     englishHtml,
-    /<meta property="og:image" content="https:\/\/langref-search\.popyson\.com\/ogp\.png">/
+    /<meta property="og:image" content="https:\/\/langrefsearch\.com\/ogp\.png">/
   );
   assert.doesNotMatch(englishHtml, /fonts\.gstatic\.com/);
   assert.match(english.headers.vary || "", /\bAccept-Language\b/i);
@@ -132,12 +132,12 @@ test("renders saved theme settings before the first paint", async () => {
 test("publishes robots, sitemap, and optimized brand assets", async () => {
   const robots = await rawRequest("/robots.txt");
   assert.equal(robots.statusCode, 200);
-  assert.match(robots.body.toString("utf8"), /Sitemap: https:\/\/langref-search\.popyson\.com\/sitemap\.xml/);
+  assert.match(robots.body.toString("utf8"), /Sitemap: https:\/\/langrefsearch\.com\/sitemap\.xml/);
 
   const sitemap = await rawRequest("/sitemap.xml");
   const sitemapXml = sitemap.body.toString("utf8");
   assert.equal(sitemap.statusCode, 200);
-  assert.match(sitemapXml, /<loc>https:\/\/langref-search\.popyson\.com\/<\/loc>/);
+  assert.match(sitemapXml, /<loc>https:\/\/langrefsearch\.com\/<\/loc>/);
   assert.doesNotMatch(sitemapXml, /\/(?:terms|privacy)/);
 
   for (const asset of [

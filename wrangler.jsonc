@@ -17,7 +17,7 @@
   ],
   "routes": [
     {
-      "pattern": "langref-search.popyson.com",
+      "pattern": "langrefsearch.com",
       "custom_domain": true
     }
   ]

@@ -15,7 +15,7 @@ interface Props {
 const { uiLanguage, title, description, pathname } = Astro.props;
 const themeSetting = getThemeSetting(Astro.cookies.get("ods_theme")?.value);
 const productionOrigin =
-  Astro.site ?? new URL("https://langref-search.popyson.com");
+  Astro.site ?? new URL("https://langrefsearch.com");
 const localizedUrl = (language: UiLanguage) => {
   const url = new URL(pathname, productionOrigin);
   url.searchParams.set("ui", language);

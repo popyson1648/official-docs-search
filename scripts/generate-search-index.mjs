@@ -40,7 +40,7 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 /* Identify the indexer and a reachable contact so upstream operators can see
    who is fetching their published indexes and how to reach the operator. */
 const INDEXER_USER_AGENT =
-  "langref-search-indexer/0.3 (+https://langref-search.popyson.com/)";
+  "langref-search-indexer/0.4 (+https://langrefsearch.com/)";
 const outputDirectory = resolve(root, "public/search-index");
 const catalogSource = readFileSync(resolve(root, "src/data/docs-sources.toml"), "utf8");
 

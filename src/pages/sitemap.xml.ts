@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 
-const fallbackOrigin = new URL("https://langref-search.popyson.com");
+const fallbackOrigin = new URL("https://langrefsearch.com");
 
 function escapeXml(value: string): string {
   return value

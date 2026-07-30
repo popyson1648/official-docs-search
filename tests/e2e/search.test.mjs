@@ -393,11 +393,11 @@ test("[smoke] initial page, help, validation, and language tags work", async () 
       title: "LangRef Search — Official Programming Documentation Search",
       description:
         "Search official programming language documentation, specifications, standards, proposals, and trusted references from one fast interface.",
-      canonical: "https://langref-search.popyson.com/",
+      canonical: "https://langrefsearch.com/",
       alternateLanguages: {
-        en: "https://langref-search.popyson.com/?ui=en",
-        ja: "https://langref-search.popyson.com/?ui=ja",
-        "x-default": "https://langref-search.popyson.com/"
+        en: "https://langrefsearch.com/?ui=en",
+        ja: "https://langrefsearch.com/?ui=ja",
+        "x-default": "https://langrefsearch.com/"
       },
       favicon: "/favicon.png",
       logo: {

@@ -225,7 +225,7 @@ const clientSearchCatalog = catalog.languages.map((language) => ({
   }))
 }));
 const productionOrigin =
-  Astro.site ?? new URL("https://langref-search.popyson.com");
+  Astro.site ?? new URL("https://langrefsearch.com");
 const rootUrl = new URL("/", productionOrigin);
 const localizedHomeUrl = (language: "en" | "ja") => {
   const url = new URL("/", productionOrigin);
@@ -318,7 +318,7 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "LangRef Search",
-        "url": "https://langref-search.popyson.com/",
+        "url": "https://langrefsearch.com/",
         "inLanguage": ["en", "ja"]
       }
     </script>

@@ -23,7 +23,7 @@ then records the acknowledgement separately from the act of submitting.
 > 【保存期間】対応完了後12か月を目安に削除し、原則として送信から24か月を超えて保持しません。
 > 【入力しないでください】パスワード、APIキー、非公開コード、機密情報、要配慮個人情報、第三者の個人情報。
 >
-> 詳しくは https://langref-search.popyson.com/privacy?ui=ja を確認してください。
+> 詳しくは https://langrefsearch.com/privacy?ui=ja を確認してください。
 >
 > ---
 >
@@ -40,7 +40,7 @@ then records the acknowledgement separately from the act of submitting.
 > submit passwords, API keys, non-public code, confidential information, sensitive
 > personal data, or another person's personal data.
 >
-> See https://langref-search.popyson.com/privacy?ui=en.
+> See https://langrefsearch.com/privacy?ui=en.
 
 ## Fields
 
