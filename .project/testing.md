@@ -20,6 +20,8 @@
   affected by the current diff, then verifies their known live result URLs.
 - `npm run test:live` explicitly checks every upstream source and live result
   URL.
+- `node scripts/check-licenses.mjs` reviews every production dependency license,
+  failing on strong copyleft, unreviewed weak copyleft, and undeclared licenses.
 
 ## Minimum Checks Before Completion
 

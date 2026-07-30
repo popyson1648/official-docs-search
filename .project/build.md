@@ -116,6 +116,15 @@ unused `SESSION` KV namespace so deployments never provision new resources. The
 application does not add analytics. Run `npm run check:worker` before release;
 do not run `wrangler deploy` unless the deployment is explicitly authorized.
 
+## Dependency Licenses
+
+Production dependencies must carry permissive licenses. `scripts/check-licenses.mjs`
+reads `package-lock.json`, fails on strong copyleft, undeclared, or unrecognized
+licenses, and permits weak copyleft only for the reviewed build-time tools listed in
+the script. Those tools run during the build; the deployed Worker bundle contains no
+native binary or CSS transformer. Adding a dependency that trips the check requires a
+recorded decision, not an allowlist edit alone.
+
 ## Common Failures
 
 - A supported catalog entry without an adapter, or an adapter without a supported entry, fails generation.

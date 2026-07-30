@@ -103,6 +103,7 @@ paths = [
   "scripts/search-index/**",
   "scripts/verify-affected-search-index.mjs",
   "scripts/verify-live-search-index.mjs",
+  "scripts/check-licenses.mjs",
   "tests/*.test.ts",
   "vitest.config.ts",
   "package.json",
@@ -313,6 +314,19 @@ run_on_edit = false
 run_pre_commit = false
 run_pre_push = false
 run_in_ci = false
+
+[phases.licenses]
+enabled = true
+command = "node scripts/check-licenses.mjs"
+run_on_edit = false
+run_pre_commit = false
+run_pre_push = true
+run_in_ci = true
+paths = [
+  "package.json",
+  "package-lock.json",
+  "scripts/check-licenses.mjs",
+]
 
 [phases.security]
 enabled = true

@@ -8,18 +8,39 @@ Only Shunsuke Setoguchi may access responses.
 
 ## Form Introduction
 
-> LangRef Searchの不具合報告フォームです。パスワード、APIキー、非公開コード、
-> 機密情報、要配慮個人情報、第三者の個人情報は入力しないでください。報告内容は
-> 調査のため、不要な個人情報を削除したうえで、Claude、ChatGPT、Claude Code、
-> Codex、Antigravityで解析する場合があります。詳しくは
-> https://langref-search.popyson.com/privacy?ui=ja を確認してください。
+A link to the Privacy Policy alone is not enough. The introduction must state the
+purpose, the recipients, the retention period, and that answering is voluntary,
+because a respondent decides what to submit before opening another page. Field 12
+then records the acknowledgement separately from the act of submitting.
+
+> LangRef Searchの不具合報告フォームです。
+> 送信は任意で、送信しなくても本サービスは利用できます。
 >
-> Use this form to report a problem with LangRef Search. Do not submit
-> passwords, API keys, non-public code, confidential information, sensitive
-> personal data, or another person's personal data. For investigation, report
-> content may be analyzed with Claude, ChatGPT, Claude Code, Codex, or
-> Antigravity after unnecessary personal data is removed. See
-> https://langref-search.popyson.com/privacy?ui=en.
+> 【取得目的】報告された不具合の調査、再現、修正、および必要な場合の返信。
+> 【取得者】Shunsuke Setoguchi（LangRef Search運営者）。回答を閲覧できるのは運営者のみです。
+> 【取扱い】原因調査のため、報告内容の全部または一部を、連絡先など調査に不要な情報を削除したうえで、
+> Claude、Claude Code、ChatGPT、Codex、Antigravityへ手動で入力する場合があります。
+> 【保存期間】対応完了後12か月を目安に削除し、原則として送信から24か月を超えて保持しません。
+> 【入力しないでください】パスワード、APIキー、非公開コード、機密情報、要配慮個人情報、第三者の個人情報。
+>
+> 詳しくは https://langref-search.popyson.com/privacy?ui=ja を確認してください。
+>
+> ---
+>
+> Use this form to report a problem with LangRef Search. Submitting is optional,
+> and you can use the Service without it.
+>
+> Purpose: investigating, reproducing, and fixing the reported problem, and
+> replying when necessary. Recipient: Shunsuke Setoguchi, the operator of LangRef
+> Search; only the operator can read responses. Handling: for investigation, all
+> or part of a report may be entered manually into Claude, Claude Code, ChatGPT,
+> Codex, or Antigravity after contact details and other information not needed for
+> the investigation are removed. Retention: deleted around 12 months after the
+> issue is resolved, and normally no later than 24 months after submission. Do not
+> submit passwords, API keys, non-public code, confidential information, sensitive
+> personal data, or another person's personal data.
+>
+> See https://langref-search.popyson.com/privacy?ui=en.
 
 ## Fields
 
@@ -52,11 +73,18 @@ Only Shunsuke Setoguchi may access responses.
     email validation
     - Description: `回答や追加確認が必要な場合にのみ使用します。 / Used only
       when a response or clarification is needed.`
-12. **情報の取扱いの確認 / Data-use acknowledgement** — required checkbox
-    - `プライバシーポリシーと、報告内容が不要な個人情報を削除したうえで外部AI
-      サービスにより解析される場合があることを確認しました。 / I have read the
-      Privacy Policy and understand that report content may be analyzed by
-      external AI services after unnecessary personal data is removed.`
+12. **情報の取扱いの確認 / Data-use acknowledgement** — required checkbox, one
+    option, question text `情報の取扱いへの同意 / Consent to data handling`
+    - `プライバシーポリシーを読み、報告内容および任意で入力した連絡先が上記の目的
+      で利用されること、調査のため不要な情報を削除したうえで外部AIサービスへ入力
+      される場合があることに同意します。 / I have read the Privacy Policy and
+      consent to my report, and any contact details I choose to provide, being
+      used for the purposes above, including manual entry into external AI
+      services after information not needed for the investigation is removed.`
+
+    Keep this a separate required checkbox rather than treating submission itself
+    as consent, so the record shows the respondent acted on the notice. Do not
+    pre-select it.
 
 ## Google Forms Settings
 

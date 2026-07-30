@@ -177,7 +177,7 @@ test("links the footer and renders both legal languages", async () => {
   assert.match(englishPrivacy, /12 months after resolution/);
   assert.match(englishPrivacy, /no later than 24 months/);
   assert.match(englishPrivacy, /Shunsuke Setoguchi/);
-  assert.match(englishPrivacy, />@popyson1648<\/a>/);
+  assert.doesNotMatch(legalArticle(englishPrivacy), /x\.com\/popyson1648/);
   assert.match(englishPrivacy, /Automatic Transmission to Third Parties/);
   assert.match(
     englishPrivacy,
@@ -200,6 +200,7 @@ test("links the footer and renders both legal languages", async () => {
   assert.match(japaneseTerms, /<html[^>]+lang="ja"/);
   assert.match(japaneseTerms, /<h1>利用規約<\/h1>/);
   assert.match(japaneseTerms, /Shunsuke Setoguchi/);
+  assert.doesNotMatch(legalArticle(japaneseTerms), /x\.com\/popyson1648/);
   assert.match(japaneseTerms, /文書本文は複製、保存または再配信しません。/);
 });
 
@@ -275,6 +276,12 @@ async function availablePort() {
       server.close(() => resolvePort(address.port));
     });
   });
+}
+
+/* The legal text itself names the operator without linking a social profile;
+   the shared site footer below it still carries that link. */
+function legalArticle(html) {
+  return html.split("<footer")[0];
 }
 
 async function rawRequest(pathname, headers = {}, method = "GET") {
