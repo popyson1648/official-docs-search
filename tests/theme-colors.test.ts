@@ -68,6 +68,10 @@ describe("theme colors", () => {
     expect(contrastRatio(dark["action-accent"], "#ffffff")).toBeGreaterThanOrEqual(
       4.5
     );
+    expect(
+      contrastRatio(cssVariable("action-accent"), "#ffffff"),
+      "filled light controls carry white labels"
+    ).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(dark.border, dark.surface)).toBeGreaterThanOrEqual(3);
   });
 

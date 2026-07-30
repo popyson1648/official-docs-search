@@ -58,9 +58,13 @@ for performance with 3.5 s LCP and 521 KiB transferred; production scored 96 wit
 1.9 s LCP and 155 KiB, because the preview serves everything uncompressed while
 Cloudflare applies Brotli at the edge. Both measured the same 0.095 CLS, caused
 by the footer reflowing when the Alexandria subset swaps in, which predates the
-brand lockup. Accessibility rose from 92 to 97 after `role="group"` was added to
-the query-modifier container; the remaining failure is the documented 4.26:1
-Search label. Total blocking time was 0 ms in every run.
+brand lockup. A metric-matched `Alexandria Fallback` face closed that gap: the
+system sans-serif renders 9.76% narrower than Alexandria, the adjusted face
+renders 0.42% narrower, and mobile CLS fell to 0.001 with the remaining shift
+coming from the source-policy fieldset. Accessibility reached 100 after
+`role="group"` was added to the query-modifier container and filled controls
+moved to the darker `#7951EF` action accent, which carries white labels at
+4.96:1. Total blocking time was 0 ms in every run.
 
 The 2026-07-30 Light/Dark production audit after adding the appearance menu
 kept Performance, Best Practices, and SEO at 100 in both modes. Dark

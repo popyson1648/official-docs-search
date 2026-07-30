@@ -420,14 +420,14 @@ test("[smoke] initial page, help, validation, and language tags work", async () 
         }
       },
       searchButton: {
-        backgroundColor: "rgb(130, 92, 255)",
+        backgroundColor: "rgb(121, 81, 239)",
         color: "rgb(255, 255, 255)"
       }
     }
   );
   assert.equal(
     fontContract.bodyFontFamily,
-    'Alexandria, "LINE Seed JP", sans-serif'
+    'Alexandria, "LINE Seed JP", "Alexandria Fallback", sans-serif'
   );
   assert.deepEqual(fontContract.weights, {
     Alexandria: ["400", "500", "600", "700"],

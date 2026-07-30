@@ -135,6 +135,8 @@
    Repeated source
    qualifications appear once in a small borderless disclosure above results.
    A contextual Top control appears only after the search panel leaves view.
+   Filled controls with white labels use the darker `#7951EF` action accent in
+   both themes so their labels clear 4.5:1.
    The light interface palette uses `#825CFF` as its theme color and preserves
    the prior perceptual-lightness hierarchy; primary light-theme result text
    remains near-black. Dark mode uses the same purple identity with
