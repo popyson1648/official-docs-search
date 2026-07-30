@@ -21,6 +21,7 @@ import {
   getLanguageTagTextColor
 } from "../core/language-colors";
 import { getThemeSetting } from "../core/theme";
+import SiteFooter from "../components/SiteFooter.astro";
 import { ClientRouter } from "astro:transitions";
 import "../font-faces.css";
 import "../styles.css";
@@ -135,8 +136,17 @@ const trustedScope = resolveSearchScope(catalog, {
 });
 
 const hasQuery = q.trim().length > 0;
-const sourceLanguages =
+const visibleSourceLanguages =
   hasQuery && parsed.languages.length > 0 ? trustedScope.languages : catalog.languages;
+const visibleSourceLanguageIds = new Set(
+  visibleSourceLanguages.map((language) => language.id)
+);
+const sourceLanguages = [
+  ...visibleSourceLanguages,
+  ...catalog.languages.filter(
+    (language) => !visibleSourceLanguageIds.has(language.id)
+  )
+];
 const initialSourceOptionState = resolveSourceOptionState(
   sourceLanguages.flatMap((language) =>
     language.sources.map((source) => ({
@@ -200,6 +210,19 @@ const suggestionScopes = catalog.languages.map((language) => ({
       name: source.name,
       kind: source.kind
     }))
+}));
+const clientSearchCatalog = catalog.languages.map((language) => ({
+  id: language.id,
+  name: language.name,
+  aliases: [...language.aliases, ...language.bareAliases],
+  autoNonOfficialFallback: language.autoNonOfficialFallback,
+  sources: language.sources.map((source) => ({
+    id: source.id,
+    name: source.name,
+    kind: source.kind,
+    defaultEnabled: source.defaultEnabled,
+    selected: selectedIds.has(source.id)
+  }))
 }));
 const productionOrigin =
   Astro.site ?? new URL("https://official-docs-search.popyson.com");
@@ -289,7 +312,6 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
     <link rel="preload" href="/logo.png" as="image" type="image/png" />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -304,7 +326,7 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
   <body>
 
 
-    <main class="page">
+    <main class="page" data-search-page>
       <section
         class="search-panel"
         aria-labelledby="search-heading"
@@ -475,7 +497,7 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
           <input type="hidden" name="ui" value={uiLanguage} data-ui-hidden />
           <input type="hidden" name="sourceSelection" value="explicit" />
           {
-            sourceLanguages.map((language) => (
+            visibleSourceLanguages.map((language) => (
               <input
                 type="hidden"
                 name="sourceScopeLanguage"
@@ -504,6 +526,7 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
                 data-query-stack
                 data-known-languages={JSON.stringify(Array.from(knownLanguages))}
                 data-suggestion-scopes={JSON.stringify(suggestionScopes)}
+                data-client-search-catalog={JSON.stringify(clientSearchCatalog)}
               >
                 <div class="query-highlight" aria-hidden="true" data-query-highlight></div>
                 <input
@@ -564,17 +587,16 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
             </div>
           </div>
 
-          {
-            parsed.languages.length > 0 && (
-              <div
-                class="active-tags"
-                data-active-tags
-                data-localized-aria-label
-                data-label-en={t("en", "activeTags")}
-                data-label-ja={t("ja", "activeTags")}
-                aria-label={t(uiLanguage, "activeTags")}
-              >
-                {parsed.languages.map((lang) => {
+          <div
+            class="active-tags"
+            data-active-tags
+            data-localized-aria-label
+            data-label-en={t("en", "activeTags")}
+            data-label-ja={t("ja", "activeTags")}
+            aria-label={t(uiLanguage, "activeTags")}
+            hidden={parsed.languages.length === 0}
+          >
+            {parsed.languages.map((lang) => {
                   const langName = catalog.languages.find((l) => l.id === lang)?.name || lang;
                   const languageColor = getLanguageColor(lang);
                   const languageTextColor = languageColor
@@ -604,9 +626,7 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
                     </span>
                   );
                 })}
-              </div>
-            )
-          }
+          </div>
 
           <p class="examples" id="query-example">
             <span class="lang-en">{t("en", "examples")}</span>
@@ -692,7 +712,11 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
             <div class="source-lists">
               {
                 sourceLanguages.map((language) => (
-                  <div class="language-group">
+                  <div
+                    class="language-group"
+                    data-source-language-group={language.id}
+                    hidden={!visibleSourceLanguageIds.has(language.id)}
+                  >
                     <h3 class="language-name">{language.name}</h3>
                     <div class="source-grid">
                       {
@@ -786,25 +810,23 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
         </form>
       </section>
 
-      {
-        parsed.errors.length > 0 && (
-          <section class="notice error" aria-live="polite">
-            {parsed.errors.map((error) => <p>{error.message}</p>)}
-          </section>
-        )
-      }
+      <section
+        class="notice error"
+        aria-live="polite"
+        data-query-errors
+        hidden={parsed.errors.length === 0}
+      >
+        {parsed.errors.map((error) => <p>{error.message}</p>)}
+      </section>
 
-      {
-        hasQuery && (
-          <section
-            class="results"
-            data-localized-aria-label
-            data-label-en={t("en", "resultsTitle")}
-            data-label-ja={t("ja", "resultsTitle")}
-            aria-label={t(uiLanguage, "resultsTitle")}
-          >
-            {
-              parsed.errors.length > 0 ? null : (
+      <section
+        class="results"
+        data-localized-aria-label
+        data-label-en={t("en", "resultsTitle")}
+        data-label-ja={t("ja", "resultsTitle")}
+        aria-label={t(uiLanguage, "resultsTitle")}
+        hidden={!hasQuery || parsed.errors.length > 0}
+      >
                 <div
                   data-search-results
                   data-loading="true"
@@ -883,12 +905,10 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
                   <ol class="result-list" data-result-list></ol>
                   <div data-result-pagination></div>
                 </div>
-              )
-            }
-          </section>
-        )
-      }
+      </section>
     </main>
+
+    <SiteFooter uiLanguage={uiLanguage} />
 
     <button
       type="button"
@@ -958,6 +978,9 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
       import { initializeClientSearchPage } from "../client/search-page";
 
       document.addEventListener("astro:page-load", () => {
+        const page = document.querySelector<HTMLElement>("[data-search-page]");
+        if (!page || page.dataset.clientInitialized === "true") return;
+        page.dataset.clientInitialized = "true";
         void initializeClientSearchPage();
       });
     </script>

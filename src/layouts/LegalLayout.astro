@@ -1,0 +1,108 @@
+---
+import SiteFooter from "../components/SiteFooter.astro";
+import type { UiLanguage } from "../core/i18n";
+import { getThemeSetting } from "../core/theme";
+import "../font-faces.css";
+import "../styles.css";
+
+interface Props {
+  uiLanguage: UiLanguage;
+  title: string;
+  description: string;
+  pathname: "/terms" | "/privacy";
+}
+
+const { uiLanguage, title, description, pathname } = Astro.props;
+const themeSetting = getThemeSetting(Astro.cookies.get("ods_theme")?.value);
+const productionOrigin =
+  Astro.site ?? new URL("https://official-docs-search.popyson.com");
+const localizedUrl = (language: UiLanguage) => {
+  const url = new URL(pathname, productionOrigin);
+  url.searchParams.set("ui", language);
+  return url;
+};
+const canonicalUrl = localizedUrl(uiLanguage);
+---
+
+<html lang={uiLanguage} data-theme-setting={themeSetting}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="color-scheme"
+      content={themeSetting === "system" ? "light dark" : `only ${themeSetting}`}
+    />
+    <meta
+      name="theme-color"
+      content="#825CFF"
+      media={
+        themeSetting === "system"
+          ? "(prefers-color-scheme: light)"
+          : themeSetting === "light"
+            ? "all"
+            : "not all"
+      }
+      data-theme-color="light"
+    />
+    <meta
+      name="theme-color"
+      content="#100D18"
+      media={
+        themeSetting === "system"
+          ? "(prefers-color-scheme: dark)"
+          : themeSetting === "dark"
+            ? "all"
+            : "not all"
+      }
+      data-theme-color="dark"
+    />
+    <meta name="application-name" content="LangRef Search" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex,follow" />
+    <title>{title}</title>
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="en" href={localizedUrl("en")} />
+    <link rel="alternate" hreflang="ja" href={localizedUrl("ja")} />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+  </head>
+  <body>
+    <div class="legal-shell">
+      <header class="legal-header">
+        <a
+          class="legal-home-link"
+          href={`/?ui=${uiLanguage}`}
+          aria-label={uiLanguage === "ja" ? "LangRef Searchのトップへ" : "LangRef Search home"}
+        >
+          <img
+            src="/logo.png"
+            width="720"
+            height="137"
+            alt="LangRef Search"
+            decoding="async"
+          />
+        </a>
+        <nav
+          class="legal-language-nav"
+          aria-label={uiLanguage === "ja" ? "表示言語" : "Display language"}
+        >
+          <a
+            href={`${pathname}?ui=en`}
+            lang="en"
+            aria-current={uiLanguage === "en" ? "page" : undefined}
+          >EN</a>
+          <span aria-hidden="true">/</span>
+          <a
+            href={`${pathname}?ui=ja`}
+            lang="ja"
+            aria-current={uiLanguage === "ja" ? "page" : undefined}
+          >JA</a>
+        </nav>
+      </header>
+      <main class="legal-content">
+        <slot />
+      </main>
+      <SiteFooter uiLanguage={uiLanguage} />
+    </div>
+  </body>
+</html>

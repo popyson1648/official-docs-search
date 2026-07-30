@@ -7,11 +7,14 @@
 - `src/core/`: framework-independent query, catalog, support-state, runtime, and ranking logic.
 - `src/data/`: TOML catalog of official, conventional, and community documentation sources.
 - `src/font-faces.css`: reviewed generated face declarations bundled by Astro.
-- `src/pages/`: the single search-page entry plus robots and sitemap discovery
-  routes.
-- `scripts/`: index adapters, reproducible publication, live verification, and production serving.
+- `src/pages/`: the single search-product entry, ancillary legal notices, and
+  robots and sitemap discovery routes.
+- `src/components/` and `src/layouts/`: shared footer and legal-page shell.
+- `scripts/`: index adapters, reproducible publication, live verification, and
+  generated font maintenance.
 - `public/search-index/`: committed compact search bundles and manifest.
-- `tests/`: unit, integration, production-server, and real-browser tests.
+- `public/fonts/google/`: pinned WOFF2 subsets and upstream OFL license files.
+- `tests/`: unit, integration, Workers-preview, and real-browser tests.
 - `.plans/` and `.decisions/`: approved task plans and architecture history.
 
 ## Important Modules
@@ -50,6 +53,10 @@
 - `src/client/search.worker.ts`: parses and searches selected indexes off the main thread.
 - `src/pages/index.astro`: server-rendered search form, localized brand and
   discovery metadata, split-color query language chips, and the result shell.
+- `src/pages/terms.astro` and `src/pages/privacy.astro`: localized ancillary
+  legal notices that remain outside the product sitemap.
+- `src/components/SiteFooter.astro` and `src/layouts/LegalLayout.astro`:
+  compact legal/report navigation and the theme-aware legal-page shell.
 - `src/pages/robots.txt.ts` and `src/pages/sitemap.xml.ts`: expose the
   production sitemap and the root page's EN/JA representations without adding
   separate product-entry pages.
@@ -72,13 +79,11 @@
   live-link checks.
 - `scripts/verify.py`: selects repository verification phases from changed
   paths with conservative fallback.
-- `scripts/precompress-production-assets.mjs`: creates maximum-compression
-  search-index sidecars inside the production build output.
 - `scripts/update-font-stylesheet.mjs`: validates and refreshes the committed
-  font-face stylesheet without changing the family or weight contract.
-- `scripts/serve-production.mjs`: serves Astro middleware with whole-response
-  text compression, precompressed search-index delivery, and the search-asset
-  cache contract.
+  font-face stylesheet, WOFF2 binaries, and licenses without changing the
+  family or weight contract.
+- `wrangler.jsonc`: Cloudflare Workers runtime, route, compatibility, and
+  observability policy.
 
 ## Runtime Data Flow
 
@@ -87,16 +92,19 @@
    precedence; `Accept-Language` is used only when neither exists. The
    interface language supplies the documentation preference unless `locale:en`
    or `locale:ja` overrides it for the query.
-2. If at least one source is selected, the client requests the lightweight
+2. Normal interactive submissions are parsed locally, update history and the
+   result mount, and do not request another HTML page. Direct, reloaded, shared,
+   and no-JavaScript GET query URLs continue to render on the server.
+3. If at least one source is selected, the client requests the lightweight
    runtime status manifest and keeps it in the page-lifetime worker; the
    complete provenance manifest stays available for generation and server
    verification. The no-source state makes no index request.
-3. The runtime prefers an exact locale and visibly falls back from Japanese to
+4. The runtime prefers an exact locale and visibly falls back from Japanese to
    the source's English bundle when no Japanese index exists.
-4. The worker fetches and caches matching supported bundles, keeps successful
+5. The worker fetches and caches matching supported bundles, keeps successful
    bundles when one load fails, scans compact tuples, and ranks/diversifies
    matches.
-5. The appearance menu immediately left of EN/JA selects Dark, Light, or
+6. The appearance menu immediately left of EN/JA selects Dark, Light, or
    System. The saved cookie lets SSR emit the correct root setting before CSS;
    System follows `prefers-color-scheme` without reloading. The menu supports
    radio-menu semantics, arrows, Home, End, Escape, outside dismissal, and
@@ -110,13 +118,13 @@
    visible `proposal` source. It is on when at least one proposal source is
    selected and off when none are selected. Individual `sourceId` values remain
    the submitted and persisted state.
-6. The runtime derives exact language/site facets from all matches; applied
+7. The runtime derives exact language/site facets from all matches; applied
    filters re-search the cached indexes for the selected source subset.
    Result order stays relevance-first by default and can switch in place to
    catalog language name ascending or descending.
-7. While the worker is busy, the result region exposes `aria-busy`, a hidden
+8. While the worker is busy, the result region exposes `aria-busy`, a hidden
    status announcement, and a reduced-motion-safe result-card skeleton.
-8. The client groups only unambiguous duplicate reference symbols and renders
+9. The client groups only unambiguous duplicate reference symbols and renders
    every single- or multi-origin result as a non-link title, an adjacent
    Linguist-colored language tag, and compact subordinate source links.
    It shows the first 15 groups and discloses later batches without navigation.
@@ -129,17 +137,21 @@
    low-luminance purple surfaces and near-white result text.
    The visible heading uses the optimized LangRef Search logo with fixed
    dimensions. Search and enabled toggle controls use the theme accent.
-9. The client renders original HTTPS links, qualified result titles, actual
+10. The client renders original HTTPS links, qualified result titles, actual
    content locales, document kinds, proposal state and warnings,
    locale-fallback notices before the count, partial failures, and explicit
    unsupported states. The visible source-policy control selects official-only,
    per-language fallback, or all-source behavior; automatic fallback does not
    render a notice.
-10. The clean top-page EN/JA representations provide localized title,
+11. The clean top-page EN/JA representations provide localized title,
     description, canonical, `hreflang`, Open Graph, Twitter, favicon, and
     `WebSite` data. Search and filter state URLs canonicalize to the clean
     localized home and remain `noindex,follow`. The top page remains the only
     product entry.
+12. A compact footer links ancillary noindex Terms and Privacy pages and the
+    external Google Forms report route. The legal pages disclose the operator,
+    Cloudflare hosting, local preferences, query fallback, report retention,
+    and named AI investigation services.
 
 ## Change Rules
 

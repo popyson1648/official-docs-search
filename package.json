@@ -11,10 +11,11 @@
     "check:search-index": "node scripts/generate-search-index.mjs --check",
     "update:font-css": "node scripts/update-font-stylesheet.mjs",
     "dev": "astro dev",
-    "build": "astro build && npm run build:precompress",
-    "build:precompress": "node scripts/precompress-production-assets.mjs",
-    "start": "node scripts/serve-production.mjs",
-    "preview": "astro preview",
+    "build": "astro build",
+    "start": "astro preview --host 0.0.0.0",
+    "preview": "astro preview --host 0.0.0.0",
+    "generate:worker-types": "wrangler types .wrangler/worker-configuration.d.ts --include-env=false",
+    "check:worker": "wrangler types .wrangler/worker-configuration.d.ts --include-env=false && wrangler deploy --dry-run && wrangler check startup --outfile .wrangler/worker-startup.cpuprofile",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --exclude 'tests/integration/**'",
     "test:integration": "vitest run tests/integration",
@@ -30,10 +31,8 @@
     "test:live:affected": "node scripts/verify-affected-search-index.mjs"
   },
   "dependencies": {
-    "@astrojs/node": "^11.0.2",
+    "@astrojs/cloudflare": "^14.1.7",
     "astro": "^7.1.3",
-    "compression": "^1.8.1",
-    "serve-static": "^2.2.1",
     "smol-toml": "^1.6.1"
   },
   "devDependencies": {
@@ -42,6 +41,7 @@
     "parse5": "^8.0.1",
     "puppeteer": "^25.1.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.9",
+    "wrangler": "^4.115.0"
   }
 }

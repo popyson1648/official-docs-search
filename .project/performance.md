@@ -12,13 +12,14 @@ unless the query contains an explicit `locale:` override.
 | Payload | Raw | gzip | Brotli |
 | --- | ---: | ---: | ---: |
 | All bundles, generator regression settings (gzip 9 / Brotli 11) | 18,007,350 B | 2,463,438 B | 1,897,426 B |
-| Runtime manifest, production sidecars (gzip 9 / Brotli 11) | 40,972 B | 7,155 B | 5,798 B |
+| Runtime manifest, generator gzip / Brotli planning sizes | 40,972 B | 7,155 B | 5,798 B |
 | All-bundle cold response including runtime manifest | 18,048,322 B | 2,470,593 B | 1,903,224 B |
-| Full manifest, production sidecars (not fetched by search) | 151,390 B | 34,620 B | 27,742 B |
+| Full manifest, generator gzip / Brotli planning sizes (not fetched by search) | 151,390 B | 34,620 B | 27,742 B |
 
 Manifest size fields use deterministic maximum-quality compression for
 regression checks.
-Production transfer estimates use the precompressed build sidecars.
+Transfer estimates use the deterministic generator compression sizes until
+production Cloudflare response measurements are available.
 Automated budgets require every bundle to remain below 750,000 Brotli-11 bytes,
 the default four-language English official set below 1,000,000 bytes, and the
 largest one-bundle set from four distinct languages below 2,000,000 bytes.
@@ -58,8 +59,8 @@ measured 1.3 s LCP. Their 0.035 CLS was attributed to the existing external
 Alexandria web-font swap, not the theme controller. The selector adds no image,
 font, or search-index request; its icons and palette are CSS and inline SVG.
 
-The reviewed Google Fonts declarations are bundled locally while the exact
-Alexandria and LINE Seed JP WOFF2 files remain on `fonts.gstatic.com`.
+The reviewed Google Fonts declarations and the exact Alexandria and LINE Seed
+JP WOFF2 subsets are served from the first-party Cloudflare origin.
 In a same-build A/B, local declarations reduced mobile LCP from a 1,958 ms
 median to 1,204 ms and stylesheet transfer from 67,474 B to 34,714 B.
 Font-loaded mobile and desktop screenshots, measured geometry, and ordered
@@ -76,8 +77,9 @@ results were pixel-identical to the pre-change baseline.
 | Unified language, worker-cached | Separate controls | 47 ms |
 | Smooth back to top | 647 ms | 639 ms |
 
-Client-routed GET forms retain the worker and parsed indexes while preserving
-normal no-JavaScript GET behavior. The alternate language's search request is
+Client-handled GET forms retain the worker and parsed indexes without fetching
+another HTML page, while preserving normal no-JavaScript GET behavior. The
+alternate language's search request is
 warmed only after pointer or keyboard intent; prefetch is disabled for
 data-saver, 2G, and slow-2G connections. Search creates only the first 15 result
 groups until the user requests another batch.
@@ -134,17 +136,16 @@ Use the browser HTTP cache:
 - Content-addressed bundles receive `public, max-age=31536000, immutable`.
 - The runtime and full manifests receive `no-cache, must-revalidate` and
   content-derived `ETag` validators.
-- Manifests and bundles use maximum-compression gzip/Brotli sidecars and send
-  `Vary: Accept-Encoding`.
+- Cloudflare performs production edge compression without committed sidecars.
 - One page-lifetime Web Worker parses and searches compact tuples away from the
   main thread.
 - The worker reuses the manifest and successfully loaded content-addressed
   bundles while the page remains open.
 - The worker caches normalized searchable fields and a bounded set of recent
   result requests; debounced suggestions reuse the same worker and bundles.
-- GET search and source-policy submissions use client routing so the worker and
-  parsed indexes survive while URL, history, focus, and no-JavaScript behavior
-  remain intact.
+- GET search and source-policy submissions resolve in the browser so the worker
+  and parsed indexes survive, no query-page request is made, and URL, history,
+  focus, and no-JavaScript behavior remain intact.
 - An alternate-language pointer or focus intent warms the same worker request
   unless reduced-data connection signals prohibit it.
 - Result-language and site filters re-search the selected subset through the
@@ -161,8 +162,9 @@ privacy, recovery, and service-worker lifecycle concerns.
 
 The E2E gate uses a 390×800 viewport and 4× CPU throttling.
 With Fast 3G and the browser cache disabled, the first Python EN-to-JA locale
-switch must finish within 4,500 ms, including newly requested LINE Seed JP
-subsets.
+switch must finish within 8,000 ms in the HTTP/1 workerd preview, including
+newly requested LINE Seed JP subsets. Re-audit the deployed HTTP/2 or HTTP/3
+origin against the 4,500 ms production target.
 A repeated switch to a bundle already held by the worker must finish within
 500 ms with no search-time Long Task over 50 ms.
 

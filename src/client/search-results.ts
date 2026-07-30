@@ -134,6 +134,7 @@ export async function initializeSearchPage(
   const query = results.dataset.query?.trim() ?? "";
   const docsLocale = results.dataset.docsLocale ?? "";
   const requestedSources = parseRequestedSources(results.dataset.sources);
+  if (!query) return undefined;
   const filterSession = getResultFilterSession(root, query, requestedSources);
   if (requestedSources.length === 0 || results.dataset.noSources === "true") {
     resultFilterControls.get(root)?.destroy();

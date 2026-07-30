@@ -3,7 +3,7 @@
 ## Current Snapshot
 
 Record the manifest date, supported bundle and record counts, raw bytes,
-generator gzip/Brotli sizes, production-sidecar sizes, and compressed runtime
+generator gzip/Brotli sizes, CDN transfer sizes, and compressed runtime
 and full manifest sizes.
 State that selected bundles, not the complete catalog, are normally fetched.
 Keep generator regression sizes separate from production transfer sizes.
@@ -45,7 +45,7 @@ Prefer native HTTP caching for content-addressed bundles:
 
 - One-year immutable caching for hashed bundles.
 - Revalidation plus content-derived `ETag` for both manifests.
-- Maximum-compression gzip/Brotli sidecars with `Vary: Accept-Encoding`.
+- Cloudflare edge compression without committed precompressed sidecars.
 - One page-lifetime worker for JSON parsing and compact-tuple search off the
   main thread, with manifest and loaded-bundle reuse.
 - Cached normalized searchable fields and bounded recent result reuse for

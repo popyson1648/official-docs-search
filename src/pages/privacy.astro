@@ -1,0 +1,386 @@
+---
+import { resolveUiLanguage } from "../core/request-preferences";
+import LegalLayout from "../layouts/LegalLayout.astro";
+
+export const prerender = false;
+
+const uiLanguage = resolveUiLanguage({
+  requested: Astro.url.searchParams.get("ui"),
+  stored: Astro.cookies.get("ods_ui")?.value,
+  acceptLanguage: Astro.request.headers.get("accept-language")
+});
+Astro.response.headers.append("Vary", "Accept-Language, Cookie");
+
+const isJapanese = uiLanguage === "ja";
+const title = isJapanese
+  ? "プライバシーポリシー — LangRef Search"
+  : "Privacy Policy — LangRef Search";
+const description = isJapanese
+  ? "LangRef Searchにおける検索、設定、不具合報告などの情報の取扱いを説明します。"
+  : "How LangRef Search handles search, preference, request, and issue-report information.";
+---
+
+<LegalLayout
+  uiLanguage={uiLanguage}
+  title={title}
+  description={description}
+  pathname="/privacy"
+>
+  {
+    isJapanese ? (
+      <article>
+        <header class="legal-title">
+          <p class="legal-kicker">LangRef Search</p>
+          <h1>プライバシーポリシー</h1>
+          <p>施行日：2026年7月30日</p>
+        </header>
+
+        <p>
+          本ポリシーは、Shunsuke Setoguchi（以下「運営者」）が個人・非営利で提供するLangRef Search（以下「本サービス」）における情報の取扱いを説明するものです。
+          本サービスは、アカウント、広告、利用状況解析、決済または公開プロフィールを提供しません。
+        </p>
+
+        <section>
+          <h2>1. 管理者</h2>
+          <dl class="legal-definition-list">
+            <div>
+              <dt>管理者・運営者</dt>
+              <dd>
+                Shunsuke Setoguchi（<a
+                  href="https://x.com/popyson1648"
+                  target="_blank"
+                  rel="external noopener noreferrer"
+                >@popyson1648</a>）
+              </dd>
+            </div>
+            <div><dt>所在国</dt><dd>日本</dd></div>
+            <div>
+              <dt>問い合わせ先</dt>
+              <dd><span class="contact-address">popyson1648 at gmail.com</span>（「at」を「@」に置き換えてください）</dd>
+            </div>
+          </dl>
+          <p>
+            法令上、住所の開示が必要となる正当な請求があった場合、運営者は遅滞なく開示します。
+          </p>
+        </section>
+
+        <section>
+          <h2>2. 取得・処理する情報</h2>
+          <h3>アクセスと検索</h3>
+          <p>
+            本サービスへの接続時、ホスティング事業者であるCloudflareは、IPアドレス、日時、リクエストURL、User-Agent、参照元、ネットワークおよびセキュリティ関連の情報を技術上必要な範囲で処理する場合があります。
+            運営者はWorkersの永続的なリクエストログおよびアクセス解析を無効にしています。
+          </p>
+          <p>
+            検索索引の照合と並べ替えはブラウザ内で行われます。
+            検索語が含まれるURLを直接開く、再読み込みする、共有リンクを開く、またはJavaScriptを利用できない環境で検索する場合、検索語を含むURLがサーバーとCloudflareへ送信されることがあります。
+            検索語には個人情報、秘密情報または認証情報を入力しないでください。
+          </p>
+
+          <h3>端末上の設定</h3>
+          <div class="legal-table-scroll">
+            <table>
+              <thead><tr><th>保存先・キー</th><th>内容</th><th>期間</th></tr></thead>
+              <tbody>
+                <tr><td>Cookie: <code>ods_ui</code></td><td>表示言語</td><td>1年</td></tr>
+                <tr><td>Cookie: <code>ods_source_policy</code></td><td>検索ソースの選択方針</td><td>1年</td></tr>
+                <tr><td>Cookie: <code>ods_theme</code></td><td>ライト、ダークまたはシステムテーマ</td><td>1年</td></tr>
+                <tr><td>sessionStorage: <code>ods_source_details_open</code></td><td>ソース詳細の開閉状態</td><td>ブラウザのタブのセッション中</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            これらはログインや追跡のためではなく、利用者が選んだ表示と検索設定を維持するために使います。
+            古い設定Cookieを読み取った場合、新しい設定へ移行した後に削除することがあります。ブラウザの設定からいつでも削除できます。
+          </p>
+
+          <h3>不具合報告</h3>
+          <p>
+            Googleフォームから、発生した問題、再現手順、期待する結果、実際の結果、環境、関連URL、任意の連絡先メールアドレスなど、利用者が入力した情報を取得します。
+            フォームはGoogleアカウントへのログイン、確認済みメールアドレスまたはファイル添付を必須にしません。
+            Googleフォームへの送信時には、Googleが独自に接続情報等を処理する場合があります。
+          </p>
+        </section>
+
+        <section>
+          <h2>3. 利用目的と法的根拠</h2>
+          <ul>
+            <li>検索結果、言語、テーマおよびソース設定を提供するため</li>
+            <li>不正利用の防止、セキュリティの確保および障害対応のため</li>
+            <li>不具合を再現、分類、修正し、必要に応じて報告者へ連絡するため</li>
+            <li>法令上の義務に対応し、本サービスおよび利用者の権利を守るため</li>
+          </ul>
+          <p>
+            適用される法令に応じ、サービス提供上の必要性、運営者または利用者の正当な利益、法的義務、または利用者が任意で行う報告・問い合わせへの対応を根拠として処理します。
+            任意項目を提供しなくても検索機能は利用できます。
+          </p>
+        </section>
+
+        <section>
+          <h2>4. 委託先・受領者と国外処理</h2>
+          <p>次の事業者が、日本国外を含む地域で情報を処理する場合があります。</p>
+          <ul>
+            <li>
+              <strong>Cloudflare, Inc.</strong> — Workers、CDN、DNSおよびセキュリティ。
+              <a href="https://www.cloudflare.com/privacypolicy/" rel="external noopener noreferrer" target="_blank">Cloudflareプライバシーポリシー</a>
+            </li>
+            <li>
+              <strong>Google LLC</strong> — Googleフォームによる不具合報告の収集。
+              <a href="https://policies.google.com/privacy" rel="external noopener noreferrer" target="_blank">Googleプライバシーポリシー</a>
+            </li>
+          </ul>
+          <p>
+            Googleフォームの回答を閲覧できるのは運営者のみです。
+            ただし、原因調査や修正案の検討のため、報告内容の全部または一部を、運営者が利用する次のAIサービスへ手動で入力する場合があります。
+          </p>
+          <ul>
+            <li>
+              <strong>Anthropic</strong> — Claude、Claude Code。
+              <a href="https://www.anthropic.com/legal/privacy" rel="external noopener noreferrer" target="_blank">Anthropicプライバシーポリシー</a>
+            </li>
+            <li>
+              <strong>OpenAI</strong> — ChatGPT、Codex。
+              <a href="https://openai.com/policies/privacy-policy/" rel="external noopener noreferrer" target="_blank">OpenAIプライバシーポリシー</a>
+            </li>
+            <li>
+              <strong>Google</strong> — Antigravity。
+              <a href="https://policies.google.com/privacy" rel="external noopener noreferrer" target="_blank">Googleプライバシーポリシー</a>
+            </li>
+          </ul>
+          <p>
+            運営者は、AIサービスへ入力する前に、連絡先など調査に不要な個人情報と秘密情報を削除またはマスキングします。
+            ただし、報告本文に必要以上の情報を含めないでください。各AIサービスでの取扱いは、運営者が利用するプラン、設定および各事業者の規約・ポリシーにも従います。
+          </p>
+          <p>
+            検索結果の外部リンクを開いた場合、リンク先は通常のWebアクセス情報を取得する場合があります。リンクを開くかどうかは利用者が選択できます。
+          </p>
+        </section>
+
+        <section>
+          <h2>5. 保存期間</h2>
+          <ul>
+            <li>機能Cookieは保存から1年間です。sessionStorageはブラウザのタブのセッション終了時までです。</li>
+            <li>運営者は、通常のアクセスおよび検索リクエストの永続ログを保存しません。</li>
+            <li>不具合報告と任意の連絡先は、対応完了後12か月を目安に削除し、原則として送信から24か月を超えて保持しません。</li>
+          </ul>
+          <p>
+            ただし、継続中のセキュリティ調査、権利の保全または法令上の義務に必要な情報は、その目的に必要な期間に限り保持することがあります。
+            委託先による保持は各事業者のポリシーと設定に従います。
+          </p>
+        </section>
+
+        <section>
+          <h2>6. 安全管理</h2>
+          <p>
+            運営者は、取得する情報を必要最小限にし、通信の暗号化、アクセス制限、永続ログの無効化、報告内容の削除・マスキングなど合理的な安全管理措置を講じます。
+            ただし、インターネット上の通信または保存の完全な安全性を保証することはできません。
+          </p>
+        </section>
+
+        <section>
+          <h2>7. 利用者の権利</h2>
+          <p>
+            適用法令に基づき、利用者は、運営者が保有する自己の情報について、利用目的の通知、開示、訂正、利用停止、削除または第三者提供の停止などを求められる場合があります。
+            上記問い合わせ先へ、対象の報告を特定できる情報と希望する対応を連絡してください。本人確認と法令上の例外を確認したうえで対応します。
+          </p>
+          <p>
+            日本では個人情報保護委員会、EEAその他の地域では居住地の監督機関へ相談または苦情を申し立てられる場合があります。
+          </p>
+        </section>
+
+        <section>
+          <h2>8. 子どもの情報</h2>
+          <p>
+            本サービスは子どもを対象として個人情報を収集するものではありません。
+            居住地の法令上、同意に年齢制限がある場合は、保護者の関与のもとで不具合報告や問い合わせを行ってください。
+          </p>
+        </section>
+
+        <section>
+          <h2>9. 変更</h2>
+          <p>
+            サービス、委託先または法令の変更に応じて本ポリシーを改定する場合があります。
+            重要な変更は本ページへの掲載その他合理的な方法で告知し、施行日を更新します。
+          </p>
+        </section>
+      </article>
+    ) : (
+      <article>
+        <header class="legal-title">
+          <p class="legal-kicker">LangRef Search</p>
+          <h1>Privacy Policy</h1>
+          <p>Effective: July 30, 2026</p>
+        </header>
+
+        <p>
+          This Policy explains how Shunsuke Setoguchi (the “Operator”) handles information in connection with LangRef Search (the “Service”), which is operated personally and on a non-commercial basis.
+          The Service does not provide accounts, advertising, usage analytics, payments, or public profiles.
+        </p>
+
+        <section>
+          <h2>1. Controller</h2>
+          <dl class="legal-definition-list">
+            <div>
+              <dt>Controller and Operator</dt>
+              <dd>
+                Shunsuke Setoguchi (<a
+                  href="https://x.com/popyson1648"
+                  target="_blank"
+                  rel="external noopener noreferrer"
+                >@popyson1648</a>)
+              </dd>
+            </div>
+            <div><dt>Country</dt><dd>Japan</dd></div>
+            <div>
+              <dt>Contact</dt>
+              <dd><span class="contact-address">popyson1648 at gmail.com</span> (replace “at” with “@”)</dd>
+            </div>
+          </dl>
+          <p>
+            The Operator’s address will be disclosed without undue delay upon a valid request where disclosure is required by law.
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Information Collected or Processed</h2>
+          <h3>Access and Search</h3>
+          <p>
+            When you connect to the Service, Cloudflare, the hosting provider, may process an IP address, timestamp, request URL, user agent, referrer, and network and security information as technically necessary.
+            The Operator has disabled persistent Workers request logs and access analytics.
+          </p>
+          <p>
+            Matching and ranking against search indexes happen in your browser.
+            A URL containing search terms may still be sent to the server and Cloudflare when you directly open, reload, or follow a shared search URL, or search without JavaScript.
+            Do not enter personal data, confidential information, or credentials as search terms.
+          </p>
+
+          <h3>Preferences on Your Device</h3>
+          <div class="legal-table-scroll">
+            <table>
+              <thead><tr><th>Storage and key</th><th>Purpose</th><th>Duration</th></tr></thead>
+              <tbody>
+                <tr><td>Cookie: <code>ods_ui</code></td><td>Display language</td><td>1 year</td></tr>
+                <tr><td>Cookie: <code>ods_source_policy</code></td><td>Search-source policy</td><td>1 year</td></tr>
+                <tr><td>Cookie: <code>ods_theme</code></td><td>Light, dark, or system theme</td><td>1 year</td></tr>
+                <tr><td>sessionStorage: <code>ods_source_details_open</code></td><td>Whether source details are open</td><td>For the browser-tab session</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            These settings are used to preserve choices you make, not for sign-in or tracking.
+            Legacy preference cookies may be read, migrated, and then removed. You can delete them through your browser settings at any time.
+          </p>
+
+          <h3>Issue Reports</h3>
+          <p>
+            Through Google Forms, the Operator receives information you enter, such as the problem, reproduction steps, expected and actual behavior, environment, relevant URL, and an optional contact email address.
+            The form does not require a Google sign-in, verified email address, or file upload.
+            Google may separately process connection and related information when you submit the form.
+          </p>
+        </section>
+
+        <section>
+          <h2>3. Purposes and Legal Bases</h2>
+          <ul>
+            <li>to provide search results and preserve language, theme, and source choices;</li>
+            <li>to prevent abuse, secure the Service, and respond to incidents;</li>
+            <li>to reproduce, classify, and fix issues and, where needed, contact a reporter; and</li>
+            <li>to comply with law and protect the rights of the Service, the Operator, and users.</li>
+          </ul>
+          <p>
+            Depending on the law that applies, processing is based on necessity to provide the Service, the legitimate interests of the Operator or users, compliance with legal obligations, or responding to a report or inquiry you voluntarily submit.
+            You can use search without providing optional form information.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. Processors, Recipients, and International Processing</h2>
+          <p>The following providers may process information in countries outside Japan:</p>
+          <ul>
+            <li>
+              <strong>Cloudflare, Inc.</strong> — Workers, CDN, DNS, and security.
+              <a href="https://www.cloudflare.com/privacypolicy/" rel="external noopener noreferrer" target="_blank">Cloudflare Privacy Policy</a>
+            </li>
+            <li>
+              <strong>Google LLC</strong> — collection of issue reports through Google Forms.
+              <a href="https://policies.google.com/privacy" rel="external noopener noreferrer" target="_blank">Google Privacy Policy</a>
+            </li>
+          </ul>
+          <p>
+            Only the Operator can view Google Form responses.
+            To investigate causes and possible fixes, the Operator may manually submit all or part of a report to the following AI services:
+          </p>
+          <ul>
+            <li>
+              <strong>Anthropic</strong> — Claude and Claude Code.
+              <a href="https://www.anthropic.com/legal/privacy" rel="external noopener noreferrer" target="_blank">Anthropic Privacy Policy</a>
+            </li>
+            <li>
+              <strong>OpenAI</strong> — ChatGPT and Codex.
+              <a href="https://openai.com/policies/privacy-policy/" rel="external noopener noreferrer" target="_blank">OpenAI Privacy Policy</a>
+            </li>
+            <li>
+              <strong>Google</strong> — Antigravity.
+              <a href="https://policies.google.com/privacy" rel="external noopener noreferrer" target="_blank">Google Privacy Policy</a>
+            </li>
+          </ul>
+          <p>
+            Before doing so, the Operator will remove or mask contact details and other personal or confidential information that is not needed for investigation.
+            You should nevertheless avoid including unnecessary information in a report. Processing by each AI service also depends on the Operator’s plan and settings and on that provider’s terms and policies.
+          </p>
+          <p>
+            If you choose to open an external search result, that destination may collect ordinary web-request information under its own policy.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. Retention</h2>
+          <ul>
+            <li>Functional cookies last for one year. Session storage lasts for the browser-tab session.</li>
+            <li>The Operator does not retain persistent logs of ordinary access or search requests.</li>
+            <li>Issue reports and optional contact details are normally deleted 12 months after resolution and, in principle, no later than 24 months after submission.</li>
+          </ul>
+          <p>
+            Information may be kept longer only when necessary for an active security investigation, preservation of legal rights, or a legal obligation.
+            Provider retention is governed by the applicable provider policies and settings.
+          </p>
+        </section>
+
+        <section>
+          <h2>6. Security</h2>
+          <p>
+            The Operator uses reasonable safeguards, including data minimization, encrypted transport, restricted access, disabled persistent logs, and deletion or masking of report content.
+            No method of Internet transmission or storage can be guaranteed completely secure.
+          </p>
+        </section>
+
+        <section>
+          <h2>7. Your Rights</h2>
+          <p>
+            Depending on applicable law, you may request notice of purpose, access, correction, restriction, deletion, objection, or cessation of third-party disclosure regarding your information held by the Operator.
+            Contact the address above with enough information to identify the relevant report and the action requested. The Operator will respond after appropriate identity verification and consideration of legal exceptions.
+          </p>
+          <p>
+            You may also be entitled to complain to Japan’s Personal Information Protection Commission or, in the EEA or another jurisdiction, your local data-protection authority.
+          </p>
+        </section>
+
+        <section>
+          <h2>8. Children</h2>
+          <p>
+            The Service is not designed to collect personal data from children.
+            Where local law imposes an age requirement for consent, a parent or guardian should be involved in submitting an issue report or inquiry.
+          </p>
+        </section>
+
+        <section>
+          <h2>9. Changes</h2>
+          <p>
+            This Policy may be updated to reflect changes to the Service, providers, or law.
+            Material changes will be announced on this page or by another reasonable method, and the effective date will be updated.
+          </p>
+        </section>
+      </article>
+    )
+  }
+</LegalLayout>

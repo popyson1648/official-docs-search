@@ -4,10 +4,9 @@
 
 - `npm test` verifies query, catalog, client controls, highlighting, adapters, deterministic publication, compact bundles, runtime loading, ranking, and diversification.
 - `npm run test:integration` verifies all supported indexes, catalog/manifest agreement, counts, hashes, URL scope, per-bundle and selected-set budgets, every known query, and multi-language results.
-- `npm run test:server` verifies production SSR, gzip/Brotli sidecar delivery,
-  decompressed body integrity, `HEAD`, validators, conditional responses, and
-  cache policies.
-- `npm run test:e2e` drives Chromium against the production server and real committed bundles.
+- `npm run test:server` verifies production SSR and static-asset behavior
+  against the workerd-based Workers preview.
+- `npm run test:e2e` drives Chromium against the Workers preview and real committed bundles.
 - Concern-specific E2E commands verify filters, catalog coverage,
   layout/accessibility, and performance against one existing build.
 - `npm run test:live:affected` checks only source families affected by the
@@ -31,8 +30,8 @@ explicit all-source live check.
 
 - Update focused unit tests for parser, source-resolution, runtime, and client changes.
 - Update generator tests, integration thresholds, and intentional artifacts for adapter changes.
-- Update server-contract tests for compression or caching changes, including
-  sidecar-byte and decompressed-body equality.
+- Update Workers-preview contract tests and run the Wrangler dry-run for
+  production runtime or caching changes.
 - For typography-preserving performance changes, require family/weight contract
   checks plus font-loaded screenshot and geometry comparison.
 - Update browser flows for user-facing behavior changes.

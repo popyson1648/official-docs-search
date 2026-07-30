@@ -12,10 +12,15 @@ Run `npm install`.
 ## Application Commands
 
 - Start the local server with `npm run dev`.
-- Build the Astro Node application with `npm run build`.
-- Start the production build with `npm start`.
+- Build the Astro Cloudflare Workers application with `npm run build`.
+- Start the workerd-based production preview with `npm start`.
+- Validate the deploy bundle without publishing with `npm run check:worker`.
+- Validate generated runtime types with `npm run generate:worker-types` after a
+  Wrangler compatibility or binding change. They stay in ignored `.wrangler/`
+  because this application does not author a Worker handler directly and the
+  Cloudflare runtime globals would conflict with browser DOM globals.
 - Refresh the reviewed font-face stylesheet with `npm run update:font-css`.
-- Use `npm run preview` only for Astro preview; it does not exercise the custom production delivery contract.
+- `npm run preview` is the same workerd-based preview used by production tests.
 
 The build does not call a paid search API and needs no public search-provider key.
 The browser fetches only supported bundles matching the selected sources and
@@ -24,15 +29,17 @@ an explicit `locale:en` or `locale:ja` query overrides it for that search.
 
 ## Font Delivery
 
-`src/font-faces.css` is the committed Google Fonts CSS response for Alexandria
+`src/font-faces.css` contains reviewed face declarations for Alexandria
 400/500/600/700 and LINE Seed JP 400/700. Astro bundles and fingerprints those
-face declarations with the application stylesheet. The WOFF2 files remain on
-`fonts.gstatic.com`, which is preconnected from the document head.
+declarations with the application stylesheet. All 252 Unicode-subset WOFF2
+files are served from `public/fonts/google/` with their upstream OFL license
+files and an immutable cache policy.
 
 Run `npm run update:font-css` only for an intentional font refresh. The updater
 requires the exact families, weights, `font-display: swap`, WOFF2 format, and
-Google font origin before replacing the committed file. Review the generated
-CSS and rerun visual verification.
+Google source origin, verifies every downloaded binary, and rewrites it to a
+first-party path. Review the generated CSS and files, then rerun visual
+verification.
 
 ## Generated Search Data
 
@@ -88,27 +95,23 @@ It never merges an index update.
 
 ## Production Delivery
 
-`npm run build && npm start` runs the Astro middleware build through `scripts/serve-production.mjs`.
+`npm run build && npm start` runs the exact Cloudflare Workers output through
+Astro's workerd-based preview.
 The production origin is set in `astro.config.mjs` so canonical, `hreflang`,
 Open Graph, robots, and sitemap URLs are absolute and consistent.
 The clean top page and its `?ui=en` and `?ui=ja` representations are
 discoverable; query, source, and filter state remain crawlable but
 `noindex,follow`.
-The server negotiates gzip level 6 or Brotli quality 5 for compressible HTML,
-CSS, JavaScript, JSON, and other text responses.
-After Astro builds, `scripts/precompress-production-assets.mjs` writes Brotli
-quality 11 and gzip level 9 sidecars next to every search-index JSON file in
-`dist/client`; these build artifacts are never committed.
-The server prefers the matching sidecar and falls back to dynamic compression
-when it is unavailable.
-Search manifests and bundles additionally use content-derived weak `ETag`
-validators and send `Vary: Accept-Encoding`.
-Content-addressed bundles use `Cache-Control: public, max-age=31536000, immutable`.
-`manifest.json` and `runtime-manifest.json` use
-`Cache-Control: no-cache, must-revalidate`.
-Missing or unhashed files never receive the immutable policy.
-The server derives bundle validators from manifest output hashes instead of
-reading every bundle during startup.
+Cloudflare serves matching static files before invoking the Worker and performs
+production transport compression at the edge. Astro emits an immutable
+one-year policy for content-hashed `/_astro/` files, and `public/_headers`
+applies the same policy to the pinned WOFF2 files. Missing files do not receive
+that policy.
+
+`wrangler.jsonc` pins the current compatible runtime date, the production custom
+domain, Node compatibility, and disabled persistent observability. The
+application does not add analytics. Run `npm run check:worker` before release;
+do not run `wrangler deploy` unless the deployment is explicitly authorized.
 
 ## Common Failures
 

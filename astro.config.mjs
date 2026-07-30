@@ -1,10 +1,10 @@
-import node from "@astrojs/node";
+import cloudflare from "@astrojs/cloudflare";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
   site: "https://official-docs-search.popyson.com",
-  adapter: node({
-    mode: "middleware"
+  adapter: cloudflare({
+    imageService: "compile"
   }),
   output: "server"
 });

@@ -1,0 +1,296 @@
+---
+import { resolveUiLanguage } from "../core/request-preferences";
+import LegalLayout from "../layouts/LegalLayout.astro";
+
+export const prerender = false;
+
+const uiLanguage = resolveUiLanguage({
+  requested: Astro.url.searchParams.get("ui"),
+  stored: Astro.cookies.get("ods_ui")?.value,
+  acceptLanguage: Astro.request.headers.get("accept-language")
+});
+Astro.response.headers.append("Vary", "Accept-Language, Cookie");
+
+const isJapanese = uiLanguage === "ja";
+const title = isJapanese
+  ? "利用規約 — LangRef Search"
+  : "Terms of Use — LangRef Search";
+const description = isJapanese
+  ? "LangRef Searchの利用条件、サービスの性質、免責事項などを定めます。"
+  : "The conditions for using LangRef Search, including the nature of the service and important limitations.";
+---
+
+<LegalLayout
+  uiLanguage={uiLanguage}
+  title={title}
+  description={description}
+  pathname="/terms"
+>
+  {
+    isJapanese ? (
+      <article>
+        <header class="legal-title">
+          <p class="legal-kicker">LangRef Search</p>
+          <h1>利用規約</h1>
+          <p>施行日：2026年7月30日</p>
+        </header>
+
+        <p>
+          この利用規約（以下「本規約」）は、Shunsuke Setoguchi（以下「運営者」）が個人・非営利で提供する
+          LangRef Search（以下「本サービス」）の利用条件を定めるものです。本サービスを利用した時点で、本規約に同意したものとみなします。
+        </p>
+
+        <section>
+          <h2>1. 本サービスについて</h2>
+          <p>
+            本サービスは、プログラミング言語、仕様、標準、提案文書その他の技術資料を横断検索するための検索インターフェースです。
+            検索対象の多くは第三者が管理する公式または信頼性の高い外部資料であり、本サービスは当該資料を保有、発行または管理するものではありません。
+          </p>
+          <p>
+            「公式」「事実上の公式」「コミュニティ」などの表示は、検索対象を理解しやすくするための分類です。
+            運営者と各言語、標準化団体、文書管理者その他の権利者との提携、承認または保証を示すものではありません。
+          </p>
+        </section>
+
+        <section>
+          <h2>2. 利用条件</h2>
+          <p>利用者は、適用法令および本規約を守り、本サービスを通常の検索目的で利用するものとします。次の行為は禁止します。</p>
+          <ul>
+            <li>違法行為、第三者の権利侵害またはそれらを助長する行為</li>
+            <li>本サービス、サーバーまたはネットワークの正常な運用を妨げる行為</li>
+            <li>セキュリティ機能、アクセス制御または利用制限を回避しようとする行為</li>
+            <li>サービスの安定性を損なう過度な自動アクセス、負荷試験または大量取得</li>
+            <li>虚偽の不具合報告、なりすまし、マルウェアまたは秘密情報の送信</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>3. 検索結果と外部サイト</h2>
+          <p>
+            検索結果、索引、分類、翻訳の有無、提案文書の状態、リンク先の内容および表示順位について、正確性、完全性、最新性、特定目的への適合性を保証しません。
+            仕様や提案文書は変更、撤回または廃止される場合があります。重要な判断には必ずリンク先の原文と最新版を確認してください。
+          </p>
+          <p>
+            外部サイトには、それぞれの利用条件、ライセンスおよびプライバシーポリシーが適用されます。
+            外部サイトの内容、可用性、セキュリティまたはデータ取扱いについて、運営者は管理せず、責任を負いません。
+          </p>
+        </section>
+
+        <section>
+          <h2>4. 知的財産権</h2>
+          <p>
+            本サービス固有の画面、プログラム、ロゴその他の成果物に関する権利は、運営者または正当な権利者に帰属します。
+            検索対象文書、商標、ロゴおよび引用情報に関する権利は、それぞれの権利者に帰属します。
+            本規約は、それらの権利を利用者へ移転するものではありません。
+          </p>
+        </section>
+
+        <section>
+          <h2>5. 不具合報告とフィードバック</h2>
+          <p>
+            利用者は、不具合報告フォームから任意で報告や提案を送信できます。
+            送信者は、送信内容を提供する権限を有し、運営者が本サービスの調査、改善、記録および連絡のために必要な範囲で利用できることに同意するものとします。
+            報告内容は公開されませんが、調査のため外部AIサービスで解析する場合があります。詳細は
+            <a href="/privacy?ui=ja">プライバシーポリシー</a>
+            を確認してください。
+          </p>
+          <p>
+            パスワード、APIキー、非公開コード、機密情報、要配慮個人情報または第三者の個人情報を送信しないでください。
+            緊急性の高い脆弱性情報は一般の不具合報告フォームでは送信せず、下記問い合わせ先へ連絡してください。
+          </p>
+        </section>
+
+        <section>
+          <h2>6. 変更、中断および終了</h2>
+          <p>
+            運営者は、保守、セキュリティ対応、外部資料の変更、技術上または運営上の事情により、本サービスの全部または一部を予告なく変更、中断または終了することがあります。
+            継続提供、特定機能、検索対象またはデータの保存を保証しません。
+          </p>
+        </section>
+
+        <section>
+          <h2>7. 保証の否認と責任の制限</h2>
+          <p>
+            本サービスは現状有姿で提供されます。運営者は、法律上許される範囲で、本サービスの利用または利用不能、検索結果、外部サイト、データの消失その他本サービスに関連して生じた損害について責任を負いません。
+          </p>
+          <p>
+            ただし、運営者の故意または重過失による場合、消費者契約法その他の強行法規により責任を制限できない場合には、この制限は適用されません。
+            運営者の軽過失により責任を負う場合、その責任は、法令上許される範囲で、通常かつ直接の損害に限られます。
+          </p>
+        </section>
+
+        <section>
+          <h2>8. 準拠法と強行法規</h2>
+          <p>
+            本規約および本サービスには日本法を適用します。
+            ただし、利用者の居住地で適用される消費者保護その他の強行法規により利用者へ認められる権利を制限するものではありません。
+          </p>
+        </section>
+
+        <section>
+          <h2>9. 本規約の変更</h2>
+          <p>
+            運営者は、法令、サービス内容または運用の変更に応じて本規約を改定できます。
+            重要な変更は、本ページへの掲載その他合理的な方法で告知します。改定後に本サービスを利用した場合、改定後の規約が適用されます。
+          </p>
+        </section>
+
+        <section>
+          <h2>10. 運営者と問い合わせ先</h2>
+          <dl class="legal-definition-list">
+            <div>
+              <dt>運営者</dt>
+              <dd>
+                Shunsuke Setoguchi（<a
+                  href="https://x.com/popyson1648"
+                  target="_blank"
+                  rel="external noopener noreferrer"
+                >@popyson1648</a>）
+              </dd>
+            </div>
+            <div><dt>所在国</dt><dd>日本</dd></div>
+            <div>
+              <dt>問い合わせ先</dt>
+              <dd><span class="contact-address">popyson1648 at gmail.com</span>（「at」を「@」に置き換えてください）</dd>
+            </div>
+          </dl>
+          <p>
+            法令上、住所の開示が必要となる正当な請求があった場合、運営者は遅滞なく開示します。
+          </p>
+        </section>
+      </article>
+    ) : (
+      <article>
+        <header class="legal-title">
+          <p class="legal-kicker">LangRef Search</p>
+          <h1>Terms of Use</h1>
+          <p>Effective: July 30, 2026</p>
+        </header>
+
+        <p>
+          These Terms of Use (“Terms”) govern LangRef Search (the “Service”), a personal, non-commercial service operated by Shunsuke Setoguchi (the “Operator”).
+          By using the Service, you agree to these Terms.
+        </p>
+
+        <section>
+          <h2>1. About the Service</h2>
+          <p>
+            The Service is a search interface for programming-language documentation, specifications, standards, proposals, and other technical references.
+            Most indexed materials are official or trusted external resources managed by third parties. The Service does not own, publish, or control those materials.
+          </p>
+          <p>
+            Labels such as “Official,” “Conventional,” and “Community” are informational classifications.
+            They do not imply affiliation with, endorsement by, or a warranty from any language project, standards body, document maintainer, or other rights holder.
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Acceptable Use</h2>
+          <p>You must comply with applicable law and use the Service for ordinary search purposes. You must not:</p>
+          <ul>
+            <li>break the law, infringe another person’s rights, or facilitate either activity;</li>
+            <li>interfere with the normal operation of the Service, its servers, or networks;</li>
+            <li>attempt to bypass security features, access controls, or usage limits;</li>
+            <li>perform excessive automated access, load testing, or bulk retrieval that threatens service stability; or</li>
+            <li>send false reports, impersonate others, or submit malware, credentials, or confidential information.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>3. Search Results and External Sites</h2>
+          <p>
+            The Operator does not warrant the accuracy, completeness, currency, ranking, availability, classification, translation status, or fitness for a particular purpose of any index, search result, proposal status, or linked material.
+            Specifications and proposals may change, be withdrawn, or become obsolete. Check the original and latest source before relying on a result for an important decision.
+          </p>
+          <p>
+            External sites are governed by their own terms, licenses, and privacy policies.
+            The Operator does not control and is not responsible for their content, availability, security, or data practices.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. Intellectual Property</h2>
+          <p>
+            Rights in the Service’s original interface, software, logo, and other original materials belong to the Operator or the applicable rights holder.
+            Rights in indexed documents, trademarks, logos, and referenced information belong to their respective owners.
+            These Terms do not transfer those rights to you.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. Issue Reports and Feedback</h2>
+          <p>
+            You may voluntarily submit reports or suggestions through the issue-report form.
+            You confirm that you have the right to provide the submission and allow the Operator to use it as reasonably necessary to investigate, improve, document, and communicate about the Service.
+            Reports are not made public, but may be analyzed using external AI services for investigation. See the
+            <a href="/privacy?ui=en">Privacy Policy</a>
+            for details.
+          </p>
+          <p>
+            Do not submit passwords, API keys, non-public code, confidential information, sensitive personal data, or another person’s personal data.
+            Do not use the general issue form for urgent vulnerability details; contact the Operator directly instead.
+          </p>
+        </section>
+
+        <section>
+          <h2>6. Changes, Suspension, and Discontinuation</h2>
+          <p>
+            The Operator may change, suspend, or discontinue any part of the Service without notice for maintenance, security, changes to external sources, or technical or operational reasons.
+            Continued availability, specific features, search coverage, and preservation of data are not guaranteed.
+          </p>
+        </section>
+
+        <section>
+          <h2>7. Disclaimer and Limitation of Liability</h2>
+          <p>
+            The Service is provided “as is.” To the extent permitted by law, the Operator is not liable for loss arising from use or inability to use the Service, search results, external sites, lost data, or other matters related to the Service.
+          </p>
+          <p>
+            This limitation does not apply to intentional misconduct or gross negligence by the Operator, or where liability cannot be limited under mandatory consumer or other law.
+            Where the Operator is liable for ordinary negligence, liability is limited, to the extent permitted by law, to ordinary and direct loss.
+          </p>
+        </section>
+
+        <section>
+          <h2>8. Governing Law and Mandatory Rights</h2>
+          <p>
+            These Terms and the Service are governed by the laws of Japan.
+            Nothing in these Terms limits rights you may have under mandatory consumer-protection or other laws in your place of residence.
+          </p>
+        </section>
+
+        <section>
+          <h2>9. Changes to These Terms</h2>
+          <p>
+            The Operator may revise these Terms to reflect changes in law, the Service, or its operation.
+            Material changes will be announced on this page or by another reasonable method. The revised Terms apply when you use the Service after they take effect.
+          </p>
+        </section>
+
+        <section>
+          <h2>10. Operator and Contact</h2>
+          <dl class="legal-definition-list">
+            <div>
+              <dt>Operator</dt>
+              <dd>
+                Shunsuke Setoguchi (<a
+                  href="https://x.com/popyson1648"
+                  target="_blank"
+                  rel="external noopener noreferrer"
+                >@popyson1648</a>)
+              </dd>
+            </div>
+            <div><dt>Country</dt><dd>Japan</dd></div>
+            <div>
+              <dt>Contact</dt>
+              <dd><span class="contact-address">popyson1648 at gmail.com</span> (replace “at” with “@”)</dd>
+            </div>
+          </dl>
+          <p>
+            The Operator’s address will be disclosed without undue delay upon a valid request where disclosure is required by law.
+          </p>
+        </section>
+      </article>
+    )
+  }
+</LegalLayout>

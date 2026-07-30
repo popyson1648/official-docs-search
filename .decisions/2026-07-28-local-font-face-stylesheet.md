@@ -10,7 +10,7 @@ Bundle the reviewed Google Fonts face declarations locally
 
 ## Status
 
-Accepted
+Superseded by `2026-07-30-self-host-font-binaries.md`
 
 ## Decision
 

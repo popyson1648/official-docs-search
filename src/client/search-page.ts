@@ -12,6 +12,9 @@ export async function initializeClientSearchPage(root: Document = document): Pro
     },
     onLanguageChange: async (_docsLocale, warmup) => {
       await initializeSearchPage(root, fetch, warmup);
+    },
+    onSearchSubmit: async () => {
+      await initializeSearchPage(root);
     }
   });
   focusSearchInput(root);

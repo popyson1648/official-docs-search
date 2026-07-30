@@ -1,0 +1,51 @@
+---
+import type { UiLanguage } from "../core/i18n";
+
+interface Props {
+  uiLanguage: UiLanguage;
+}
+
+const { uiLanguage } = Astro.props;
+const localeQuery = `?ui=${uiLanguage}`;
+---
+
+<footer class="site-footer">
+  <nav
+    class="site-footer-links"
+    aria-label={uiLanguage === "ja" ? "サイト情報" : "Site information"}
+  >
+    <a href={`/terms${localeQuery}`}>
+      <span class="lang-en">Terms of Use</span>
+      <span class="lang-ja">利用規約</span>
+    </a>
+    <a href={`/privacy${localeQuery}`}>
+      <span class="lang-en">Privacy Policy</span>
+      <span class="lang-ja">プライバシーポリシー</span>
+    </a>
+    <a
+      href="https://forms.gle/WHDXAprmCmmu9M957"
+      target="_blank"
+      rel="external noopener noreferrer"
+    >
+      <span class="lang-en">Report an issue</span>
+      <span class="lang-ja">不具合報告</span>
+      <svg
+        class="external-link-mark"
+        viewBox="0 0 16 16"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M6 4h6v6M12 4 4 12"></path>
+      </svg>
+    </a>
+  </nav>
+  <p class="site-footer-operator">
+    <span class="lang-en">Operated by </span>
+    <span class="lang-ja">運営者：</span>
+    <a
+      href="https://x.com/popyson1648"
+      target="_blank"
+      rel="external noopener noreferrer"
+    >popyson1648</a>
+  </p>
+</footer>

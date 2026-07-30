@@ -4,14 +4,12 @@
 
 - `npm test` runs Vitest unit tests for query parsing, source selection, client controls, highlighting, adapters, deterministic publication, compact bundles, ranking, runtime loading, and language diversification.
 - `npm run test:integration` verifies all committed supported indexes, catalog/manifest agreement, minimum counts, content hashes, allowed original URLs, per-bundle and selected-set size budgets, every known query, and combined-language results.
-- `npm run test:server` builds and verifies production SSR, Brotli/gzip
-  negotiation and body integrity for HTML, CSS, JavaScript, and search JSON,
-  verifies that search responses use the precompressed build sidecars, and
-  checks search-asset `HEAD`, `ETag`, conditional `304`, `Vary`, and cache
-  policies. It also verifies EN/JA metadata precedence, search-state `noindex`,
-  robots, sitemap, PNG brand-asset delivery, and server-rendered theme
-  persistence metadata.
-- `npm run test:e2e` builds and drives Chromium against the production server and real committed indexes.
+- `npm run test:server` builds and verifies the workerd production preview,
+  SSR metadata, language and theme precedence, legal pages, footer links,
+  noindex behavior, robots, sitemap, brand assets, local font delivery, and
+  immutable static-asset policies.
+- `npm run test:e2e` builds and drives Chromium against the Workers preview and
+  real committed indexes.
 - `npm run test:e2e:filters`, `npm run test:e2e:catalog`,
   `npm run test:e2e:layout`, and `npm run test:e2e:performance` run bounded
   browser concerns against an existing build.
@@ -54,12 +52,11 @@ Both live commands are non-mutating.
 - Runtime loading or ranking: update `tests/search-runtime.test.ts`, `tests/search.test.ts`, and integration coverage.
 - Client controls or rendering: update focused client tests and the applicable
   tagged scenarios in `tests/e2e/search.test.mjs`.
-- Production compression or caching: update and run
-  `tests/integration/production-server.test.mjs`, including decompressed-body
-  equality for every changed response type and encoded-byte equality for
-  precompressed sidecars.
+- Production hosting or caching: update and run
+  `tests/integration/production-server.test.mjs` and `npm run check:worker`.
 - Font delivery: verify the Alexandria and LINE Seed JP family/weight contract,
-  then compare font-loaded screenshots, geometry, and ordered results.
+  the local WOFF2 files and licenses, then compare font-loaded screenshots,
+  geometry, and ordered results.
 - Catalog adapter or upstream-data changes: run the source-scoped update
   intentionally, review the diff, then run `npm run test:live:affected`.
 - Build or verification changes: run
@@ -161,6 +158,13 @@ overflow. Language choices reuse result-tag colors; selected Site and Order
 choices, applied filters, and focus treatment use the theme accent.
 Settings-toggle coverage fixes accent-colored checked and focused tracks while
 keeping unchecked tracks muted.
+Legal-page coverage checks the compact footer, Google Forms external-link
+attributes, EN/JA rendering, noindex metadata, light and dark themes, mobile
+containment, named AI services, and report-retention disclosure.
+Interactive-search performance coverage requires ordinary form and
+source-policy submissions to preserve the document and avoid any query-page
+request while reusing cached indexes. Direct GET URLs remain the no-JavaScript
+fallback.
 Long-page coverage keeps a 44 CSS-pixel bottom-right Top control hidden near the
 header, shows it after scrolling, returns focus to the page heading, localizes
 its accessible name, and suppresses its motion when requested.
@@ -168,10 +172,12 @@ The 18 admitted English teaching sources and cpprefjp must remain excluded from
 official-only searches, return a known result under `source:all`, and expose
 their English/Japanese qualification in the source picker and result metadata.
 Under 4× CPU throttling and Fast 3G with the browser cache disabled, an uncached
-Python EN-to-JA unified-language switch must complete within 4,500 ms without a
-new document request. This cold budget includes the preserved LINE Seed JP
-font-subset requests triggered by changing the visible interface and waits for
-`document.fonts.ready`.
+Python EN-to-JA unified-language switch in the HTTP/1 workerd preview must
+complete within 8,000 ms without a new document request. This provisional local
+budget includes the preserved LINE Seed JP font-subset requests triggered by
+changing the visible interface and waits for `document.fonts.ready`. The
+deployed HTTP/2 or HTTP/3 production origin must be re-audited against the
+4,500 ms target.
 A repeated switch using the page-lifetime worker cache must complete within
 500 ms and produce no search-time Long Task over 50 ms.
 A result container without a non-empty original-document link is not a successful search test.

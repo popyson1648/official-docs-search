@@ -12,9 +12,10 @@ Run `npm install`.
 ## Application Commands
 
 - Start the local server with `npm run dev`.
-- Build the Astro Node application with `npm run build`.
+- Build the Astro Cloudflare Workers application with `npm run build`.
 - Start the production build with `npm start`.
-- Use `npm run preview` only for Astro preview, not production delivery verification.
+- Validate the deployment bundle without publishing with `npm run check:worker`.
+- Use the workerd-based preview for production delivery verification.
 
 The application has no runtime search-provider key.
 The browser fetches only supported bundles matching selected sources and the
@@ -63,13 +64,10 @@ reviewable draft pull requests, and never merge them.
 ## Production Delivery
 
 Run `npm run build && npm start`.
-Generate maximum-compression gzip and Brotli sidecars for search-index JSON
-inside the build output without committing them.
-The production server prefers those sidecars, negotiates gzip and Brotli for
-other compressible responses, emits content-derived `ETag` and
-`Vary: Accept-Encoding`, gives hashed bundles a one-year immutable policy, and
-requires revalidation for both manifests.
-Derive bundle validators from manifest output hashes so startup does not read every bundle.
+Serve matching static files before the Worker, rely on Cloudflare edge
+compression, and apply an immutable policy only to content-addressed assets.
+Document the Wrangler compatibility date, routes, observability choice, dry-run
+command, and any revalidation policy for mutable manifests.
 
 ## Common Failures
 

@@ -10,7 +10,7 @@ Use Astro client routing for GET search form submissions
 
 ## Status
 
-Accepted
+Superseded by `2026-07-30-run-interactive-search-without-page-fetches.md`
 
 ## Decision
 

@@ -16,7 +16,8 @@ The production domain is `official-docs-search.popyson.com`.
 - Index adapters and generation: `scripts/generate-search-index.mjs`
 - Source-family index jobs and parsers: `scripts/search-index/`
 - Generated federated search indexes: `public/search-index/`
-- Production server: `scripts/serve-production.mjs`
+- Production runtime: Cloudflare Workers via `@astrojs/cloudflare` and
+  `wrangler.jsonc`
 - Unit, integration, server-contract, and browser tests: `tests/`
 
 ## Minimum Setup

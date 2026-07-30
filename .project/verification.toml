@@ -60,6 +60,7 @@ paths = [
   "tests/**/*.ts",
   "scripts/**/*.mts",
   "astro.config.mjs",
+  "wrangler.jsonc",
   "vitest.config.ts",
   "tsconfig.json",
   "package.json",
@@ -76,8 +77,8 @@ run_in_ci = true
 paths = [
   "src/**",
   "public/**",
-  "scripts/precompress-production-assets.mjs",
   "astro.config.mjs",
+  "wrangler.jsonc",
   "tsconfig.json",
   "package.json",
   "package-lock.json",
@@ -144,9 +145,9 @@ paths = [
   "src/core/search-runtime.ts",
   "src/core/sources.ts",
   "src/pages/**",
-  "scripts/serve-production.mjs",
   "tests/e2e/**",
   "astro.config.mjs",
+  "wrangler.jsonc",
   "package.json",
   "package-lock.json",
 ]
@@ -197,6 +198,8 @@ covered_by = ["test_e2e"]
 paths = [
   "src/font-faces.css",
   "src/styles.css",
+  "public/fonts/**",
+  "public/_headers",
 ]
 
 [phases.test_e2e_performance]
@@ -218,7 +221,9 @@ paths = [
   "src/pages/**",
   "src/font-faces.css",
   "src/styles.css",
-  "scripts/serve-production.mjs",
+  "public/fonts/**",
+  "public/_headers",
+  "wrangler.jsonc",
   "tests/e2e/performance/**",
 ]
 
@@ -260,10 +265,11 @@ paths = [
   "public/search-index/**",
   "src/pages/**",
   "src/data/docs-sources.toml",
-  "scripts/precompress-production-assets.mjs",
-  "scripts/serve-production.mjs",
+  "public/fonts/**",
+  "public/_headers",
   "tests/integration/**/*.mjs",
   "astro.config.mjs",
+  "wrangler.jsonc",
   "package.json",
   "package-lock.json",
 ]

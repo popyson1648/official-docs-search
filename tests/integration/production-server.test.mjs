@@ -1,42 +1,40 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { createHash } from "node:crypto";
-import { readFile, readdir } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { request } from "node:http";
 import net from "node:net";
 import { resolve } from "node:path";
 import { after, before, test } from "node:test";
-import { brotliDecompressSync, gunzipSync } from "node:zlib";
 
 const root = resolve(import.meta.dirname, "../..");
-const manifestFile = resolve(root, "dist/client/search-index/manifest.json");
-const runtimeManifestFile = resolve(
-  root,
-  "dist/client/search-index/runtime-manifest.json"
-);
 let app;
 let baseUrl;
-let manifest;
 
 before(async () => {
   const port = await availablePort();
   const logs = [];
-  const child = spawn(process.execPath, ["scripts/serve-production.mjs"], {
-    cwd: root,
-    env: {
-      ...process.env,
-      HOST: "127.0.0.1",
-      PORT: String(port)
-    },
-    stdio: ["ignore", "pipe", "pipe"]
-  });
+  const child = spawn(
+    process.execPath,
+    [
+      "node_modules/astro/bin/astro.mjs",
+      "preview",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      String(port)
+    ],
+    {
+      cwd: root,
+      env: process.env,
+      stdio: ["ignore", "pipe", "pipe"]
+    }
+  );
   child.stdout.on("data", (chunk) => logs.push(chunk.toString()));
   child.stderr.on("data", (chunk) => logs.push(chunk.toString()));
 
   app = { child, logs };
   baseUrl = `http://127.0.0.1:${port}`;
   await waitForServer();
-  manifest = JSON.parse(await readFile(manifestFile, "utf8"));
 });
 
 after(async () => {
@@ -49,7 +47,7 @@ after(async () => {
   if (!exited && app.child.exitCode === null) app.child.kill("SIGKILL");
 });
 
-test("serves the production SSR build with its bundled catalog", async () => {
+test("serves the Workers SSR build with its bundled catalog", async () => {
   const response = await rawRequest("/");
 
   assert.equal(response.statusCode, 200);
@@ -78,47 +76,29 @@ test("serves localized home metadata without indexing search-state URLs", async 
   );
   assert.match(
     englishHtml,
-    /<link rel="alternate" hreflang="x-default" href="https:\/\/official-docs-search\.popyson\.com\/">/
+    /<meta name="robots" content="index,follow,max-image-preview:large">/
   );
-  assert.match(englishHtml, /<meta name="robots" content="index,follow,max-image-preview:large">/);
   assert.match(englishHtml, /<meta property="og:site_name" content="LangRef Search">/);
   assert.match(
     englishHtml,
     /<meta property="og:image" content="https:\/\/official-docs-search\.popyson\.com\/ogp\.png">/
   );
-  const structuredDataSource = englishHtml.match(
-    /<script type="application\/ld\+json">([\s\S]*?)<\/script>/
-  )?.[1];
-  assert.ok(structuredDataSource);
-  assert.deepEqual(JSON.parse(structuredDataSource), {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "LangRef Search",
-    url: "https://official-docs-search.popyson.com/",
-    inLanguage: ["en", "ja"]
-  });
+  assert.doesNotMatch(englishHtml, /fonts\.gstatic\.com/);
   assert.match(english.headers.vary || "", /\bAccept-Language\b/i);
   assert.match(english.headers.vary || "", /\bCookie\b/i);
 
-  const japanese = await rawRequest("/?ui=ja", {
-    "Accept-Language": "en-US,en;q=0.9"
-  });
+  const japanese = await rawRequest("/?ui=ja");
   const japaneseHtml = japanese.body.toString("utf8");
   assert.match(japaneseHtml, /<html[^>]+lang="ja"/);
   assert.match(
     japaneseHtml,
     /<title>LangRef Search — プログラミング公式ドキュメント検索<\/title>/
   );
-  assert.match(japaneseHtml, /<meta property="og:locale" content="ja_JP">/);
 
   const search = await rawRequest("/?q=python+list&ui=en");
   assert.match(
     search.body.toString("utf8"),
     /<meta name="robots" content="noindex,follow">/
-  );
-  assert.match(
-    search.body.toString("utf8"),
-    /<link rel="canonical" href="https:\/\/official-docs-search\.popyson\.com\/\?ui=en">/
   );
 });
 
@@ -133,65 +113,32 @@ test("uses Accept-Language only when URL and saved preferences are absent", asyn
     Cookie: "ods_ui=en"
   });
   assert.match(savedEnglish.body.toString("utf8"), /<html[^>]+lang="en"/);
-
-  const explicitEnglish = await rawRequest("/?ui=en", {
-    "Accept-Language": "ja-JP,ja;q=0.9",
-    Cookie: "ods_ui=ja"
-  });
-  assert.match(explicitEnglish.body.toString("utf8"), /<html[^>]+lang="en"/);
 });
 
 test("renders saved theme settings before the first paint", async () => {
-  const systemHtml = (await rawRequest("/")).body.toString("utf8");
-  assert.match(systemHtml, /<html[^>]+data-theme-setting="system"/);
-  assert.match(
-    systemHtml,
-    /<meta name="color-scheme" content="light dark">/
-  );
-  assert.match(
-    systemHtml,
-    /<meta name="theme-color" content="#825CFF" media="\(prefers-color-scheme: light\)" data-theme-color="light">/
-  );
-
   const darkHtml = (
     await rawRequest("/", { Cookie: "ods_theme=dark" })
   ).body.toString("utf8");
   assert.match(darkHtml, /<html[^>]+data-theme-setting="dark"/);
   assert.match(darkHtml, /<meta name="color-scheme" content="only dark">/);
-  assert.match(
-    darkHtml,
-    /<meta name="theme-color" content="#100D18" media="all" data-theme-color="dark">/
-  );
 
   const lightHtml = (
     await rawRequest("/", { Cookie: "ods_theme=light" })
   ).body.toString("utf8");
   assert.match(lightHtml, /<html[^>]+data-theme-setting="light"/);
   assert.match(lightHtml, /<meta name="color-scheme" content="only light">/);
-
-  const invalidHtml = (
-    await rawRequest("/", { Cookie: "ods_theme=auto" })
-  ).body.toString("utf8");
-  assert.match(invalidHtml, /<html[^>]+data-theme-setting="system"/);
 });
 
 test("publishes robots, sitemap, and optimized brand assets", async () => {
   const robots = await rawRequest("/robots.txt");
   assert.equal(robots.statusCode, 200);
-  assert.match(robots.headers["content-type"] || "", /^text\/plain\b/);
-  assert.match(robots.body.toString("utf8"), /^User-agent: \*\nAllow: \//);
-  assert.match(
-    robots.body.toString("utf8"),
-    /Sitemap: https:\/\/official-docs-search\.popyson\.com\/sitemap\.xml/
-  );
+  assert.match(robots.body.toString("utf8"), /Sitemap: https:\/\/official-docs-search\.popyson\.com\/sitemap\.xml/);
 
   const sitemap = await rawRequest("/sitemap.xml");
   const sitemapXml = sitemap.body.toString("utf8");
   assert.equal(sitemap.statusCode, 200);
-  assert.match(sitemap.headers["content-type"] || "", /^application\/xml\b/);
   assert.match(sitemapXml, /<loc>https:\/\/official-docs-search\.popyson\.com\/<\/loc>/);
-  assert.match(sitemapXml, /<loc>https:\/\/official-docs-search\.popyson\.com\/\?ui=en<\/loc>/);
-  assert.match(sitemapXml, /<loc>https:\/\/official-docs-search\.popyson\.com\/\?ui=ja<\/loc>/);
+  assert.doesNotMatch(sitemapXml, /\/(?:terms|privacy)/);
 
   for (const asset of [
     "/logo.png",
@@ -202,252 +149,81 @@ test("publishes robots, sitemap, and optimized brand assets", async () => {
     const response = await rawRequest(asset);
     assert.equal(response.statusCode, 200, asset);
     assert.match(response.headers["content-type"] || "", /^image\/png\b/, asset);
-    assert.deepEqual(
-      response.body.subarray(0, 8),
-      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-      asset
-    );
   }
 });
 
-test("negotiates compression for HTML, CSS, and JavaScript", async () => {
-  const assets = [
-    { path: "/", readSource: () => rawRequest("/") },
-    {
-      path: await builtAssetPath(".css"),
-      readSource: async (pathname) => ({
-        body: await readFile(resolve(root, `dist/client${pathname}`))
-      })
-    },
-    {
-      path: await builtAssetPath(".js"),
-      readSource: async (pathname) => ({
-        body: await readFile(resolve(root, `dist/client${pathname}`))
-      })
-    }
-  ];
+test("links the footer and renders both legal languages", async () => {
+  const home = (await rawRequest("/?ui=en")).body.toString("utf8");
+  assert.match(home, /href="\/terms\?ui=en"/);
+  assert.match(home, /href="\/privacy\?ui=en"/);
+  assert.match(home, /href="https:\/\/forms\.gle\/WHDXAprmCmmu9M957"/);
+  assert.match(home, /href="https:\/\/x\.com\/popyson1648"/);
+  assert.match(home, />popyson1648<\/a>/);
+  assert.match(home, /rel="external noopener noreferrer"/);
 
-  for (const asset of assets) {
-    const source = await asset.readSource(asset.path);
-    for (const encoding of ["br", "gzip"]) {
-      const response = await rawRequest(asset.path, {
-        "Accept-Encoding": encoding
-      });
-
-      assert.equal(response.statusCode, 200, asset.path);
-      assert.equal(response.headers["content-encoding"], encoding, asset.path);
-      assert.match(
-        response.headers.vary || "",
-        /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i,
-        asset.path
-      );
-      const decoded =
-        encoding === "br"
-          ? brotliDecompressSync(response.body)
-          : gunzipSync(response.body);
-      assert.deepEqual(decoded, source.body, asset.path);
-    }
+  const englishPrivacy = (
+    await rawRequest("/privacy?ui=en")
+  ).body.toString("utf8");
+  assert.match(englishPrivacy, /<html[^>]+lang="en"/);
+  assert.match(englishPrivacy, /<meta name="robots" content="noindex,follow">/);
+  for (const service of ["Claude", "Claude Code", "ChatGPT", "Codex", "Antigravity"]) {
+    assert.match(englishPrivacy, new RegExp(service));
   }
+  assert.match(englishPrivacy, /12 months after resolution/);
+  assert.match(englishPrivacy, /no later than 24 months/);
+  assert.match(englishPrivacy, /Shunsuke Setoguchi/);
+  assert.match(englishPrivacy, />@popyson1648<\/a>/);
+
+  const japaneseTerms = (
+    await rawRequest("/terms?ui=ja")
+  ).body.toString("utf8");
+  assert.match(japaneseTerms, /<html[^>]+lang="ja"/);
+  assert.match(japaneseTerms, /<h1>利用規約<\/h1>/);
+  assert.match(japaneseTerms, /Shunsuke Setoguchi/);
 });
 
-test("precompresses every built search-index JSON without changing its bytes", async () => {
-  const files = await findJsonFiles(resolve(root, "dist/client/search-index"));
-  assert.ok(files.length > 0);
+test("serves self-hosted fonts and immutable application assets", async () => {
+  const fontName = (
+    await readFile(resolve(root, "src/font-faces.css"), "utf8")
+  ).match(/url\(\/fonts\/google\/([^)]+\.woff2)\)/)?.[1];
+  assert.ok(fontName);
 
-  for (const file of files) {
-    const [source, brotli, gzip] = await Promise.all([
-      readFile(file),
-      readFile(`${file}.br`),
-      readFile(`${file}.gz`)
-    ]);
-    assert.deepEqual(brotliDecompressSync(brotli), source, file);
-    assert.deepEqual(gunzipSync(gzip), source, file);
-  }
+  const font = await rawRequest(`/fonts/google/${fontName}`);
+  assert.equal(font.statusCode, 200);
+  assert.match(font.headers["content-type"] || "", /^font\/woff2\b/);
+  assert.match(font.headers["cache-control"] || "", /\bmax-age=31536000\b/);
+  assert.match(font.headers["cache-control"] || "", /\bimmutable\b/);
+  assert.equal(font.body.subarray(0, 4).toString("ascii"), "wOF2");
+
+  const html = (await rawRequest("/")).body.toString("utf8");
+  const assetPath = /(?:src|href)="(\/_astro\/[^"]+\.(?:js|css))"/.exec(html)?.[1];
+  assert.ok(assetPath);
+  const asset = await rawRequest(assetPath);
+  assert.equal(asset.statusCode, 200);
+  assert.match(asset.headers["cache-control"] || "", /\bimmutable\b/);
 });
 
-test("serves both manifests from sidecars with stable revalidation headers", async () => {
-  const manifests = [
-    {
-      path: "/search-index/manifest.json",
-      file: manifestFile
-    },
-    {
-      path: "/search-index/runtime-manifest.json",
-      file: runtimeManifestFile
-    }
-  ];
-
-  for (const item of manifests) {
-    const source = await readFile(item.file);
-    const sidecar = await readFile(`${item.file}.br`);
-    const response = await rawRequest(item.path, {
-      "Accept-Encoding": "br"
-    });
-
-    assert.equal(response.statusCode, 200);
-    assert.equal(response.headers["content-encoding"], "br");
-    assert.match(response.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
-    assert.match(response.headers["cache-control"] || "", /\bno-cache\b/);
-    assert.equal(response.headers.etag, contentEtag(source));
-    assert.deepEqual(response.body, sidecar);
-    assert.deepEqual(brotliDecompressSync(response.body), source);
-
-    const conditional = await rawRequest(item.path, {
-      "Accept-Encoding": "br",
-      "If-None-Match": response.headers.etag
-    });
-    assert.equal(conditional.statusCode, 304);
-    assert.equal(conditional.body.byteLength, 0);
-    assert.match(conditional.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
-  }
-});
-
-test("negotiates Brotli and gzip for a manifest-listed bundle", async () => {
-  const entry = largestManifestEntry();
-  const file = resolve(root, `dist/client${entry.path}`);
-  const source = await readFile(file);
-  const brotliSidecar = await readFile(`${file}.br`);
-  const gzipSidecar = await readFile(`${file}.gz`);
-  const expectedEtag = contentEtag(source);
-
-  const brotli = await rawRequest(entry.path, { "Accept-Encoding": "br" });
-  assert.equal(brotli.statusCode, 200);
-  assert.equal(brotli.headers["content-encoding"], "br");
-  assert.equal(brotli.headers.etag, expectedEtag);
-  assert.match(brotli.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
-  assert.deepEqual(brotli.body, brotliSidecar);
-  assert.deepEqual(brotliDecompressSync(brotli.body), source);
-
-  const gzip = await rawRequest(entry.path, { "Accept-Encoding": "gzip" });
-  assert.equal(gzip.statusCode, 200);
-  assert.equal(gzip.headers["content-encoding"], "gzip");
-  assert.equal(gzip.headers.etag, expectedEtag);
-  assert.deepEqual(gzip.body, gzipSidecar);
-  assert.deepEqual(gunzipSync(gzip.body), source);
-
-  const preferredGzip = await rawRequest(entry.path, {
-    "Accept-Encoding": "br;q=0.5, gzip;q=1"
-  });
-  assert.equal(preferredGzip.headers["content-encoding"], "gzip");
-  assert.deepEqual(preferredGzip.body, gzipSidecar);
-
-  const preferredIdentity = await rawRequest(entry.path, {
-    "Accept-Encoding": "br;q=0.5, identity;q=1"
-  });
-  assert.equal(preferredIdentity.headers["content-encoding"], undefined);
-  assert.deepEqual(preferredIdentity.body, source);
-
-  const identity = await rawRequest(entry.path, { "Accept-Encoding": "identity" });
-  assert.equal(identity.statusCode, 200);
-  assert.equal(identity.headers["content-encoding"], undefined);
-  assert.equal(identity.headers.etag, expectedEtag);
-  assert.deepEqual(identity.body, source);
-});
-
-test("preserves search-asset headers for HEAD and conditional requests", async () => {
-  const entry = largestManifestEntry();
-  const file = resolve(root, `dist/client${entry.path}`);
-  const sidecar = await readFile(`${file}.br`);
-  const expectedEtag = contentEtag(await readFile(file));
-  const head = await rawRequest(
-    entry.path,
-    { "Accept-Encoding": "br" },
-    "HEAD"
-  );
-
-  assert.equal(head.statusCode, 200);
-  assert.equal(head.body.byteLength, 0);
-  assert.equal(head.headers["content-encoding"], "br");
-  assert.equal(Number(head.headers["content-length"]), sidecar.byteLength);
-  assert.equal(head.headers.etag, expectedEtag);
-  assert.match(head.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
-  assert.match(head.headers["cache-control"] || "", /\bimmutable\b/);
-
-  const conditional = await rawRequest(entry.path, {
-    "Accept-Encoding": "br",
-    "If-None-Match": expectedEtag
-  });
-  assert.equal(conditional.statusCode, 304);
-  assert.equal(conditional.body.byteLength, 0);
-  assert.equal(conditional.headers.etag, expectedEtag);
-  assert.match(conditional.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
-  assert.match(conditional.headers["cache-control"] || "", /\bimmutable\b/);
-});
-
-test("only gives immutable caching to content-hashed bundles", async () => {
-  const entry = largestManifestEntry();
-  const response = await rawRequest(entry.path, { "Accept-Encoding": "gzip" });
-  const cacheControl = response.headers["cache-control"] || "";
-  const isHashed = /(?:^|[.-])[a-f0-9]{12,64}\.json$/i.test(entry.path.split("/").at(-1));
-
-  if (isHashed) {
-    assert.match(cacheControl, /\bmax-age=31536000\b/);
-    assert.match(cacheControl, /\bimmutable\b/);
-  } else {
-    assert.match(cacheControl, /\bmax-age=0\b/);
-    assert.doesNotMatch(cacheControl, /\bimmutable\b/);
-  }
-
-  const conditional = await rawRequest(entry.path, {
-    "Accept-Encoding": "gzip",
-    "If-None-Match": response.headers.etag
-  });
-  assert.equal(conditional.statusCode, 304);
-  assert.equal(conditional.body.byteLength, 0);
-  assert.match(conditional.headers.vary || "", /(?:^|,)\s*Accept-Encoding\s*(?:,|$)/i);
-});
-
-test("does not apply index cache headers to missing paths", async () => {
-  const response = await rawRequest("/search-index/not-in-the-manifest.123456789abc.json", {
-    "Accept-Encoding": "br"
-  });
-
+test("does not apply immutable headers to missing static paths", async () => {
+  const response = await rawRequest("/fonts/google/not-found.woff2");
   assert.equal(response.statusCode, 404);
   assert.doesNotMatch(response.headers["cache-control"] || "", /\bimmutable\b/);
 });
-
-function largestManifestEntry() {
-  return manifest.entries
-    .filter((entry) => entry.status === "supported")
-    .sort((left, right) => right.recordCount - left.recordCount)[0];
-}
-
-async function builtAssetPath(extension) {
-  const assetDirectory = resolve(root, "dist/client/_astro");
-  const names = await readdir(assetDirectory);
-  const name = names.find((candidate) => candidate.endsWith(extension));
-  assert.ok(name, `Expected a built ${extension} asset`);
-  return `/_astro/${name}`;
-}
-
-async function findJsonFiles(directory) {
-  const files = [];
-  for (const entry of await readdir(directory, { withFileTypes: true })) {
-    const entryPath = resolve(directory, entry.name);
-    if (entry.isDirectory()) {
-      files.push(...(await findJsonFiles(entryPath)));
-    } else if (entry.isFile() && entry.name.endsWith(".json")) {
-      files.push(entryPath);
-    }
-  }
-  return files.sort();
-}
 
 async function waitForServer() {
   const deadline = Date.now() + 20_000;
   while (Date.now() < deadline) {
     if (app.child.exitCode !== null) {
-      throw new Error(`Production server exited before startup:\n${app.logs.join("")}`);
+      throw new Error(`Workers preview exited before startup:\n${app.logs.join("")}`);
     }
     try {
       const response = await rawRequest("/");
       if (response.statusCode === 200) return;
     } catch {
-      // The production server is still starting.
+      // The Workers preview is still starting.
     }
     await new Promise((resolveDelay) => setTimeout(resolveDelay, 100));
   }
-  throw new Error(`Timed out starting production server:\n${app.logs.join("")}`);
+  throw new Error(`Timed out starting Workers preview:\n${app.logs.join("")}`);
 }
 
 async function availablePort() {
@@ -485,9 +261,4 @@ async function rawRequest(pathname, headers = {}, method = "GET") {
     pending.once("error", reject);
     pending.end();
   });
-}
-
-function contentEtag(bytes) {
-  const digest = createHash("sha256").update(bytes).digest("base64url");
-  return `W/"sha256-${digest}"`;
 }

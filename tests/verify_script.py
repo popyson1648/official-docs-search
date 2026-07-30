@@ -45,7 +45,7 @@ class ChangeSelectionTests(unittest.TestCase):
             phase("unit", "src/core/**", "scripts/search-index/**", "tests/*.test.ts", "package*.json"),
             phase("integration", "public/search-index/**", "src/data/docs-sources.toml", "package*.json"),
             phase("e2e", "src/client/**", "src/pages/**", "public/**", "package*.json"),
-            phase("contract", "scripts/serve-production.mjs", "public/search-index/**", "package*.json"),
+            phase("contract", "wrangler.jsonc", "public/search-index/**", "package*.json"),
             phase("live", "scripts/search-index/**", "src/data/docs-sources.toml"),
             phase("security", "package*.json"),
         ]

@@ -15,7 +15,8 @@ source-and-locale indexes and searches selected bundles in a browser Web Worker.
 - Index adapters and generation: `scripts/generate-search-index.mjs`
 - Source-family index jobs and parsers: `scripts/search-index/`
 - Generated indexes: `public/search-index/`
-- Production server: `scripts/serve-production.mjs`
+- Production runtime: Cloudflare Workers via `@astrojs/cloudflare` and
+  `wrangler.jsonc`
 - Verification: `tests/` and `scripts/verify.py`
 
 ## Minimum Setup
