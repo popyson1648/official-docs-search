@@ -52,6 +52,16 @@ throttling measured 110 ms LCP and 0.00 CLS.
 The corresponding mobile Lighthouse audit scored 100 for accessibility, best
 practices, and SEO with no failed audit.
 
+The 2026-07-31 branch audit compared the local workerd preview with the live
+deployment under the same mobile Lighthouse configuration. The preview scored 82
+for performance with 3.5 s LCP and 521 KiB transferred; production scored 96 with
+1.9 s LCP and 155 KiB, because the preview serves everything uncompressed while
+Cloudflare applies Brotli at the edge. Both measured the same 0.095 CLS, caused
+by the footer reflowing when the Alexandria subset swaps in, which predates the
+brand lockup. Accessibility rose from 92 to 97 after `role="group"` was added to
+the query-modifier container; the remaining failure is the documented 4.26:1
+Search label. Total blocking time was 0 ms in every run.
+
 The 2026-07-30 Light/Dark production audit after adding the appearance menu
 kept Performance, Best Practices, and SEO at 100 in both modes. Dark
 Accessibility scored 100; Light scored 96 only because the intentionally white
