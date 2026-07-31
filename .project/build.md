@@ -110,11 +110,13 @@ bundles under `/search-index/bundles/`. Both manifests stay revalidated so a
 new deployment is picked up immediately. Missing files do not receive that
 policy.
 
-`src/middleware.ts` declares `private, no-cache` on every server-rendered HTML
-document, which is rendered from the visitor's language, theme, and source
+`src/middleware.ts` declares `private, no-cache, no-transform` on every
+server-rendered HTML document, which is rendered from the visitor's language, theme, and source
 cookies. `Vary` already carries that dependency; the explicit policy removes the
 ambiguity for a shared cache that handles `Vary` poorly, and `no-cache` keeps the
-browser's back-forward cache, which `no-store` would forfeit.
+browser's back-forward cache, which `no-store` would forfeit. `no-transform`
+stops the Cloudflare edge from rewriting the document, which it otherwise does to
+inject its Web Analytics beacon.
 
 `wrangler.jsonc` pins the current compatible runtime date, the production custom
 domain, Node compatibility, disabled persistent observability, and the adapter's

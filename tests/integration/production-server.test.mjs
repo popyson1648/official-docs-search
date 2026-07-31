@@ -231,7 +231,7 @@ test("declares a cache policy for documents, bundles, and manifests", async () =
     assert.equal(response.statusCode, 200, document);
     assert.equal(
       response.headers["cache-control"],
-      "private, no-cache",
+      "private, no-cache, no-transform",
       document
     );
     assert.match(response.headers.vary || "", /\bCookie\b/i, document);

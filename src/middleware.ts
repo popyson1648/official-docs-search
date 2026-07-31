@@ -4,7 +4,10 @@ import type { MiddlewareHandler } from "astro";
    source cookies, so it must never be reused for another visitor. `Vary`
    already says so, but stating the policy removes the ambiguity for a shared
    cache that handles `Vary` poorly. `no-cache` still allows the browser's
-   back-forward cache, which `no-store` would forfeit. */
+   back-forward cache, which `no-store` would forfeit. `no-transform` keeps
+   intermediaries, including the Cloudflare edge, from rewriting the document;
+   without it the edge injects its Web Analytics beacon, contradicting the
+   Privacy Policy's statement that the page embeds no third-party script. */
 export const onRequest: MiddlewareHandler = async (_context, next) => {
   const response = await next();
   const contentType = response.headers.get("content-type") ?? "";
@@ -12,7 +15,7 @@ export const onRequest: MiddlewareHandler = async (_context, next) => {
     contentType.startsWith("text/html") &&
     !response.headers.has("cache-control")
   ) {
-    response.headers.set("cache-control", "private, no-cache");
+    response.headers.set("cache-control", "private, no-cache, no-transform");
   }
   return response;
 };
