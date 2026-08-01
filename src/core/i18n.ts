@@ -13,6 +13,16 @@ const messages: Record<UiLanguage, Messages> = {
     queryLabel: "LangRef Search",
     queryInputLabel: "Search terms",
     clearQuery: "Clear the search terms",
+    languagesTitle: "Supported languages",
+    languagesDescription:
+      "Every programming language LangRef Search indexes, with the sources behind it.",
+    languagesIntro:
+      "Search covers {languages} languages through {sources} indexed sources. Japanese results are available where a source publishes Japanese documentation; other languages fall back to English.",
+    languagesLocales: "Indexed documentation",
+    languagesPending: "Not indexed yet",
+    languagesBackToSearch: "Back to search",
+    localeEnglish: "English",
+    localeJapanese: "Japanese",
     sourcePolicyLabel: "Non-official sources",
     sourcePolicyOfficial: "Don't include",
     sourcePolicyFallback: "Only if unavailable",
@@ -87,6 +97,16 @@ const messages: Record<UiLanguage, Messages> = {
     queryLabel: "LangRef Search",
     queryInputLabel: "検索語",
     clearQuery: "検索語を消去",
+    languagesTitle: "対応言語",
+    languagesDescription:
+      "LangRef Searchが索引化しているプログラミング言語と、その出典の一覧です。",
+    languagesIntro:
+      "{languages}言語を{sources}件の索引で検索できます。日本語の結果は、配布元が日本語版を公開しているソースで利用できます。それ以外は英語にフォールバックします。",
+    languagesLocales: "索引化されている言語版",
+    languagesPending: "未索引",
+    languagesBackToSearch: "検索に戻る",
+    localeEnglish: "英語",
+    localeJapanese: "日本語",
     sourcePolicyLabel: "非公式ソース",
     sourcePolicyOfficial: "含めない",
     sourcePolicyFallback: "公式がない時だけ",

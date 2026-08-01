@@ -7,8 +7,8 @@
 - `src/core/`: framework-independent query, catalog, support-state, runtime, and ranking logic.
 - `src/data/`: TOML catalog of official, conventional, and community documentation sources.
 - `src/font-faces.css`: reviewed generated face declarations bundled by Astro.
-- `src/pages/`: the single search-product entry, ancillary legal notices, and
-  robots and sitemap discovery routes.
+- `src/pages/`: the single search-product entry, ancillary coverage and legal
+  notices, and robots and sitemap discovery routes.
 - `src/components/` and `src/layouts/`: shared footer and legal-page shell.
 - `scripts/`: index adapters, reproducible publication, live verification, and
   generated font maintenance.
@@ -56,8 +56,11 @@
   discovery metadata, split-color query language chips, and the result shell.
 - `src/pages/terms.astro` and `src/pages/privacy.astro`: localized ancillary
   legal notices that remain outside the product sitemap.
-- `src/components/SiteFooter.astro` and `src/layouts/LegalLayout.astro`:
-  compact legal/report navigation and the theme-aware legal-page shell.
+- `src/components/SiteFooter.astro` and `src/layouts/AncillaryLayout.astro`:
+  compact coverage/legal/report navigation and the theme-aware shell every
+  ancillary page shares.
+- `src/pages/languages.astro`: the catalog's coverage, generated from
+  `loadCatalog()` so it cannot claim more than the search resolves.
 - `src/middleware.ts`: declares the per-visitor cache policy on rendered HTML
   documents without touching static assets or discovery routes.
 - `src/pages/robots.txt.ts` and `src/pages/sitemap.xml.ts`: expose the

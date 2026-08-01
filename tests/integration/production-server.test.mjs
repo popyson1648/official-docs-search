@@ -204,6 +204,53 @@ test("links the footer and renders both legal languages", async () => {
   assert.match(japaneseTerms, /文書本文は複製、保存または再配信しません。/);
 });
 
+test("publishes the catalog's coverage on the supported-languages page", async () => {
+  const catalog = await readFile(resolve(root, "src/data/docs-sources.toml"), "utf8");
+  const languageNames = [...catalog.matchAll(/^name = "(.+)"$/gm)].map(
+    (match) => match[1]
+  );
+  const sourceCount = [...catalog.matchAll(/^\[\[languages\.sources\]\]$/gm)].length;
+  const languageCount = [...catalog.matchAll(/^\[\[languages\]\]$/gm)].length;
+  assert.ok(languageCount > 0 && sourceCount > languageCount);
+
+  const decode = (html) =>
+    html
+      .replaceAll("&#39;", "'")
+      .replaceAll("&quot;", '"')
+      .replaceAll("&lt;", "<")
+      .replaceAll("&gt;", ">")
+      .replaceAll("&amp;", "&");
+  const japanese = (await rawRequest("/languages?ui=ja")).body.toString("utf8");
+  assert.match(japanese, /<html[^>]+lang="ja"/);
+  assert.match(japanese, /<h1>対応言語<\/h1>/);
+  assert.match(japanese, /<meta name="robots" content="noindex,follow">/);
+  assert.equal(
+    japanese.match(/class="language-entry"/g)?.length,
+    languageCount,
+    "every catalog language should have a section"
+  );
+  assert.equal(
+    japanese.match(/class="language-source-list"><li>/g)?.length,
+    languageCount
+  );
+  for (const name of languageNames) {
+    assert.ok(
+      decode(japanese).includes(name),
+      `${name} was missing from the supported-languages page`
+    );
+  }
+
+  const english = (await rawRequest("/languages?ui=en")).body.toString("utf8");
+  assert.match(english, /<h1>Supported languages<\/h1>/);
+  assert.match(english, /Indexed documentation/);
+
+  const sitemap = (await rawRequest("/sitemap.xml")).body.toString("utf8");
+  assert.doesNotMatch(sitemap, /\/languages/);
+
+  const home = (await rawRequest("/?ui=ja")).body.toString("utf8");
+  assert.match(home, /href="\/languages\?ui=ja"/);
+});
+
 test("serves self-hosted fonts and immutable application assets", async () => {
   const fontName = (
     await readFile(resolve(root, "src/font-faces.css"), "utf8")

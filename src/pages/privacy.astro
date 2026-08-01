@@ -1,6 +1,6 @@
 ---
 import { resolveUiLanguage } from "../core/request-preferences";
-import LegalLayout from "../layouts/LegalLayout.astro";
+import AncillaryLayout from "../layouts/AncillaryLayout.astro";
 
 export const prerender = false;
 
@@ -20,7 +20,7 @@ const description = isJapanese
   : "How LangRef Search handles search, preference, request, and issue-report information.";
 ---
 
-<LegalLayout
+<AncillaryLayout
   uiLanguage={uiLanguage}
   title={title}
   description={description}
@@ -386,4 +386,4 @@ const description = isJapanese
       </article>
     )
   }
-</LegalLayout>
+</AncillaryLayout>

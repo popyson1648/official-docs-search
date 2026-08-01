@@ -1,0 +1,134 @@
+---
+import { getDocumentKindLabel, getSourceKindLabel, t } from "../core/i18n";
+import { resolveUiLanguage } from "../core/request-preferences";
+import { getLanguageColor, getLanguageTagTextColor } from "../core/language-colors";
+import { loadCatalog } from "../core/sources";
+import AncillaryLayout from "../layouts/AncillaryLayout.astro";
+
+export const prerender = false;
+
+const uiLanguage = resolveUiLanguage({
+  requested: Astro.url.searchParams.get("ui"),
+  stored: Astro.cookies.get("ods_ui")?.value,
+  acceptLanguage: Astro.request.headers.get("accept-language")
+});
+Astro.response.headers.append("Vary", "Accept-Language, Cookie");
+
+const catalog = loadCatalog();
+/* The catalog is what the search itself resolves against, so a page built from
+   it cannot claim coverage the search does not have. */
+const languages = catalog.languages.map((language) => {
+  const sources = language.sources.map((source) => ({
+    ...source,
+    indexedLocales: source.indexes
+      .filter((index) => index.status === "supported")
+      .map((index) => index.locale),
+    pending: source.indexes.filter((index) => index.status !== "supported")
+  }));
+  return {
+    ...language,
+    sources,
+    indexedSourceCount: sources.filter(
+      (source) => source.indexedLocales.length > 0
+    ).length
+  };
+});
+const indexCount = languages.reduce(
+  (total, language) =>
+    total +
+    language.sources.reduce(
+      (count, source) => count + source.indexedLocales.length,
+      0
+    ),
+  0
+);
+const localeLabel = (locale: string) =>
+  locale === "ja"
+    ? t(uiLanguage, "localeJapanese")
+    : locale === "en"
+      ? t(uiLanguage, "localeEnglish")
+      : locale;
+const intro = t(uiLanguage, "languagesIntro")
+  .replace("{languages}", String(languages.length))
+  .replace("{sources}", String(indexCount));
+---
+
+<AncillaryLayout
+  uiLanguage={uiLanguage}
+  title={`${t(uiLanguage, "languagesTitle")} — LangRef Search`}
+  description={t(uiLanguage, "languagesDescription")}
+  pathname="/languages"
+>
+  <article>
+    <header class="legal-title">
+      <p class="legal-kicker">LangRef Search</p>
+      <h1>{t(uiLanguage, "languagesTitle")}</h1>
+      <p>{intro}</p>
+    </header>
+
+    <p>
+      <a href={`/?ui=${uiLanguage}`}>{t(uiLanguage, "languagesBackToSearch")}</a>
+    </p>
+
+    {
+      languages.map((language) => {
+        const color = getLanguageColor(language.id);
+        return (
+          <section class="language-entry">
+            <h2>
+              <span
+                class="language-entry-tag"
+                style={
+                  color
+                    ? `--language-color: ${color}; --language-text-color: ${getLanguageTagTextColor(color)};`
+                    : undefined
+                }
+              >
+                {language.name}
+              </span>
+            </h2>
+            <ul class="language-source-list">
+              {language.sources.map((source) => (
+                <li>
+                  <a
+                    href={source.url}
+                    target="_blank"
+                    rel="external noopener noreferrer"
+                  >
+                    {source.name}
+                    <svg
+                      class="external-link-mark"
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="M6 4h6v6M12 4 4 12" />
+                    </svg>
+                  </a>
+                  <span class="language-source-meta">
+                    {getSourceKindLabel(uiLanguage, source.kind)} ·{" "}
+                    {getDocumentKindLabel(uiLanguage, source.documentKind)}
+                  </span>
+                  {source.indexedLocales.length > 0 && (
+                    <span class="language-source-meta">
+                      {t(uiLanguage, "languagesLocales")}:{" "}
+                      {source.indexedLocales.map(localeLabel).join(" / ")}
+                    </span>
+                  )}
+                  {source.indexedLocales.length === 0 && (
+                    <span class="language-source-meta">
+                      {t(uiLanguage, "languagesPending")}
+                      {source.pending[0]?.reason
+                        ? ` (${source.pending[0].reason})`
+                        : ""}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })
+    }
+  </article>
+</AncillaryLayout>

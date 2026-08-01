@@ -14,6 +14,10 @@ const localeQuery = `?ui=${uiLanguage}`;
     class="site-footer-links"
     aria-label={uiLanguage === "ja" ? "サイト情報" : "Site information"}
   >
+    <a href={`/languages${localeQuery}`}>
+      <span class="lang-en">Supported languages</span>
+      <span class="lang-ja">対応言語</span>
+    </a>
     <a href={`/terms${localeQuery}`}>
       <span class="lang-en">Terms of Use</span>
       <span class="lang-ja">利用規約</span>
