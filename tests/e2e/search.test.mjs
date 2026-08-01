@@ -1937,8 +1937,8 @@ test("[filters] result order switches between relevance and language name withou
     [
       {
         value: "relevance",
-        backgroundColor: "rgb(130, 92, 255)",
-        color: "rgb(18, 0, 46)"
+        backgroundColor: "rgb(121, 81, 239)",
+        color: "rgb(255, 255, 255)"
       },
       {
         value: "language-asc",
@@ -2059,6 +2059,15 @@ test("[filters] result filters match the reference overlay and responsive intera
           Math.round(choice.getBoundingClientRect().top)
         )
       ).size,
+      /* The row scrolls, so it clips both axes. A selected chip draws a 2px
+         outline 1px outside its box, which needs room inside that clip. */
+      selectedRingRoom: (() => {
+        const selected =
+          choices.querySelector("button.on") ?? choices.querySelector("button");
+        const chip = selected.getBoundingClientRect();
+        const row = choices.getBoundingClientRect();
+        return Math.min(chip.top - row.top, row.bottom - chip.bottom);
+      })(),
       targets: visibleTargets.map((button) => {
         const rect = button.getBoundingClientRect();
         return {
@@ -2084,6 +2093,10 @@ test("[filters] result filters match the reference overlay and responsive intera
   assert.equal(layout.choicesOverflowX, "auto");
   assert.equal(layout.choiceRows, 1);
   assert.ok(layout.choicesScrollWidth > layout.choicesClientWidth);
+  assert.ok(
+    layout.selectedRingRoom >= 3,
+    `the selected chip's outline had ${layout.selectedRingRoom}px of room inside the scrolling row`
+  );
   assert.ok(
     layout.targets.every(
       (target) =>

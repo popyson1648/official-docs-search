@@ -1115,9 +1115,9 @@ html:not([lang="ja"]) [data-search-form][data-docs-locale="ja"] .source-ja-unava
 }
 
 .result-filter-choice.on {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--on-accent);
+  border-color: var(--action-accent);
+  background: var(--action-accent);
+  color: #ffffff;
 }
 
 .result-filter-choice.language {
@@ -1248,7 +1248,9 @@ html:not([lang="ja"]) [data-search-form][data-docs-locale="ja"] .source-ja-unava
 
   .result-filter-choices {
     flex-wrap: nowrap;
-    padding-bottom: 2px;
+    /* Scrolling clips both axes, so the row reserves the 3px the selected
+       language chip's outline needs plus the room the scrollbar wants. */
+    padding: 3px 3px 5px;
     overflow-x: auto;
     overscroll-behavior-inline: contain;
     scrollbar-width: thin;
