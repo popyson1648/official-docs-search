@@ -71,6 +71,7 @@ export function initializeSearchControls(
   const helpOpen = root.querySelector<HTMLButtonElement>("[data-help-open]");
   const queryStack = root.querySelector<HTMLElement>("[data-query-stack]");
   const suggestions = root.querySelector<HTMLElement>("[data-search-suggestions]");
+  const queryClear = root.querySelector<HTMLButtonElement>("[data-query-clear]");
   const knownLanguages = parseKnownLanguages(queryStack?.dataset.knownLanguages);
   const suggestionScopes = parseSuggestionScopes(
     queryStack?.dataset.suggestionScopes
@@ -123,6 +124,7 @@ export function initializeSearchControls(
   }
 
   const renderHighlight = () => {
+    syncQueryClearVisibility();
     if (!input || !highlight) return;
     const { flags } = parseQuery(input.value, { knownLanguages });
     highlight.replaceChildren(
@@ -139,6 +141,8 @@ export function initializeSearchControls(
   input?.addEventListener("input", () => {
     if (!composing) scheduleSuggestions();
   });
+  queryClear?.addEventListener("click", clearQuery);
+  syncQueryClearVisibility();
   input?.addEventListener("scroll", () => {
     if (highlight) highlight.scrollLeft = input.scrollLeft;
   });
@@ -184,6 +188,29 @@ export function initializeSearchControls(
     closeSuggestions();
     void submitSearchLocally();
   });
+
+  function restoreFullSourceScope() {
+    if (!form) return;
+    activeScopeLanguageIds = new Set(
+      clientSearchCatalog.map((language) => language.id)
+    );
+    syncVisibleSourceGroups(root, activeScopeLanguageIds);
+    syncSourceScopeInputs(root, form, activeScopeLanguageIds);
+    syncPreservedSourceInputs(root, form, clientSearchCatalog, selectedSourceIds);
+  }
+
+  function clearQuery() {
+    if (!input) return;
+    input.value = "";
+    renderHighlight();
+    closeSuggestions();
+    input.focus();
+  }
+
+  function syncQueryClearVisibility() {
+    if (!queryClear) return;
+    queryClear.hidden = (input?.value.length ?? 0) === 0;
+  }
 
   /* A completed search keeps the query editable on pointer-driven devices. On a
      touch device the same focus keeps the virtual keyboard over the results, so
@@ -489,6 +516,10 @@ export function initializeSearchControls(
     renderQueryErrors(root, errors, parsed.errors.map((error) => error.message));
     renderActiveLanguageTags(root, clientSearchCatalog, parsed.languages);
     if (!hasQuery || parsed.errors.length > 0 || !resultsElement) {
+      /* An empty query is the same state a fresh page load renders, where every
+         language's sources are offered. Without this the Sources list keeps the
+         previous query's languages. */
+      if (!hasQuery) restoreFullSourceScope();
       if (resultsSection) resultsSection.hidden = true;
       if (resultsElement) {
         resultsElement.dataset.query = "";

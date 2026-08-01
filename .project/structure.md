@@ -134,7 +134,10 @@
    It shows the first 15 groups and discloses later batches without navigation.
    Repeated source
    qualifications appear once in a small borderless disclosure above results.
-   A contextual Top control appears only after the search panel leaves view.
+   A contextual Top control appears once the search box leaves view, so it is
+   reachable while scrolling a fully expanded source list.
+   A clear control inside the query field empties it while typing, after
+   typing, and after a search, and an empty query restores every source group.
    Filled controls with white labels use the darker `#7951EF` action accent in
    both themes so their labels clear 4.5:1.
    The light interface palette uses `#825CFF` as its theme color and preserves

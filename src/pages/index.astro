@@ -328,11 +328,7 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
 
 
     <main class="page" data-search-page>
-      <section
-        class="search-panel"
-        aria-labelledby="search-heading"
-        data-page-top-sentinel
-      >
+      <section class="search-panel" aria-labelledby="search-heading">
         <div class="search-header">
           <h1 id="search-heading" tabindex="-1" data-page-top-target>
             <span class="site-logo">
@@ -527,7 +523,7 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
               />
             ))
           }
-          <div class="query-row">
+          <div class="query-row" data-page-top-sentinel>
             <div class="search-group">
               <label class="sr-only" for="q">
                 <span class="lang-en">{t("en", "queryInputLabel")}</span>
@@ -556,6 +552,26 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
                   data-query-input
                   autofocus
                 />
+                <button
+                  class="query-clear"
+                  type="button"
+                  data-query-clear
+                  data-localized-aria-label
+                  data-label-en={t("en", "clearQuery")}
+                  data-label-ja={t("ja", "clearQuery")}
+                  aria-label={t(uiLanguage, "clearQuery")}
+                  hidden={q.length === 0}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path d="M6 6 18 18M18 6 6 18"></path>
+                  </svg>
+                </button>
                 <div
                   id="search-suggestions"
                   class="search-suggestions"

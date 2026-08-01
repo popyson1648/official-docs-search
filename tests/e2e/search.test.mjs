@@ -1287,6 +1287,77 @@ test("[layout] duplicate reference symbols group by source and long results disc
   await page.close();
 });
 
+test("[layout] the Top control appears while scrolling a fully expanded source list", async () => {
+  const page = await newPage({ width: 390, height: 800 });
+  await page.goto(`${app.baseUrl}/?ui=ja`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => {
+    document.querySelector(".source-details").open = true;
+  });
+  const panelHeight = await page.$eval(".search-panel", (panel) =>
+    panel.getBoundingClientRect().height
+  );
+  assert.ok(
+    panelHeight > 2000,
+    `the expanded source list should outgrow the viewport, was ${panelHeight}px`
+  );
+  assert.equal(
+    await page.$eval("[data-back-to-top]", (button) => button.hidden),
+    true
+  );
+
+  await page.evaluate(() => window.scrollTo(0, 600));
+  await page.waitForSelector("[data-back-to-top]:not([hidden])", { timeout: 10_000 });
+  await page.close();
+});
+
+test("[smoke] clearing the query restores every source group and the clear control", async () => {
+  const page = await newPage();
+  await page.goto(`${app.baseUrl}/?ui=en`, { waitUntil: "domcontentloaded" });
+  const visibleGroups = () =>
+    page.$$eval(
+      "[data-source-language-group]",
+      (groups) => groups.filter((group) => !group.hidden).length
+    );
+  const clearHidden = () =>
+    page.$eval("[data-query-clear]", (button) => button.hidden);
+
+  const initialGroups = await visibleGroups();
+  assert.ok(initialGroups > 1);
+  assert.equal(await clearHidden(), true);
+
+  await page.click("[data-query-input]");
+  await page.type("[data-query-input]", "python list");
+  assert.equal(await clearHidden(), false);
+  await page.keyboard.press("Enter");
+  await waitForResults(page);
+  const narrowedGroups = await visibleGroups();
+  assert.ok(
+    narrowedGroups < initialGroups,
+    `the search should narrow the source list, ${narrowedGroups} of ${initialGroups}`
+  );
+
+  await page.click("[data-query-clear]");
+  assert.equal(await page.$eval("[data-query-input]", (input) => input.value), "");
+  assert.equal(await clearHidden(), true);
+  assert.equal(
+    await page.evaluate(
+      () => document.activeElement === document.querySelector("[data-query-input]")
+    ),
+    true
+  );
+
+  await page.click(".search-submit");
+  await page.waitForFunction(
+    (expected) =>
+      [...document.querySelectorAll("[data-source-language-group]")].filter(
+        (group) => !group.hidden
+      ).length === expected,
+    { timeout: 10_000 },
+    initialGroups
+  );
+  await page.close();
+});
+
 test("[layout] the Top control appears after scrolling and returns focus to the heading", async () => {
   const page = await newPage({ width: 390, height: 800 });
   await page.emulateMediaFeatures([
