@@ -185,6 +185,19 @@ export function initializeSearchControls(
     void submitSearchLocally();
   });
 
+  /* A completed search keeps the query editable on pointer-driven devices. On a
+     touch device the same focus keeps the virtual keyboard over the results, so
+     release it instead. An empty or invalid query never reaches this point, and
+     the keyboard stays up for the correction. */
+  function settleQueryFocus() {
+    if (!input) return;
+    if (window.matchMedia?.("(pointer: coarse)").matches) {
+      input.blur();
+      return;
+    }
+    input.focus();
+  }
+
   const scheduleSuggestions = () => {
     if (!input || !suggestions) return;
     if (suggestionTimer !== undefined) window.clearTimeout(suggestionTimer);
@@ -539,7 +552,7 @@ export function initializeSearchControls(
     if (resultsSection) resultsSection.hidden = false;
     updateSearchUrl(root, form);
     root.defaultView?.scrollTo({ top: 0, left: 0 });
-    input.focus();
+    settleQueryFocus();
     await callbacks.onSearchSubmit?.();
     signalClientPageLoad(root);
   }

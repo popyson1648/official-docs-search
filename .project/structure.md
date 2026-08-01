@@ -143,6 +143,9 @@
    low-luminance purple surfaces and near-white result text.
    The visible heading uses the LangRef Search lockup: a square mark and a
    wordmark declared with fixed dimensions on one flex row. Search and enabled toggle controls use the theme accent.
+   A completed search keeps the query focused on pointer-driven devices and
+   releases focus on touch devices so the virtual keyboard stops covering the
+   results; an empty or invalid query keeps focus for the correction.
 10. The client renders original HTTPS links, qualified result titles, actual
    content locales, document kinds, proposal state and warnings,
    locale-fallback notices before the count, partial failures, and explicit

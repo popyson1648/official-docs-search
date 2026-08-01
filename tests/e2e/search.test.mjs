@@ -668,6 +668,44 @@ test("[smoke] a visit and a search stay first-party, as the Privacy Policy state
   await page.close();
 });
 
+test("[smoke] submitting dismisses a virtual keyboard but keeps desktop focus", async () => {
+  const touch = await newPage({ width: 390, height: 800 });
+  await touch.goto(`${app.baseUrl}/?ui=en`, { waitUntil: "domcontentloaded" });
+  await touch.click("[data-query-input]");
+  assert.equal(
+    await touch.evaluate(() =>
+      document.activeElement === document.querySelector("[data-query-input]")
+    ),
+    true
+  );
+  await touch.type("[data-query-input]", "python list");
+  await touch.keyboard.press("Enter");
+  await waitForResults(touch);
+  assert.equal(
+    await touch.evaluate(() =>
+      document.activeElement === document.querySelector("[data-query-input]")
+    ),
+    false,
+    "the query input kept focus, so the virtual keyboard would stay open"
+  );
+  await touch.close();
+
+  const desktop = await newPage();
+  await desktop.goto(`${app.baseUrl}/?ui=en`, { waitUntil: "domcontentloaded" });
+  await desktop.click("[data-query-input]");
+  await desktop.type("[data-query-input]", "python list");
+  await desktop.keyboard.press("Enter");
+  await waitForResults(desktop);
+  assert.equal(
+    await desktop.evaluate(() =>
+      document.activeElement === document.querySelector("[data-query-input]")
+    ),
+    true,
+    "a pointer-driven device should keep the query editable after submitting"
+  );
+  await desktop.close();
+});
+
 test("[smoke] the search form keeps its GET fallback without JavaScript", async () => {
   const page = await newPage();
   await page.setJavaScriptEnabled(false);
