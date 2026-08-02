@@ -51,6 +51,15 @@ interface ClientSearchLanguage {
   sources: ClientSearchSource[];
 }
 
+interface SearchHistorySnapshot {
+  query: string;
+  uiLanguage: "en" | "ja";
+  sourcePolicy: SourcePolicy;
+  selectedSourceIds: string[];
+}
+
+const SEARCH_HISTORY_STATE_KEY = "odsSearch";
+
 export function initializeSearchControls(
   root: Document = document,
   callbacks: SearchControlCallbacks = {}
@@ -112,6 +121,60 @@ export function initializeSearchControls(
   restoreSourceDetailsState(root, sourceDetails);
   migrateLegacyLanguageUrl(root);
   syncProposalSourceToggle();
+
+  const captureHistorySnapshot = (): SearchHistorySnapshot => ({
+    query: input?.value ?? "",
+    uiLanguage: root.documentElement.lang === "ja" ? "ja" : "en",
+    sourcePolicy: currentSourcePolicy(sourcePolicyRadios),
+    selectedSourceIds: [...selectedSourceIds]
+  });
+
+  const renderUiLanguage = (uiLanguage: "en" | "ja") => {
+    if (uiHidden) uiHidden.value = uiLanguage;
+    root.documentElement.lang = uiLanguage;
+    root.title = t(uiLanguage, "title");
+    root
+      .querySelector<HTMLElement>("[data-back-to-top]")
+      ?.setAttribute("aria-label", t(uiLanguage, "pageTop"));
+    root
+      .querySelectorAll<HTMLElement>("[data-localized-aria-label]")
+      .forEach((element) => {
+        const label =
+          uiLanguage === "ja"
+            ? element.dataset.labelJa
+            : element.dataset.labelEn;
+        if (label) element.setAttribute("aria-label", label);
+      });
+    uiRadios.forEach((candidate) => {
+      candidate.checked = candidate.value === uiLanguage;
+      candidate.parentElement?.classList.toggle(
+        "active",
+        candidate.value === uiLanguage
+      );
+    });
+  };
+
+  replaceSearchHistoryState(root, captureHistorySnapshot());
+  root.defaultView?.addEventListener("popstate", (event) => {
+    const snapshot = readSearchHistorySnapshot(event.state);
+    if (!snapshot || !input) return;
+    input.value = snapshot.query;
+    selectedSourceIds.clear();
+    snapshot.selectedSourceIds.forEach((id) => selectedSourceIds.add(id));
+    form
+      ?.querySelectorAll<HTMLInputElement>("[data-source-option]")
+      .forEach((option) => {
+        option.checked = selectedSourceIds.has(option.value);
+      });
+    sourcePolicyRadios.forEach((radio) => {
+      radio.checked = radio.value === snapshot.sourcePolicy;
+      radio.parentElement?.classList.toggle("active", radio.checked);
+    });
+    renderUiLanguage(snapshot.uiLanguage);
+    syncProposalSourceToggle();
+    renderHighlight();
+    void submitSearchLocally(false);
+  });
 
   proposalSourceToggle?.addEventListener("change", () => {
     for (const option of proposalSourceOptions()) {
@@ -399,24 +462,8 @@ export function initializeSearchControls(
       }
 
       root.cookie = preferenceCookie("ui", radio.value);
-      if (uiHidden) uiHidden.value = radio.value;
-      root.documentElement.lang = radio.value;
-      root.title = t(nextUiLanguage, "title");
-      updateLanguageUrl(root, nextUiLanguage);
-      root
-        .querySelector<HTMLElement>("[data-back-to-top]")
-        ?.setAttribute("aria-label", t(nextUiLanguage, "pageTop"));
-      root
-        .querySelectorAll<HTMLElement>("[data-localized-aria-label]")
-        .forEach((element) => {
-          const label =
-            nextUiLanguage === "ja"
-              ? element.dataset.labelJa
-              : element.dataset.labelEn;
-          if (label) element.setAttribute("aria-label", label);
-        });
-      uiRadios.forEach((candidate) => candidate.parentElement?.classList.remove("active"));
-      radio.parentElement?.classList.add("active");
+      renderUiLanguage(nextUiLanguage);
+      updateLanguageUrl(root, nextUiLanguage, captureHistorySnapshot());
     });
   });
 
@@ -503,7 +550,7 @@ export function initializeSearchControls(
 
   renderHighlight();
 
-  async function submitSearchLocally() {
+  async function submitSearchLocally(updateHistory = true) {
     if (!form || !input) return;
     syncSelectedSourceIds(form, selectedSourceIds);
     const parsed = parseQuery(input.value, { knownLanguages });
@@ -525,8 +572,10 @@ export function initializeSearchControls(
         resultsElement.dataset.query = "";
         await callbacks.onSearchSubmit?.();
       }
-      updateSearchUrl(root, form);
-      signalClientPageLoad(root);
+      if (updateHistory) {
+        updateSearchUrl(root, form, captureHistorySnapshot());
+      }
+      signalSearchStateChange(root);
       return;
     }
 
@@ -581,11 +630,13 @@ export function initializeSearchControls(
     resultsElement.dataset.sources = JSON.stringify(requestedSources);
     if (form) form.dataset.docsLocale = docsLocale;
     if (resultsSection) resultsSection.hidden = false;
-    updateSearchUrl(root, form);
+    if (updateHistory) {
+      updateSearchUrl(root, form, captureHistorySnapshot());
+    }
     root.defaultView?.scrollTo({ top: 0, left: 0 });
     settleQueryFocus();
     await callbacks.onSearchSubmit?.();
-    signalClientPageLoad(root);
+    signalSearchStateChange(root);
   }
 }
 
@@ -792,7 +843,11 @@ function renderActiveLanguageTags(
   mount.hidden = languageIds.length === 0;
 }
 
-function updateSearchUrl(root: Document, form: HTMLFormElement): void {
+function updateSearchUrl(
+  root: Document,
+  form: HTMLFormElement,
+  snapshot: SearchHistorySnapshot
+): void {
   const view = root.defaultView;
   if (!view) return;
   const url = new URL(form.action, view.location.href);
@@ -801,7 +856,7 @@ function updateSearchUrl(root: Document, form: HTMLFormElement): void {
     if (typeof value === "string" && value !== "") params.append(name, value);
   }
   url.search = params.toString();
-  view.history.pushState(view.history.state, "", url);
+  view.history.pushState(historyStateWithSnapshot(view, snapshot), "", url);
   const hasNonLocaleParameters = [...params.keys()].some((key) => key !== "ui");
   root
     .querySelector<HTMLMetaElement>('meta[name="robots"]')
@@ -813,8 +868,8 @@ function updateSearchUrl(root: Document, form: HTMLFormElement): void {
     );
 }
 
-function signalClientPageLoad(root: Document): void {
-  root.dispatchEvent(new Event("astro:page-load"));
+function signalSearchStateChange(root: Document): void {
+  root.dispatchEvent(new Event("ods:search-state-change"));
 }
 
 function sourceKind(value: string | undefined): SourceKind {
@@ -863,13 +918,63 @@ function restoreSourceDetailsState(
   }
 }
 
-function updateLanguageUrl(root: Document, uiLanguage: string): void {
+function updateLanguageUrl(
+  root: Document,
+  uiLanguage: string,
+  snapshot: SearchHistorySnapshot
+): void {
   const view = root.defaultView;
   if (!view) return;
   const url = new URL(view.location.href);
   url.searchParams.set("ui", uiLanguage);
   url.searchParams.delete("docsLocale");
-  view.history.replaceState(view.history.state, "", url);
+  view.history.replaceState(historyStateWithSnapshot(view, snapshot), "", url);
+}
+
+function replaceSearchHistoryState(
+  root: Document,
+  snapshot: SearchHistorySnapshot
+): void {
+  const view = root.defaultView;
+  if (!view) return;
+  view.history.replaceState(
+    historyStateWithSnapshot(view, snapshot),
+    "",
+    view.location.href
+  );
+}
+
+function historyStateWithSnapshot(
+  view: Window,
+  snapshot: SearchHistorySnapshot
+): Record<string, unknown> {
+  const current = view.history.state;
+  return {
+    ...(typeof current === "object" && current !== null ? current : {}),
+    [SEARCH_HISTORY_STATE_KEY]: snapshot
+  };
+}
+
+function readSearchHistorySnapshot(
+  value: unknown
+): SearchHistorySnapshot | undefined {
+  if (typeof value !== "object" || value === null) return undefined;
+  const snapshot = Reflect.get(value, SEARCH_HISTORY_STATE_KEY);
+  if (typeof snapshot !== "object" || snapshot === null) return undefined;
+  const query = Reflect.get(snapshot, "query");
+  const uiLanguage = Reflect.get(snapshot, "uiLanguage");
+  const sourcePolicy = Reflect.get(snapshot, "sourcePolicy");
+  const selectedSourceIds = Reflect.get(snapshot, "selectedSourceIds");
+  if (
+    typeof query !== "string" ||
+    (uiLanguage !== "en" && uiLanguage !== "ja") ||
+    !isSourcePolicy(sourcePolicy) ||
+    !Array.isArray(selectedSourceIds) ||
+    !selectedSourceIds.every((id) => typeof id === "string")
+  ) {
+    return undefined;
+  }
+  return { query, uiLanguage, sourcePolicy, selectedSourceIds };
 }
 
 function migrateLegacyLanguageUrl(root: Document): void {

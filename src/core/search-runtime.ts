@@ -1,5 +1,4 @@
 import {
-  isSupportedSearchIndexEntry,
   searchStoredIndexesWithFacets,
   validateStoredSearchIndex,
   validateStoredSearchIndexIdentity,
@@ -13,6 +12,22 @@ import {
 } from "./search";
 
 const fullyValidatedBundles = new WeakSet<StoredSearchIndexBundle>();
+
+export interface SelectableSearchIndexEntry {
+  sourceId: string;
+  docsLocale: string;
+  status: string;
+  path?: string;
+  recordCount?: number;
+}
+
+export type SupportedSelectableSearchIndexEntry<
+  Entry extends SelectableSearchIndexEntry
+> = Entry & {
+  status: "supported";
+  path: string;
+  recordCount: number;
+};
 
 export interface RequestedSearchSource {
   id: string;
@@ -76,7 +91,10 @@ export async function runSearchRequest(
 
   for (const source of request.sources) {
     const candidates = manifestEntries.filter((entry) => entry.sourceId === source.id);
-    const selected = selectEntries(candidates, request.docsLocale);
+    const selected = selectSupportedSearchIndexEntries(
+      candidates,
+      request.docsLocale
+    );
     entries.push(...selected.entries);
     if (selected.fallbackLocale) {
       fallbackSources.push({
@@ -148,11 +166,13 @@ export async function runSearchRequest(
   };
 }
 
-function selectEntries(
-  candidates: SearchIndexManifestEntry[],
+export function selectSupportedSearchIndexEntries<
+  Entry extends SelectableSearchIndexEntry
+>(
+  candidates: readonly Entry[],
   requestedLocale: string
 ): {
-  entries: SupportedSearchIndexManifestEntry[];
+  entries: SupportedSelectableSearchIndexEntry<Entry>[];
   fallbackLocale?: string;
 } {
   if (!requestedLocale) return { entries: supportedEntries(candidates) };
@@ -163,16 +183,23 @@ function selectEntries(
   if (exact.length > 0) return { entries: exact };
 
   if (requestedLocale === "ja") {
-    const english = supportedEntries(candidates.filter((entry) => entry.docsLocale === "en"));
+    const english = supportedEntries(
+      candidates.filter((entry) => entry.docsLocale === "en")
+    );
     if (english.length > 0) return { entries: english, fallbackLocale: "en" };
   }
   return { entries: [] };
 }
 
-function supportedEntries(
-  candidates: SearchIndexManifestEntry[]
-): SupportedSearchIndexManifestEntry[] {
-  return candidates.filter(isSupportedSearchIndexEntry);
+function supportedEntries<Entry extends SelectableSearchIndexEntry>(
+  candidates: readonly Entry[]
+): SupportedSelectableSearchIndexEntry<Entry>[] {
+  return candidates.filter(
+    (entry): entry is SupportedSelectableSearchIndexEntry<Entry> =>
+      entry.status === "supported" &&
+      typeof entry.path === "string" &&
+      typeof entry.recordCount === "number"
+  );
 }
 
 function selectUnavailableEntry(

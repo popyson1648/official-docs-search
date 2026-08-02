@@ -21,10 +21,15 @@ import {
   getLanguageTagTextColor
 } from "../core/language-colors";
 import { getThemeSetting } from "../core/theme";
+import {
+  SEARCH_RUNTIME_MANIFEST_PATH,
+  selectInitialSearchPreloads
+} from "../core/search-preloads";
 import SiteFooter from "../components/SiteFooter.astro";
-import { ClientRouter } from "astro:transitions";
-import "../font-faces.css";
-import "../styles.css";
+import InlinePageStyles from "../components/InlinePageStyles.astro";
+import alexandriaFontCssUrl from "../font-faces-alexandria.css?url";
+import lineSeedJpFontCssUrl from "../font-faces-line-seed-jp.css?url";
+import runtimeSearchManifest from "../../public/search-index/runtime-manifest.json";
 
 export const prerender = false;
 
@@ -245,13 +250,20 @@ const robotsContent = hasNonLocaleParameters
 const socialImageUrl = new URL("/ogp.png", productionOrigin);
 const openGraphLocale = uiLanguage === "ja" ? "ja_JP" : "en_US";
 const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
+const needsJapaneseFont = uiLanguage === "ja" || locale === "ja";
+const shouldPreloadSearch =
+  hasQuery && parsed.errors.length === 0 && scope.sources.length > 0;
+const initialSearchPreloads = shouldPreloadSearch
+  ? selectInitialSearchPreloads(runtimeSearchManifest, scope.sources, locale ?? "")
+  : [];
 ---
 
 <html
   lang={uiLanguage}
   data-theme-setting={themeSetting}
-  transition:name="root"
-  transition:animate="none"
+  data-font-alexandria-url={alexandriaFontCssUrl}
+  data-font-line-seed-jp-url={lineSeedJpFontCssUrl}
+  data-needs-japanese-font={String(needsJapaneseFont)}
 >
   <head>
     <meta charset="utf-8" />
@@ -309,8 +321,43 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
     <meta name="twitter:description" content={t(uiLanguage, "description")} />
     <meta name="twitter:image" content={socialImageUrl} />
     <meta name="twitter:image:alt" content={t(uiLanguage, "socialImageAlt")} />
-    <link rel="preload" href="/icon.png" as="image" type="image/png" />
-    <link rel="preload" href="/logo_svg.svg" as="image" type="image/svg+xml" />
+    <link rel="preload" href="/icon.png" as="image" type="image/png" fetchpriority="high" />
+    <link rel="preload" href="/logo_svg.svg" as="image" type="image/svg+xml" fetchpriority="high" />
+    <link rel="preload" href={alexandriaFontCssUrl} as="style" fetchpriority="low" />
+    {
+      needsJapaneseFont && (
+        <link rel="preload" href={lineSeedJpFontCssUrl} as="style" fetchpriority="low" />
+      )
+    }
+    <noscript>
+      <link rel="stylesheet" href={alexandriaFontCssUrl} />
+      {needsJapaneseFont && <link rel="stylesheet" href={lineSeedJpFontCssUrl} />}
+    </noscript>
+    <InlinePageStyles />
+    {
+      shouldPreloadSearch && (
+        <link
+          rel="preload"
+          href={SEARCH_RUNTIME_MANIFEST_PATH}
+          as="fetch"
+          type="application/json"
+          crossorigin="anonymous"
+          fetchpriority="high"
+        />
+      )
+    }
+    {
+      initialSearchPreloads.map((path) => (
+        <link
+          rel="preload"
+          href={path}
+          as="fetch"
+          type="application/json"
+          crossorigin="anonymous"
+          fetchpriority="high"
+        />
+      ))
+    }
     <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <script type="application/ld+json">
@@ -322,7 +369,6 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
         "inLanguage": ["en", "ja"]
       }
     </script>
-    <ClientRouter fallback="swap" />
   </head>
   <body>
 
@@ -1006,12 +1052,11 @@ const alternateOpenGraphLocale = uiLanguage === "ja" ? "en_US" : "ja_JP";
     <script>
       import { initializeClientSearchPage } from "../client/search-page";
 
-      document.addEventListener("astro:page-load", () => {
-        const page = document.querySelector<HTMLElement>("[data-search-page]");
-        if (!page || page.dataset.clientInitialized === "true") return;
+      const page = document.querySelector<HTMLElement>("[data-search-page]");
+      if (page && page.dataset.clientInitialized !== "true") {
         page.dataset.clientInitialized = "true";
         void initializeClientSearchPage();
-      });
+      }
     </script>
   </body>
 </html>

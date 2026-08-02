@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { request } from "node:http";
+import { gunzipSync, gzipSync } from "node:zlib";
 import net from "node:net";
 import { resolve } from "node:path";
 import { after, before, test } from "node:test";
@@ -100,6 +101,35 @@ test("serves localized home metadata without indexing search-state URLs", async 
     search.body.toString("utf8"),
     /<meta name="robots" content="noindex,follow">/
   );
+});
+
+test("preloads only a valid direct query's manifest and selected bundles", async () => {
+  const home = (await rawRequest("/?ui=en")).body.toString("utf8");
+  assert.doesNotMatch(home, /rel="preload" href="\/search-index\//);
+
+  const invalid = (
+    await rawRequest("/?q=locale%3Afr+proxy&ui=en")
+  ).body.toString("utf8");
+  assert.doesNotMatch(invalid, /rel="preload" href="\/search-index\//);
+
+  const direct = (
+    await rawRequest("/?q=javascript+proxy&ui=en&sourcePolicy=official")
+  ).body.toString("utf8");
+  assert.match(
+    direct,
+    /rel="preload" href="\/search-index\/runtime-manifest\.json" as="fetch"[^>]+crossorigin="anonymous"/
+  );
+  const runtimeManifest = JSON.parse(
+    await readFile(resolve(root, "public/search-index/runtime-manifest.json"), "utf8")
+  );
+  for (const sourceId of ["tc39-ecma262", "tc39-proposals"]) {
+    const entry = runtimeManifest.entries.find(
+      (candidate) =>
+        candidate.sourceId === sourceId && candidate.docsLocale === "en"
+    );
+    assert.ok(entry?.path, sourceId);
+    assert.match(direct, new RegExp(`rel="preload" href="${entry.path.replaceAll("/", "\\/")}"`));
+  }
 });
 
 test("uses Accept-Language only when URL and saved preferences are absent", async () => {
@@ -253,7 +283,7 @@ test("publishes the catalog's coverage on the supported-languages page", async (
 
 test("serves self-hosted fonts and immutable application assets", async () => {
   const fontName = (
-    await readFile(resolve(root, "src/font-faces.css"), "utf8")
+    await readFile(resolve(root, "src/font-faces-alexandria.css"), "utf8")
   ).match(/url\(\/fonts\/google\/([^)]+\.woff2)\)/)?.[1];
   assert.ok(fontName);
 
@@ -270,6 +300,67 @@ test("serves self-hosted fonts and immutable application assets", async () => {
   const asset = await rawRequest(assetPath);
   assert.equal(asset.statusCode, 200);
   assert.match(asset.headers["cache-control"] || "", /\bimmutable\b/);
+});
+
+test("keeps the initial render path within its CSS and JavaScript budgets", async () => {
+  const html = (await rawRequest("/?ui=en")).body.toString("utf8");
+  const activeHtml = html.replace(/<noscript>[^]*?<\/noscript>/g, "");
+  const renderBlockingStyles = [
+    ...activeHtml.matchAll(/<link rel="stylesheet" href="([^"]+)">/g)
+  ].map((match) => match[1]);
+  assert.deepEqual(renderBlockingStyles, []);
+  const inlineStyles = /<style>([^]*?)<\/style>/.exec(activeHtml)?.[1];
+  assert.ok(inlineStyles);
+  assert.ok(
+    Buffer.byteLength(inlineStyles) <= 36 * 1024,
+    Buffer.byteLength(inlineStyles)
+  );
+  assert.match(html, /rel="preload" href="\/_astro\/font-faces-alexandria\.[^"]+\.css" as="style"/);
+  assert.doesNotMatch(
+    html,
+    /rel="preload" href="\/_astro\/font-faces-line-seed-jp\.[^"]+\.css" as="style"/
+  );
+
+  const japanese = (await rawRequest("/?ui=ja")).body.toString("utf8");
+  assert.match(
+    japanese,
+    /rel="preload" href="\/_astro\/font-faces-line-seed-jp\.[^"]+\.css" as="style"/
+  );
+
+  const assets = await readdir(resolve(root, "dist/client/_astro"));
+  assert.equal(assets.some((asset) => asset.includes("ClientRouter")), false);
+  const pageScript = assets.find((asset) =>
+    /^index\.astro_astro_type_script_index_0_lang\..+\.js$/.test(asset)
+  );
+  assert.ok(pageScript);
+  const pageScriptBytes = (
+    await readFile(resolve(root, "dist/client/_astro", pageScript))
+  ).byteLength;
+  assert.ok(pageScriptBytes <= 65 * 1024, pageScriptBytes);
+});
+
+test("negotiates private HTML gzip without changing its decoded document", async () => {
+  const pathname = "/?q=javascript+proxy&ui=en&sourcePolicy=official";
+  const identity = await rawRequest(pathname, { "Accept-Encoding": "identity" });
+  const compressed = await rawRequest(pathname, { "Accept-Encoding": "br, gzip" });
+
+  assert.equal(identity.statusCode, 200);
+  assert.equal(compressed.statusCode, 200);
+  assert.equal(identity.headers["content-encoding"], undefined);
+  assert.match(compressed.headers.vary || "", /\bAccept-Encoding\b/i);
+  assert.equal(
+    compressed.headers["cache-control"],
+    "private, no-cache, no-transform"
+  );
+  /* Astro preview's Node proxy transparently decodes the direct workerd
+     response and removes Content-Encoding. A direct workerd response retains
+     gzip; accept both transport views while requiring identical HTML. */
+  const decoded = compressed.headers["content-encoding"] === "gzip"
+    ? gunzipSync(compressed.body)
+    : compressed.body;
+  assert.deepEqual(decoded, identity.body);
+  assert.ok(gzipSync(identity.body, { level: 9 }).byteLength <= 25 * 1024);
+  assert.doesNotMatch(identity.body.toString("utf8"), /cloudflareinsights|beacon\.min\.js/);
 });
 
 test("declares a cache policy for documents, bundles, and manifests", async () => {
@@ -303,6 +394,15 @@ test("declares a cache policy for documents, bundles, and manifests", async () =
   assert.equal(bundle.statusCode, 200);
   assert.match(bundle.headers["cache-control"] || "", /\bmax-age=31536000\b/);
   assert.match(bundle.headers["cache-control"] || "", /\bimmutable\b/);
+
+  for (const asset of ["/icon.png", "/logo_svg.svg"]) {
+    const response = await rawRequest(asset);
+    assert.match(response.headers["cache-control"] || "", /\bmax-age=86400\b/);
+    assert.match(
+      response.headers["cache-control"] || "",
+      /\bstale-while-revalidate=604800\b/
+    );
+  }
 });
 
 test("does not apply immutable headers to missing static paths", async () => {

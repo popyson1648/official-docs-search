@@ -12,7 +12,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/python-docs.en.9308af986fcb2e75.json",
-      "recordCount": 13577
+      "recordCount": 13577,
+      "gzipBytes": 154153,
+      "brotliBytes": 122053
     },
     {
       "sourceId": "python-docs",
@@ -22,8 +24,10 @@
       "programmingLanguage": "python",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/python-docs.ja.ffd88c8c1db435b3.json",
-      "recordCount": 6547
+      "path": "/search-index/bundles/python-docs.ja.8e00879f40108a37.json",
+      "recordCount": 6547,
+      "gzipBytes": 139805,
+      "brotliBytes": 89764
     },
     {
       "sourceId": "python-peps",
@@ -33,8 +37,10 @@
       "programmingLanguage": "python",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/python-peps.en.09e2bd9b9b839325.json",
-      "recordCount": 732,
+      "path": "/search-index/bundles/python-peps.en.96a5c6e165a55a1c.json",
+      "recordCount": 733,
+      "gzipBytes": 22491,
+      "brotliBytes": 18576,
       "qualification": "PEPs include drafts, rejected, withdrawn, deferred, and superseded proposals; status is shown on every result.",
       "qualificationJa": "PEPには草案・却下・撤回・保留・置換済みの提案が含まれます。各結果に状態を表示します。"
     },
@@ -47,7 +53,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/rust-docs.en.56c55b645c4cad61.json",
-      "recordCount": 37210
+      "recordCount": 37210,
+      "gzipBytes": 297048,
+      "brotliBytes": 199856
     },
     {
       "sourceId": "comprehensive-rust",
@@ -59,6 +67,8 @@
       "status": "supported",
       "path": "/search-index/bundles/comprehensive-rust.en.8f04a119000905a6.json",
       "recordCount": 562,
+      "gzipBytes": 8504,
+      "brotliBytes": 7334,
       "qualification": "Google-maintained course material, not an API reference.",
       "qualificationJa": "Google が保守する講座資料であり、API リファレンスではありません。"
     },
@@ -71,7 +81,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/tc39-ecma262.en.fc0e3169f008c773.json",
-      "recordCount": 2337
+      "recordCount": 2337,
+      "gzipBytes": 38881,
+      "brotliBytes": 31728
     },
     {
       "sourceId": "tc39-proposals",
@@ -83,6 +95,8 @@
       "status": "supported",
       "path": "/search-index/bundles/tc39-proposals.en.a2382d30a4eb455a.json",
       "recordCount": 294,
+      "gzipBytes": 7056,
+      "brotliBytes": 5982,
       "qualification": "TC39 stages describe proposal maturity. This metadata-only index follows the official tracking tables; their repository declares no explicit reuse license.",
       "qualificationJa": "TC39のStageは提案の成熟度を示します。公式追跡表のメタデータのみを索引化しており、そのリポジトリには明示的な再利用ライセンスがありません。"
     },
@@ -95,7 +109,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/mdn-js.en.197c42ea5f402a7b.json",
-      "recordCount": 1291
+      "recordCount": 1291,
+      "gzipBytes": 13621,
+      "brotliBytes": 11479
     },
     {
       "sourceId": "mdn-js",
@@ -105,8 +121,10 @@
       "programmingLanguage": "javascript",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/mdn-js.ja.999f30f9f3588e54.json",
-      "recordCount": 1028
+      "path": "/search-index/bundles/mdn-js.ja.691586569c996284.json",
+      "recordCount": 1028,
+      "gzipBytes": 13863,
+      "brotliBytes": 11298
     },
     {
       "sourceId": "javascript-info",
@@ -118,6 +136,8 @@
       "status": "supported",
       "path": "/search-index/bundles/javascript-info.en.202a582353154721.json",
       "recordCount": 202,
+      "gzipBytes": 3518,
+      "brotliBytes": 2995,
       "qualification": "Tutorial metadata only; the repository and website use different Creative Commons license labels.",
       "qualificationJa": "索引はタイトル等のメタデータのみです。リポジトリとWebサイトでCreative Commonsライセンス表記が異なります。"
     },
@@ -130,7 +150,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/typescript-docs.en.c77be3e033f1a265.json",
-      "recordCount": 179
+      "recordCount": 179,
+      "gzipBytes": 3043,
+      "brotliBytes": 2638
     },
     {
       "sourceId": "typescript-deep-dive",
@@ -142,6 +164,8 @@
       "status": "supported",
       "path": "/search-index/bundles/typescript-deep-dive.en.7c28b9683e1ecb51.json",
       "recordCount": 124,
+      "gzipBytes": 1932,
+      "brotliBytes": 1655,
       "qualification": "A classic deep guide, but many chapters predate recent TypeScript features; verify current behavior in the official docs.",
       "qualificationJa": "定評ある詳説書ですが、多くの章は最近のTypeScript機能より前に書かれています。現在の挙動は公式文書でも確認してください。"
     },
@@ -154,7 +178,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/go-docs.en.a915dfc97e202365.json",
-      "recordCount": 48
+      "recordCount": 48,
+      "gzipBytes": 1130,
+      "brotliBytes": 917
     },
     {
       "sourceId": "go-std",
@@ -165,7 +191,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/go-std.en.e53c368bd4c0696f.json",
-      "recordCount": 6351
+      "recordCount": 6351,
+      "gzipBytes": 52466,
+      "brotliBytes": 44110
     },
     {
       "sourceId": "go-by-example",
@@ -177,6 +205,8 @@
       "status": "supported",
       "path": "/search-index/bundles/go-by-example.en.2e749cc8961be84c.json",
       "recordCount": 85,
+      "gzipBytes": 1193,
+      "brotliBytes": 1027,
       "qualification": "Example-oriented learning material, not the Go language specification or API reference.",
       "qualificationJa": "例題中心の学習資料であり、Go言語仕様やAPIリファレンスではありません。"
     },
@@ -189,7 +219,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/cppreference-c.en.2781d072397f4dbc.json",
-      "recordCount": 656
+      "recordCount": 656,
+      "gzipBytes": 8497,
+      "brotliBytes": 7133
     },
     {
       "sourceId": "cppreference-c",
@@ -201,6 +233,8 @@
       "status": "supported",
       "path": "/search-index/bundles/cppreference-c.ja.89ddb7d89c55a254.json",
       "recordCount": 548,
+      "gzipBytes": 7565,
+      "brotliBytes": 6250,
       "qualification": "Partial Japanese community edition"
     },
     {
@@ -211,8 +245,10 @@
       "programmingLanguage": "cpp",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/cppreference-cpp.en.00b9f421e6c12e85.json",
-      "recordCount": 6328
+      "path": "/search-index/bundles/cppreference-cpp.en.aef0c0bbfa88677e.json",
+      "recordCount": 6329,
+      "gzipBytes": 77454,
+      "brotliBytes": 63767
     },
     {
       "sourceId": "cppreference-cpp",
@@ -224,6 +260,8 @@
       "status": "supported",
       "path": "/search-index/bundles/cppreference-cpp.ja.9076b9bcdfd2f333.json",
       "recordCount": 4007,
+      "gzipBytes": 48796,
+      "brotliBytes": 39935,
       "qualification": "Partial Japanese community edition"
     },
     {
@@ -234,8 +272,10 @@
       "programmingLanguage": "cpp",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/cpprefjp.ja.917836532b4133a9.json",
-      "recordCount": 6617,
+      "path": "/search-index/bundles/cpprefjp.ja.6f7ba3be0c8eac5a.json",
+      "recordCount": 6662,
+      "gzipBytes": 62715,
+      "brotliBytes": 51613,
       "qualification": "A Japanese community reference published under CC BY 4.0; verify normative details against standards material.",
       "qualificationJa": "CC BY 4.0で公開される日本語コミュニティリファレンスです。規範的な詳細は標準資料でも確認してください。"
     },
@@ -249,6 +289,8 @@
       "status": "supported",
       "path": "/search-index/bundles/wg21-papers.en.2bd053fd472c3e82.json",
       "recordCount": 7550,
+      "gzipBytes": 202981,
+      "brotliBytes": 138531,
       "qualification": "Committee papers can be drafts, rejected, withdrawn, or superseded; they do not necessarily describe adopted C++ behavior.",
       "qualificationJa": "委員会文書には草案・却下・撤回・置換済みのものがあり、採用済みのC++仕様を示すとは限りません。"
     },
@@ -262,6 +304,8 @@
       "status": "supported",
       "path": "/search-index/bundles/cpp-core-guidelines.en.c56b9aca50734d82.json",
       "recordCount": 607,
+      "gzipBytes": 15717,
+      "brotliBytes": 13074,
       "qualification": "Design and coding guidelines rather than a complete language reference; the index stores rule metadata only under the source's custom terms.",
       "qualificationJa": "完全な言語リファレンスではなく設計・コーディング指針です。独自の利用条件に従い、索引にはルールのメタデータのみを収録します。"
     },
@@ -274,7 +318,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/csharp-docs.en.2bdc942e19e1f8fd.json",
-      "recordCount": 271
+      "recordCount": 271,
+      "gzipBytes": 6014,
+      "brotliBytes": 4986
     },
     {
       "sourceId": "csharp-docs",
@@ -285,7 +331,9 @@
       "docsLocale": "ja",
       "status": "supported",
       "path": "/search-index/bundles/csharp-docs.ja.386cba515e9aaaf3.json",
-      "recordCount": 280
+      "recordCount": 280,
+      "gzipBytes": 7867,
+      "brotliBytes": 6644
     },
     {
       "sourceId": "java-docs",
@@ -296,7 +344,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/java-docs.en.ed66fedd6db460e9.json",
-      "recordCount": 5208
+      "recordCount": 5208,
+      "gzipBytes": 76953,
+      "brotliBytes": 56539
     },
     {
       "sourceId": "java-docs",
@@ -307,7 +357,9 @@
       "docsLocale": "ja",
       "status": "supported",
       "path": "/search-index/bundles/java-docs.ja.88332a48d463f8f6.json",
-      "recordCount": 5207
+      "recordCount": 5207,
+      "gzipBytes": 76929,
+      "brotliBytes": 56506
     },
     {
       "sourceId": "openjdk-jeps",
@@ -317,8 +369,10 @@
       "programmingLanguage": "java",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/openjdk-jeps.en.37ee60463f3e15d2.json",
+      "path": "/search-index/bundles/openjdk-jeps.en.0ead0233599dcae2.json",
       "recordCount": 505,
+      "gzipBytes": 11666,
+      "brotliBytes": 9543,
       "qualification": "JEP status is shown explicitly; drafts and candidates are not delivered JDK features.",
       "qualificationJa": "JEPの状態を明示します。DraftやCandidateは、提供済みのJDK機能ではありません。"
     },
@@ -331,7 +385,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/php-manual.en.7f373f39bfe1d7b3.json",
-      "recordCount": 9149
+      "recordCount": 9149,
+      "gzipBytes": 91086,
+      "brotliBytes": 73332
     },
     {
       "sourceId": "php-manual",
@@ -342,7 +398,9 @@
       "docsLocale": "ja",
       "status": "supported",
       "path": "/search-index/bundles/php-manual.ja.bdfaa7b9b279baa4.json",
-      "recordCount": 9149
+      "recordCount": 9149,
+      "gzipBytes": 91187,
+      "brotliBytes": 73385
     },
     {
       "sourceId": "php-the-right-way",
@@ -354,6 +412,8 @@
       "status": "supported",
       "path": "/search-index/bundles/php-the-right-way.en.8f7d145936e7b27f.json",
       "recordCount": 177,
+      "gzipBytes": 3374,
+      "brotliBytes": 2767,
       "qualification": "Practical community recommendations and curated links, not the PHP language reference.",
       "qualificationJa": "コミュニティによる実践的な推奨事項とリンク集であり、PHP言語リファレンスではありません。"
     },
@@ -366,7 +426,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/ruby-docs.en.16a0ab88c2d70b76.json",
-      "recordCount": 16341
+      "recordCount": 16341,
+      "gzipBytes": 186239,
+      "brotliBytes": 139181
     },
     {
       "sourceId": "ruby-docs",
@@ -376,8 +438,10 @@
       "programmingLanguage": "ruby",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/ruby-docs.ja.40b2eee8a84944b1.json",
-      "recordCount": 11963
+      "path": "/search-index/bundles/ruby-docs.ja.cc58a8adf48e255f.json",
+      "recordCount": 12100,
+      "gzipBytes": 110100,
+      "brotliBytes": 91042
     },
     {
       "sourceId": "swift-docs",
@@ -388,7 +452,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/swift-docs.en.10b499234d4554da.json",
-      "recordCount": 44
+      "recordCount": 44,
+      "gzipBytes": 857,
+      "brotliBytes": 700
     },
     {
       "sourceId": "kotlin-docs",
@@ -398,8 +464,10 @@
       "programmingLanguage": "kotlin",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/kotlin-docs.en.59d146c4ee4ebf54.json",
-      "recordCount": 360
+      "path": "/search-index/bundles/kotlin-docs.en.4f52274801265053.json",
+      "recordCount": 361,
+      "gzipBytes": 4862,
+      "brotliBytes": 4029
     },
     {
       "sourceId": "scala-docs",
@@ -410,7 +478,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/scala-docs.en.570358b2f37327b5.json",
-      "recordCount": 32
+      "recordCount": 32,
+      "gzipBytes": 790,
+      "brotliBytes": 601
     },
     {
       "sourceId": "scala-docs-ja",
@@ -422,6 +492,8 @@
       "status": "supported",
       "path": "/search-index/bundles/scala-docs-ja.ja.024c55b6279d1131.json",
       "recordCount": 8,
+      "gzipBytes": 614,
+      "brotliBytes": 497,
       "qualification": "Partial Japanese community translation"
     },
     {
@@ -433,7 +505,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/dart-docs.en.30d90af7a1fc574a.json",
-      "recordCount": 1184
+      "recordCount": 1184,
+      "gzipBytes": 18744,
+      "brotliBytes": 14467
     },
     {
       "sourceId": "dart-api",
@@ -444,7 +518,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/dart-api.en.3aba1ea3704968ba.json",
-      "recordCount": 12881
+      "recordCount": 12881,
+      "gzipBytes": 129966,
+      "brotliBytes": 105306
     },
     {
       "sourceId": "elixir-docs",
@@ -455,7 +531,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/elixir-docs.en.01f108dc0d1c49c2.json",
-      "recordCount": 2369
+      "recordCount": 2369,
+      "gzipBytes": 28844,
+      "brotliBytes": 25071
     },
     {
       "sourceId": "elixir-lang",
@@ -477,6 +555,8 @@
       "status": "supported",
       "path": "/search-index/bundles/elixir-school.en.fd0106029efd9084.json",
       "recordCount": 56,
+      "gzipBytes": 844,
+      "brotliBytes": 719,
       "qualification": "A community-maintained learning site; translations can have different freshness, and the official Elixir docs remain authoritative.",
       "qualificationJa": "コミュニティ運営の学習サイトです。翻訳ごとに更新状況が異なる場合があり、正確な仕様は公式Elixir文書を優先してください。"
     },
@@ -489,7 +569,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/erlang-docs.en.5ebb13f8f44edd75.json",
-      "recordCount": 577
+      "recordCount": 577,
+      "gzipBytes": 5148,
+      "brotliBytes": 4579
     },
     {
       "sourceId": "haskell-docs",
@@ -510,7 +592,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/haskell-ghc-users-guide.en.ab23618b4b9725f7.json",
-      "recordCount": 1103
+      "recordCount": 1103,
+      "gzipBytes": 22559,
+      "brotliBytes": 17297
     },
     {
       "sourceId": "learn-you-a-haskell",
@@ -522,6 +606,8 @@
       "status": "supported",
       "path": "/search-index/bundles/learn-you-a-haskell.en.b45708f13691dae0.json",
       "recordCount": 14,
+      "gzipBytes": 442,
+      "brotliBytes": 398,
       "qualification": "A community-maintained edition published with the original author's permission; official GHC docs remain authoritative.",
       "qualificationJa": "原著者の許可を得て保守されるコミュニティ版です。正確な仕様は公式GHC文書を優先してください。"
     },
@@ -534,7 +620,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/lua-manual.en.d8172358b3c2c7e0.json",
-      "recordCount": 530
+      "recordCount": 530,
+      "gzipBytes": 4627,
+      "brotliBytes": 3882
     },
     {
       "sourceId": "perl-docs",
@@ -545,7 +633,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/perl-docs.en.ceb30668dbfbe987.json",
-      "recordCount": 1495
+      "recordCount": 1495,
+      "gzipBytes": 14295,
+      "brotliBytes": 12221
     },
     {
       "sourceId": "r-manuals",
@@ -556,7 +646,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/r-manuals.en.1dbfc4db825c0ecf.json",
-      "recordCount": 21
+      "recordCount": 21,
+      "gzipBytes": 297,
+      "brotliBytes": 251
     },
     {
       "sourceId": "advanced-r",
@@ -568,6 +660,8 @@
       "status": "supported",
       "path": "/search-index/bundles/advanced-r.en.79a698691cb15759.json",
       "recordCount": 33,
+      "gzipBytes": 611,
+      "brotliBytes": 489,
       "qualification": "An advanced book about R internals and techniques, not an introductory course or the official R manuals.",
       "qualificationJa": "Rの内部構造と高度な技法を扱う書籍であり、入門講座や公式Rマニュアルではありません。"
     },
@@ -580,7 +674,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/julia-docs.en.fc6998e5128d1f56.json",
-      "recordCount": 3873
+      "recordCount": 3873,
+      "gzipBytes": 51652,
+      "brotliBytes": 41996
     },
     {
       "sourceId": "clojure-docs",
@@ -591,7 +687,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/clojure-docs.en.5a15b5b3901db7df.json",
-      "recordCount": 69
+      "recordCount": 69,
+      "gzipBytes": 1020,
+      "brotliBytes": 836
     },
     {
       "sourceId": "clojure-guides",
@@ -603,6 +701,8 @@
       "status": "supported",
       "path": "/search-index/bundles/clojure-guides.en.5592181c9853ba54.json",
       "recordCount": 36,
+      "gzipBytes": 766,
+      "brotliBytes": 644,
       "qualification": "Community-maintained guides; the official Clojure reference keeps authority and ranking priority.",
       "qualificationJa": "コミュニティ運営のガイドです。正確な仕様と検索順位では公式Clojureリファレンスを優先します。"
     },
@@ -615,7 +715,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/groovy-docs.en.21b7533cfe0627b7.json",
-      "recordCount": 1133
+      "recordCount": 1133,
+      "gzipBytes": 16718,
+      "brotliBytes": 14062
     },
     {
       "sourceId": "objc-docs",
@@ -636,7 +738,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/gnu-objc.en.fcbfa6a91805f15a.json",
-      "recordCount": 23
+      "recordCount": 23,
+      "gzipBytes": 634,
+      "brotliBytes": 522
     },
     {
       "sourceId": "bash-manual",
@@ -647,7 +751,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/bash-manual.en.6774473b9061f08a.json",
-      "recordCount": 508
+      "recordCount": 508,
+      "gzipBytes": 7171,
+      "brotliBytes": 6140
     },
     {
       "sourceId": "powershell-docs",
@@ -658,7 +764,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/powershell-docs.en.d7e18c60a8dac85d.json",
-      "recordCount": 646
+      "recordCount": 646,
+      "gzipBytes": 11389,
+      "brotliBytes": 9497
     },
     {
       "sourceId": "powershell-docs",
@@ -669,7 +777,9 @@
       "docsLocale": "ja",
       "status": "supported",
       "path": "/search-index/bundles/powershell-docs.ja.27efacf4c4f54a52.json",
-      "recordCount": 646
+      "recordCount": 646,
+      "gzipBytes": 13085,
+      "brotliBytes": 10755
     },
     {
       "sourceId": "fsharp-docs",
@@ -680,7 +790,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/fsharp-docs.en.bc29b23bf4a689d8.json",
-      "recordCount": 148
+      "recordCount": 148,
+      "gzipBytes": 2563,
+      "brotliBytes": 2150
     },
     {
       "sourceId": "fsharp-docs",
@@ -691,7 +803,9 @@
       "docsLocale": "ja",
       "status": "supported",
       "path": "/search-index/bundles/fsharp-docs.ja.1efb5812bf55c29c.json",
-      "recordCount": 148
+      "recordCount": 148,
+      "gzipBytes": 3411,
+      "brotliBytes": 2770
     },
     {
       "sourceId": "fsharp-for-fun-and-profit",
@@ -703,6 +817,8 @@
       "status": "supported",
       "path": "/search-index/bundles/fsharp-for-fun-and-profit.en.436c8ccdcd5d651b.json",
       "recordCount": 193,
+      "gzipBytes": 3892,
+      "brotliBytes": 3258,
       "qualification": "Independent learning material; only titles and direct links are indexed because the site text is not openly relicensed.",
       "qualificationJa": "独立系の学習資料です。サイト本文にオープンライセンスが明示されていないため、索引にはタイトルと直接リンクのみを収録します。"
     },
@@ -715,7 +831,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/vb-docs.en.58d617a60cffa688.json",
-      "recordCount": 685
+      "recordCount": 685,
+      "gzipBytes": 11877,
+      "brotliBytes": 10179
     },
     {
       "sourceId": "vb-docs",
@@ -726,7 +844,9 @@
       "docsLocale": "ja",
       "status": "supported",
       "path": "/search-index/bundles/vb-docs.ja.5fb59151d1d18910.json",
-      "recordCount": 685
+      "recordCount": 685,
+      "gzipBytes": 13850,
+      "brotliBytes": 11632
     },
     {
       "sourceId": "zig-docs",
@@ -737,7 +857,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/zig-docs.en.f057ca5cf85a13ba.json",
-      "recordCount": 703
+      "recordCount": 703,
+      "gzipBytes": 5824,
+      "brotliBytes": 4605
     },
     {
       "sourceId": "zig-guide",
@@ -749,6 +871,8 @@
       "status": "supported",
       "path": "/search-index/bundles/zig-guide.en.3c809bf59c8a8e0d.json",
       "recordCount": 66,
+      "gzipBytes": 1070,
+      "brotliBytes": 906,
       "qualification": "Version-specific guide for Zig 0.15.2; compare version-sensitive behavior with the current official Zig documentation.",
       "qualificationJa": "Zig 0.15.2向けのバージョン固定ガイドです。バージョン依存の挙動は最新の公式Zig文書とも照合してください。"
     },
@@ -761,7 +885,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/nim-docs.en.b241810ad0f8f954.json",
-      "recordCount": 198
+      "recordCount": 198,
+      "gzipBytes": 1966,
+      "brotliBytes": 1665
     },
     {
       "sourceId": "crystal-docs",
@@ -772,7 +898,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/crystal-docs.en.01748841eb2f8736.json",
-      "recordCount": 155
+      "recordCount": 155,
+      "gzipBytes": 1962,
+      "brotliBytes": 1632
     },
     {
       "sourceId": "d-docs",
@@ -783,7 +911,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/d-docs.en.6af50568ee50a22f.json",
-      "recordCount": 624
+      "recordCount": 624,
+      "gzipBytes": 5459,
+      "brotliBytes": 4833
     },
     {
       "sourceId": "programming-in-d",
@@ -795,6 +925,8 @@
       "status": "supported",
       "path": "/search-index/bundles/programming-in-d.en.461c2ccfe3dd0ab6.json",
       "recordCount": 93,
+      "gzipBytes": 1465,
+      "brotliBytes": 1242,
       "qualification": "A CC BY-NC-SA community-authored language book rather than the official D specification; it may lag the latest D release.",
       "qualificationJa": "公式のD言語仕様ではなく、CC BY-NC-SAのコミュニティ著者による解説書です。最新のDリリースへの追従が遅れる場合があります。"
     },
@@ -807,7 +939,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/ocaml-docs.en.defdef3263246562.json",
-      "recordCount": 65
+      "recordCount": 65,
+      "gzipBytes": 1103,
+      "brotliBytes": 887
     },
     {
       "sourceId": "cornell-ocaml",
@@ -819,6 +953,8 @@
       "status": "supported",
       "path": "/search-index/bundles/cornell-ocaml.en.0761e0593e5a535f.json",
       "recordCount": 106,
+      "gzipBytes": 1570,
+      "brotliBytes": 1359,
       "qualification": "Cornell's Spring 2026 course textbook; the index stores metadata only under CC BY-NC-ND.",
       "qualificationJa": "Cornell大学の2026年春学期の教科書です。CC BY-NC-NDに従い、索引にはメタデータのみを収録します。"
     },
@@ -831,7 +967,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/solidity-docs.en.038eb3a1e1f3d1fd.json",
-      "recordCount": 563
+      "recordCount": 563,
+      "gzipBytes": 10382,
+      "brotliBytes": 8710
     },
     {
       "sourceId": "solidity-docs-ja",
@@ -843,6 +981,8 @@
       "status": "supported",
       "path": "/search-index/bundles/solidity-docs-ja.ja.6a17ce1434058a3c.json",
       "recordCount": 563,
+      "gzipBytes": 10474,
+      "brotliBytes": 8765,
       "qualification": "Japanese community translation"
     },
     {
@@ -855,6 +995,8 @@
       "status": "supported",
       "path": "/search-index/bundles/solidity-by-example.en.c5eb086917d232b7.json",
       "recordCount": 129,
+      "gzipBytes": 2015,
+      "brotliBytes": 1711,
       "qualification": "Example-oriented material targeting Solidity 0.8.x; use current official security guidance for production contracts.",
       "qualificationJa": "Solidity 0.8系を対象にした例題中心の資料です。本番コントラクトでは最新の公式セキュリティ指針も確認してください。"
     },
@@ -867,7 +1009,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/elm-guide.en.b784ac9ded24e60d.json",
-      "recordCount": 40
+      "recordCount": 40,
+      "gzipBytes": 640,
+      "brotliBytes": 546
     },
     {
       "sourceId": "elm-packages",
@@ -877,8 +1021,10 @@
       "programmingLanguage": "elm",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/elm-packages.en.34afcb9ced9c5c0d.json",
-      "recordCount": 3011
+      "path": "/search-index/bundles/elm-packages.en.391de5d766bfb13b.json",
+      "recordCount": 3013,
+      "gzipBytes": 41945,
+      "brotliBytes": 35806
     },
     {
       "sourceId": "racket-docs",
@@ -888,8 +1034,10 @@
       "programmingLanguage": "racket",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/racket-docs.en.fee65e5ddd96b81a.json",
-      "recordCount": 1302
+      "path": "/search-index/bundles/racket-docs.en.eb61a31b47ab742a.json",
+      "recordCount": 1303,
+      "gzipBytes": 21036,
+      "brotliBytes": 18324
     },
     {
       "sourceId": "cl-hyperspec",
@@ -910,7 +1058,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/cl-language-reference.en.25229f250cf41512.json",
-      "recordCount": 981
+      "recordCount": 981,
+      "gzipBytes": 13959,
+      "brotliBytes": 11921
     },
     {
       "sourceId": "common-lisp-cookbook",
@@ -922,6 +1072,8 @@
       "status": "supported",
       "path": "/search-index/bundles/common-lisp-cookbook.en.d8a2b1932b8aba55.json",
       "recordCount": 43,
+      "gzipBytes": 845,
+      "brotliBytes": 696,
       "qualification": "A practical community cookbook, not the ANSI Common Lisp specification; recipes can be implementation- or library-specific.",
       "qualificationJa": "ANSI Common Lisp仕様ではなくコミュニティの実践的なクックブックで、処理系やライブラリ固有のレシピを含む場合があります。"
     },
@@ -934,7 +1086,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/gfortran.en.b5b4c5e7e923e9fe.json",
-      "recordCount": 486
+      "recordCount": 486,
+      "gzipBytes": 10593,
+      "brotliBytes": 8531
     },
     {
       "sourceId": "fortran-lang",
@@ -944,8 +1098,10 @@
       "programmingLanguage": "fortran",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/fortran-lang.en.1b1863de006ec3a4.json",
-      "recordCount": 2289
+      "path": "/search-index/bundles/fortran-lang.en.cc09c5f0a4fd4156.json",
+      "recordCount": 2295,
+      "gzipBytes": 17084,
+      "brotliBytes": 11645
     },
     {
       "sourceId": "haxe-manual",
@@ -956,7 +1112,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/haxe-manual.en.5b14ba3e3d43ad3e.json",
-      "recordCount": 338
+      "recordCount": 338,
+      "gzipBytes": 4259,
+      "brotliBytes": 3636
     },
     {
       "sourceId": "haxe-api",
@@ -987,7 +1145,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/mysql-docs.en.79926be2152d1799.json",
-      "recordCount": 1336
+      "recordCount": 1336,
+      "gzipBytes": 24269,
+      "brotliBytes": 20095
     },
     {
       "sourceId": "mysql-docs",
@@ -999,6 +1159,8 @@
       "status": "supported",
       "path": "/search-index/bundles/mysql-docs.ja.691a83f8799083fe.json",
       "recordCount": 1298,
+      "gzipBytes": 27109,
+      "brotliBytes": 21845,
       "qualification": "Machine-translated MySQL 8.0 edition; English index is MySQL 8.4"
     },
     {
@@ -1010,7 +1172,9 @@
       "docsLocale": "en",
       "status": "supported",
       "path": "/search-index/bundles/sqlite-docs.en.f793c4ea1e51e799.json",
-      "recordCount": 123
+      "recordCount": 123,
+      "gzipBytes": 2132,
+      "brotliBytes": 1812
     },
     {
       "sourceId": "wasm-mdn",
@@ -1020,8 +1184,10 @@
       "programmingLanguage": "webassembly",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/wasm-mdn.en.9c1e6caa81b9e4cd.json",
-      "recordCount": 268
+      "path": "/search-index/bundles/wasm-mdn.en.d54701beffc3bd71.json",
+      "recordCount": 268,
+      "gzipBytes": 2938,
+      "brotliBytes": 2570
     },
     {
       "sourceId": "wasm-mdn",
@@ -1031,8 +1197,10 @@
       "programmingLanguage": "webassembly",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/wasm-mdn.ja.0af4e77851727e10.json",
-      "recordCount": 45
+      "path": "/search-index/bundles/wasm-mdn.ja.a6931770e43643ca.json",
+      "recordCount": 45,
+      "gzipBytes": 895,
+      "brotliBytes": 716
     },
     {
       "sourceId": "wasm-spec",
@@ -1052,8 +1220,10 @@
       "programmingLanguage": "html",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/html-mdn.en.d59551e5dbcdfd9b.json",
-      "recordCount": 254
+      "path": "/search-index/bundles/html-mdn.en.d29e9b0bba52f3f0.json",
+      "recordCount": 254,
+      "gzipBytes": 3658,
+      "brotliBytes": 3079
     },
     {
       "sourceId": "html-mdn",
@@ -1063,8 +1233,10 @@
       "programmingLanguage": "html",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/html-mdn.ja.121558c7c95a4006.json",
-      "recordCount": 253
+      "path": "/search-index/bundles/html-mdn.ja.4e1ba5e5afc6c404.json",
+      "recordCount": 253,
+      "gzipBytes": 4501,
+      "brotliBytes": 3730
     },
     {
       "sourceId": "webdev-html",
@@ -1076,6 +1248,8 @@
       "status": "supported",
       "path": "/search-index/bundles/webdev-html.en.c78e6cc56d748757.json",
       "recordCount": 23,
+      "gzipBytes": 412,
+      "brotliBytes": 337,
       "qualification": "A Google-authored practical course, not the WHATWG HTML specification.",
       "qualificationJa": "Googleによる実践講座であり、WHATWG HTML仕様ではありません。"
     },
@@ -1087,8 +1261,10 @@
       "programmingLanguage": "css",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/css-mdn.en.c88d2348201da7c0.json",
-      "recordCount": 1248
+      "path": "/search-index/bundles/css-mdn.en.4e13100cdfefda1f.json",
+      "recordCount": 1249,
+      "gzipBytes": 14108,
+      "brotliBytes": 12243
     },
     {
       "sourceId": "css-mdn",
@@ -1098,8 +1274,10 @@
       "programmingLanguage": "css",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/css-mdn.ja.a14d3ef26d5c0303.json",
-      "recordCount": 1190
+      "path": "/search-index/bundles/css-mdn.ja.754e71ca0963ed0d.json",
+      "recordCount": 1198,
+      "gzipBytes": 15409,
+      "brotliBytes": 12740
     },
     {
       "sourceId": "webdev-css",
@@ -1111,6 +1289,8 @@
       "status": "supported",
       "path": "/search-index/bundles/webdev-css.en.eb220cccfe675a8b.json",
       "recordCount": 40,
+      "gzipBytes": 638,
+      "brotliBytes": 553,
       "qualification": "A Google-authored practical course that complements, rather than replaces, MDN and CSS specifications.",
       "qualificationJa": "Googleによる実践講座であり、MDNやCSS仕様を置き換えるものではなく補完する資料です。"
     }

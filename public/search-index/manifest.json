@@ -45,22 +45,22 @@
       "programmingLanguage": "python",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/python-docs.ja.ffd88c8c1db435b3.json",
+      "path": "/search-index/bundles/python-docs.ja.8e00879f40108a37.json",
       "recordCount": 6547,
-      "rawBytes": 717185,
-      "gzipBytes": 139737,
-      "brotliBytes": 89851,
-      "outputSha256": "ffd88c8c1db435b343d5c340f90078a9289f81146a3cc368a2cec62a007fdee5",
-      "inputSha256": "2b5de3ee8a070775c3aa48f8d5921a951f1c5da338b3e2b19cf0372b92ac5029",
+      "rawBytes": 717227,
+      "gzipBytes": 139805,
+      "brotliBytes": 89764,
+      "outputSha256": "8e00879f40108a37375837ffd42de6a598560fea7b00613874c1613ee9790ac9",
+      "inputSha256": "73dc2b4b8dd6eeec097cc05d2af0978cf390bd2ea5145ecfed22fa200b2fc918",
       "inputs": [
         {
           "url": "https://docs.python.org/ja/3/searchindex.js",
-          "sha256": "10918e0d096915dc6ce7c6ad6294da6cb8279b8fb57d71ce7c349a95a5cf0b6c",
-          "etag": "\"6a69c5a6-4d58a1\"",
-          "lastModified": "Wed, 29 Jul 2026 09:19:34 GMT"
+          "sha256": "18df4a2da7c6bb7b250305aab0fd1fa0408108d407d29efc89a24b2198d0e4f7",
+          "etag": "\"6a6f0bbf-4d5608\"",
+          "lastModified": "Sun, 02 Aug 2026 09:19:59 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:38.606Z",
+      "retrievedAt": "2026-08-02T09:49:47.486Z",
       "adapter": "sphinx",
       "upstreamVersion": "Python 3 Japanese latest",
       "attribution": "Python documentation © Python Software Foundation; PSF License.",
@@ -79,22 +79,22 @@
       "programmingLanguage": "python",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/python-peps.en.09e2bd9b9b839325.json",
-      "recordCount": 732,
-      "rawBytes": 88229,
-      "gzipBytes": 22476,
-      "brotliBytes": 18572,
-      "outputSha256": "09e2bd9b9b83932563a9e8d969801d20bda1b7f893cace3ebc652155a1b01054",
-      "inputSha256": "5180de3d046016d3f7cf9b1b8c57842bcffe86901cf21cf65e4ba9cec3c0f5a4",
+      "path": "/search-index/bundles/python-peps.en.96a5c6e165a55a1c.json",
+      "recordCount": 733,
+      "rawBytes": 88319,
+      "gzipBytes": 22491,
+      "brotliBytes": 18576,
+      "outputSha256": "96a5c6e165a55a1c0f5d0a8bf9a69da6467f83fb392636167a40b476c7b1db67",
+      "inputSha256": "4aed189bdc2a10cceb803f83813f5460fda38e7dfb3920fb3a8f744730ff6341",
       "inputs": [
         {
           "url": "https://peps.python.org/api/peps.json",
-          "sha256": "bcdbd188303c1142df0ea9f0afbc3aad11bcb8a03481af56913f373fbcaa27ad",
-          "etag": "W/\"6a6a9578-66b2a\"",
-          "lastModified": "Thu, 30 Jul 2026 00:06:16 GMT"
+          "sha256": "f1a369bb7850fc429b005bed1f66c8952d7f1451112cc959425c61fe5235a6b6",
+          "etag": "W/\"6a6e0e80-66da4\"",
+          "lastModified": "Sat, 01 Aug 2026 15:19:28 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:38.690Z",
+      "retrievedAt": "2026-08-02T09:49:48.744Z",
       "adapter": "pep-json",
       "upstreamVersion": "PEP index rolling",
       "attribution": "Python Enhancement Proposal metadata © Python contributors; individual PEPs are public domain or CC0-1.0.",
@@ -309,22 +309,22 @@
       "programmingLanguage": "javascript",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/mdn-js.ja.999f30f9f3588e54.json",
+      "path": "/search-index/bundles/mdn-js.ja.691586569c996284.json",
       "recordCount": 1028,
       "rawBytes": 77052,
-      "gzipBytes": 13847,
-      "brotliBytes": 11315,
-      "outputSha256": "999f30f9f3588e548cfdc18b0e95e67d4a54c590ff22b830f35884fb9467c859",
-      "inputSha256": "d2e1ed7b801ef5c5e1f377083758cf89a122b2fdd4d24c0e9486b2b691b86999",
+      "gzipBytes": 13863,
+      "brotliBytes": 11298,
+      "outputSha256": "691586569c996284e68af5f2015b613fec8f4b39443c8088bb401530c1dfc333",
+      "inputSha256": "d4fa54d38290c7e70e48914ab462702129b6f43d8dc50fb9374af88880f8cb16",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/ja/search-index.json",
-          "sha256": "5b6146004a8ff967783fafd6a9429ad0f89af2f2506b4c44507d3866d618f4e8",
-          "etag": "\"7fa17ca4f53e16c746513071519e120a\"",
-          "lastModified": "Wed, 29 Jul 2026 01:11:34 GMT"
+          "sha256": "188c9e3f3ed5ae7bbc62f5daf01013e7960743a3b7bc8a414656bd06e23bb9a2",
+          "etag": "\"3ba6fa40cba0666f27b3d7cb42d838df\"",
+          "lastModified": "Sun, 02 Aug 2026 01:28:46 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:45.441Z",
+      "retrievedAt": "2026-08-02T09:49:53.389Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs ja rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
@@ -349,15 +349,15 @@
       "gzipBytes": 3518,
       "brotliBytes": 2995,
       "outputSha256": "202a5823531547213bccb5dcd15a2d69d7b87747b182e7bc8797f27d28385038",
-      "inputSha256": "88db9ade70301397c48e1c42c2d264387b0acb6506037128f19352663275c3bf",
+      "inputSha256": "10e872b87c907efb8dd0665be32318e0f7d368d6ef33253442023f63e0b35ed2",
       "inputs": [
         {
           "url": "https://javascript.info/",
-          "sha256": "3e6686a46c1d5cb8d34d33515fb75be4866a98a1063d7a73c368860324ceef71",
-          "etag": "W/\"d0cf-qqGQgFMw5JM/RVFIU7kg53zBGVg\""
+          "sha256": "06de87a478ec6f6da6027f522abe19b95c1b0fd80b8bc198ecdd3a2cce945db3",
+          "etag": "W/\"d0d2-YT1/LjkeDseCUFAVCsbMLcYNvyg\""
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:46.189Z",
+      "retrievedAt": "2026-08-02T09:49:55.021Z",
       "adapter": "html-course-toc",
       "upstreamVersion": "The Modern JavaScript Tutorial rolling",
       "attribution": "The Modern JavaScript Tutorial © Ilya Kantor and contributors. Repository terms are based on CC BY-NC 4.0; the site terms describe CC BY-NC-SA. Titles and direct links only.",
@@ -631,13 +631,13 @@
       "programmingLanguage": "cpp",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/cppreference-cpp.en.00b9f421e6c12e85.json",
-      "recordCount": 6328,
-      "rawBytes": 624413,
-      "gzipBytes": 77432,
-      "brotliBytes": 63785,
-      "outputSha256": "00b9f421e6c12e85aab017124dd884a3086fad63ebac07e4d44198f6895baa1a",
-      "inputSha256": "d513b312e6f6d1e70b76d175d26cec633aea98e41c595723e457b4ee9ee6b012",
+      "path": "/search-index/bundles/cppreference-cpp.en.aef0c0bbfa88677e.json",
+      "recordCount": 6329,
+      "rawBytes": 624573,
+      "gzipBytes": 77454,
+      "brotliBytes": 63767,
+      "outputSha256": "aef0c0bbfa88677e53b8f88103a77ef208634006295b088c92beec25ede82004",
+      "inputSha256": "2ee22a019b152f6ed985b950123a774b54d1188c4c06b0b650bb63e1308af91f",
       "inputs": [
         {
           "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2",
@@ -676,36 +676,36 @@
         },
         {
           "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Flocale%2Fctype%2Fis",
-          "sha256": "4b746dd307327592a887b0a22cf1b51965f453ab501aaf17f1e828b812655ab1",
-          "lastModified": "Thu, 30 Jul 2026 00:26:59 GMT"
+          "sha256": "2e63c955020a56a300e77e7d4d2c7146278a264498deeb9ef63b7fb27b240784",
+          "lastModified": "Sun, 02 Aug 2026 09:47:59 GMT"
         },
         {
-          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fmeta%2Fis_namespace",
-          "sha256": "7c1d29a5ec7e7ea5d64d978cedb1494df860fcbc97d9331f1157d04ffeca6023",
-          "lastModified": "Thu, 30 Jul 2026 00:26:59 GMT"
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fmeta%2Fis_mutable_member",
+          "sha256": "f876ec7e8f0002451ceabfe73df8fa6a510bed1800b3b449e55bbf2b509140f1",
+          "lastModified": "Sun, 02 Aug 2026 09:48:00 GMT"
         },
         {
-          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fnumeric%2Frandom%2Fpiecewise_linear_distribution%2Foperator_ltltgtgt",
-          "sha256": "89fd7f7decb5f1b8a9ccabfe3c9b34e3d11af92a44c65e71faf47b8a087f6bba",
-          "lastModified": "Thu, 30 Jul 2026 00:26:59 GMT"
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fnumeric%2Frandom%2Fpiecewise_linear_distribution%2Foperator_cmp",
+          "sha256": "cc57077bc7b2f7b416d63a8230da727bb6e4d2bed2872e35f43c5623cd1d72a6",
+          "lastModified": "Sun, 02 Aug 2026 09:48:00 GMT"
         },
         {
-          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Franges%2Fslide_view%2Freserve_hint",
-          "sha256": "36a7b35c3a6bea3c9152e2fe802f267c0398e0fe818dc34c611576806a548703",
-          "lastModified": "Thu, 30 Jul 2026 00:27:00 GMT"
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Franges%2Fslide_view%2Fiterator%2Foperator_cmp",
+          "sha256": "fad425a6384d1c3f740fb3f4d92da1575f1633b80f3bb5c2325a5d93222be701",
+          "lastModified": "Sun, 02 Aug 2026 09:48:01 GMT"
         },
         {
-          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fthread%2Fbarrier%2Farrive_and_wait",
-          "sha256": "8c5bcaae6adbc6103950625f904c2c4a592d4574d431b1a708f9c6900c6ec89f",
-          "lastModified": "Thu, 30 Jul 2026 00:27:00 GMT"
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Fthread%2Fbarrier%2Farrive_and_drop",
+          "sha256": "47d6a24f62181c91ad75a419d891c815a7e38ffc5d62192256a44d2acbf587ea",
+          "lastModified": "Sun, 02 Aug 2026 09:48:01 GMT"
         },
         {
-          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Futility%2Fexpected%2Femplace",
-          "sha256": "39680118602eb15d21cedd0fdb12fc4d3885fdbdbc2a6b266eae4f901db292dd",
-          "lastModified": "Thu, 30 Jul 2026 00:27:00 GMT"
+          "url": "https://en.cppreference.com/api.php?action=query&generator=allpages&gapnamespace=0&gapprefix=cpp%2F&gaplimit=max&gapfilterredir=nonredirects&prop=pageprops&ppprop=displaytitle&format=json&formatversion=2&gapcontinue=cpp%2Futility%2Fexpected%2Fbad_expected_access",
+          "sha256": "08b479240173cfe0b969be9c56b0a472cd84428d8b6fba1ba1d5c7ac60bcef1a",
+          "lastModified": "Sun, 02 Aug 2026 09:48:02 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:45.221Z",
+      "retrievedAt": "2026-08-02T09:49:55.856Z",
       "adapter": "mediawiki-allpages",
       "upstreamVersion": "cppreference C++ rolling",
       "attribution": "cppreference content; CC BY-SA 3.0 and GFDL.",
@@ -799,22 +799,22 @@
       "programmingLanguage": "cpp",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/cpprefjp.ja.917836532b4133a9.json",
-      "recordCount": 6617,
-      "rawBytes": 578462,
-      "gzipBytes": 62341,
-      "brotliBytes": 51317,
-      "outputSha256": "917836532b4133a9814c8e788ebccae5486e89356c66dd597d293455685c569c",
-      "inputSha256": "79a843e8ce08b1a057e08b4656ba2f45bca3e9c9d5650f8a6ffd6270fe93ed0f",
+      "path": "/search-index/bundles/cpprefjp.ja.6f7ba3be0c8eac5a.json",
+      "recordCount": 6662,
+      "rawBytes": 581688,
+      "gzipBytes": 62715,
+      "brotliBytes": 51613,
+      "outputSha256": "6f7ba3be0c8eac5ae05b6c01c134c109026368c5a0b3db01f2830b761d353815",
+      "inputSha256": "a996586ba76a1e4cff5be8c5949bc315097ee2c4fea842edcc01bdf9220b08d1",
       "inputs": [
         {
           "url": "https://cpprefjp.github.io/sitemap.xml",
-          "sha256": "f2efc086d13ff66dd4a8bbe3eb665c33c23616d44087d603dc010543e38c675d",
-          "etag": "W/\"6a6a2436-176ca6\"",
-          "lastModified": "Wed, 29 Jul 2026 16:03:02 GMT"
+          "sha256": "c085c68df62fcecb223e8abeaef0411afc463985d48ad857e14983dd79457695",
+          "etag": "W/\"6a6ecdae-17939a\"",
+          "lastModified": "Sun, 02 Aug 2026 04:55:10 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:44.583Z",
+      "retrievedAt": "2026-08-02T09:49:56.435Z",
       "adapter": "sitemap",
       "upstreamVersion": "cpprefjp rolling",
       "attribution": "cpprefjp contributors; CC BY 4.0.",
@@ -1205,22 +1205,22 @@
       "programmingLanguage": "java",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/openjdk-jeps.en.37ee60463f3e15d2.json",
+      "path": "/search-index/bundles/openjdk-jeps.en.0ead0233599dcae2.json",
       "recordCount": 505,
-      "rawBytes": 54413,
-      "gzipBytes": 11665,
-      "brotliBytes": 9542,
-      "outputSha256": "37ee60463f3e15d274dac8090774fa59def9ed06f3d021ff33aaea7bf659ec55",
-      "inputSha256": "d8d6420943cd1cf627942cd627276dbe60476cd247f2ec8b09679428d3ef8d08",
+      "rawBytes": 54397,
+      "gzipBytes": 11666,
+      "brotliBytes": 9543,
+      "outputSha256": "0ead0233599dcae2d9177dcabf50f0071f9226ca3c38c78ba0e33bd70d9752a6",
+      "inputSha256": "6fb60d6ac62b5cbef21b0bf2d34581569d8ba0a3251860375eee52a6af172209",
       "inputs": [
         {
           "url": "https://openjdk.org/jeps/0",
-          "sha256": "953498a8e29a7025ed999eb26f52f00cb43bfbd5455ac3ea9d165ea19b4bdea9",
-          "etag": "\"6a6a4fa0-2f93f\"",
-          "lastModified": "Wed, 29 Jul 2026 19:08:16 GMT"
+          "sha256": "141ded03f97eed62acd733c245bb013db1ba9c6708b467de08b94101bd588921",
+          "etag": "\"6a6ce493-2f92f\"",
+          "lastModified": "Fri, 31 Jul 2026 18:08:19 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:47.162Z",
+      "retrievedAt": "2026-08-02T09:50:06.903Z",
       "adapter": "openjdk-jep-index",
       "upstreamVersion": "OpenJDK JEP index rolling",
       "attribution": "OpenJDK JEP metadata © Oracle and/or its affiliates; GPLv2.",
@@ -1248,15 +1248,15 @@
       "gzipBytes": 91086,
       "brotliBytes": 73332,
       "outputSha256": "7f373f39bfe1d7b31e4731dd509e62f4c8f51f231b76cd668458c6a1c1ef9b4d",
-      "inputSha256": "e8dd9b385712d3d3cea8eabe7948ed80039c2dfc1192358c4d4232704f88178b",
+      "inputSha256": "382de7c85d53abd3f632f8412768b0aad871191c0355dfcfddb937b48c3e3855",
       "inputs": [
         {
           "url": "https://www.php.net/manual/en/indexes.functions.php",
-          "sha256": "5238f76c6101bb5e0626c851dc074978025b06dd81cfc60fc5271580a48d5d24",
-          "lastModified": "Thu, 23 Jul 2026 14:09:32 GMT"
+          "sha256": "c2ca858e376911fd1abccf23ca29dd5a3681c9453b310d019316b5cb74471c68",
+          "lastModified": "Sun, 02 Aug 2026 08:09:17 GMT"
         }
       ],
-      "retrievedAt": "2026-07-23T14:44:20.339Z",
+      "retrievedAt": "2026-08-02T09:49:59.114Z",
       "adapter": "php-manual-index",
       "upstreamVersion": "PHP Manual rolling",
       "attribution": "PHP Manual © PHP Documentation Group, CC BY 3.0 or later.",
@@ -1280,15 +1280,15 @@
       "gzipBytes": 91187,
       "brotliBytes": 73385,
       "outputSha256": "bdfaa7b9b279baa43ee104b4130eab94c5847480696b1e9a10106d8ee2620471",
-      "inputSha256": "abe22a401f6c721d0debe1d38021a433d91a2456fd35e4240103304bfd4e6dbf",
+      "inputSha256": "f60c099d91a299459793c1caa0e402fd080e518ff037b9613f7260dbbb46448c",
       "inputs": [
         {
           "url": "https://www.php.net/manual/ja/indexes.functions.php",
-          "sha256": "b4365710aa14151933d1f3332a3ea6691353a79125bcb25afb7858ff6aa39238",
-          "lastModified": "Mon, 27 Jul 2026 04:22:38 GMT"
+          "sha256": "f918653264c7f7fb2a86f1e4de4055abf87f6beca26f62c44f2615aa587f2716",
+          "lastModified": "Sun, 02 Aug 2026 08:22:40 GMT"
         }
       ],
-      "retrievedAt": "2026-07-27T06:24:28.401Z",
+      "retrievedAt": "2026-08-02T09:50:00.257Z",
       "adapter": "php-manual-index",
       "upstreamVersion": "PHP Manual rolling",
       "attribution": "PHP Manual © PHP Documentation Group, CC BY 3.0 or later.",
@@ -1376,31 +1376,31 @@
       "programmingLanguage": "ruby",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/ruby-docs.ja.40b2eee8a84944b1.json",
-      "recordCount": 11963,
-      "rawBytes": 778500,
-      "gzipBytes": 108898,
-      "brotliBytes": 90024,
-      "outputSha256": "40b2eee8a84944b1a311d930f830ea6297f89f3b5e9e5da3c6ebfea1b661b989",
-      "inputSha256": "34a1f1f1329df3e947b12000591d7006130743882c1f6a36d8ef348e170f78cf",
+      "path": "/search-index/bundles/ruby-docs.ja.cc58a8adf48e255f.json",
+      "recordCount": 12100,
+      "rawBytes": 788469,
+      "gzipBytes": 110100,
+      "brotliBytes": 91042,
+      "outputSha256": "cc58a8adf48e255f074803c16247d18546f074cea9ac19defc13abfcf20c742f",
+      "inputSha256": "d8f26102ef5ce468ddaf79424c45dcf8f7e2758f85d08eafb7e8cac0db84dfae",
       "inputs": [
         {
           "url": "https://docs.ruby-lang.org/ja/3.4/class/index.html",
-          "sha256": "89c7ddac67141ec8ad62f95e2324e29e414d3fdcfc9992c70f054c4267f9639e",
-          "etag": "W/\"6a691ce7-c410a\"",
-          "lastModified": "Tue, 28 Jul 2026 21:19:35 GMT"
+          "sha256": "5889c559e6367b04862c675b705f24b56f4f25a88a9f0c1a8532602a301680ba",
+          "etag": "W/\"6a6d1161-c6959\"",
+          "lastModified": "Fri, 31 Jul 2026 21:19:29 GMT"
         },
         {
           "url": "https://docs.ruby-lang.org/ja/3.4/doc/index.html",
-          "sha256": "2ab8bb0b019aebe642c18fd25015c45d96e9ea19651be99e6bd4f1ba5b1447d8",
-          "etag": "W/\"6a5f28b1-1a6a\"",
-          "lastModified": "Tue, 21 Jul 2026 08:07:13 GMT"
+          "sha256": "05055d5747ee2ecbfa1d61ceb4ab2bf64d5c94fa9b662a0fcf501545affa9260",
+          "etag": "W/\"6a6d1161-1a70\"",
+          "lastModified": "Fri, 31 Jul 2026 21:19:29 GMT"
         },
         {
           "url": "https://docs.ruby-lang.org/ja/3.4/function/index.html",
-          "sha256": "8257f6d4c5dab3ea79d99c8c6002e604655345feffbf2fc925eadb13f57b04e5",
-          "etag": "W/\"6a5f28b1-26dc8\"",
-          "lastModified": "Tue, 21 Jul 2026 08:07:13 GMT"
+          "sha256": "8b2a6323adee1ce3770456e62c419a495dd99437028622ab7b818595e5a3fe51",
+          "etag": "W/\"6a6d1162-26eb0\"",
+          "lastModified": "Fri, 31 Jul 2026 21:19:30 GMT"
         },
         {
           "url": "https://docs.ruby-lang.org/ja/3.4/library/index.html",
@@ -1409,7 +1409,7 @@
           "lastModified": "Wed, 29 Jul 2026 11:41:36 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:50.832Z",
+      "retrievedAt": "2026-08-02T09:50:02.817Z",
       "adapter": "ruby-reference-index",
       "upstreamVersion": "Ruby 3.4 Japanese Reference",
       "attribution": "Ruby Reference Manual Japanese edition, CC BY 3.0.",
@@ -1462,22 +1462,22 @@
       "programmingLanguage": "kotlin",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/kotlin-docs.en.59d146c4ee4ebf54.json",
-      "recordCount": 360,
-      "rawBytes": 18578,
-      "gzipBytes": 4853,
-      "brotliBytes": 4005,
-      "outputSha256": "59d146c4ee4ebf54f21b0afe1466c68a9d43ef2bf00f467925efe2a3bef257ce",
-      "inputSha256": "547a4fb71e573c937d9b758a42cb25acb39d28113eb0dae0c080b4ede4550fe0",
+      "path": "/search-index/bundles/kotlin-docs.en.4f52274801265053.json",
+      "recordCount": 361,
+      "rawBytes": 18623,
+      "gzipBytes": 4862,
+      "brotliBytes": 4029,
+      "outputSha256": "4f52274801265053be3955dae24ad285baab92343b43809bd925f31821e17652",
+      "inputSha256": "930bf1bb8ec92c482a4b5cf08b9e567f6cc4b606cf010a96787ee171b6f98238",
       "inputs": [
         {
           "url": "https://kotlinlang.org/docs/sitemap.xml",
-          "sha256": "90d5c1149cb4463a1b51ff2d7f98efeb27ddcef64d767fefcd94c10da20cac96",
-          "etag": "W/\"81d26f9df57647e332bf02295fe1fa56\"",
-          "lastModified": "Wed, 29 Jul 2026 13:47:06 GMT"
+          "sha256": "b87208ddcf2a5496eeb2b3204c036a1c794d3991a080e5aec5250c3a4e8853d1",
+          "etag": "W/\"aa9b33fa9294d75819c70b574a17c6e3\"",
+          "lastModified": "Fri, 31 Jul 2026 17:06:51 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:51.035Z",
+      "retrievedAt": "2026-08-02T09:50:03.878Z",
       "adapter": "sitemap",
       "upstreamVersion": "Kotlin documentation rolling sitemap",
       "attribution": "Kotlin documentation © JetBrains and contributors; Apache 2.0.",
@@ -1569,16 +1569,16 @@
       "gzipBytes": 18744,
       "brotliBytes": 14467,
       "outputSha256": "30d90af7a1fc574addd50202384ff56812f9ab50d82dda39a2e27819b2253b1e",
-      "inputSha256": "186de537776a1e25f9df1beff45693715d02182ab1c52a799287b9429d97f83c",
+      "inputSha256": "ad4787019c248ebd7d14619d32db794985b35d1340ba06b05572b15c16972c75",
       "inputs": [
         {
           "url": "https://dart.dev/sitemap.xml",
-          "sha256": "be9652618b1894df4bc975b201b5261c529dbda4fa24b6b91b8840fe166d2894",
-          "etag": "\"30fc9324ceb6a58fd699d2c9cf0654f4287a0dbe41defab711d7efe974394968-br\"",
-          "lastModified": "Wed, 29 Jul 2026 21:38:49 GMT"
+          "sha256": "6a132b27d3796e3eec95bb4df616d6c41217475d3d38d06b927d4d1894108243",
+          "etag": "\"14861e12a6fecffa30f65bd7c1a5b86ab830f6f7c190537042059fbf59a04d18-br\"",
+          "lastModified": "Fri, 31 Jul 2026 20:16:29 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:51.244Z",
+      "retrievedAt": "2026-08-02T09:50:04.494Z",
       "adapter": "sitemap",
       "upstreamVersion": "Dart documentation rolling sitemap",
       "attribution": "Dart documentation © Dart project contributors; BSD-3-Clause.",
@@ -2006,16 +2006,16 @@
       "gzipBytes": 1020,
       "brotliBytes": 836,
       "outputSha256": "5a15b5b3901db7dfaec81c630ce55149ae693e93e7394967476c7ebc75fdd5bc",
-      "inputSha256": "86ac11167338f889722b5b5bea531d205a2aa094cf0f8500bf73bce9d8e79449",
+      "inputSha256": "bf1a58deaa43fd9aa19a0f428e33d6b70f8e4e356314aa108c30f5f298209048",
       "inputs": [
         {
           "url": "https://clojure.org/sitemap.xml",
-          "sha256": "7020c014ec97f18706bb84bd52767253836343169038903e7d23ef7aa26df084",
-          "etag": "W/\"5cb6281b40130f5e80d3ba61e9ef81b1\"",
-          "lastModified": "Wed, 29 Jul 2026 19:59:18 GMT"
+          "sha256": "f357acf312a8443503d2fb0d85b24b6d40a5c2944c25bbe446322f0b5273af8b",
+          "etag": "W/\"a9fb2343496f2ca272ef0ee8b4f01202\"",
+          "lastModified": "Thu, 30 Jul 2026 14:59:26 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:56.820Z",
+      "retrievedAt": "2026-08-02T09:50:08.710Z",
       "adapter": "sitemap",
       "upstreamVersion": "Clojure site rolling",
       "attribution": "Clojure documentation © Rich Hickey and contributors; EPL-1.0.",
@@ -2262,16 +2262,16 @@
       "gzipBytes": 2563,
       "brotliBytes": 2150,
       "outputSha256": "bc29b23bf4a689d83ecce88f2302aebcd3e17f4c0f0d4bebe2a9733bc0cf8f44",
-      "inputSha256": "67619d389fa6b67701226d799aba00ba6cd567239eb3853d4b4795ea10c3b9ae",
+      "inputSha256": "461d98f740aec27efb79aae731d3c3b19f65440ce8768108939670bd17451c3b",
       "inputs": [
         {
           "url": "https://learn.microsoft.com/en-us/dotnet/fsharp/toc.json",
-          "sha256": "f07b04885447cd76395f4c3c719dabbc2c6b8ba84aa86923a86ebeba49027df7",
-          "etag": "\"43meC+KAHiG6aejwEuJtoFGdOEs=\"",
-          "lastModified": "Wed, 22 Apr 2026 21:20:37 GMT"
+          "sha256": "8adca5b3aa58d481fc86a7630fd0dccd5d03714ed63fb24c1569b5ab4ad9f32e",
+          "etag": "\"fpNZgRRF5v8QKCIweyKVQTjfDVE=\"",
+          "lastModified": "Fri, 31 Jul 2026 09:05:19 GMT"
         }
       ],
-      "retrievedAt": "2026-07-23T06:35:27.857Z",
+      "retrievedAt": "2026-08-02T09:50:09.720Z",
       "adapter": "microsoft-learn-localized-toc",
       "upstreamVersion": "Microsoft Learn localized TOC rolling",
       "attribution": ".NET documentation © Microsoft and contributors; CC BY 4.0.",
@@ -2366,16 +2366,16 @@
       "gzipBytes": 11877,
       "brotliBytes": 10179,
       "outputSha256": "58d617a60cffa68835ba67603a0bbb14d9cc1051514f158dca8f9d275eb8862d",
-      "inputSha256": "21c9ca53c3a7d4cbaedf36a9d88aeb77cac056ce512193a59f5c516f644a30ae",
+      "inputSha256": "c9fab9d3be78cb4f378b71e6f54e8629563dd31684157321c110ddec77d7eeb6",
       "inputs": [
         {
           "url": "https://learn.microsoft.com/en-us/dotnet/visual-basic/toc.json",
-          "sha256": "6ca43aa4c720835d5a34647d01c8922581715434e579c9d09db1c73ed4fef680",
-          "etag": "\"XbE62ikUmthZMqHbFz1INirwbYA=\"",
-          "lastModified": "Fri, 26 Jun 2026 19:11:27 GMT"
+          "sha256": "a78c2e881f1d8d2c581aac97c06c283a4a0b49c0526bbd22bd2c203ad1e24ab0",
+          "etag": "\"V/Xo+PjLK8b0IX0uUrwmlo87r/E=\"",
+          "lastModified": "Fri, 31 Jul 2026 09:05:18 GMT"
         }
       ],
-      "retrievedAt": "2026-07-23T06:35:28.026Z",
+      "retrievedAt": "2026-08-02T09:50:09.990Z",
       "adapter": "microsoft-learn-localized-toc",
       "upstreamVersion": "Microsoft Learn localized TOC rolling",
       "attribution": ".NET documentation © Microsoft and contributors; CC BY 4.0.",
@@ -2434,16 +2434,16 @@
       "gzipBytes": 5824,
       "brotliBytes": 4605,
       "outputSha256": "f057ca5cf85a13ba456e69b0ade45b393e9ab99ece348c2f518a25e91d14eb9d",
-      "inputSha256": "28cab872512e702ddcaf8a1ce159b3b411c8cd10fc8bed7fcb050aabd8f4fa92",
+      "inputSha256": "8d9575ffea12da4e445f08d8b71cefef83e93d940883142e592ac58cb54f5c36",
       "inputs": [
         {
           "url": "https://ziglang.org/documentation/master/",
-          "sha256": "6f55b834260c889ccb1edbde43c34924a5a88e462e00579ef3c40de73ec8c4cf",
-          "etag": "W/\"6a69fd8b-ef637\"",
-          "lastModified": "Wed, 29 Jul 2026 13:18:03 GMT"
+          "sha256": "88374523744c341172b31e44b2006fe1671aebd311cc335f22aedfa2efd4074d",
+          "etag": "W/\"6a6e4d3d-ef5fe\"",
+          "lastModified": "Sat, 01 Aug 2026 19:47:09 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:28:59.968Z",
+      "retrievedAt": "2026-08-02T09:50:12.311Z",
       "adapter": "html-link-index",
       "upstreamVersion": "Zig master rolling",
       "attribution": "Zig documentation © Zig contributors; MIT.",
@@ -2577,7 +2577,7 @@
       "gzipBytes": 5459,
       "brotliBytes": 4833,
       "outputSha256": "6af50568ee50a22fbf026db7179f21a222c7e6bcdac0a053bef4b84f4db623c9",
-      "inputSha256": "6ac9878695a124022def0172844bbfbb4f7826e1d04f6b171236d3c72f4c3257",
+      "inputSha256": "1651b9f1c0ce1af9cdcf054efbc3fe4befea122d282038c4fb3f15fe87325292",
       "inputs": [
         {
           "url": "https://dlang.org/library/index.html",
@@ -2586,16 +2586,16 @@
         },
         {
           "url": "https://dlang.org/phobos/index.html",
-          "sha256": "e1fadabb2726d0baa1483205ffd4a4ebc9769b91d70e18a43664e5e3698ac0b1",
-          "lastModified": "Wed, 29 Jul 2026 23:15:10 GMT"
+          "sha256": "bfea480248de9e7b628be840e5e9ea9342f5357ad4c58f6396939b5927619b1e",
+          "lastModified": "Sat, 01 Aug 2026 13:21:39 GMT"
         },
         {
           "url": "https://dlang.org/spec/spec.html",
-          "sha256": "1fd9f76c8ebc40de4905cb9645ef31852fa71e894d613cab8bd3f51d552b13f0",
-          "lastModified": "Wed, 29 Jul 2026 23:22:48 GMT"
+          "sha256": "a13e925549670199137e8c84b5c3a6530f4df6d0856e5c61303a6ce8943a7b7f",
+          "lastModified": "Sat, 01 Aug 2026 13:32:17 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:29:00.912Z",
+      "retrievedAt": "2026-08-02T09:50:12.966Z",
       "adapter": "html-link-index",
       "upstreamVersion": "D language and Phobos latest",
       "attribution": "D documentation © D Language Foundation and contributors; BSL-1.0.",
@@ -2854,21 +2854,21 @@
       "programmingLanguage": "elm",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/elm-packages.en.34afcb9ced9c5c0d.json",
-      "recordCount": 3011,
-      "rawBytes": 209576,
-      "gzipBytes": 41921,
-      "brotliBytes": 35786,
-      "outputSha256": "34afcb9ced9c5c0dbdededf0e7675ebf8eb24bb14267d0214c8712241291e6f8",
-      "inputSha256": "8f60cb44938ed08bb8cbc999504aca20334be6b75ba273a1985bb13be8668cd2",
+      "path": "/search-index/bundles/elm-packages.en.391de5d766bfb13b.json",
+      "recordCount": 3013,
+      "rawBytes": 209702,
+      "gzipBytes": 41945,
+      "brotliBytes": 35806,
+      "outputSha256": "391de5d766bfb13b28c506361e3c62b3e8abaa0f8ee245e0e24f994e9750e010",
+      "inputSha256": "57bae6ab33258da08bdb37db2b1ff9c029012a2d096a6270a0239d432fe097fd",
       "inputs": [
         {
           "url": "https://package.elm-lang.org/all-packages",
-          "sha256": "4cdf02a08bcc2d23ca666cd338e83c7f528b9fccb5e16cafd222e9d46d1d7cb6",
-          "lastModified": "Wed, 29 Jul 2026 13:40:03 GMT"
+          "sha256": "322afcdd1d1ff63e2e9afd0f056927b8b3a1f5fd1ccc386aa5a793d3e5cd765c",
+          "lastModified": "Sun, 02 Aug 2026 00:51:48 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:29:02.721Z",
+      "retrievedAt": "2026-08-02T09:50:15.058Z",
       "adapter": "elm-package-index",
       "upstreamVersion": "Elm package catalog rolling",
       "attribution": "Elm package catalog metadata; individual package licenses apply.",
@@ -2887,21 +2887,21 @@
       "programmingLanguage": "racket",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/racket-docs.en.fee65e5ddd96b81a.json",
-      "recordCount": 1302,
-      "rawBytes": 68100,
-      "gzipBytes": 21026,
-      "brotliBytes": 18315,
-      "outputSha256": "fee65e5ddd96b81a3d645dd726778193ae68c583c4970c8248575c2ff2c28e99",
-      "inputSha256": "4ce5ddd6bb7368408bec5f280f78607794438cdf3fac1b5dff6ab20d9a23277e",
+      "path": "/search-index/bundles/racket-docs.en.eb61a31b47ab742a.json",
+      "recordCount": 1303,
+      "rawBytes": 68153,
+      "gzipBytes": 21036,
+      "brotliBytes": 18324,
+      "outputSha256": "eb61a31b47ab742ae88648de2484e3dd49ccba4b1b19869eb5673df6cbc6cd09",
+      "inputSha256": "7f153cc787dfc273df04f49d81a6d21c7cc21d83fffff3a69316795c29ccb4a7",
       "inputs": [
         {
           "url": "https://docs.racket-lang.org/",
-          "sha256": "a5656c37161c9e6900951994e54e55d4a73a2a3453df8016da749f5a61ba289d",
-          "lastModified": "Wed, 29 Jul 2026 16:10:15 GMT"
+          "sha256": "232d12f065e3311fb9766f3272e536d1e719a3975f94aafbc7fba34a18a3caf0",
+          "lastModified": "Fri, 31 Jul 2026 09:05:53 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:29:02.399Z",
+      "retrievedAt": "2026-08-02T09:50:15.132Z",
       "adapter": "html-toc",
       "upstreamVersion": "Racket documentation rolling manuals",
       "attribution": "Racket documentation © Racket contributors; Apache 2.0 or MIT.",
@@ -3033,22 +3033,22 @@
       "programmingLanguage": "fortran",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/fortran-lang.en.1b1863de006ec3a4.json",
-      "recordCount": 2289,
-      "rawBytes": 273105,
-      "gzipBytes": 16824,
-      "brotliBytes": 11505,
-      "outputSha256": "1b1863de006ec3a4514e882192b6d1016e382f7d4c4abee35203afffe0633ff2",
-      "inputSha256": "cbc548aa1e8a8c0df77e15b9c544213950dab50aa71f41f238f21c5c83fbbc6c",
+      "path": "/search-index/bundles/fortran-lang.en.cc09c5f0a4fd4156.json",
+      "recordCount": 2295,
+      "rawBytes": 273966,
+      "gzipBytes": 17084,
+      "brotliBytes": 11645,
+      "outputSha256": "cc09c5f0a4fd415685b81074f1e5186cdcba4c07bb8cee68bf14eff0760a01b6",
+      "inputSha256": "565c9097aaa27bee82977ac9d07c766d543574d97b7230eb33eba07704fec40e",
       "inputs": [
         {
           "url": "https://fortran-lang.org/searchindex.js",
-          "sha256": "bcc4b162c6aa2e8e944fe0472381fbb521319fa447e3e955181ebc7ac5202836",
-          "etag": "W/\"6a61af04-5af6d\"",
-          "lastModified": "Thu, 23 Jul 2026 06:04:52 GMT"
+          "sha256": "63eef2ad2ffeccd492a66ca6635c458b7f319d37158032c722ebb4b8ceba01a6",
+          "etag": "W/\"6a6edfd5-5c48f\"",
+          "lastModified": "Sun, 02 Aug 2026 06:12:37 GMT"
         }
       ],
-      "retrievedAt": "2026-07-23T06:46:17.128Z",
+      "retrievedAt": "2026-08-02T09:50:15.803Z",
       "adapter": "sphinx-pretty-url",
       "upstreamVersion": "Fortran Lang rolling English",
       "attribution": "Fortran Lang documentation © Fortran community contributors; MIT.",
@@ -3221,22 +3221,22 @@
       "programmingLanguage": "webassembly",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/wasm-mdn.en.9c1e6caa81b9e4cd.json",
+      "path": "/search-index/bundles/wasm-mdn.en.d54701beffc3bd71.json",
       "recordCount": 268,
       "rawBytes": 21021,
-      "gzipBytes": 2918,
-      "brotliBytes": 2564,
-      "outputSha256": "9c1e6caa81b9e4cdf469eb77c20ec3099b900e49047e35faa2818d806fbf96cb",
-      "inputSha256": "6ef69c3cdaa21d631d512aecac9e87f55f04b57a371b8edcad9fabb531a637a7",
+      "gzipBytes": 2938,
+      "brotliBytes": 2570,
+      "outputSha256": "d54701beffc3bd71e788bba7611bfe8cfec210d142170796787b7f96a51bb697",
+      "inputSha256": "ca9f82655ac025c483c89cab47d494ea3420a5972faec29d437d6b705ce10a63",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/en-US/search-index.json",
-          "sha256": "cb5849aed8898644a36a4cdfa93672274b016b582fece2782cf91e73605060b6",
-          "etag": "\"22041d8f91b3bc700cca73e51991ac6d\"",
-          "lastModified": "Wed, 29 Jul 2026 01:09:01 GMT"
+          "sha256": "91f589ff8efea3a866c65e44044db023ef9ee82f3a632bbd820351bd0e627cdb",
+          "etag": "\"bb923a237956aea0670812a837e42428\"",
+          "lastModified": "Sat, 01 Aug 2026 01:16:28 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:29:03.995Z",
+      "retrievedAt": "2026-08-02T09:50:16.119Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs en-US rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
@@ -3255,22 +3255,22 @@
       "programmingLanguage": "webassembly",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/wasm-mdn.ja.0af4e77851727e10.json",
+      "path": "/search-index/bundles/wasm-mdn.ja.a6931770e43643ca.json",
       "recordCount": 45,
       "rawBytes": 3828,
-      "gzipBytes": 891,
+      "gzipBytes": 895,
       "brotliBytes": 716,
-      "outputSha256": "0af4e77851727e10c8542d07bf3d3798088c0d22e72a5372b7149719181289e3",
-      "inputSha256": "d2e1ed7b801ef5c5e1f377083758cf89a122b2fdd4d24c0e9486b2b691b86999",
+      "outputSha256": "a6931770e43643ca6b9205e31baa93ff8991b7a3a17c5b66ea2c38ef9d19d4c4",
+      "inputSha256": "d4fa54d38290c7e70e48914ab462702129b6f43d8dc50fb9374af88880f8cb16",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/ja/search-index.json",
-          "sha256": "5b6146004a8ff967783fafd6a9429ad0f89af2f2506b4c44507d3866d618f4e8",
-          "etag": "\"7fa17ca4f53e16c746513071519e120a\"",
-          "lastModified": "Wed, 29 Jul 2026 01:11:34 GMT"
+          "sha256": "188c9e3f3ed5ae7bbc62f5daf01013e7960743a3b7bc8a414656bd06e23bb9a2",
+          "etag": "\"3ba6fa40cba0666f27b3d7cb42d838df\"",
+          "lastModified": "Sun, 02 Aug 2026 01:28:46 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:29:04.276Z",
+      "retrievedAt": "2026-08-02T09:50:16.185Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs ja rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
@@ -3299,22 +3299,22 @@
       "programmingLanguage": "html",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/html-mdn.en.d59551e5dbcdfd9b.json",
+      "path": "/search-index/bundles/html-mdn.en.d29e9b0bba52f3f0.json",
       "recordCount": 254,
       "rawBytes": 17827,
-      "gzipBytes": 3656,
-      "brotliBytes": 3091,
-      "outputSha256": "d59551e5dbcdfd9b83b38853e308dc8c9c743ccff27853c56b8b11cadfdd0f1c",
-      "inputSha256": "6ef69c3cdaa21d631d512aecac9e87f55f04b57a371b8edcad9fabb531a637a7",
+      "gzipBytes": 3658,
+      "brotliBytes": 3079,
+      "outputSha256": "d29e9b0bba52f3f07e96176bf175433d656d91cf96c1a7190db61d6dc2b7191b",
+      "inputSha256": "ca9f82655ac025c483c89cab47d494ea3420a5972faec29d437d6b705ce10a63",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/en-US/search-index.json",
-          "sha256": "cb5849aed8898644a36a4cdfa93672274b016b582fece2782cf91e73605060b6",
-          "etag": "\"22041d8f91b3bc700cca73e51991ac6d\"",
-          "lastModified": "Wed, 29 Jul 2026 01:09:01 GMT"
+          "sha256": "91f589ff8efea3a866c65e44044db023ef9ee82f3a632bbd820351bd0e627cdb",
+          "etag": "\"bb923a237956aea0670812a837e42428\"",
+          "lastModified": "Sat, 01 Aug 2026 01:16:28 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:29:04.045Z",
+      "retrievedAt": "2026-08-02T09:50:16.175Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs en-US rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
@@ -3333,22 +3333,22 @@
       "programmingLanguage": "html",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/html-mdn.ja.121558c7c95a4006.json",
+      "path": "/search-index/bundles/html-mdn.ja.4e1ba5e5afc6c404.json",
       "recordCount": 253,
       "rawBytes": 17965,
-      "gzipBytes": 4512,
-      "brotliBytes": 3721,
-      "outputSha256": "121558c7c95a40065ade14f7ee975eea4f04c53a7f28e3d62b0ea750fe9b81be",
-      "inputSha256": "d2e1ed7b801ef5c5e1f377083758cf89a122b2fdd4d24c0e9486b2b691b86999",
+      "gzipBytes": 4501,
+      "brotliBytes": 3730,
+      "outputSha256": "4e1ba5e5afc6c4042595bc45beef34d67d4de2646c088b9291e62bfa04666063",
+      "inputSha256": "d4fa54d38290c7e70e48914ab462702129b6f43d8dc50fb9374af88880f8cb16",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/ja/search-index.json",
-          "sha256": "5b6146004a8ff967783fafd6a9429ad0f89af2f2506b4c44507d3866d618f4e8",
-          "etag": "\"7fa17ca4f53e16c746513071519e120a\"",
-          "lastModified": "Wed, 29 Jul 2026 01:11:34 GMT"
+          "sha256": "188c9e3f3ed5ae7bbc62f5daf01013e7960743a3b7bc8a414656bd06e23bb9a2",
+          "etag": "\"3ba6fa40cba0666f27b3d7cb42d838df\"",
+          "lastModified": "Sun, 02 Aug 2026 01:28:46 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:29:04.088Z",
+      "retrievedAt": "2026-08-02T09:50:16.222Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs ja rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
@@ -3403,22 +3403,22 @@
       "programmingLanguage": "css",
       "docsLocale": "en",
       "status": "supported",
-      "path": "/search-index/bundles/css-mdn.en.c88d2348201da7c0.json",
-      "recordCount": 1248,
-      "rawBytes": 87721,
-      "gzipBytes": 14085,
-      "brotliBytes": 12227,
-      "outputSha256": "c88d2348201da7c0d73972939bc334c097a6e3a2f53f26eb04ef6e06eb8b57e9",
-      "inputSha256": "6ef69c3cdaa21d631d512aecac9e87f55f04b57a371b8edcad9fabb531a637a7",
+      "path": "/search-index/bundles/css-mdn.en.4e13100cdfefda1f.json",
+      "recordCount": 1249,
+      "rawBytes": 87772,
+      "gzipBytes": 14108,
+      "brotliBytes": 12243,
+      "outputSha256": "4e13100cdfefda1f029a51dedf758ece088cb73819f098ab800f2f7bb9325147",
+      "inputSha256": "ca9f82655ac025c483c89cab47d494ea3420a5972faec29d437d6b705ce10a63",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/en-US/search-index.json",
-          "sha256": "cb5849aed8898644a36a4cdfa93672274b016b582fece2782cf91e73605060b6",
-          "etag": "\"22041d8f91b3bc700cca73e51991ac6d\"",
-          "lastModified": "Wed, 29 Jul 2026 01:09:01 GMT"
+          "sha256": "91f589ff8efea3a866c65e44044db023ef9ee82f3a632bbd820351bd0e627cdb",
+          "etag": "\"bb923a237956aea0670812a837e42428\"",
+          "lastModified": "Sat, 01 Aug 2026 01:16:28 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:29:04.409Z",
+      "retrievedAt": "2026-08-02T09:50:16.329Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs en-US rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",
@@ -3437,22 +3437,22 @@
       "programmingLanguage": "css",
       "docsLocale": "ja",
       "status": "supported",
-      "path": "/search-index/bundles/css-mdn.ja.a14d3ef26d5c0303.json",
-      "recordCount": 1190,
-      "rawBytes": 77343,
-      "gzipBytes": 15329,
-      "brotliBytes": 12733,
-      "outputSha256": "a14d3ef26d5c030319ebbc971110545c6904672563f8f7784fbdb155eec040fa",
-      "inputSha256": "d2e1ed7b801ef5c5e1f377083758cf89a122b2fdd4d24c0e9486b2b691b86999",
+      "path": "/search-index/bundles/css-mdn.ja.754e71ca0963ed0d.json",
+      "recordCount": 1198,
+      "rawBytes": 77944,
+      "gzipBytes": 15409,
+      "brotliBytes": 12740,
+      "outputSha256": "754e71ca0963ed0d1cfa933db6a666de4131bcbf9fad2f1bd5a826b41ad7e129",
+      "inputSha256": "d4fa54d38290c7e70e48914ab462702129b6f43d8dc50fb9374af88880f8cb16",
       "inputs": [
         {
           "url": "https://developer.mozilla.org/ja/search-index.json",
-          "sha256": "5b6146004a8ff967783fafd6a9429ad0f89af2f2506b4c44507d3866d618f4e8",
-          "etag": "\"7fa17ca4f53e16c746513071519e120a\"",
-          "lastModified": "Wed, 29 Jul 2026 01:11:34 GMT"
+          "sha256": "188c9e3f3ed5ae7bbc62f5daf01013e7960743a3b7bc8a414656bd06e23bb9a2",
+          "etag": "\"3ba6fa40cba0666f27b3d7cb42d838df\"",
+          "lastModified": "Sun, 02 Aug 2026 01:28:46 GMT"
         }
       ],
-      "retrievedAt": "2026-07-30T00:29:04.568Z",
+      "retrievedAt": "2026-08-02T09:50:16.433Z",
       "adapter": "mdn-search-index",
       "upstreamVersion": "MDN Web Docs ja rolling search index",
       "attribution": "MDN content © Mozilla contributors; CC BY-SA 2.5 or later.",

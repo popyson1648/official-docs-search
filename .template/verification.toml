@@ -95,7 +95,7 @@ paths = [
   "src/core/**",
   "src/client/search-controls.ts",
   "src/client/search-result-filters.ts",
-  "src/font-faces.css",
+  "src/font-faces-*.css",
   "scripts/update-font-stylesheet.mjs",
   "scripts/generate-search-index.mjs",
   "scripts/search-index.mjs",
@@ -197,7 +197,7 @@ run_in_ci = true
 requires = ["build"]
 covered_by = ["test_e2e"]
 paths = [
-  "src/font-faces.css",
+  "src/font-faces-*.css",
   "src/styles.css",
   "public/fonts/**",
   "public/_headers",
@@ -220,7 +220,7 @@ paths = [
   "src/client/search.worker.ts",
   "src/core/search-runtime.ts",
   "src/pages/**",
-  "src/font-faces.css",
+  "src/font-faces-*.css",
   "src/styles.css",
   "public/fonts/**",
   "public/_headers",
@@ -264,6 +264,8 @@ run_in_ci = true
 requires = ["build"]
 paths = [
   "public/search-index/**",
+  "src/middleware.ts",
+  "src/core/html-response.ts",
   "src/pages/**",
   "src/data/docs-sources.toml",
   "public/fonts/**",

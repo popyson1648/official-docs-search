@@ -34,6 +34,8 @@ const RUNTIME_MANIFEST_ENTRY_FIELDS = [
   "reason",
   "path",
   "recordCount",
+  "gzipBytes",
+  "brotliBytes",
   "qualification",
   "qualificationJa"
 ];
