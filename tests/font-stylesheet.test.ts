@@ -1,12 +1,23 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const stylesheet = readFileSync("src/font-faces.css", "utf8");
+const stylesheets = [
+  readFileSync("src/font-faces-alexandria.css", "utf8"),
+  readFileSync("src/font-faces-line-seed-jp.css", "utf8")
+];
+const stylesheet = stylesheets.join("\n");
 const faceBlocks = [...stylesheet.matchAll(/@font-face\s*\{([^}]+)\}/gs)].map(
   (match) => match[1]
 );
 
 describe("font stylesheet", () => {
+  it("keeps each generated family in its own stylesheet", () => {
+    expect(stylesheets[0]).toContain("font-family: 'Alexandria'");
+    expect(stylesheets[0]).not.toContain("font-family: 'LINE Seed JP'");
+    expect(stylesheets[1]).toContain("font-family: 'LINE Seed JP'");
+    expect(stylesheets[1]).not.toContain("font-family: 'Alexandria'");
+  });
+
   it("preserves the product families, weights, display, and local WOFF2 files", () => {
     const weightsByFamily = new Map<string, Set<string>>();
 

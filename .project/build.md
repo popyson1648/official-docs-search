@@ -19,7 +19,8 @@ Run `npm install`.
   Wrangler compatibility or binding change. They stay in ignored `.wrangler/`
   because this application does not author a Worker handler directly and the
   Cloudflare runtime globals would conflict with browser DOM globals.
-- Refresh the reviewed font-face stylesheet with `npm run update:font-css`.
+- Refresh the reviewed family-specific font-face stylesheets with
+  `npm run update:font-css`.
 - `npm run preview` is the same workerd-based preview used by production tests.
 
 The build does not call a paid search API and needs no public search-provider key.
@@ -29,9 +30,13 @@ an explicit `locale:en` or `locale:ja` query overrides it for that search.
 
 ## Font Delivery
 
-`src/font-faces.css` contains reviewed face declarations for Alexandria
-400/500/600/700 and LINE Seed JP 400/700. Astro bundles and fingerprints those
-declarations with the application stylesheet. All 252 Unicode-subset WOFF2
+`src/font-faces-alexandria.css` and `src/font-faces-line-seed-jp.css` contain
+reviewed face declarations for Alexandria 400/500/600/700 and LINE Seed JP
+400/700. Astro fingerprints them separately from the compact page stylesheet,
+which is inlined into the compressed private HTML to remove its network
+dependency. Client initialization applies Alexandria after document
+parsing and applies LINE Seed JP only for Japanese UI or results; `noscript`
+keeps the same family contract without JavaScript. All 252 Unicode-subset WOFF2
 files are served from `public/fonts/google/` with their upstream OFL license
 files and an immutable cache policy.
 
@@ -103,7 +108,7 @@ The clean top page and its `?ui=en` and `?ui=ja` representations are
 discoverable; query, source, and filter state remain crawlable but
 `noindex,follow`.
 Cloudflare serves matching static files before invoking the Worker and performs
-production transport compression at the edge. Astro emits an immutable
+production transport compression for static assets at the edge. Astro emits an immutable
 one-year policy for content-hashed `/_astro/` files, and `public/_headers`
 applies the same policy to the pinned WOFF2 files and to the content-addressed
 bundles under `/search-index/bundles/`. Both manifests stay revalidated so a
@@ -116,7 +121,16 @@ cookies. `Vary` already carries that dependency; the explicit policy removes the
 ambiguity for a shared cache that handles `Vary` poorly, and `no-cache` keeps the
 browser's back-forward cache, which `no-store` would forfeit. `no-transform`
 stops the Cloudflare edge from rewriting the document, which it otherwise does to
-inject its Web Analytics beacon.
+inject its Web Analytics beacon. The same middleware negotiates gzip, merges
+`Vary: Accept-Encoding`, and asks the Workers runtime to stream that encoding;
+this compresses private HTML without permitting an intermediary transform.
+Astro preview's Node-facing port transparently decodes the inner workerd
+response, so transport inspection must use direct workerd or the deployment.
+
+A valid direct query preloads the revalidated runtime manifest and up to four
+exact selected bundles before the search worker discovers them. The hints have
+a cumulative 500 KiB deterministic Brotli ceiling. Empty, invalid, and
+no-source pages emit no search-index hint.
 
 `wrangler.jsonc` pins the current compatible runtime date, the production custom
 domain, Node compatibility, disabled persistent observability, and the adapter's

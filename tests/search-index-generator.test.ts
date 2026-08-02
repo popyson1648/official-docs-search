@@ -126,7 +126,9 @@ describe("search index generation", () => {
       docsLocale: "en",
       status: "supported",
       path: expect.stringMatching(/^\/search-index\/bundles\/example-docs\.en\.[a-f0-9]{16}\.json$/),
-      recordCount: 1
+      recordCount: 1,
+      gzipBytes: expect.any(Number),
+      brotliBytes: expect.any(Number)
     });
     expect(runtimeManifest.entries[1]).toEqual({
       sourceId: "example-docs",

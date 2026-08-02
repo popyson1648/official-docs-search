@@ -6,7 +6,10 @@
 - `src/client/`: browser controllers, result rendering, and the search worker.
 - `src/core/`: framework-independent query, catalog, support-state, runtime, and ranking logic.
 - `src/data/`: TOML catalog of official, conventional, and community documentation sources.
-- `src/font-faces.css`: reviewed generated face declarations bundled by Astro.
+- `src/font-faces-*.css`: reviewed generated face declarations fingerprinted
+  separately by family and applied outside the initial render-blocking path.
+- `src/styles.css`: page and ancillary presentation inlined into negotiated
+  compressed HTML so first paint has no stylesheet request.
 - `src/pages/`: the single search-product entry, ancillary coverage and legal
   notices, and robots and sitemap discovery routes.
 - `src/components/` and `src/layouts/`: shared footer and legal-page shell.
@@ -26,6 +29,11 @@
   records, applies exact-first bounded typo tolerance, ranks document kinds and
   lifecycle states, and diversifies languages.
 - `src/core/search-runtime.ts`: fetches and validates manifest-selected bundles and isolates unavailable, failed, or malformed sources.
+- `src/core/search-preloads.ts`: shares locale-aware entry selection with the
+  runtime and caps direct-query bundle preload hints by count and compressed
+  size.
+- `src/core/html-response.ts`: negotiates private HTML response encoding and
+  merges cache variance without touching static responses.
 - `src/core/result-filters.ts`: resolves language and source facet selections with OR-within and AND-across semantics.
 - `src/core/result-groups.ts`: conservatively groups equivalent qualified
   reference symbols and stably orders groups by catalog language name when
@@ -38,7 +46,10 @@
   serializes the server-readable theme preference.
 - `src/client/search-controls.ts`: binds query, debounced accessible
   suggestions, IME handling, in-page locale, automatic fallback, source,
-  cookie, URL, tag, and help controls.
+  cookie, URL, history restoration, tag, and help controls.
+- `src/client/font-styles.ts`: applies fingerprinted family stylesheets after
+  parsing and adds the Japanese catalog only when the active UI or results need
+  it.
 - `src/client/search-results.ts`: reuses the page-lifetime worker for results
   and suggestions, rejects stale responses, and renders external strings with
   DOM text APIs, safe links, and glyph-independent SVG external-link marks.
@@ -62,7 +73,8 @@
 - `src/pages/languages.astro`: the catalog's coverage, generated from
   `loadCatalog()` so it cannot claim more than the search resolves.
 - `src/middleware.ts`: declares the per-visitor cache policy on rendered HTML
-  documents without touching static assets or discovery routes.
+  documents and negotiates Workers gzip without touching static assets or
+  discovery routes.
 - `src/pages/robots.txt.ts` and `src/pages/sitemap.xml.ts`: expose the
   production sitemap and the root page's EN/JA representations without adding
   separate product-entry pages.
@@ -99,11 +111,14 @@
    precedence; `Accept-Language` is used only when neither exists. The
    interface language supplies the documentation preference unless `locale:en`
    or `locale:ja` overrides it for the query.
-2. Normal interactive submissions are parsed locally, update history and the
-   result mount, and do not request another HTML page. Direct, reloaded, shared,
-   and no-JavaScript GET query URLs continue to render on the server.
+2. Normal interactive submissions are parsed locally, update and restore
+   history with application-owned state, and do not request another HTML page.
+   Direct, reloaded, shared, and no-JavaScript GET query URLs continue to render
+   on the server; Astro `ClientRouter` is not shipped.
 3. If at least one source is selected, the client requests the lightweight
-   runtime status manifest and keeps it in the page-lifetime worker; the
+   runtime status manifest and keeps it in the page-lifetime worker. A valid
+   direct query starts that manifest and a bounded set of exact bundles from
+   HTML preload hints; the
    complete provenance manifest stays available for generation and server
    verification. The no-source state makes no index request.
 4. The runtime prefers an exact locale and visibly falls back from Japanese to

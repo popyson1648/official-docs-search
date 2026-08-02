@@ -1,9 +1,10 @@
 ---
 import SiteFooter from "../components/SiteFooter.astro";
+import InlinePageStyles from "../components/InlinePageStyles.astro";
 import type { UiLanguage } from "../core/i18n";
 import { getThemeSetting } from "../core/theme";
-import "../font-faces.css";
-import "../styles.css";
+import alexandriaFontCssUrl from "../font-faces-alexandria.css?url";
+import lineSeedJpFontCssUrl from "../font-faces-line-seed-jp.css?url";
 
 interface Props {
   uiLanguage: UiLanguage;
@@ -24,7 +25,13 @@ const localizedUrl = (language: UiLanguage) => {
 const canonicalUrl = localizedUrl(uiLanguage);
 ---
 
-<html lang={uiLanguage} data-theme-setting={themeSetting}>
+<html
+  lang={uiLanguage}
+  data-theme-setting={themeSetting}
+  data-font-alexandria-url={alexandriaFontCssUrl}
+  data-font-line-seed-jp-url={lineSeedJpFontCssUrl}
+  data-needs-japanese-font={String(uiLanguage === "ja")}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -63,6 +70,17 @@ const canonicalUrl = localizedUrl(uiLanguage);
     <link rel="canonical" href={canonicalUrl} />
     <link rel="alternate" hreflang="en" href={localizedUrl("en")} />
     <link rel="alternate" hreflang="ja" href={localizedUrl("ja")} />
+    <link rel="preload" href={alexandriaFontCssUrl} as="style" fetchpriority="low" />
+    {
+      uiLanguage === "ja" && (
+        <link rel="preload" href={lineSeedJpFontCssUrl} as="style" fetchpriority="low" />
+      )
+    }
+    <noscript>
+      <link rel="stylesheet" href={alexandriaFontCssUrl} />
+      {uiLanguage === "ja" && <link rel="stylesheet" href={lineSeedJpFontCssUrl} />}
+    </noscript>
+    <InlinePageStyles />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
   </head>
@@ -115,5 +133,22 @@ const canonicalUrl = localizedUrl(uiLanguage);
       </main>
       <SiteFooter uiLanguage={uiLanguage} />
     </div>
+    <script is:inline>
+      for (const family of [
+        "alexandria",
+        ...(document.documentElement.lang === "ja" ? ["line-seed-jp"] : [])
+      ]) {
+        const key = family === "alexandria"
+          ? "fontAlexandriaUrl"
+          : "fontLineSeedJpUrl";
+        const href = document.documentElement.dataset[key];
+        if (!href) continue;
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = href;
+        link.dataset.loadedFontStylesheet = family;
+        document.head.append(link);
+      }
+    </script>
   </body>
 </html>

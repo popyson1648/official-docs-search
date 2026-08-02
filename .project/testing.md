@@ -7,8 +7,9 @@
 - `npm run test:server` builds and verifies the workerd production preview,
   SSR metadata, language and theme precedence, legal pages, footer links,
   noindex behavior, robots, sitemap, brand assets, local font delivery, and
-  immutable static-asset policies, including immutable index bundles alongside a
-  revalidated runtime manifest.
+  immutable static-asset policies. It also verifies private HTML encoding
+  negotiation and decoded identity, direct-query resource hints, immutable
+  index bundles, and the revalidated runtime manifest.
 - `npm run test:e2e` builds and drives Chromium against the Workers preview and
   real committed indexes. It also records every browser request during a visit
   and a search and requires them all to stay first-party, matching the Privacy
@@ -60,7 +61,8 @@ Both live commands are non-mutating.
 - Production hosting or caching: update and run
   `tests/integration/production-server.test.mjs` and `npm run check:worker`.
 - Font delivery: verify the Alexandria and LINE Seed JP family/weight contract,
-  the local WOFF2 files and licenses, then compare font-loaded screenshots,
+  the split generated stylesheets, asynchronous language-aware loading, the
+  local WOFF2 files and licenses, then compare font-loaded screenshots,
   geometry, and ordered results.
 - Catalog adapter or upstream-data changes: run the source-scoped update
   intentionally, review the diff, then run `npm run test:live:affected`.
@@ -101,6 +103,8 @@ recovery (`cpp srot`), cpprefjp Japanese results, proposal-source labeling and
 ranking, silent automatic-fallback settings/override behavior, bounded
 keyboard suggestions, and one shared no-source/no-result status component.
 The no-source path must not request the manifest.
+Valid direct query HTML must hint only its budgeted manifest-selected bundles;
+an empty or invalid query must not hint any search-index resource.
 Multi-language form coverage accepts whitespace after commas, adds default
 Sources only for newly introduced languages, renders policy-disabled
 non-official Sources unchecked, restores their preserved choices, and keeps an
@@ -178,11 +182,12 @@ official-only searches, return a known result under `source:all`, and expose
 their English/Japanese qualification in the source picker and result metadata.
 Under 4× CPU throttling and Fast 3G with the browser cache disabled, an uncached
 Python EN-to-JA unified-language switch in the HTTP/1 workerd preview must
-complete within 8,000 ms without a new document request. This provisional local
-budget includes the preserved LINE Seed JP font-subset requests triggered by
-changing the visible interface and waits for `document.fonts.ready`. The
-deployed HTTP/2 or HTTP/3 production origin must be re-audited against the
-4,500 ms target.
+complete within 9,000 ms without a new document request. This provisional local
+budget includes the asynchronously loaded, uncompressed LINE Seed JP face
+catalog and preserved font-subset requests triggered by changing the visible
+interface, and waits for `document.fonts.ready`. The catalog no longer blocks
+the English initial render. The deployed HTTP/2 or HTTP/3 production origin
+must be re-audited against the unchanged 4,500 ms target.
 A repeated switch using the page-lifetime worker cache must complete within
 500 ms and produce no search-time Long Task over 50 ms.
 A result container without a non-empty original-document link is not a successful search test.

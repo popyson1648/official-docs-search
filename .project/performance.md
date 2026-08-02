@@ -27,6 +27,52 @@ The current sets are 382,486 B and 601,284 B respectively.
 
 ## Page And Interaction Snapshot
 
+### 2026-08-02 first-load remediation
+
+The production audit before this change sent a 163,577-byte direct-query HTML
+document without content coding because its privacy-preserving `no-transform`
+directive disabled edge compression. The final production build sends the same
+decoded representation contract through Workers gzip: the document is 194,700
+bytes after inlining page CSS and 24,519 bytes on the wire, an 85% reduction
+from the former live response. Decoding is byte-identical, and the response
+retains `private, no-cache, no-transform` plus locale, cookie, and encoding
+variance.
+
+The generated font-face catalog is split by family and removed from the
+render-blocking path. The 32 KiB minified page CSS is inlined into the compressed
+document, so Lighthouse reports no render-blocking stylesheet, zero unused-CSS
+savings, and a passing document-latency insight. The 16,132-byte Astro
+`ClientRouter` and its lifecycle dependency are gone; application-owned state
+restores Back/Forward searches without a document request.
+
+Five cold Lighthouse 13.4.1 runs against the direct workerd production build
+used the same direct JavaScript query, mobile simulation, and desktop preset as
+the 2026-08-02 live baseline:
+
+| Build path | Score median | LCP median (range) | FCP median | TBT median | CLS | Transfer | Requests |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Live before, mobile | 97 | 2,140 ms (1,300–2,790) | — | 0 ms | 0.001 | 287 KiB | 8 |
+| Final workerd, mobile | 100 | 1,661 ms (1,656–1,669) | 914 ms | 2 ms | 0.00063 | 152,379 B | 14 |
+| Final workerd, desktop | 100 | 451 ms (449–454) | 251 ms | 0 ms | 0.00012 | 152,379 B | 14 |
+
+The larger request count intentionally includes early manifest and exact-index
+preloads, both result bundles, and their logical worker fetches. The worker
+fetches reused the preloaded bundle bodies with zero additional body transfer.
+The query URL correctly scores 69 for SEO because it is intentionally
+`noindex,follow`; a separate clean-home audit scored 100 for Accessibility,
+Best Practices, and SEO.
+
+Under a 390×800 viewport, Fast 3G, 4× CPU slowdown, and an empty browser cache,
+the final direct workerd query completed in 2,514 ms and recorded 1,744 ms of
+application search time. The manifest and both exact JavaScript bundles began
+together at about 640 ms rather than waiting for worker discovery. Ten later
+same-scope searches completed in a 38 ms median, recorded a 17 ms median search,
+and made zero document or search-index requests.
+
+These are verified build measurements. The public site retains the prior live
+behavior until this branch is deployed and remeasured over the production
+HTTP/2 or HTTP/3 endpoint.
+
 Measurements on 2026-07-28 use the production build. Lighthouse reports use
 five cold runs. Interaction measurements use a 390×800 viewport, Fast 3G,
 4× CPU slowdown, and disabled browser cache. No CrUX field data was available.
@@ -151,7 +197,11 @@ Use the browser HTTP cache:
 - Content-addressed bundles receive `public, max-age=31536000, immutable`.
 - The runtime and full manifests receive `no-cache, must-revalidate` and
   content-derived `ETag` validators.
-- Cloudflare performs production edge compression without committed sidecars.
+- Cloudflare performs production edge compression for static assets without
+  committed sidecars; middleware negotiates Workers gzip for private HTML while
+  retaining `no-transform`.
+- Valid direct queries preload the runtime manifest and at most four exact
+  bundles under a 500 KiB Brotli planning ceiling.
 - One page-lifetime Web Worker parses and searches compact tuples away from the
   main thread.
 - The worker reuses the manifest and successfully loaded content-addressed
@@ -177,9 +227,11 @@ privacy, recovery, and service-worker lifecycle concerns.
 
 The E2E gate uses a 390×800 viewport and 4× CPU throttling.
 With Fast 3G and the browser cache disabled, the first Python EN-to-JA locale
-switch must finish within 8,000 ms in the HTTP/1 workerd preview, including
-newly requested LINE Seed JP subsets. Re-audit the deployed HTTP/2 or HTTP/3
-origin against the 4,500 ms production target.
+switch must finish within 9,000 ms in the HTTP/1 workerd preview, including
+the asynchronously requested, uncompressed LINE Seed JP face catalog and its
+newly requested subsets. The catalog no longer blocks an English first paint.
+Re-audit the deployed HTTP/2 or HTTP/3 origin, where the stylesheet is
+compressed, against the unchanged 4,500 ms production target.
 A repeated switch to a bundle already held by the worker must finish within
 500 ms with no search-time Long Task over 50 ms.
 
