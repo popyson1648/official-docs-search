@@ -74,19 +74,21 @@ const intro = t(uiLanguage, "languagesIntro")
       languages.map((language) => {
         const color = getLanguageColor(language.id);
         return (
-          <section class="language-entry">
-            <h2>
-              <span
-                class="language-entry-tag"
-                style={
-                  color
-                    ? `--language-color: ${color}; --language-text-color: ${getLanguageTagTextColor(color)};`
-                    : undefined
-                }
-              >
-                {language.name}
-              </span>
-            </h2>
+          <details class="language-entry">
+            <summary class="language-entry-summary">
+              <h2>
+                <span
+                  class="language-entry-tag"
+                  style={
+                    color
+                      ? `--language-color: ${color}; --language-text-color: ${getLanguageTagTextColor(color)};`
+                      : undefined
+                  }
+                >
+                  {language.name}
+                </span>
+              </h2>
+            </summary>
             <ul class="language-source-list">
               {language.sources.map((source) => (
                 <li>
@@ -126,7 +128,7 @@ const intro = t(uiLanguage, "languagesIntro")
                 </li>
               ))}
             </ul>
-          </section>
+          </details>
         );
       })
     }

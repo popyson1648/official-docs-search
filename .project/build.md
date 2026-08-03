@@ -147,6 +147,12 @@ the script. Those tools run during the build; the deployed Worker bundle contain
 native binary or CSS transformer. Adding a dependency that trips the check requires a
 recorded decision, not an allowlist edit alone.
 
+`package.json` temporarily overrides PostCSS and Undici to exact patched releases
+because the current Vite and Cloudflare toolchain lockfile otherwise resolves known
+vulnerable transitive versions. Remove an override when the supported upstream graph
+selects an advisory-free release on its own; do not use `npm audit fix --force` to
+rewrite the framework or Wrangler versions.
+
 ## Common Failures
 
 - A supported catalog entry without an adapter, or an adapter without a supported entry, fails generation.
