@@ -1890,12 +1890,57 @@ html[lang="ja"] .lang-en {
 }
 
 .language-entry {
-  margin: 22px 0 0;
+  margin: 8px 0 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.language-entry-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+  list-style: none;
+}
+
+.language-entry-summary:hover {
+  background: var(--highlight);
+}
+
+.language-entry-summary::-webkit-details-marker {
+  display: none;
+}
+
+.language-entry-summary::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translate(-2px, 2px);
+  transition: transform 0.15s ease;
+}
+
+.language-entry[open] .language-entry-summary {
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.language-entry[open] .language-entry-summary::after {
+  transform: rotate(225deg) translate(-2px, 2px);
 }
 
 .language-entry h2 {
-  margin: 0 0 8px;
+  margin: 0;
   font-size: 1rem;
+  line-height: 1.4;
 }
 
 .language-entry-tag {
@@ -1913,7 +1958,7 @@ html[lang="ja"] .lang-en {
 
 .language-source-list {
   margin: 0;
-  padding: 0 0 0 2px;
+  padding: 14px 14px 4px;
   list-style: none;
 }
 

@@ -255,10 +255,16 @@ test("publishes the catalog's coverage on the supported-languages page", async (
   assert.match(japanese, /<h1>対応言語<\/h1>/);
   assert.match(japanese, /<meta name="robots" content="noindex,follow">/);
   assert.equal(
-    japanese.match(/class="language-entry"/g)?.length,
+    japanese.match(/<details class="language-entry">/g)?.length,
     languageCount,
-    "every catalog language should have a section"
+    "every catalog language should have a closed disclosure"
   );
+  assert.equal(
+    japanese.match(/<summary class="language-entry-summary">/g)?.length,
+    languageCount,
+    "every language disclosure should expose its name as a summary"
+  );
+  assert.doesNotMatch(japanese, /<details class="language-entry" open/);
   assert.equal(
     japanese.match(/class="language-source-list"><li>/g)?.length,
     languageCount
